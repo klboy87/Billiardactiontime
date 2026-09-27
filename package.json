@@ -1,0 +1,15 @@
+{
+  "name": "billiard-action-time",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pool tournament directory with an automatic sync from your existing tournament site.",
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "sync": "node src/sync-cli.js",
+    "geocode": "node src/geocode-cli.js",
+    "test": "node --test --no-warnings \"test/*.test.js\""
+  }
+}
