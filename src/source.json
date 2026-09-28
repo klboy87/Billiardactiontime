@@ -1,8 +1,0 @@
-{
-  "tournaments": [
-    {"id":"1001","name":"Tuesday Night 9 Ball","date":"2030-01-01","time":"7:00 PM","game":"9 Ball","entry_fee":"$20","added_money":"$100","venue":"Test Hall One","address":"100 Test Street","city":"Testville","state":"MI","zip":"49000","lat":42.3,"lng":-85.2},
-    {"id":"1002","name":"Ladies Night 8 Ball","date":"2030-01-02","game":"8 Ball","entry_fee":10,"venue":"Test Hall One","address":"100 Test Street","city":"Testville","state":"Michigan","zip":"49000"},
-    {"id":"1003","name":"Laggers Choice 8, 9 or 10 Ball","date":"01/03/2030","time":"19:30","venue":"Test Hall Two","address":"200 Sample Ave","city":"Exampleton","state":"OH","zip":"44000-1234","website":"testhall.example/events"},
-    {"id":"1004","name":"One Pocket Ring Game","date":"2030-01-04T14:00:00","game":"One Pocket","venue":"Test Hall Two","address":"200 Sample Ave","city":"Exampleton","state":"OH","zip":"44000"}
-  ]
-}
