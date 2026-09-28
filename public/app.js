@@ -48,7 +48,10 @@
     return data.cities || [];
   }
 
-  function stateCitySelects({ state = '', city = '', idPrefix = 'sc' } = {}) {
+  // Builds a linked "State" + "City" dropdown pair. Every US state is always listed,
+  // even states or cities that have no tournament posted yet -- the city list comes
+  // from /api/places, which merges known cities with any real venue cities on file.
+  function stateCitySelects({ state = '', city = '', idPrefix = 'sc', onChange } = {}) {
     return `<div class="twosel" data-statecity="${idPrefix}">
       <div class="fg">
         <label for="${idPrefix}State">State</label>
@@ -352,7 +355,36 @@
     loadPlaces().then(places => {
       const sel = document.getElementById('postState');
       for (const s of places.states) sel.insertAdjacentHTML('beforeend', `<option value="${esc(s.code)}">${esc(s.name)}</option>`);
-    }).catch(() => {});
+      applyScannedFlyer();
+    }).catch(() => { applyScannedFlyer(); });
+
+    function applyScannedFlyer() {
+      const raw = sessionStorage.getItem('bat_scanned_flyer');
+      if (!raw) return;
+      sessionStorage.removeItem('bat_scanned_flyer');
+      let f;
+      try { f = JSON.parse(raw); } catch { return; }
+      const form = document.getElementById('postForm');
+      const set = (name, val) => { const el = form.elements[name]; if (el && val != null && val !== '') el.value = val; };
+      set('name', f.name);
+      set('date', f.date);
+      set('time', f.time);
+      if (f.game && GAMES.includes(f.game)) set('game', f.game);
+      set('entry', f.entry);
+      set('added', f.added);
+      set('venueName', f.venue);
+      set('address', f.address);
+      set('city', f.city);
+      if (f.state) set('state', f.state);
+      set('zip', f.zip);
+      const extras = [f.race ? `Race to ${f.race}` : '', f.format || ''].filter(Boolean).join(' · ');
+      set('notes', extras || null);
+      const banner = document.createElement('div');
+      banner.className = 'loadwrap';
+      banner.innerHTML = '<p class="muted">✓ Filled in from your scanned flyer. Review everything below before submitting.</p>';
+      form.prepend(banner);
+    }
+
     document.getElementById('postForm').addEventListener('submit', async e => {
       e.preventDefault();
       const f = new FormData(e.target);
@@ -404,9 +436,10 @@
         try {
           const data = await api('/api/scan', { method: 'POST', body: { image: reader.result } });
           const f = data.fields || {};
-          result.innerHTML = `<div class="loadwrap"><p class="muted">Here's what we read off the flyer. Review it, then
-            <a href="#/post">post it</a> with these details filled in by hand.</p>
-            <pre class="note">${esc(JSON.stringify(f, null, 2))}</pre></div>`;
+          sessionStorage.setItem('bat_scanned_flyer', JSON.stringify(f));
+          result.innerHTML = `<div class="loadwrap"><p class="muted">Here's what we read off the flyer. Review it, then continue to the post form with these details already filled in.</p>
+            <pre class="note">${esc(JSON.stringify(f, null, 2))}</pre>
+            <a class="btn btn-blue" href="#/post">Continue to Post Form →</a></div>`;
         } catch (e) { result.innerHTML = errorBox(e.message); }
       };
       reader.readAsDataURL(input.files[0]);
@@ -562,7 +595,9 @@
   async function render() {
     const { pathPart, params, segs } = parseHash();
     window.scrollTo(0, 0);
+    // exact match first
     if (routes[pathPart]) return routes[pathPart](params);
+    // /prefix/:id style
     if (segs.length === 2 && routes['/' + segs[0]]) return routes['/' + segs[0]](params, segs[1]);
     if (segs.length === 0) return routes['/'](params);
     notFound();
