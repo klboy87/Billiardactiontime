@@ -10,6 +10,13 @@ const server = createApp(db, cfg, { log: m => console.log(new Date().toISOString
 
 server.listen(cfg.port, () => console.log(`Billiard Action Time running at ${cfg.publicUrl} (port ${cfg.port})`));
 
+for (const sig of ['SIGTERM', 'SIGINT']) {
+  process.on(sig, () => {
+    server.flushPageviews?.();
+    process.exit(0);
+  });
+}
+
 if (cfg.source.url && cfg.syncIntervalMinutes > 0) {
   const tick = () => server.syncNow().catch(e => console.error('sync error', e));
   setTimeout(tick, 5000);
@@ -20,4 +27,3 @@ if (cfg.source.url && cfg.syncIntervalMinutes > 0) {
 }
 if (cfg.anthropicKey) console.log('Flyer reading is ON (ANTHROPIC_API_KEY is set)');
 else console.log('Flyer reading is OFF -- set ANTHROPIC_API_KEY in .env to turn it on');
-
