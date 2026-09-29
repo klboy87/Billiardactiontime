@@ -139,6 +139,11 @@
             ${stateCitySelects({ idPrefix: 'home' })}
             <button class="btn btn-blue" type="submit">Search Tournaments</button>
           </form>
+          <div class="homescan">
+            <input type="file" id="homeFlyerInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
+            <button class="btn btn-out" id="homeFlyerBtn" type="button">📷 Scan a Flyer</button>
+            <span class="muted" id="homeFlyerStatus" style="margin-left:10px"></span>
+          </div>
         </div>
       </section>
       <section class="sec">
@@ -156,6 +161,28 @@
       e.preventDefault();
       const state = document.getElementById('homeState').value, city = document.getElementById('homeCity').value;
       location.hash = '#/search?' + qs({ state, city });
+    });
+    document.getElementById('homeFlyerBtn').addEventListener('click', () => document.getElementById('homeFlyerInput').click());
+    document.getElementById('homeFlyerInput').addEventListener('change', async e => {
+      const file = e.target.files[0];
+      const status = document.getElementById('homeFlyerStatus');
+      if (!file) return;
+      let cfg;
+      try { cfg = await api('/api/config'); } catch { cfg = { scan: false }; }
+      if (!cfg.scan) { status.textContent = "Flyer scanning isn't turned on for this site yet."; e.target.value = ''; return; }
+      status.textContent = 'Reading flyer…';
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const data = await api('/api/scan', { method: 'POST', body: { image: reader.result } });
+          sessionStorage.setItem('bat_scanned_flyer', JSON.stringify(data.fields || {}));
+          try { sessionStorage.setItem('bat_scanned_flyer_image', reader.result); } catch { /* too big, skip */ }
+          status.textContent = 'Got it! Opening the post form…';
+          location.hash = '#/post';
+          render();
+        } catch (err) { status.textContent = 'Could not read that flyer: ' + err.message; e.target.value = ''; }
+      };
+      reader.readAsDataURL(file);
     });
     try {
       const data = await api('/api/tournaments?limit=9');
