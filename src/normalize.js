@@ -1,6 +1,7 @@
 // Turns messy source values into the clean values the site uses.
 
 export const GAMES = ['9-Ball', '8-Ball', '10-Ball', 'One Pocket', 'Banks', 'Straight Pool', 'Scotch Doubles', 'Other'];
+export const TABLE_SIZES = ['7-ft', '8-ft', '9-ft', 'Other'];
 
 export function normalizeGame(...texts) {
   const s = texts.filter(Boolean).join(' ').toLowerCase().replace(/[-_/]/g, ' ');
