@@ -234,6 +234,14 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const list = D.listTournaments(db, { from, to: parseDate(url.searchParams.get('to')) || undefined, state: normalizeState(url.searchParams.get('state')), limit: Math.min(Number(url.searchParams.get('limit')) || 20000, 50000) });
       return json(req, res, 200, { generatedAt: new Date().toISOString(), tournaments: list }, { 'Cache-Control': 'public, max-age=60' });
     }
+    if (m === 'GET' && p === '/api/tournaments/past') {
+      const state = normalizeState(url.searchParams.get('state'));
+      const limit = Math.min(Number(url.searchParams.get('limit')) || 30, 100);
+      const offset = Math.max(Number(url.searchParams.get('offset')) || 0, 0);
+      const list = D.listPastTournaments(db, { state, limit, offset });
+      const total = D.countPastTournaments(db, { state });
+      return json(req, res, 200, { tournaments: list, total, offset, limit }, { 'Cache-Control': 'public, max-age=300' });
+    }
     if (m === 'GET' && (x = p.match(/^\/api\/tournaments\/(\d+)$/))) {
       const t = D.getTournament(db, Number(x[1]));
       return t ? json(req, res, 200, t) : json(req, res, 404, { error: 'Tournament not found' });
@@ -326,7 +334,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return send(req, res, 200, statesIndexPage(counts, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
     }
     if (m === 'GET' && p === '/sitemap.xml') {
-      const published = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published');
+      const published = D.listTournaments(db, { from: '0001-01-01', limit: 50000 }).filter(t => t.status === 'published');
       const tUrls = published.map(t => `<url><loc>${esc(cfg.publicUrl)}/t/${t.id}</loc><lastmod>${esc((t.updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
       const venueIds = new Map();
       for (const t of published) if (!venueIds.has(t.venue.id)) venueIds.set(t.venue.id, t.updatedAt);
