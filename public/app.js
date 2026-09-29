@@ -3,6 +3,7 @@
   'use strict';
 
   const GAMES = ['9-Ball', '8-Ball', '10-Ball', 'One Pocket', 'Banks', 'Straight Pool', 'Scotch Doubles', 'Other'];
+  const TABLE_SIZES = ['7-ft', '8-ft', '9-ft', 'Other'];
   const app = document.getElementById('app');
   document.getElementById('yr').textContent = new Date().getFullYear();
 
@@ -185,7 +186,6 @@
           try { sessionStorage.setItem('bat_scanned_flyer_image', reader.result); } catch { /* too big, skip */ }
           status.textContent = 'Got it! Opening the post form…';
           location.hash = '#/post';
-          render();
         } catch (err) { status.textContent = 'Could not read that flyer: ' + err.message; e.target.value = ''; }
       };
       reader.readAsDataURL(file);
@@ -349,6 +349,8 @@
           ${t.added ? `<tr><th>Added Money</th><td>${esc(money(t.added))}</td></tr>` : ''}
           ${t.race ? `<tr><th>Race</th><td>${esc(t.race)}</td></tr>` : ''}
           ${t.format ? `<tr><th>Format</th><td>${esc(t.format)}</td></tr>` : ''}
+          ${t.tableSize ? `<tr><th>Table Size</th><td>${esc(t.tableSize)}</td></tr>` : ''}
+          ${t.limit ? `<tr><th>Player/Team Limit</th><td>${esc(t.limit)}</td></tr>` : ''}
           ${t.director.name ? `<tr><th>Director</th><td>${esc(t.director.name)} ${t.director.phone ? '· ' + esc(t.director.phone) : ''} ${t.director.email ? '· ' + esc(t.director.email) : ''}</td></tr>` : ''}
         </tbody></table>
         ${t.hasFlyer ? `<img class="previewimg" src="/api/tournaments/${t.id}/flyer" alt="Tournament flyer">` : ''}
@@ -425,13 +427,19 @@
           </div>
         </div>
         <div class="fg"><label>Zip</label><input name="zip" maxlength="10"></div>
+        <div class="two">
+          <div class="fg"><label>Table Size</label><select name="tableSize"><option value="">Not specified</option>${TABLE_SIZES.map(t => `<option>${esc(t)}</option>`).join('')}</select></div>
+          <div class="fg"><label>Player/Team Limit</label><input name="limit" type="number" min="0" step="1"></div>
+        </div>
+        <div class="fg"><label>Race To</label><input name="race" maxlength="40" placeholder="e.g. Race to 9"></div>
+        <div class="fg"><label>Format</label><input name="format" maxlength="60" placeholder="e.g. Double Elimination"></div>
         <div class="fg"><label>Director Name</label><input name="directorName" maxlength="80"></div>
         <div class="two">
           <div class="fg"><label>Director Phone</label><input name="directorPhone" maxlength="30"></div>
           <div class="fg"><label>Director Email</label><input name="directorEmail" type="email" maxlength="120"></div>
         </div>
         <div class="fg"><label>Registration URL</label><input name="registrationUrl" type="url"></div>
-        <div class="fg"><label>Notes</label><textarea name="notes" maxlength="1000" rows="4"></textarea></div>
+        <div class="fg"><label>Description / Rules</label><textarea name="notes" maxlength="1000" rows="4"></textarea></div>
         <div class="fg" id="flyerFg"><label>Flyer Photo (optional)</label>
           <div id="flyerPreviewWrap"></div>
           <input type="file" id="flyerFile" accept="image/png,image/jpeg,image/webp,image/gif">
@@ -479,8 +487,13 @@
       set('city', f.city);
       if (f.state) set('state', f.state);
       set('zip', f.zip);
-      const extras = [f.race ? `Race to ${f.race}` : '', f.format || ''].filter(Boolean).join(' · ');
-      set('notes', extras || null);
+      set('race', f.race);
+      set('format', f.format);
+      if (f.tableSize && TABLE_SIZES.includes(f.tableSize)) set('tableSize', f.tableSize);
+      set('limit', f.limit);
+      set('directorName', f.directorName);
+      set('directorPhone', f.directorPhone);
+      set('notes', f.notes);
       const img = sessionStorage.getItem('bat_scanned_flyer_image');
       if (img) { sessionStorage.removeItem('bat_scanned_flyer_image'); showFlyerPreview(img); }
       const banner = document.createElement('div');
@@ -495,6 +508,8 @@
       const body = {
         name: f.get('name'), date: f.get('date'), time: f.get('time') || null, game: f.get('game'),
         entry: f.get('entry') || null, added: f.get('added') || null, notes: f.get('notes') || null,
+        race: f.get('race') || null, format: f.get('format') || null,
+        tableSize: f.get('tableSize') || null, limit: f.get('limit') || null,
         registrationUrl: f.get('registrationUrl') || null,
         director: { name: f.get('directorName') || null, phone: f.get('directorPhone') || null, email: f.get('directorEmail') || null },
         venue: { name: f.get('venueName'), address: f.get('address') || null, city: f.get('city'), state: f.get('state'), zip: f.get('zip') || null },
@@ -546,7 +561,6 @@
           try { sessionStorage.setItem('bat_scanned_flyer_image', reader.result); } catch { /* image too big for storage, skip it */ }
           result.innerHTML = `<div class="loadwrap"><p class="muted">Got it! Taking you to the post form with these details filled in…</p></div>`;
           location.hash = '#/post';
-          render();
         } catch (e) { result.innerHTML = errorBox(e.message); }
       };
       reader.readAsDataURL(input.files[0]);
@@ -714,4 +728,3 @@
   document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('nav').classList.toggle('open'));
   render();
 })();
-
