@@ -404,3 +404,11 @@ table.t td{padding:10px 8px;border-bottom:1px solid var(--line)}
 .cmsg{font-size:15px;line-height:1.35}.cmsg b{margin-right:4px}.cmsg.host b{color:var(--green)}
 .stake-tag.live{background:var(--red);color:#fff}
 .ahostbar{margin-bottom:14px;border-color:var(--blue)}
+
+/* home tiles: fit all tiles in one row on wide screens; balance an odd last tile on phones */
+.tiles{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+@media (max-width:860px){.tiles{grid-template-columns:1fr 1fr}.tiles .tile:last-child:nth-child(odd){grid-column:1/-1;min-height:110px}}
+.t-gold{background:linear-gradient(160deg,#d9a21b,#8a5a00)}.t-gold .ic{color:#8a5a00}.t-gold .free{color:#8a5a00}
+.t-red{background:linear-gradient(160deg,#e0454b,#9c1d23)}.t-red .ic{color:#9c1d23}.t-red .free{color:#9c1d23}
+@media (min-width:861px){.tiles .tile h3{font-size:17px}.tiles .tile{padding:18px 14px}}
+@media (min-width:861px){.tiles{display:flex;flex-wrap:wrap}.tiles .tile{flex:1 1 118px;width:auto}}

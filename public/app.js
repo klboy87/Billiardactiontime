@@ -215,6 +215,8 @@
         <a class="tile t-pink" href="#/states"><div class="ic">🗺️</div><h3>Browse by State</h3></a>
         <button class="tile t-purple" id="homeFlyerBtn" type="button"><div class="ic">📷</div><h3>Scan a Flyer</h3></button>
         <a class="tile t-green" href="#/post"><span class="free">FREE</span><div class="ic">➕</div><h3>Post a Tournament</h3></a>
+        <a class="tile t-gold" href="#/stakes"><span class="free">NEW</span><div class="ic">🐎</div><h3>Stake Horse Board</h3></a>
+        <a class="tile t-red" href="#/auctions"><span class="free">NEW</span><div class="ic">🔨</div><h3>Calcutta Auctions</h3></a>
       </section>
       <input type="file" id="homeFlyerInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
       <p class="muted" id="homeFlyerStatus" style="text-align:center"></p>
