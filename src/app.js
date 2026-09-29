@@ -5,7 +5,7 @@ import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import * as D from './db.js';
-import { GAMES, normalizeState, parseDate, parseTime, parseMoney, parseInteger, clean, detectLevel, zip5 } from './normalize.js';
+import { GAMES, TABLE_SIZES, normalizeState, parseDate, parseTime, parseMoney, parseInteger, clean, detectLevel, zip5 } from './normalize.js';
 import { safeUrl } from './mapping.js';
 import { ingest, runSync } from './sync.js';
 import { geocodePending } from './geocode.js';
@@ -71,7 +71,7 @@ export function validateSubmission(b) {
     value: {
       name, date, time: parseTime(b.time), game: GAMES.includes(b.game) ? b.game : 'Other', gameRaw: null,
       entry: parseMoney(b.entry), added: parseMoney(b.added), race: s(b.race, 40) || null, format: s(b.format, 60) || null,
-      playerLimit: parseInteger(b.limit), level: detectLevel(name), tableSize: null,
+      playerLimit: parseInteger(b.limit), level: detectLevel(name), tableSize: TABLE_SIZES.includes(b.tableSize) ? b.tableSize : null,
       directorName: s(b.director?.name, 80) || null, directorPhone: s(b.director?.phone, 30) || null, directorEmail: s(b.director?.email, 120) || null,
       registrationUrl: safeUrl(b.registrationUrl), website: safeUrl(b.website), notes: s(b.notes, 1000) || null, flyerUrl: null,
       venue: { name: venueName, address: s(b.venue?.address, 120), city, state, zip: zip5(b.venue?.zip), phone: s(b.venue?.phone, 30) || null, lat: null, lng: null, tables: null }
@@ -90,7 +90,7 @@ function tournamentPage(t, base) {
     location: { '@type': 'Place', name: v.name, address: { '@type': 'PostalAddress', streetAddress: v.address || undefined, addressLocality: v.city, addressRegion: v.state, postalCode: v.zip || undefined, addressCountry: 'US' } },
     ...(t.entry != null ? { offers: { '@type': 'Offer', price: t.entry, priceCurrency: 'USD' } } : {})
   };
-  const rows = [['Date', t.date + (t.time ? ' at ' + t.time : '')], ['Venue', `${v.name}, ${where}`], ['Game', t.game], ['Entry', money(t.entry)], ['Added money', money(t.added)], ['Race', t.race], ['Format', t.format]]
+  const rows = [['Date', t.date + (t.time ? ' at ' + t.time : '')], ['Venue', `${v.name}, ${where}`], ['Game', t.game], ['Entry', money(t.entry)], ['Added money', money(t.added)], ['Race', t.race], ['Format', t.format], ['Table Size', t.tableSize], ['Player/Team Limit', t.limit]]
     .filter(r => r[1]).map(r => `<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td></tr>`).join('');
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(t.name)} | ${esc(v.city)}, ${esc(v.state)} ${esc(t.game)} Tournament</title><meta name="description" content="${esc(desc)}">
