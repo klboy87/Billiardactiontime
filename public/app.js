@@ -437,9 +437,9 @@
           const data = await api('/api/scan', { method: 'POST', body: { image: reader.result } });
           const f = data.fields || {};
           sessionStorage.setItem('bat_scanned_flyer', JSON.stringify(f));
-          result.innerHTML = `<div class="loadwrap"><p class="muted">Here's what we read off the flyer. Review it, then continue to the post form with these details already filled in.</p>
-            <pre class="note">${esc(JSON.stringify(f, null, 2))}</pre>
-            <a class="btn btn-blue" href="#/post">Continue to Post Form →</a></div>`;
+          result.innerHTML = `<div class="loadwrap"><p class="muted">Got it! Taking you to the post form with these details filled in…</p></div>`;
+          location.hash = '#/post';
+          render();
         } catch (e) { result.innerHTML = errorBox(e.message); }
       };
       reader.readAsDataURL(input.files[0]);
