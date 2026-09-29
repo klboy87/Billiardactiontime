@@ -1197,6 +1197,392 @@
     return stakesBoard(params);
   };
 
+  // ------------------------------------------------------------ CALCUTTA / LIVE AUCTIONS
+  // Records only, like the Staking Board: the site never takes, holds or pays out money.
+  const AUCTION_NOTE = `<p class="stake-note">Billiard Action Time runs the auction and keeps the records only. It never takes, holds or pays out money: settle up with the host directly. You must be 18+ and follow the laws where you play.</p>`;
+  function aStore(code) { try { return JSON.parse(localStorage.getItem('bat_auction_' + code) || '{}'); } catch { return {}; } }
+  function aSave(code, patch) { try { localStorage.setItem('bat_auction_' + code, JSON.stringify({ ...aStore(code), ...patch })); } catch { /* ignore */ } }
+  const aStatusLabel = { setup: 'Not started', running: 'Live', paused: 'Paused', done: 'Finished' };
+
+  async function auctionsHome() {
+    app.innerHTML = `
+      <div class="pagehead"><h1>Calcutta Auctions</h1>
+        <p>Run a live Calcutta for your tournament: bidders buy players on a countdown clock, everyone sees the bids in real time, and the payouts are worked out for you when the tournament ends.</p>
+        <div class="actbar" style="margin-top:14px"><a class="btn btn-green" href="#/auctions/new">Create an Auction</a></div>
+      </div>
+      <form class="card" id="joinCode" style="max-width:460px">
+        <label class="f" for="codeIn">Have a code? Join an auction</label>
+        <div style="display:flex;gap:8px"><input id="codeIn" maxlength="10" placeholder="e.g. K7PQ2M" autocapitalize="characters" style="text-transform:uppercase"><button class="btn btn-blue" type="submit">Join</button></div>
+      </form>
+      <div class="card" style="margin-top:18px">
+        <h3 style="margin-bottom:8px">How it works</h3>
+        <ol class="steps3">
+          <li><b>The host creates the auction</b> and lists the players, the opening bid, the bid increment, the clock and the payout split.</li>
+          <li><b>Bidders join with the code</b> on their phones. No account needed.</li>
+          <li><b>Live mode:</b> one player at a time on a countdown. A late bid adds time back so nobody gets sniped. <b>Silent mode:</b> every player is open at once until the clock runs out.</li>
+          <li><b>After the tournament</b> the host enters where each player finished and the site shows what every owner is paid.</li>
+        </ol>
+      </div>
+      <h2 class="stake-h">Auctions</h2>
+      <div id="aList">${loading()}</div>
+      ${AUCTION_NOTE}`;
+    document.getElementById('joinCode').addEventListener('submit', e => {
+      e.preventDefault();
+      const c = document.getElementById('codeIn').value.trim().toUpperCase();
+      if (c) location.hash = '#/a/' + encodeURIComponent(c);
+    });
+    try {
+      const { auctions } = await api('/api/auctions');
+      document.getElementById('aList').innerHTML = auctions.length ? `<div class="stakegrid">${auctions.map(a => `
+        <a class="card stakecard" href="#/a/${esc(a.code)}">
+          <div class="stake-top"><span class="stake-tag ${a.status === 'done' ? 'lost' : ''}">${esc(aStatusLabel[a.status] || a.status)} · ${a.mode === 'silent' ? 'Silent' : 'Live'}</span><span class="muted">Code ${esc(a.code)}</span></div>
+          <h3>${esc(a.title)}</h3>
+          <div class="muted">${a.players} players${a.pot ? ' · Pot ' + cash(a.pot) : ''}${a.startsAt ? ' · ' + esc(a.startsAt.replace('T', ' ')) : ''}</div>
+        </a>`).join('')}</div>` : '<div class="card"><p class="muted" style="margin:0">No public auctions right now. Most hosts share their code directly with bidders.</p></div>';
+    } catch (e) { document.getElementById('aList').innerHTML = errorBox(e.message); }
+  }
+
+  async function auctionCreate() {
+    app.innerHTML = `
+      <div class="crumbs"><a href="#/auctions">Calcutta Auctions</a> / Create</div>
+      <div class="pagehead"><h1>Create an Auction</h1><p>You'll get a code to share with bidders and a private host link to run it.</p></div>
+      <form class="card" id="aForm">
+        <div class="fg"><label class="f">Auction name *</label><input name="title" required maxlength="100" placeholder="e.g. Friday 9-Ball Calcutta"></div>
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">Starts</label><input name="startsAt" type="datetime-local"></div>
+          <div class="fg"><label class="f">Type</label><select name="mode" id="aMode"><option value="live">Live: one player at a time</option><option value="silent">Silent: all players at once</option></select></div>
+        </div>
+        <div class="row3">
+          <div class="fg"><label class="f">Opening bid ($)</label><input name="minBid" type="number" min="1" step="1" value="20" inputmode="numeric"></div>
+          <div class="fg"><label class="f">Bid increment ($)</label><input name="increment" type="number" min="1" step="1" value="5" inputmode="numeric"></div>
+          <div class="fg"><label class="f">House cut (%)</label><input name="houseCut" type="number" min="0" max="50" step="0.5" value="0"></div>
+        </div>
+        <div class="row3" id="liveOpts">
+          <div class="fg"><label class="f">Clock per player (sec)</label><input name="bidSeconds" type="number" min="10" max="300" value="30" inputmode="numeric"></div>
+          <div class="fg"><label class="f">Late bid resets to (sec)</label><input name="resetSeconds" type="number" min="5" max="120" value="15" inputmode="numeric"></div>
+        </div>
+        <div class="fg" id="silentOpts" hidden><label class="f">Silent auction length (minutes)</label><input name="silentMinutes" type="number" min="5" max="10080" value="60" inputmode="numeric"></div>
+        <div class="fg"><label class="f">Payout split by finish (%)</label><input name="payouts" value="50, 25, 15, 10" placeholder="1st, 2nd, 3rd, ..."><small class="muted">1st, 2nd, 3rd… as percentages of the pot after any house cut.</small></div>
+        <div class="fg"><label class="f">Players, one per line *</label><textarea name="items" rows="8" required placeholder="Player One&#10;Player Two&#10;Player Three"></textarea></div>
+        <label style="display:flex;gap:8px;align-items:center;margin-bottom:12px;font-size:14px"><input type="checkbox" name="listed"> Show this auction on the public Auctions page</label>
+        <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I understand this site doesn't take, hold or pay out money, and I'm responsible for following the laws where the auction is held.</label>
+        <div id="aMsg"></div>
+        <button class="btn btn-green" type="submit">Create Auction</button>
+      </form>`;
+    const mode = document.getElementById('aMode');
+    mode.addEventListener('change', () => {
+      document.getElementById('liveOpts').hidden = mode.value === 'silent';
+      document.getElementById('silentOpts').hidden = mode.value !== 'silent';
+    });
+    document.getElementById('aForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const body = Object.fromEntries(new FormData(e.target));
+      body.listed = !!body.listed;
+      try {
+        const r = await api('/api/auctions', { method: 'POST', body });
+        aSave(r.code, { hostKey: r.hostKey });
+        const hostLink = `${location.origin}/#/a/${r.code}?host=${encodeURIComponent(r.hostKey)}`;
+        app.innerHTML = `
+          <div class="pagehead"><h1>Auction Created</h1></div>
+          <div class="card">
+            <p>Bidders join with this code:</p>
+            <div class="acode">${esc(r.code)}</div>
+            <p class="muted">Or send them this link: <b>${esc(location.origin)}/#/a/${esc(r.code)}</b></p>
+            <hr class="hr">
+            <h3 style="margin-bottom:6px">Your private host link</h3>
+            <p class="muted">Use it to start the auction and run it from any device. It's saved on this phone too. Don't share it.</p>
+            <input id="hostLink" readonly value="${esc(hostLink)}">
+            <div class="actbar" style="margin-top:12px"><button class="btn btn-blue" type="button" id="copyHost">Copy Host Link</button><a class="btn btn-green" href="#/a/${esc(r.code)}">Open the Auction Room</a></div>
+          </div>`;
+        document.getElementById('copyHost').addEventListener('click', async () => {
+          document.getElementById('hostLink').select();
+          try { await navigator.clipboard.writeText(hostLink); } catch { /* ignore */ }
+          document.getElementById('copyHost').textContent = 'Copied';
+        });
+      } catch (err) { document.getElementById('aMsg').innerHTML = errorBox(err.message); }
+    });
+  }
+
+  let auctionPoll = null;
+  async function auctionRoom(params, rawCode) {
+    const code = String(rawCode || '').toUpperCase();
+    if (params.get('host')) { aSave(code, { hostKey: params.get('host') }); history.replaceState(null, '', '#/a/' + code); }
+    if (auctionPoll) { clearInterval(auctionPoll); auctionPoll = null; }
+    const route = '#/a/' + code;
+    let st = null, offset = 0, tab = 'room', seenChat = 0, pendingRender = false;
+    const creds = () => aStore(code);
+    const call = (path, opts = {}) => {
+      const c = creds(), headers = {};
+      if (c.token) headers['X-Bidder'] = c.token;
+      if (c.hostKey) headers['X-Host-Key'] = c.hostKey;
+      return api(`/api/auctions/${code}${path}`, { ...opts, headers });
+    };
+    const now = () => Date.now() + offset;
+
+    app.innerHTML = `
+      <div class="crumbs"><a href="#/auctions">Calcutta Auctions</a> / ${esc(code)}</div>
+      <div id="aHead">${loading('Loading auction…')}</div>
+      <div id="aJoin"></div>
+      <div id="aHostBar"></div>
+      <div class="atabs" role="tablist">
+        <button type="button" data-tab="room" class="on">Auction</button>
+        <button type="button" data-tab="results">Results</button>
+        <button type="button" data-tab="chat">Chat <span id="chatBadge" class="abadge" hidden></span></button>
+      </div>
+      <div id="aMain"></div>
+      <div id="aChat" hidden>
+        <div class="card achat"><div id="chatList" class="chatlist"></div>
+          <form id="chatForm" style="display:flex;gap:8px;margin-top:10px"><input name="text" maxlength="300" placeholder="Say something…" autocomplete="off"><button class="btn btn-blue" type="submit">Send</button></form>
+          <div id="chatMsg"></div></div>
+      </div>
+      <div id="aHost"></div>
+      ${AUCTION_NOTE}`;
+
+    const focusedIn = el => el && el.contains(document.activeElement) && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+
+    async function refresh(force = false) {
+      if (!location.hash.startsWith(route)) { clearInterval(auctionPoll); auctionPoll = null; return; }
+      try {
+        const r = await call(force || !st ? '' : `?rev=${st.rev}`);
+        offset = r.serverNow - Date.now();
+        if (r.unchanged) return;
+        st = r; draw();
+      } catch (e) {
+        if (!st) { document.getElementById('aHead').innerHTML = errorBox(e.message); clearInterval(auctionPoll); auctionPoll = null; }
+      }
+    }
+
+    function secsLeft(endsAt) { return Math.max(0, Math.ceil((endsAt - now()) / 1000)); }
+    const clock = s => s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : String(s);
+
+    function drawHead() {
+      const a = st.auction;
+      document.getElementById('aHead').innerHTML = `
+        <div class="pagehead" style="margin-bottom:12px">
+          <div class="stake-top" style="justify-content:flex-start"><span class="stake-tag ${a.status === 'running' ? 'live' : a.status === 'done' ? 'lost' : ''}">${esc(aStatusLabel[a.status])} · ${a.mode === 'silent' ? 'Silent auction' : 'One player at a time'}</span>
+          <button type="button" class="chip" id="shareBtn" style="cursor:pointer">Code ${esc(a.code)} · Share</button></div>
+          <h1 style="margin-top:8px">${esc(a.title)}</h1>
+        </div>
+        <div class="stake-nums" style="margin-bottom:14px">
+          <div><small>Pot</small><b>${cash(st.pot)}</b></div>
+          <div><small>Sold</small><b>${st.items.filter(i => i.status === 'sold').length}/${st.items.length}</b></div>
+          <div><small>Bidders</small><b>${st.bidders}</b></div>
+        </div>`;
+      document.getElementById('shareBtn').addEventListener('click', async () => {
+        const link = `${location.origin}/#/a/${a.code}`;
+        try { if (navigator.share) await navigator.share({ title: a.title, text: `Join the ${a.title} Calcutta. Code ${a.code}`, url: link }); else { await navigator.clipboard.writeText(link); document.getElementById('shareBtn').textContent = 'Link copied'; } } catch { /* ignore */ }
+      });
+    }
+
+    function drawJoin() {
+      const el = document.getElementById('aJoin');
+      if (st.you || st.host || st.auction.status === 'done') { el.innerHTML = st.you ? `<p class="muted" style="margin:-4px 0 12px">Bidding as <b style="color:var(--text)">${esc(st.you.name)}</b></p>` : ''; return; }
+      if (focusedIn(el)) return;
+      el.innerHTML = `<form class="card" id="joinForm" style="margin-bottom:14px">
+          <label class="f">Join to bid: pick the name everyone will see</label>
+          <div style="display:flex;gap:8px"><input name="name" maxlength="30" required placeholder="Your name"><button class="btn btn-green" type="submit">Join</button></div>
+          <div id="joinMsg"></div></form>`;
+      document.getElementById('joinForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        try {
+          const r = await call('/join', { method: 'POST', body: { name: new FormData(e.target).get('name') } });
+          aSave(code, { token: r.token, name: r.bidder.name });
+          refresh(true);
+        } catch (err) { document.getElementById('joinMsg').innerHTML = errorBox(err.message); }
+      });
+    }
+
+    function bidButtons(item) {
+      if (!st.you) return '';
+      const a = st.auction, base = item.minNext;
+      const opts = [base, base + a.increment * 2, base + a.increment * 5];
+      return `<div class="abids" data-item="${item.id}">
+          ${opts.map((v, i) => `<button type="button" class="btn ${i ? 'btn-out' : 'btn-green'}" data-bid="${v}">Bid ${cash(v)}</button>`).join('')}
+        </div>
+        <form class="abidform" data-item="${item.id}"><input name="amount" type="number" min="${base}" step="1" inputmode="numeric" placeholder="Other amount (${cash(base)}+)"><button class="btn btn-blue" type="submit">Bid</button></form>`;
+    }
+
+    function drawRoom() {
+      const a = st.auction, main = document.getElementById('aMain');
+      if (focusedIn(main)) { pendingRender = true; return; }
+      pendingRender = false;
+      const waiting = st.items.filter(i => i.status === 'waiting');
+      const closed = st.items.filter(i => i.status === 'sold' || i.status === 'unsold');
+      const soldList = closed.length ? `<h2 class="stake-h">Sold</h2><div class="card"><table class="t"><tbody>${closed.slice().reverse().map(i =>
+        `<tr><td>${esc(i.name)}</td><td>${i.status === 'sold' ? `${esc(i.highBidder)}${i.mine ? ' <span class="chip g">You</span>' : ''}` : '<span class="muted">No sale</span>'}</td><td style="text-align:right">${i.status === 'sold' ? cash(i.highBid) : ''}</td></tr>`).join('')}</tbody></table></div>` : '';
+
+      if (a.mode === 'silent') {
+        const list = st.items.filter(i => i.status === 'open' || i.status === 'waiting');
+        main.innerHTML = `
+          ${a.status === 'setup' ? `<div class="card aup"><p class="muted" style="margin:0">Waiting for the host to start. When it starts, every player opens for bidding at once for ${a.silentMinutes} minutes. A bid in the last ${a.resetSeconds} seconds adds time.</p></div>` : ''}
+          <div class="silentgrid">${list.map(i => `
+            <div class="card aitem${i.mine ? ' mine' : ''}">
+              <div class="stake-top"><b style="font-size:18px">${esc(i.name)}</b>${i.status === 'open' ? `<span class="aclock sm" data-ends="${i.endsAt}"></span>` : ''}</div>
+              <div class="muted" style="margin:4px 0 8px">${i.highBid != null ? `High bid <b style="color:var(--text)">${cash(i.highBid)}</b> · ${esc(i.highBidder)}${i.mine ? ' <span class="chip g">You</span>' : ''}` : `Opens at ${cash(a.minBid)}`}</div>
+              ${i.status === 'open' ? bidButtons(i) : ''}
+            </div>`).join('')}</div>
+          ${soldList}`;
+        return;
+      }
+
+      const cur = st.items.find(i => i.id === a.currentItem);
+      let stage;
+      if (a.status === 'setup') stage = `<div class="card aup"><small class="muted">Up first</small><h2>${esc(waiting[0]?.name || '—')}</h2><p class="muted" style="margin:0">Waiting for the host to start the auction. Opening bid ${cash(a.minBid)}, then ${cash(a.increment)} steps. Each player gets ${a.bidSeconds} seconds; a late bid resets the clock to ${a.resetSeconds}.</p></div>`;
+      else if (a.status === 'done') stage = `<div class="card aup"><h2>Auction over</h2><p class="muted" style="margin:0">Pot: <b style="color:var(--text)">${cash(st.pot)}</b>. See the Results tab for owners and payouts.</p></div>`;
+      else if (cur) {
+        const open = cur.status === 'open';
+        stage = `<div class="card aup${open ? ' live' : ''}">
+            <div class="stake-top"><small class="muted">${open ? 'Now bidding' : cur.status === 'sold' ? 'Sold' : 'No sale'}</small>
+              ${a.status === 'paused' ? '<span class="stake-tag">Paused</span>' : open ? `<span class="aclock" data-ends="${cur.endsAt}"></span>` : a.nextAt ? `<span class="muted">Next player in <b class="acount" data-ends="${a.nextAt}"></b></span>` : ''}</div>
+            <h2>${esc(cur.name)}</h2>
+            <div class="ahigh">${cur.highBid != null ? cash(cur.highBid) : cash(a.minBid)}</div>
+            <div class="muted">${cur.highBid != null ? `${open ? 'High bid' : 'Sold to'}: <b style="color:var(--text)">${esc(cur.highBidder)}</b>${cur.mine ? ' <span class="chip g">You</span>' : ''}` : open ? 'No bids yet: opening bid' : 'Nobody bid on this player'}</div>
+            ${open && a.status === 'running' ? `<div style="margin-top:12px">${cur.mine ? '<p class="amine">You have the high bid</p>' : bidButtons(cur)}</div>` : ''}
+            <div id="bidErr"></div>
+            ${st.currentBids.length ? `<div class="ahist">${st.currentBids.map(b => `<div><span>${esc(b.name)}</span><b>${cash(b.amount)}</b></div>`).join('')}</div>` : ''}
+          </div>`;
+      } else stage = `<div class="card aup"><p class="muted" style="margin:0">Getting the next player ready…</p></div>`;
+      main.innerHTML = `${stage}
+        ${waiting.length && a.status !== 'done' ? `<h2 class="stake-h">Up Next (${waiting.length})</h2><div class="card"><ol class="aqueue">${waiting.map(i => `<li>${esc(i.name)}${st.host ? ` <button type="button" class="linkbtn" data-remove="${i.id}">remove</button>` : ''}</li>`).join('')}</ol></div>` : ''}
+        ${soldList}`;
+    }
+
+    function drawResults() {
+      const a = st.auction, main = document.getElementById('aMain');
+      if (focusedIn(main)) { pendingRender = true; return; }
+      const sold = st.items.filter(i => i.status === 'sold');
+      main.innerHTML = `
+        <div class="card">
+          <div class="stake-nums"><div><small>Pot</small><b>${cash(st.pot)}</b></div><div><small>House cut</small><b>${a.houseCut}%</b></div><div><small>To pay out</small><b>${cash(st.net)}</b></div></div>
+          ${a.payouts.length ? `<table class="t" style="margin-top:12px"><thead><tr><th>Finish</th><th>Share</th><th style="text-align:right">Pays</th></tr></thead><tbody>${a.payouts.map((p, i) => `<tr><td>${ordinal(i + 1)}</td><td>${p}%</td><td style="text-align:right">${cash(st.placePay[i])}</td></tr>`).join('')}</tbody></table>` : ''}
+        </div>
+        <h2 class="stake-h">Players &amp; Owners</h2>
+        ${sold.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t"><thead><tr><th>Player</th><th>Owner</th><th>Price</th><th>Finish</th><th style="text-align:right">Won</th></tr></thead><tbody>${sold.map(i => `<tr>
+            <td>${esc(i.name)}</td><td>${esc(i.highBidder)}${i.mine ? ' <span class="chip g">You</span>' : ''}</td><td>${cash(i.highBid)}</td>
+            <td>${st.host ? `<select data-finish="${i.id}" aria-label="Finish for ${esc(i.name)}"><option value="">—</option>${Array.from({ length: Math.max(a.payouts.length, 8) }, (_, k) => `<option value="${k + 1}"${i.finish === k + 1 ? ' selected' : ''}>${ordinal(k + 1)}</option>`).join('')}</select>` : (i.finish ? ordinal(i.finish) : '—')}</td>
+            <td style="text-align:right">${i.payout ? `<b>${cash(i.payout)}</b>` : '—'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="card"><p class="muted" style="margin:0">Nobody has been sold yet.</p></div>'}
+        ${st.owners.length ? `<h2 class="stake-h">By Owner</h2><div class="card" style="overflow-x:auto"><table class="t stakes-t"><thead><tr><th>Owner</th><th>Players</th><th>Spent</th><th style="text-align:right">Won</th></tr></thead><tbody>${st.owners.map(o => `<tr><td>${esc(o.name)}</td><td>${o.players}</td><td>${cash(o.spent)}</td><td style="text-align:right">${o.won ? `<b>${cash(o.won)}</b>` : '—'}</td></tr>`).join('')}</tbody></table></div>` : ''}
+        ${st.host ? '<p class="muted" style="font-size:14px">As host, set each player\'s finish after the tournament and the payouts fill in.</p>' : ''}`;
+    }
+
+    function drawChat() {
+      const list = document.getElementById('chatList');
+      const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
+      list.innerHTML = st.chat.length ? st.chat.map(c => `<div class="cmsg${c.host ? ' host' : ''}"><b>${esc(c.name)}</b> ${esc(c.text)}</div>`).join('') : '<p class="muted">No messages yet.</p>';
+      if (atBottom || tab === 'chat') list.scrollTop = list.scrollHeight;
+      const badge = document.getElementById('chatBadge');
+      if (tab === 'chat') seenChat = st.chat.length;
+      const unread = st.chat.length - seenChat;
+      badge.hidden = unread <= 0; badge.textContent = unread > 9 ? '9+' : String(unread);
+      document.getElementById('chatForm').hidden = !st.you && !st.host;
+    }
+
+    function drawHost() {
+      const el = document.getElementById('aHost');
+      if (!st.host) { el.innerHTML = ''; document.getElementById('aHostBar').innerHTML = ''; return; }
+      if (focusedIn(el)) return;
+      const a = st.auction, cur = st.items.find(i => i.id === a.currentItem);
+      const btn = (act, label, cls = 'btn-out') => `<button type="button" class="btn ${cls} btn-sm" data-host="${act}">${label}</button>`;
+      const controls = [];
+      if (a.status === 'setup') controls.push(btn('start', 'Start Auction', 'btn-green'));
+      if (a.status === 'running' && a.mode === 'live') controls.push(btn('pause', 'Pause'));
+      if (a.status === 'paused') controls.push(btn('resume', 'Resume', 'btn-green'));
+      if (a.mode === 'live' && cur && cur.status === 'open' && a.status !== 'done') controls.push(btn('sell', 'Sell Now', 'btn-blue'), btn('pass', 'Pass (No Sale)'));
+      if (a.mode === 'live' && a.status === 'running' && (!cur || cur.status !== 'open')) controls.push(btn('next', 'Next Player Now'));
+      if (a.status === 'running' || a.status === 'paused') controls.push(btn('end', 'End Auction'));
+      document.getElementById('aHostBar').innerHTML = `
+        <div class="card ahostbar"><small class="muted">Host controls</small>
+          <div class="actbar" style="margin-top:6px">${controls.join('') || '<span class="muted">The auction is over. Set finishes on the Results tab.</span>'}</div>
+          <div id="hostMsg"></div></div>`;
+      el.innerHTML = `
+        <h2 class="stake-h">Host Tools</h2>
+        <div class="card">
+          ${a.status !== 'done' ? `<form id="addPlayers"><label class="f">Add players (one per line)</label><textarea name="items" rows="3"></textarea><button class="btn btn-out btn-sm" type="submit" style="margin-top:8px">Add</button></form><hr class="hr">` : ''}
+          <button type="button" class="btn btn-sm btn-out" data-host="delete" style="color:var(--red)">Delete Auction</button>
+        </div>`;
+      const add = document.getElementById('addPlayers');
+      if (add) add.addEventListener('submit', async e => {
+        e.preventDefault();
+        await hostDo('add', { items: new FormData(add).get('items') });
+        add.reset(); refresh(true);
+      });
+    }
+
+    async function hostDo(action, extra = {}) {
+      if (action === 'end' && !confirm('End the auction now? Any player still open is sold to the high bidder; the rest go unsold.')) return;
+      if (action === 'delete' && !confirm('Delete this auction and all its bids for everyone? This cannot be undone.')) return;
+      try {
+        await call('/host', { method: 'POST', body: { action, ...extra } });
+        if (action === 'delete') { location.hash = '#/auctions'; return; }
+        refresh(true);
+      } catch (err) { const m = document.getElementById('hostMsg'); if (m) m.innerHTML = errorBox(err.message); else alert(err.message); }
+    }
+
+    function draw() {
+      if (!st) return;
+      drawHead(); drawJoin();
+      if (tab === 'room') drawRoom(); else if (tab === 'results') drawResults();
+      drawChat(); drawHost(); tickClocks();
+    }
+
+    function tickClocks() {
+      document.querySelectorAll('#aMain [data-ends]').forEach(el => {
+        const s = secsLeft(Number(el.dataset.ends));
+        el.textContent = el.classList.contains('acount') ? `${s}s` : clock(s);
+        el.classList.toggle('urgent', !el.classList.contains('acount') && s <= 5);
+      });
+    }
+
+    async function bid(itemId, amount) {
+      const errBox = document.getElementById('bidErr');
+      try { await call('/bid', { method: 'POST', body: { itemId, amount } }); if (errBox) errBox.innerHTML = ''; refresh(true); }
+      catch (err) { if (errBox) errBox.innerHTML = `<p class="aerr">${esc(err.message)}</p>`; else alert(err.message); refresh(true); }
+    }
+
+    document.querySelector('.atabs').addEventListener('click', e => {
+      const b = e.target.closest('[data-tab]'); if (!b) return;
+      tab = b.dataset.tab;
+      document.querySelectorAll('.atabs button').forEach(x => x.classList.toggle('on', x === b));
+      document.getElementById('aMain').hidden = tab === 'chat';
+      document.getElementById('aChat').hidden = tab !== 'chat';
+      draw();
+    });
+    const main = document.getElementById('aMain');
+    main.addEventListener('click', e => {
+      const b = e.target.closest('[data-bid]');
+      if (b) { bid(Number(b.closest('[data-item]').dataset.item), Number(b.dataset.bid)); return; }
+      const r = e.target.closest('[data-remove]');
+      if (r) hostDo('remove', { itemId: Number(r.dataset.remove) });
+    });
+    main.addEventListener('submit', e => {
+      const f = e.target.closest('.abidform'); if (!f) return;
+      e.preventDefault();
+      const amt = Number(new FormData(f).get('amount'));
+      document.activeElement && document.activeElement.blur();
+      if (amt > 0) bid(Number(f.dataset.item), amt);
+    });
+    main.addEventListener('change', e => {
+      const s = e.target.closest('[data-finish]');
+      if (s) { s.blur(); hostDo('finish', { itemId: Number(s.dataset.finish), finish: s.value }); }
+    });
+    main.addEventListener('focusout', () => setTimeout(() => { if (pendingRender && !focusedIn(main)) draw(); }, 50));
+    for (const id of ['aHost', 'aHostBar']) document.getElementById(id).addEventListener('click', e => { const b = e.target.closest('[data-host]'); if (b) hostDo(b.dataset.host); });
+    document.getElementById('chatForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const input = e.target.elements.text;
+      try { await call('/chat', { method: 'POST', body: { text: input.value } }); input.value = ''; refresh(true); }
+      catch (err) { document.getElementById('chatMsg').innerHTML = errorBox(err.message); }
+    });
+
+    await refresh(true);
+    auctionPoll = setInterval(() => { refresh(); tickClocks(); }, 1500);
+    const clockTimer = setInterval(() => { if (!location.hash.startsWith(route)) clearInterval(clockTimer); else tickClocks(); }, 250);
+  }
+  const ordinal = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 'st', 'nd', 'rd'][n % 100] || 'th');
+
+  routes['/auctions'] = async (params, id) => (id === 'new' ? auctionCreate() : auctionsHome());
+  routes['/a'] = async (params, code) => (code ? auctionRoom(params, code) : auctionsHome());
+
   routes['/account'] = async () => {
     const since = memberSince();
     const sinceLabel = new Date(since).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });

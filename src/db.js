@@ -106,6 +106,45 @@ CREATE TABLE IF NOT EXISTS stake_pieces (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_pieces_stake ON stake_pieces(stake_id);
+-- Calcutta / live auctions. Records only: no money is taken or paid out by the site.
+CREATE TABLE IF NOT EXISTS auctions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT NOT NULL UNIQUE, title TEXT NOT NULL, starts_at TEXT,
+  mode TEXT NOT NULL DEFAULT 'live',          -- live (one player at a time) | silent (all at once)
+  status TEXT NOT NULL DEFAULT 'setup',       -- setup | running | paused | done
+  listed INTEGER NOT NULL DEFAULT 0,
+  min_bid REAL NOT NULL DEFAULT 5, increment REAL NOT NULL DEFAULT 5,
+  bid_seconds INTEGER NOT NULL DEFAULT 30,    -- live: clock for each player
+  reset_seconds INTEGER NOT NULL DEFAULT 15,  -- a late bid pushes the clock back up to this
+  silent_minutes INTEGER NOT NULL DEFAULT 60,
+  house_cut REAL NOT NULL DEFAULT 0, payouts TEXT NOT NULL DEFAULT '[]',
+  current_item INTEGER, paused_left_ms INTEGER, next_at INTEGER,
+  host_hash TEXT NOT NULL, rev INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS auction_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL REFERENCES auctions(id),
+  name TEXT NOT NULL, note TEXT, sort INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'waiting',     -- waiting | open | sold | unsold
+  ends_at INTEGER, high_bid REAL, high_bidder INTEGER, finish INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_aitems ON auction_items(auction_id, sort);
+CREATE TABLE IF NOT EXISTS auction_bidders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL REFERENCES auctions(id),
+  name TEXT NOT NULL, name_key TEXT NOT NULL, token_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (auction_id, name_key)
+);
+CREATE TABLE IF NOT EXISTS auction_bids (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL, item_id INTEGER NOT NULL,
+  bidder_id INTEGER NOT NULL, amount REAL NOT NULL, at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_abids ON auction_bids(item_id, id);
+CREATE TABLE IF NOT EXISTS auction_chat (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL,
+  name TEXT NOT NULL, host INTEGER NOT NULL DEFAULT 0, text TEXT NOT NULL, at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_achat ON auction_chat(auction_id, id);
 `;
 
 export function openDb(file) {

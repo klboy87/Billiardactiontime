@@ -14,6 +14,7 @@ import { placesPayload, citiesForState, statesList } from './places.js';
 import { renderSiteCard, renderTournamentCard } from './ogcard.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
+import * as A from './auctions.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -152,6 +153,15 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (list.length >= 10) { hits.set(ip, list); return true; }
     list.push(now); hits.set(ip, list); return false;
   };
+  // General-purpose limiter: at most `max` hits per `windowMs` for a key.
+  const joinHits = new Map(), fastHits = new Map();
+  function limitedBy(store, key, max, windowMs) {
+    const now = Date.now(), list = (store.get(key) || []).filter(t => now - t < windowMs);
+    if (list.length >= max) { store.set(key, list); return true; }
+    list.push(now); store.set(key, list);
+    if (store.size > 20_000) store.clear();
+    return false;
+  }
   // Behind Railway's proxy every request arrives from the proxy's own address, so the real
   // visitor IP has to come from the proxy's headers (Railway sets X-Real-IP). Without this,
   // everyone looks like the same person and the visitor counts collapse to 1 a day.
@@ -304,6 +314,53 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const { counts, skips } = ingest(db, cfg, records);
       setImmediate(() => geocodePending(db, cfg, { fetchFn, log }).catch(() => {}));
       return json(req, res, 200, { ...counts, reasons: [...new Set(skips)] });
+    }
+
+    // ---- Live / Calcutta auctions ----
+    if (m === 'GET' && p === '/api/auctions') return json(req, res, 200, { auctions: A.listedAuctions(db) }, { 'Cache-Control': 'no-cache' });
+    if (m === 'POST' && p === '/api/auctions') {
+      if (limited(clientIp(req) + ':auction')) return json(req, res, 429, { error: 'Too many auctions created. Try again in an hour.' });
+      const v = A.validateAuction(await readJson(req, 50_000));
+      if (v.error) return json(req, res, 400, { error: v.error });
+      return json(req, res, 201, A.createAuction(db, v.value));
+    }
+    if ((x = p.match(/^\/api\/auctions\/([A-Za-z0-9]{4,10})(\/[a-z]+)?$/))) {
+      let a = A.getAuction(db, x[1]);
+      if (!a) return json(req, res, 404, { error: 'Auction not found. Check the code.' });
+      a = A.tick(db, a);
+      const rest = x[2] || '';
+      const host = A.isHost(a, req.headers['x-host-key']);
+      const you = A.bidderFor(db, a, req.headers['x-bidder']);
+      if (m === 'GET' && rest === '') {
+        const since = Number(url.searchParams.get('rev'));
+        if (since && since === a.rev) return json(req, res, 200, { rev: a.rev, serverNow: Date.now(), unchanged: true }, { 'Cache-Control': 'no-store' });
+        return json(req, res, 200, A.roomState(db, a, { you, host }), { 'Cache-Control': 'no-store' });
+      }
+      if (m === 'POST' && rest === '/join') {
+        if (limitedBy(joinHits, clientIp(req), 40, 3_600_000)) return json(req, res, 429, { error: 'Too many joins. Try again later.' });
+        const r = A.join(db, a, ((await readJson(req, 2000)) || {}).name);
+        return json(req, res, r.status, r.error ? { error: r.error } : r);
+      }
+      if (m === 'POST' && rest === '/bid') {
+        if (!you) return json(req, res, 401, { error: 'Join the auction to bid' });
+        if (limitedBy(fastHits, 'b' + you.id, 6, 2000)) return json(req, res, 429, { error: 'Slow down a little' });
+        const b = (await readJson(req, 2000)) || {};
+        const r = A.placeBid(db, a, you, Number(b.itemId), b.amount);
+        return json(req, res, r.status, r.error ? { error: r.error } : r);
+      }
+      if (m === 'POST' && rest === '/chat') {
+        if (!you && !host) return json(req, res, 401, { error: 'Join the auction to chat' });
+        if (limitedBy(fastHits, 'c' + (host ? 'h' + a.id : you.id), 3, 5000)) return json(req, res, 429, { error: 'Slow down a little' });
+        const r = A.postChat(db, a, host ? 'Host' : you.name, host, ((await readJson(req, 2000)) || {}).text);
+        return json(req, res, r.status, r.error ? { error: r.error } : r);
+      }
+      if (m === 'POST' && rest === '/host') {
+        if (!host) return json(req, res, 403, { error: 'Only the host can do that' });
+        const b = (await readJson(req, 50_000)) || {};
+        const r = A.hostAction(db, a, String(b.action || ''), b);
+        return json(req, res, r.error ? 400 : 200, r);
+      }
+      return json(req, res, 404, { error: 'Not found' });
     }
 
     // ---- Staking Board ----

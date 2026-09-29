@@ -374,3 +374,33 @@ table.t td{padding:10px 8px;border-bottom:1px solid var(--line)}
 .stake-h{font-size:30px;margin:26px 0 12px}
 .stake-note{font-size:13px;color:var(--muted);margin-top:18px;max-width:70ch}
 .stake-filter{cursor:pointer;min-height:36px;padding:4px 14px}.stake-filter.on{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ---- Calcutta auctions ---- */
+.acode{font:800 52px/1 var(--display);letter-spacing:.12em;margin:6px 0 12px;color:var(--green)}
+.atabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:14px;position:sticky;top:calc(64px + env(safe-area-inset-top,0px));z-index:5}
+.atabs button{font:700 15px var(--body);border:0;background:transparent;color:var(--muted);border-radius:7px;min-height:42px;cursor:pointer}
+.atabs button.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.abadge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--red);color:#fff;font-size:12px}
+.aup h2{font-size:40px;text-transform:none;margin:4px 0 6px}
+.aup.live{border-color:var(--green);box-shadow:0 0 0 2px rgba(20,138,56,.18),var(--shadow)}
+.ahigh{font:800 56px/1 var(--display);color:var(--green)}
+.aclock{font:800 34px/1 var(--display);min-width:56px;text-align:center;padding:4px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--line)}
+.aclock.sm{font-size:20px;min-width:0;padding:2px 8px}
+.aclock.urgent{background:var(--red);border-color:var(--red);color:#fff}
+.abids{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.abids .btn{padding:12px 6px;min-height:48px}
+.abidform{display:flex;gap:8px;margin-top:8px}
+.amine{font-weight:700;color:var(--green);margin:0}
+.aerr{color:var(--red);font-weight:600;margin:8px 0 0}
+.ahist{margin-top:14px;border-top:1px solid var(--line);padding-top:8px;max-height:180px;overflow:auto}
+.ahist div{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+.ahist div:first-child{font-weight:700}
+.aqueue{margin:0;padding-left:22px}.aqueue li{padding:4px 0}
+.linkbtn{background:none;border:0;color:var(--red);cursor:pointer;font:600 13px var(--body);padding:4px}
+.silentgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media (max-width:420px){.silentgrid{grid-template-columns:1fr}}
+.aitem.mine{border-color:var(--green)}
+.chatlist{max-height:55vh;min-height:200px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.cmsg{font-size:15px;line-height:1.35}.cmsg b{margin-right:4px}.cmsg.host b{color:var(--green)}
+.stake-tag.live{background:var(--red);color:#fff}
+.ahostbar{margin-bottom:14px;border-color:var(--blue)}
