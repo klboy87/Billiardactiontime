@@ -146,6 +146,7 @@
       <section class="sec tiles">
         <a class="tile t-blue" href="#/search"><div class="ic">🔍</div><h3>Find a Tournament</h3></a>
         <a class="tile t-orange" href="#/calendar"><div class="ic">📅</div><h3>Find by Date</h3></a>
+        <a class="tile t-pink" href="#/states"><div class="ic">🗺️</div><h3>Browse by State</h3></a>
         <button class="tile t-purple" id="homeFlyerBtn" type="button"><div class="ic">📷</div><h3>Scan a Flyer</h3></button>
         <a class="tile t-green" href="#/post"><span class="free">FREE</span><div class="ic">➕</div><h3>Post a Tournament</h3></a>
       </section>
@@ -289,6 +290,24 @@
     }
     filtersEl.addEventListener('submit', e => { e.preventDefault(); runSearch(); });
     runSearch();
+  };
+
+  routes['/states'] = async () => {
+    app.innerHTML = `<div class="pagehead"><h1>Browse by State</h1></div><div id="stateGrid" class="results">${loading()}</div>`;
+    try {
+      const [places, data] = await Promise.all([api('/api/places'), api('/api/tournaments?limit=50000')]);
+      const counts = {};
+      for (const t of data.tournaments) counts[t.venue.state] = (counts[t.venue.state] || 0) + 1;
+      const withCounts = places.states.map(s => ({ ...s, count: counts[s.code] || 0 }));
+      const active = withCounts.filter(s => s.count > 0).sort((a, b) => b.count - a.count);
+      const inactive = withCounts.filter(s => s.count === 0).sort((a, b) => a.name.localeCompare(b.name));
+      const tile = s => `<a class="tile t-blue statecard" href="#/search?state=${esc(s.code)}"><h3>${esc(s.name)}</h3><span>${s.count} tournament${s.count === 1 ? '' : 's'}</span></a>`;
+      document.getElementById('stateGrid').outerHTML = `
+        <div id="stateGrid">
+          <div class="tiles statetiles">${active.map(tile).join('')}</div>
+          ${inactive.length ? `<h2 style="margin-top:24px">No tournaments posted yet</h2><div class="tiles statetiles">${inactive.map(tile).join('')}</div>` : ''}
+        </div>`;
+    } catch (e) { document.getElementById('stateGrid').innerHTML = errorBox(e.message); }
   };
 
   routes['/calendar'] = async () => {
