@@ -988,6 +988,34 @@
     } catch (e) { document.getElementById('gameGrid').innerHTML = errorBox(e.message); }
   };
 
+  routes['/results'] = async () => {
+    app.innerHTML = `
+      <div class="pagehead"><h1>Past Tournaments</h1>
+        <p class="muted">A running archive of tournaments that have already happened.</p></div>
+      <div id="pastList" class="results">${loading()}</div>
+      <div class="actbar" id="pastMoreWrap" style="display:none">
+        <button class="btn btn-out" id="pastMoreBtn">Load more</button>
+      </div>`;
+    let offset = 0;
+    const limit = 30;
+    let total = 0;
+    const listEl = document.getElementById('pastList');
+    const moreWrap = document.getElementById('pastMoreWrap');
+    const moreBtn = document.getElementById('pastMoreBtn');
+    async function loadMore() {
+      try {
+        const data = await api(`/api/tournaments/past?limit=${limit}&offset=${offset}`);
+        total = data.total;
+        if (offset === 0) listEl.innerHTML = data.tournaments.length ? '' : '<div class="loadwrap"><p class="muted">No past tournaments yet — check back once some have happened.</p></div>';
+        listEl.insertAdjacentHTML('beforeend', data.tournaments.map(tournamentCard).join(''));
+        offset += data.tournaments.length;
+        moreWrap.style.display = offset < total ? '' : 'none';
+      } catch (e) { listEl.innerHTML = errorBox(e.message); }
+    }
+    moreBtn.addEventListener('click', loadMore);
+    await loadMore();
+  };
+
   routes['/scout'] = async () => {
     const submissions = lsGet(LS.submissions);
     app.innerHTML = `
