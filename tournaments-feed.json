@@ -1,0 +1,24 @@
+{
+  "tournaments": [
+    {"id": "rr-hard-rock-open-2026-10-01", "name": "Hard Rock Open", "date": "2026-10-01", "venue": "Hard Rock Casino Rockford", "city": "Rockford", "state": "IL", "entry": 65, "notes": "Source: rackradar.com"},
+    {"id": "rr-scotch-doubles-chip-2026-10-03", "name": "Scotch Doubles Chip Benefit Tournament", "date": "2026-10-03", "venue": "Break Time Billiards & Sports", "city": "Clemmons", "state": "NC", "game": "Scotch Doubles", "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-little-dog-425-2026-10-03", "name": "Little Dog 425 & Below", "date": "2026-10-03", "venue": "Hustlers Pizza and Billiards", "city": "Mount Morris", "state": "MI", "entry": 60, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-fall-9ball-shootout-2026-10-03", "name": "Fall 9-Ball Shootout", "date": "2026-10-03", "venue": "Griffs Bar and Billiards", "city": "Las Vegas", "state": "NV", "game": "9-Ball", "entry": 80, "notes": "Source: rackradar.com"},
+    {"id": "rr-arkansas-open-9ball-2026-10-03", "name": "Arkansas Open Nineball Championship", "date": "2026-10-03", "venue": "Krome Billiards", "city": "North Little Rock", "state": "AR", "game": "9-Ball", "entry": 125, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-mississippi-state-champ-2026-10-03", "name": "Mississippi State Championship", "date": "2026-10-03", "venue": "Hot Shots Billiards", "city": "Byram", "state": "MS", "notes": "Source: rackradar.com"},
+    {"id": "rr-525-under-2026-10-03", "name": "525 & Under", "date": "2026-10-03", "venue": "Bangin Ballz Billiards Bar", "city": "Las Vegas", "state": "NV", "entry": 100, "notes": "Source: rackradar.com"},
+    {"id": "rr-apex-5v5-2026-10-03", "name": "The Apex 5 vs 5 Team Challenge", "date": "2026-10-03", "venue": "Rusty's Billiards", "city": "Arlington", "state": "TX", "entry": 1050, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-9ball-extravaganza-2026-10-04", "name": "9-Ball Extravaganza", "date": "2026-10-04", "venue": "2660 N Riley Hwy", "city": "Shelbyville", "state": "IN", "game": "9-Ball", "entry": 100, "notes": "Source: rackradar.com"},
+    {"id": "rr-best-of-west-shootout-2026-10-07", "name": "Best of the West Shootout", "date": "2026-10-07", "venue": "Red Lion Hotel & Conference Center", "city": "Cheyenne", "state": "WY", "entry": 30, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-black-hills-battle-2026-10-09", "name": "Black Hills Battle", "date": "2026-10-09", "venue": "BreakRoom Billiards and Darts", "city": "Rapid City", "state": "SD", "entry": 175, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-fall-season-opener-2026-10-10", "name": "Fall Season Opener Tournament", "date": "2026-10-10", "venue": "Shooters Billiard Club & Café", "city": "Burnsville", "state": "MN", "entry": 40, "notes": "Source: rackradar.com"},
+    {"id": "rr-cashin-out-1pocket-2026-10-10", "name": "Cashin' Out Open 1 Pocket Tournament", "date": "2026-10-10", "venue": "The Rack", "city": "Livonia", "state": "MI", "game": "One Pocket", "entry": 100, "notes": "Source: rackradar.com"},
+    {"id": "rr-the-mako-10ball-2026-10-10", "name": "The Mako - $1,000 Entry 630 & Under Bar Table 10-Ball Championship", "date": "2026-10-10", "venue": "Griffs Bar and Billiards", "city": "Las Vegas", "state": "NV", "game": "10-Ball", "entry": 1000, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-south-carolina-open-2026-10-14", "name": "South Carolina Open", "date": "2026-10-14", "venue": "Rack and Grill III", "city": "Aiken", "state": "SC", "notes": "Source: rackradar.com"},
+    {"id": "rr-saving-the-rack-womens-2026-10-16", "name": "7th Annual Saving the Rack Women's 8-Ball Classic", "date": "2026-10-16", "venue": "Peppermill Bar and Liquors", "city": "Cheyenne", "state": "WY", "game": "8-Ball", "entry": 130, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-hi-low-9ball-split-2026-10-17", "name": "Hi Low 9-Ball Split Bracket Tournament", "date": "2026-10-17", "venue": "The Billiard Club", "city": "Mobile", "state": "AL", "game": "9-Ball", "entry": 40, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-scotch-doubles-10ball-2-2026-10-17", "name": "Scotch Doubles 10 Ball Shootout #2", "date": "2026-10-17", "venue": "Lucky Cue Billiards", "city": "Moorpark", "state": "CA", "game": "10-Ball", "entry": 150, "notes": "Source: rackradar.com"},
+    {"id": "rr-eric-trombetta-memorial-2026-10-17", "name": "The Eric J. Trombetta Memorial", "date": "2026-10-17", "venue": "The Rack Billiard Club", "city": "Clive", "state": "IA", "entry": 30, "notes": "Player auction. Source: rackradar.com"},
+    {"id": "rr-the-rhino-2026-10-17", "name": "The Rhino", "date": "2026-10-17", "venue": "Griffs Bar and Billiards", "city": "Las Vegas", "state": "NV", "entry": 200, "notes": "Source: rackradar.com"}
+  ]
+}
