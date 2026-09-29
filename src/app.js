@@ -11,6 +11,7 @@ import { ingest, runSync } from './sync.js';
 import { geocodePending } from './geocode.js';
 import { readFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
+import { renderSiteCard, renderTournamentCard } from './ogcard.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -95,6 +96,7 @@ function tournamentPage(t, base) {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(t.name)} | ${esc(v.city)}, ${esc(v.state)} ${esc(t.game)} Tournament</title><meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${esc(base)}/t/${t.id}"><meta property="og:title" content="${esc(t.name)}"><meta property="og:description" content="${esc(desc)}">
+<meta property="og:type" content="website"><meta property="og:image" content="${esc(base)}/t/${t.id}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${esc(base)}/t/${t.id}/og.png">
 <link rel="stylesheet" href="/styles.css"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
 <main class="wrap page"><div class="card"><h1 class="dtitle">${esc(t.name)}</h1><p class="muted">${esc(desc)}</p><table class="t"><tbody>${rows}</tbody></table>
@@ -150,6 +152,15 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   };
   const clientIp = req => (process.env.TRUST_PROXY ? String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() : '') || req.socket.remoteAddress || 'unknown';
   const admin = req => { if (!tokenOk(req, cfg.adminToken)) throw new HttpError(cfg.adminToken ? 401 : 403, cfg.adminToken ? 'Invalid admin token' : 'Admin is disabled until ADMIN_TOKEN is set'); };
+  // Privacy-friendly visit counter: hashes IP+day+secret, so nothing identifying is stored
+  // and the same person only counts once per day.
+  function trackVisit(req) {
+    try {
+      const day = D.todayIso();
+      const visitor = sha(clientIp(req) + '|' + day + '|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32);
+      D.recordPageview(db, day, visitor);
+    } catch {}
+  }
 
   async function syncNow() {
     const r = await runSync(db, cfg, { fetchFn, log });
@@ -243,6 +254,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (p.startsWith('/api/admin/')) {
       admin(req);
       if (m === 'GET' && p === '/api/admin/summary') return json(req, res, 200, D.summary(db));
+      if (m === 'GET' && p === '/api/admin/pageviews') return json(req, res, 200, D.pageviewCounts(db));
       if (m === 'GET' && p === '/api/admin/pending') return json(req, res, 200, { tournaments: D.listPending(db) });
       if (m === 'POST' && p === '/api/admin/sync') return json(req, res, 200, await syncNow());
       if ((x = p.match(/^\/api\/admin\/(claims|reports)\/(\d+)\/done$/)) && m === 'POST') return json(req, res, 200, { ok: D.resolveItem(db, x[1], Number(x[2])) });
@@ -266,17 +278,29 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return json(req, res, 404, { error: 'Not found' });
     }
 
+    if (m === 'GET' && p === '/og.png') {
+      return send(req, res, 200, renderSiteCard(), { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
+    }
+    if (m === 'GET' && (x = p.match(/^\/t\/(\d+)\/og\.png$/))) {
+      const t = D.getTournament(db, Number(x[1]));
+      if (!t) return send(req, res, 404, renderSiteCard(), { 'Content-Type': 'image/png' });
+      const card = renderTournamentCard({ name: t.name, game: t.game, date: t.date, venue: t.venue?.name, city: t.venue?.city, state: t.venue?.state });
+      return send(req, res, 200, card, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' });
+    }
     if (m === 'GET' && (x = p.match(/^\/t\/(\d+)$/))) {
+      trackVisit(req);
       const t = D.getTournament(db, Number(x[1]));
       return t ? send(req, res, 200, tournamentPage(t, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' })
         : send(req, res, 404, '<h1>Tournament not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
     }
     if (m === 'GET' && (x = p.match(/^\/venue\/(\d+)$/))) {
+      trackVisit(req);
       const all = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published' && Number(t.venue.id) === Number(x[1]));
       if (!all.length) return send(req, res, 404, '<h1>Venue not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
       return send(req, res, 200, venuePage(all[0].venue, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
     }
     if (m === 'GET' && (x = p.match(/^\/state\/([a-zA-Z]{2})\/?$/))) {
+      trackVisit(req);
       const code = normalizeState(x[1]);
       if (!code) return send(req, res, 404, '<h1>State not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
       const name = statesList().find(s => s.code === code)?.name || code;
@@ -284,6 +308,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return send(req, res, 200, statePage(code, name, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
     }
     if (m === 'GET' && (p === '/state' || p === '/state/')) {
+      trackVisit(req);
       const published = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published');
       const counts = new Map();
       for (const t of published) counts.set(t.venue.state, (counts.get(t.venue.state) || 0) + 1);
@@ -306,6 +331,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const file = path.resolve(PUBLIC_DIR, rel);
       if (file.startsWith(PUBLIC_DIR + path.sep) && fs.existsSync(file) && fs.statSync(file).isFile()) {
         const ext = path.extname(file);
+        if (rel === 'index.html' && m === 'GET') trackVisit(req);
         return send(req, res, 200, fs.readFileSync(file), { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
       }
     }
