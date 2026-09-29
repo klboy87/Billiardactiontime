@@ -195,6 +195,18 @@ export function listTournaments(db, { from = todayIso(), to = '9999-12-31', stat
   return rows.map(shape);
 }
 
+// Past-tournament archive: published events that already happened, newest first.
+export function listPastTournaments(db, { state = '', limit = 30, offset = 0 } = {}) {
+  const rows = db.prepare(`${SELECT} WHERE t.status = 'published' AND t.date < ?
+    AND (? = '' OR v.state = ?) ORDER BY t.date DESC, COALESCE(t.time,'99:99') DESC, t.id DESC LIMIT ? OFFSET ?`)
+    .all(todayIso(), state, state, limit, offset);
+  return rows.map(shape);
+}
+export function countPastTournaments(db, { state = '' } = {}) {
+  return db.prepare(`SELECT COUNT(*) n FROM tournaments t JOIN venues v ON v.id = t.venue_id
+    WHERE t.status = 'published' AND t.date < ? AND (? = '' OR v.state = ?)`).get(todayIso(), state, state).n;
+}
+
 export function getTournament(db, id, { includeHidden = false } = {}) {
   const r = db.prepare(`${SELECT} WHERE t.id = ?`).get(id);
   if (!r) return null;
