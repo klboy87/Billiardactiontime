@@ -26,6 +26,36 @@
 
   function adminToken() { return localStorage.getItem('bat_admin_token') || ''; }
 
+  // ------------------------------------------------- local player data (device-only; no sign-in yet)
+  const LS = { saved: 'bat_saved', submissions: 'bat_submissions', claims: 'bat_claims', alerts: 'bat_alerts', recent: 'bat_recent', memberSince: 'bat_member_since' };
+  function lsGet(key) { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } }
+  function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch { /* storage full or unavailable */ } }
+  function memberSince() {
+    let v = localStorage.getItem(LS.memberSince);
+    if (!v) { v = new Date().toISOString(); try { localStorage.setItem(LS.memberSince, v); } catch { /* ignore */ } }
+    return v;
+  }
+  function isSaved(id) { return lsGet(LS.saved).some(t => String(t.id) === String(id)); }
+  function toggleSaved(t) {
+    const list = lsGet(LS.saved);
+    const i = list.findIndex(x => String(x.id) === String(t.id));
+    if (i === -1) list.unshift(t); else list.splice(i, 1);
+    lsSet(LS.saved, list.slice(0, 100));
+    return i === -1;
+  }
+  function recordSubmission(rec) { const list = lsGet(LS.submissions); list.unshift(rec); lsSet(LS.submissions, list.slice(0, 300)); }
+  function recordClaim(rec) { const list = lsGet(LS.claims); list.unshift(rec); lsSet(LS.claims, list.slice(0, 300)); }
+  function recordAlert(email) {
+    const list = lsGet(LS.alerts);
+    if (!list.some(a => a.email === email)) list.unshift({ email, at: new Date().toISOString() });
+    lsSet(LS.alerts, list.slice(0, 50));
+  }
+  function recordRecent(t) {
+    const list = lsGet(LS.recent).filter(x => String(x.id) !== String(t.id));
+    list.unshift(t);
+    lsSet(LS.recent, list.slice(0, 20));
+  }
+
   async function api(path, opts = {}) {
     const headers = Object.assign({}, opts.headers || {});
     if (opts.body) headers['Content-Type'] = 'application/json';
@@ -110,17 +140,52 @@
     return `<span class="chip ${cls}">${esc(g)}</span>`;
   }
 
+  function saveButtonHtml(t) {
+    const v = t.venue || {};
+    const saved = isSaved(t.id);
+    const tMini = { id: t.id, name: t.name, date: t.date, game: t.game, venue: { name: v.name, city: v.city, state: v.state } };
+    return `<button type="button" class="savebtn${saved ? ' on' : ''}" data-t='${esc(JSON.stringify(tMini))}' aria-label="Save tournament">${saved ? '★' : '☆'}</button>`;
+  }
+
   function tournamentCard(t) {
+    const v = t.venue || {};
     return `<a class="tcard" href="#/t/${t.id}">
-      <div class="badges">${gameChip(t.game)}${t.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
+      ${saveButtonHtml(t)}
+      <div class="badges">${gameChip(t.game || 'Other')}${t.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
       <h3>${esc(t.name)}</h3>
       <div class="muted">${esc(fmtDate(t.date))}${t.time ? ' · ' + esc(fmtTime(t.time)) : ''}</div>
-      <div class="muted">${esc(t.venue.name)} — ${esc(t.venue.city)}, ${esc(t.venue.state)}</div>
+      <div class="muted">${esc(v.name || '')}${v.city ? ' — ' + esc(v.city) + ', ' + esc(v.state || '') : ''}</div>
       <div class="facts">
         ${t.entry != null ? `<span>Entry ${esc(money(t.entry))}</span>` : ''}
         ${t.added ? `<span>Added ${esc(money(t.added))}</span>` : ''}
         ${t.format ? `<span>${esc(t.format)}</span>` : ''}
       </div>
+    </a>`;
+  }
+
+  // ------------------------------------------------------------- game balls
+  const BALL_META = {
+    '9-Ball': { num: 9, color: '#e0ac1f', stripe: true, bgA: '#caa23a', bgB: '#4d3a0c' },
+    '8-Ball': { num: 8, color: '#161616', stripe: false, bgA: '#3a3a3a', bgB: '#050505' },
+    '10-Ball': { num: 10, color: '#1f5fd1', stripe: true, bgA: '#2b6fe0', bgB: '#0d2a66' },
+    'One Pocket': { num: 1, color: '#f0c419', stripe: false, bgA: '#8a55f0', bgB: '#3d1c8a' },
+    'Banks': { num: 6, color: '#1e8a3d', stripe: false, bgA: '#22ad4d', bgB: '#0d4f21' },
+    'Straight Pool': { num: 15, color: '#7a1f1f', stripe: true, bgA: '#a3312f', bgB: '#4f1414' },
+    'Scotch Doubles': { num: 3, color: '#d63a40', stripe: false, bgA: '#1e9c86', bgB: '#0d3f36' },
+    'Other': { num: '?', color: '#666', stripe: false, bgA: '#4a5568', bgB: '#1c2431' }
+  };
+  function ballIcon(meta) {
+    const bg = meta.stripe
+      ? `linear-gradient(to bottom, ${meta.color} 0%, ${meta.color} 26%, #fff 26%, #fff 74%, ${meta.color} 74%, ${meta.color} 100%)`
+      : meta.color;
+    return `<div class="ball" style="background:${bg}"><span>${meta.num}</span></div>`;
+  }
+  function gameTile(game, count) {
+    const meta = BALL_META[game] || BALL_META.Other;
+    return `<a class="tile gametile" href="#/search?game=${encodeURIComponent(game)}" style="background:linear-gradient(160deg,${meta.bgA},${meta.bgB})">
+      ${ballIcon(meta)}
+      <h3>${esc(game.toUpperCase())}</h3>
+      <span>${count} tournament${count === 1 ? '' : 's'}</span>
     </a>`;
   }
 
@@ -163,6 +228,14 @@
       <section class="sec">
         <div class="sec-head"><h2>Upcoming Tournaments</h2><a href="#/search">See all →</a></div>
         <div id="homeList" class="results">${loading()}</div>
+      </section>
+      <section class="sec featband on-dark">
+        <h2>Why Players Use Billiard Action Time</h2>
+        <div class="feat">
+          <div class="card"><div class="ficon" style="background:var(--purple)">📷</div><h3>Scan, Don't Type</h3><p class="muted">Snap a photo of any flyer. We pull out the date, game, and entry fee so you can check it and post.</p></div>
+          <div class="card"><div class="ficon" style="background:var(--blue)">🔔</div><h3>Never Miss a Game</h3><p class="muted">Set an alert for your game and your radius. We tell you the moment a match is posted.</p></div>
+          <div class="card"><div class="ficon" style="background:var(--green)">🛡️</div><h3>Free for Directors</h3><p class="muted">Posting is free. Claim your listing to keep the details accurate and promote your event.</p></div>
+        </div>
       </section>`;
 
     document.getElementById('homeSearch').addEventListener('submit', e => {
@@ -310,19 +383,115 @@
     } catch (e) { document.getElementById('stateGrid').innerHTML = errorBox(e.message); }
   };
 
-  routes['/calendar'] = async () => {
-    app.innerHTML = `<div class="pagehead"><h1>Tournament Calendar</h1></div><div id="cal" class="agenda">${loading()}</div>`;
-    try {
-      const data = await api('/api/tournaments?limit=500');
-      const byDate = {};
-      for (const t of data.tournaments) (byDate[t.date] ||= []).push(t);
-      const dates = Object.keys(byDate).sort();
-      document.getElementById('cal').innerHTML = dates.length ? dates.map(d => `
-        <div class="cday">
-          <h3>${esc(fmtDate(d))}</h3>
-          <div class="results">${byDate[d].map(tournamentCard).join('')}</div>
-        </div>`).join('') : `<div class="loadwrap"><p class="muted">No upcoming tournaments yet.</p></div>`;
-    } catch (e) { document.getElementById('cal').innerHTML = errorBox(e.message); }
+  routes['/calendar'] = async (params) => {
+    const todayIso = new Date().toISOString().slice(0, 10);
+    let view = ['month', 'week', 'day'].includes(params.get('view')) ? params.get('view') : 'month';
+    let selected = /^\d{4}-\d{2}-\d{2}$/.test(params.get('d') || '') ? params.get('d') : todayIso;
+    let [curYear, curMonth] = selected.split('-').map(Number); curMonth -= 1;
+
+    app.innerHTML = `<div class="pagehead"><h1>Calendar</h1><p class="muted">Pick a day to see every tournament on it.</p></div><div id="calWrap">${loading()}</div>`;
+
+    let all;
+    try { all = (await api('/api/tournaments?limit=50000')).tournaments; }
+    catch (e) { document.getElementById('calWrap').innerHTML = errorBox(e.message); return; }
+    const byDate = {};
+    for (const t of all) (byDate[t.date] ||= []).push(t);
+
+    const DOW = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const monthName = (y, m) => new Date(y, m, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase();
+    const isoOf = d => d.toISOString().slice(0, 10);
+
+    function dayCell(iso, label) {
+      const has = (byDate[iso] || []).length;
+      const cls = ['cday']; if (iso === todayIso) cls.push('today'); if (iso === selected) cls.push('sel');
+      return `<button type="button" class="${cls.join(' ')}" data-d="${iso}"><span class="n">${label}</span>${has ? `<small>${has} tourney${has === 1 ? '' : 's'}</small>` : ''}</button>`;
+    }
+
+    function monthBody() {
+      const first = new Date(curYear, curMonth, 1), startDow = first.getDay();
+      const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+      const prevDays = new Date(curYear, curMonth, 0).getDate();
+      let cells = '';
+      for (let i = startDow - 1; i >= 0; i--) cells += `<div class="cday out">${prevDays - i}</div>`;
+      for (let d = 1; d <= daysInMonth; d++) cells += dayCell(`${curYear}-${String(curMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, d);
+      const trailing = (7 - ((startDow + daysInMonth) % 7)) % 7;
+      for (let n = 1; n <= trailing; n++) cells += `<div class="cday out">${n}</div>`;
+      return `
+        <div class="calbar">
+          <button class="btn btn-out btn-sm" id="calPrev">‹</button>
+          <h2>${monthName(curYear, curMonth)}</h2>
+          <button class="btn btn-out btn-sm" id="calNext">›</button>
+        </div>
+        <div class="cgrid">${DOW.map(d => `<div class="dh">${d}</div>`).join('')}${cells}</div>`;
+    }
+
+    function weekBody() {
+      const d0 = new Date(selected + 'T00:00:00'); const start = new Date(d0); start.setDate(d0.getDate() - d0.getDay());
+      const days = [...Array(7)].map((_, i) => { const d = new Date(start); d.setDate(start.getDate() + i); return d; });
+      return `
+        <div class="calbar">
+          <button class="btn btn-out btn-sm" id="calPrev">‹</button>
+          <h2>${days[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${days[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</h2>
+          <button class="btn btn-out btn-sm" id="calNext">›</button>
+        </div>
+        <div class="cgrid">${DOW.map(d => `<div class="dh">${d}</div>`).join('')}${days.map(d => dayCell(isoOf(d), d.getDate())).join('')}</div>`;
+    }
+
+    function dayBody() {
+      const d = new Date(selected + 'T00:00:00');
+      return `<div class="calbar">
+        <button class="btn btn-out btn-sm" id="calPrev">‹</button>
+        <h2>${d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h2>
+        <button class="btn btn-out btn-sm" id="calNext">›</button>
+      </div>`;
+    }
+
+    function agendaBody() {
+      const list = (byDate[selected] || []).slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+      return `<div class="agenda">
+        <h3>${new Date(selected + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h3>
+        <p class="muted">${list.length} tournament${list.length === 1 ? '' : 's'}</p>
+        ${list.length ? list.map(t => `<a class="arow" href="#/t/${t.id}"><span class="tm">${t.time ? esc(fmtTime(t.time)) : 'TBD'}</span><span><b>${esc(t.name)}</b><small>${esc(t.venue.name)}, ${esc(t.venue.city)}, ${esc(t.venue.state)}</small></span></a>`).join('')
+          : `<div class="loadwrap"><p class="muted">Nothing listed for this day yet. Know of one? <a href="#/post">Post a tournament</a> for free.</p></div>`}
+      </div>`;
+    }
+
+    function paint() {
+      const body = view === 'month' ? monthBody() : view === 'week' ? weekBody() : dayBody();
+      document.getElementById('calWrap').innerHTML = `
+        <div class="seg">
+          <button data-v="month" class="${view === 'month' ? 'on' : ''}">Month</button>
+          <button data-v="week" class="${view === 'week' ? 'on' : ''}">Week</button>
+          <button data-v="day" class="${view === 'day' ? 'on' : ''}">Day</button>
+        </div>
+        ${body}
+        ${agendaBody()}`;
+      history.replaceState(null, '', '#/calendar?' + qs({ view, d: selected }));
+      document.querySelectorAll('.seg button[data-v]').forEach(b => b.addEventListener('click', () => { view = b.dataset.v; paint(); }));
+      const prevBtn = document.getElementById('calPrev'), nextBtn = document.getElementById('calNext');
+      if (prevBtn) prevBtn.addEventListener('click', () => step(-1));
+      if (nextBtn) nextBtn.addEventListener('click', () => step(1));
+      document.querySelectorAll('.cday[data-d]').forEach(el => el.addEventListener('click', () => {
+        selected = el.dataset.d; const [y, m] = selected.split('-').map(Number); curYear = y; curMonth = m - 1; paint();
+      }));
+    }
+
+    function step(dir) {
+      if (view === 'month') {
+        curMonth += dir;
+        if (curMonth < 0) { curMonth = 11; curYear--; }
+        if (curMonth > 11) { curMonth = 0; curYear++; }
+        selected = `${curYear}-${String(curMonth + 1).padStart(2, '0')}-01`;
+      } else {
+        const d = new Date(selected + 'T00:00:00');
+        d.setDate(d.getDate() + dir * (view === 'week' ? 7 : 1));
+        selected = isoOf(d);
+        const [y, m] = selected.split('-').map(Number); curYear = y; curMonth = m - 1;
+      }
+      paint();
+    }
+
+    paint();
   };
 
   routes['/near'] = async () => {
@@ -356,9 +525,11 @@
     let t;
     try { t = await api('/api/tournaments/' + id); }
     catch (e) { app.innerHTML = errorBox('Tournament not found.'); return; }
+    recordRecent(t);
     app.innerHTML = `
       <div class="crumbs"><a href="#/search">Find Tournaments</a> / ${esc(t.name)}</div>
       <div class="card">
+        ${saveButtonHtml(t)}
         <div class="badges">${gameChip(t.game)}${t.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
         <h1 class="dtitle">${esc(t.name)}</h1>
         <table class="t"><tbody>
@@ -537,8 +708,9 @@
       const msg = document.getElementById('postMsg');
       msg.innerHTML = loading('Submitting…');
       try {
-        await api('/api/tournaments', { method: 'POST', body });
-        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted! It will appear once an admin approves it.</p></div>`;
+        const res = await api('/api/tournaments', { method: 'POST', body });
+        recordSubmission({ id: res.id, name: body.name, date: body.date, venue: body.venue, status: res.status, submittedAt: new Date().toISOString() });
+        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted! It will appear once an admin approves it. <a href="#/account">View it on your account</a>.</p></div>`;
         e.target.reset();
         showFlyerPreview(null);
       } catch (err) { msg.innerHTML = errorBox(err.message); }
@@ -600,6 +772,7 @@
       const msg = document.getElementById('claimMsg');
       try {
         await api('/api/claims', { method: 'POST', body: { tournamentId: Number(id), name: f.get('name'), email: f.get('email') } });
+        recordClaim({ tournamentId: Number(id), name: f.get('name'), email: f.get('email'), at: new Date().toISOString() });
         msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Claim submitted. We'll follow up by email.</p></div>`;
         e.target.reset();
       } catch (err) { msg.innerHTML = errorBox(err.message); }
@@ -642,6 +815,7 @@
       const msg = document.getElementById('nlMsg');
       try {
         await api('/api/subscribe', { method: 'POST', body: { email: f.get('email') } });
+        recordAlert(f.get('email'));
         msg.innerHTML = `<p>✓ You're subscribed!</p>`;
         e.target.reset();
       } catch (err) { msg.innerHTML = `<p>⚠ ${esc(err.message)}</p>`; }
@@ -716,9 +890,142 @@
   };
 
   routes['/account'] = async () => {
-    app.innerHTML = `<div class="pagehead"><h1>My Account</h1></div>
-      <div class="loadwrap"><p class="muted">Player accounts are coming soon. In the meantime you can
-      <a href="#/claim">claim a tournament</a> you run, or <a href="#/alerts">subscribe to alerts</a>.</p></div>`;
+    const since = memberSince();
+    const sinceLabel = new Date(since).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const saved = lsGet(LS.saved), submissions = lsGet(LS.submissions), claims = lsGet(LS.claims), alerts = lsGet(LS.alerts), recent = lsGet(LS.recent);
+    app.innerHTML = `
+      <div class="pagehead"><h1>Welcome back, Player!</h1>
+        <p class="muted">Member since ${esc(sinceLabel)}. Sign-in isn't connected yet, so saves live on this device.</p></div>
+      <div class="stats">
+        <div class="stat"><b>${saved.length}</b><span>Saved tournaments</span></div>
+        <div class="stat"><b>${submissions.length}</b><span>Submissions</span></div>
+        <div class="stat"><b>${alerts.length}</b><span>Active alerts</span></div>
+        <div class="stat"><b>${claims.length}</b><span>Claims</span></div>
+      </div>
+      <h2 style="margin-top:26px">Quick Actions</h2>
+      <div class="qa">
+        <a href="#/search"><span>🔍</span>Find a tournament</a>
+        <a href="#/calendar"><span>📅</span>View calendar</a>
+        <a href="#/alerts"><span>🔔</span>Manage alerts</a>
+        <a href="#/post"><span>➕</span>Post a tournament</a>
+      </div>
+      <div class="tabs" id="acctTabs">
+        <button class="on" data-tab="saved">Saved</button>
+        <button data-tab="posts">My posts</button>
+        <button data-tab="venues">My venues</button>
+        <button data-tab="alerts">My alerts</button>
+      </div>
+      <div id="acctBody"></div>
+      <h2 style="margin-top:26px">Recently Viewed</h2>
+      <div id="acctRecent" class="results">
+        ${recent.length ? recent.map(tournamentCard).join('') : '<div class="loadwrap"><p class="muted">Tournaments you open will show up here.</p></div>'}
+      </div>`;
+
+    function renderTab(tab) {
+      const body = document.getElementById('acctBody');
+      if (tab === 'saved') {
+        body.innerHTML = saved.length ? `<div class="results">${saved.map(tournamentCard).join('')}</div>`
+          : `<div class="loadwrap"><p class="muted">No saved tournaments yet. Tap the ☆ on any tournament to save it.</p></div>`;
+      } else if (tab === 'posts') {
+        body.innerHTML = submissions.length ? `<div class="results">${submissions.map(s => `
+          <a class="tcard" href="#/t/${s.id}">
+            <h3>${esc(s.name)}</h3>
+            <div class="muted">${esc(fmtDate(s.date))}</div>
+            <div class="muted">${esc(s.venue?.name || '')}${s.venue?.city ? ' — ' + esc(s.venue.city) + ', ' + esc(s.venue.state || '') : ''}</div>
+            <div class="facts"><span>${s.status === 'pending' ? 'Pending review' : 'Submitted'}</span></div>
+          </a>`).join('')}</div>`
+          : `<div class="loadwrap"><p class="muted">Nothing posted yet. <a href="#/post">Post a tournament</a> for free.</p></div>`;
+      } else if (tab === 'venues') {
+        const uniq = new Map();
+        for (const c of claims) if (!uniq.has(c.tournamentId)) uniq.set(c.tournamentId, c);
+        body.innerHTML = uniq.size ? `<div class="results">${[...uniq.values()].map(c => `
+          <a class="tcard" href="#/t/${c.tournamentId}"><h3>Claimed Tournament #${esc(c.tournamentId)}</h3>
+          <div class="muted">Claimed ${esc(fmtDate((c.at || '').slice(0, 10)))}</div></a>`).join('')}</div>`
+          : `<div class="loadwrap"><p class="muted">No claimed venues yet. Run a tournament? <a href="#/claim">Claim your listing</a>.</p></div>`;
+      } else {
+        body.innerHTML = alerts.length ? `<ul class="statelist">${alerts.map(a => `<li>${esc(a.email)}</li>`).join('')}</ul>`
+          : `<div class="loadwrap"><p class="muted">No alerts set up on this device yet. <a href="#/alerts">Get alerts</a>.</p></div>`;
+      }
+    }
+    document.getElementById('acctTabs').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-tab]'); if (!btn) return;
+      document.querySelectorAll('#acctTabs button').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      renderTab(btn.dataset.tab);
+    });
+    renderTab('saved');
+  };
+
+  routes['/games'] = async () => {
+    app.innerHTML = `<div class="pagehead"><h1>Browse by Game</h1></div><div id="gameGrid" class="tiles gametiles">${loading()}</div>`;
+    try {
+      const data = await api('/api/tournaments?limit=50000');
+      const counts = {};
+      for (const t of data.tournaments) counts[t.game] = (counts[t.game] || 0) + 1;
+      const order = GAMES.filter(g => g !== 'Other').concat('Other');
+      document.getElementById('gameGrid').innerHTML = order.map(g => gameTile(g, counts[g] || 0)).join('');
+    } catch (e) { document.getElementById('gameGrid').innerHTML = errorBox(e.message); }
+  };
+
+  routes['/scout'] = async () => {
+    const submissions = lsGet(LS.submissions);
+    app.innerHTML = `
+      <div class="pagehead"><h1>Tournament Scout</h1>
+        <p class="muted">Report a tournament you spotted. Help Billiard Action Time keep the database growing.</p></div>
+      <div class="card">
+        <h2>How It Works</h2>
+        <ol class="steps3">
+          <li>Upload a flyer or screenshot.</li>
+          <li>We read the information from it.</li>
+          <li>We review and publish it.</li>
+        </ol>
+        <div class="actbar">
+          <button class="btn btn-blue" id="scoutUploadBtn">⬆ Upload flyer</button>
+          <a class="btn btn-out" href="#/account">View my scouts</a>
+        </div>
+        <input type="file" id="scoutFlyerInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
+        <p class="muted" id="scoutStatus"></p>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Scout Badges</h2>
+        <p class="muted">You have posted ${submissions.length} tournament${submissions.length === 1 ? '' : 's'}.</p>
+        <div id="badgeGrid" class="badgegrid">${loading('Checking verified count…')}</div>
+      </div>`;
+
+    document.getElementById('scoutUploadBtn').addEventListener('click', () => document.getElementById('scoutFlyerInput').click());
+    document.getElementById('scoutFlyerInput').addEventListener('change', async e => {
+      const file = e.target.files[0];
+      const status = document.getElementById('scoutStatus');
+      if (!file) return;
+      let cfg;
+      try { cfg = await api('/api/config'); } catch { cfg = { scan: false }; }
+      if (!cfg.scan) { status.textContent = "Flyer scanning isn't turned on for this site yet. You can still post manually."; e.target.value = ''; return; }
+      status.textContent = 'Reading flyer…';
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const data = await api('/api/scan', { method: 'POST', body: { image: reader.result } });
+          sessionStorage.setItem('bat_scanned_flyer', JSON.stringify(data.fields || {}));
+          try { sessionStorage.setItem('bat_scanned_flyer_image', reader.result); } catch { /* too big, skip */ }
+          status.textContent = 'Got it! Opening the post form…';
+          location.hash = '#/post';
+        } catch (err) { status.textContent = 'Could not read that flyer: ' + err.message; e.target.value = ''; }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    (async () => {
+      const grid = document.getElementById('badgeGrid');
+      let verified = 0;
+      const toCheck = submissions.slice(0, 100);
+      await Promise.all(toCheck.map(async s => {
+        try { const t = await api('/api/tournaments/' + s.id); if (t.status === 'published') verified++; } catch { /* not visible / removed */ }
+      }));
+      const tiers = [1, 10, 25, 50, 100];
+      grid.innerHTML = `
+        <div class="badge on"><div class="hex">★</div><small>Tournament Scout</small></div>
+        ${tiers.map(n => `<div class="badge${verified >= n ? ' on' : ''}"><div class="hex">${n}</div><small>${n} Verified</small></div>`).join('')}`;
+    })();
   };
 
   function notFound() { app.innerHTML = `<div class="pagehead"><h1>Page not found</h1></div><a class="btn btn-out" href="#/">Go home</a>`; }
@@ -743,6 +1050,30 @@
     notFound();
   }
 
+  app.addEventListener('click', e => {
+    const btn = e.target.closest('.savebtn');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    let t; try { t = JSON.parse(btn.dataset.t); } catch { return; }
+    const nowSaved = toggleSaved(t);
+    btn.classList.toggle('on', nowSaved);
+    btn.textContent = nowSaved ? '★' : '☆';
+  });
+
+  const ftrNlForm = document.getElementById('ftrNlForm');
+  if (ftrNlForm) ftrNlForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = new FormData(e.target).get('email');
+    const msg = document.getElementById('ftrNlMsg');
+    try {
+      await api('/api/subscribe', { method: 'POST', body: { email } });
+      recordAlert(email);
+      msg.textContent = "✓ You're subscribed!";
+      e.target.reset();
+    } catch (err) { msg.textContent = '⚠ ' + err.message; }
+  });
+
+  memberSince();
   window.addEventListener('hashchange', render);
   document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('nav').classList.toggle('open'));
   render();
