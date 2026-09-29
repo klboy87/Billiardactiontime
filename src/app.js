@@ -101,6 +101,21 @@ function tournamentPage(t, base) {
 <p style="margin-top:16px"><a class="btn btn-blue" href="/#/t/${t.id}">Open full details</a></p></div></main></body></html>`;
 }
 
+function venuePage(v, tournaments, base) {
+  const where = [v.address, v.city, v.state, v.zip].filter(Boolean).join(', ');
+  const desc = `Upcoming pool tournaments at ${v.name} in ${v.city}, ${v.state}.`;
+  const rows = tournaments.map(t => `<tr><td><a href="/t/${t.id}">${esc(t.name)}</a></td><td>${esc(t.date)}${t.time ? ' ' + esc(t.time) : ''}</td><td>${esc(t.game)}</td></tr>`).join('');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(v.name)} | ${esc(v.city)}, ${esc(v.state)} Pool Tournaments</title><meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${esc(base)}/venue/${v.id}"><meta property="og:title" content="${esc(v.name)}"><meta property="og:description" content="${esc(desc)}">
+<link rel="stylesheet" href="/styles.css"></head>
+<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
+<main class="wrap page"><div class="card"><h1 class="dtitle">${esc(v.name)}</h1><p class="muted">${esc(where)}</p>
+${rows ? `<table class="t"><thead><tr><th>Tournament</th><th>Date</th><th>Game</th></tr></thead><tbody>${rows}</tbody></table>`
+  : `<p class="muted">No upcoming tournaments listed right now.</p>`}
+<p style="margin-top:16px"><a class="btn btn-blue" href="/#/venue/${v.id}">Open full details</a></p></div></main></body></html>`;
+}
+
 // ---- the server ------------------------------------------------------------
 export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   const hits = new Map();
@@ -232,9 +247,18 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return t ? send(req, res, 200, tournamentPage(t, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' })
         : send(req, res, 404, '<h1>Tournament not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
     }
+    if (m === 'GET' && (x = p.match(/^\/venue\/(\d+)$/))) {
+      const all = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published' && Number(t.venue.id) === Number(x[1]));
+      if (!all.length) return send(req, res, 404, '<h1>Venue not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
+      return send(req, res, 200, venuePage(all[0].venue, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
+    }
     if (m === 'GET' && p === '/sitemap.xml') {
-      const urls = D.listTournaments(db, { limit: 50000 }).map(t => `<url><loc>${esc(cfg.publicUrl)}/t/${t.id}</loc><lastmod>${esc((t.updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
-      return send(req, res, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${esc(cfg.publicUrl)}/</loc></url>${urls}</urlset>`, { 'Content-Type': 'application/xml; charset=utf-8' });
+      const published = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published');
+      const tUrls = published.map(t => `<url><loc>${esc(cfg.publicUrl)}/t/${t.id}</loc><lastmod>${esc((t.updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
+      const venueIds = new Map();
+      for (const t of published) if (!venueIds.has(t.venue.id)) venueIds.set(t.venue.id, t.updatedAt);
+      const vUrls = [...venueIds.entries()].map(([id, updatedAt]) => `<url><loc>${esc(cfg.publicUrl)}/venue/${id}</loc><lastmod>${esc((updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
+      return send(req, res, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${esc(cfg.publicUrl)}/</loc></url>${tUrls}${vUrls}</urlset>`, { 'Content-Type': 'application/xml; charset=utf-8' });
     }
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
