@@ -206,6 +206,7 @@
             <button type="submit" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
           </form>
           <p class="eg">Example: 9-Ball Battle Creek</p>
+          <div class="totalstat" id="totalStat"><span class="ic">🎱</span> <span id="totalStatText">Loading tournament count…</span></div>
         </div>
       </section>
       <section class="sec tiles">
@@ -264,6 +265,16 @@
       };
       reader.readAsDataURL(file);
     });
+
+    // Total tournaments listed sitewide
+    (async () => {
+      const el = document.getElementById('totalStatText');
+      try {
+        const data = await api('/api/tournaments?limit=50000');
+        const n = data.tournaments.length;
+        el.innerHTML = `<b>${n.toLocaleString('en-US')}</b> tournament${n === 1 ? '' : 's'} listed right now`;
+      } catch { el.textContent = 'Tournament count unavailable'; }
+    })();
 
     // This Weekend
     (async () => {
