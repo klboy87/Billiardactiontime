@@ -12,6 +12,7 @@ import { geocodePending } from './geocode.js';
 import { readFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
 import { renderSiteCard, renderTournamentCard } from './ogcard.js';
+import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -150,21 +151,42 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (list.length >= 10) { hits.set(ip, list); return true; }
     list.push(now); hits.set(ip, list); return false;
   };
-  const clientIp = req => (process.env.TRUST_PROXY ? String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() : '') || req.socket.remoteAddress || 'unknown';
+  // Behind Railway's proxy every request arrives from the proxy's own address, so the real
+  // visitor IP has to come from the proxy's headers (Railway sets X-Real-IP). Without this,
+  // everyone looks like the same person and the visitor counts collapse to 1 a day.
+  const behindProxy = !!(process.env.TRUST_PROXY || process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_ENVIRONMENT_NAME);
+  const clientIp = req => (behindProxy ? String(req.headers['x-real-ip'] || '').trim() || String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() : '') || req.socket.remoteAddress || 'unknown';
   const admin = req => { if (!tokenOk(req, cfg.adminToken)) throw new HttpError(cfg.adminToken ? 401 : 403, cfg.adminToken ? 'Invalid admin token' : 'Admin is disabled until ADMIN_TOKEN is set'); };
   // Privacy-friendly visit counter: hashes IP+day+secret, so nothing identifying is stored
   // and the same person only counts once per day. Writes are batched in memory and flushed to
   // SQLite on a timer (never inline on a request) because node:sqlite is synchronous and a
   // disk write on every page load would stall the whole server's event loop.
   const pendingViews = new Map();
-  function trackVisit(req) {
+  const visitorId = (req, day) => sha(clientIp(req) + '|' + day + '|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32);
+  let ownHosts = [];
+  try { ownHosts = [new URL(cfg.publicUrl).hostname.replace(/^www\./, '')]; } catch {}
+  function trackVisit(req, page) {
     try {
+      if (isBot(req.headers['user-agent'])) return;
       const day = D.todayIso();
-      const visitor = sha(clientIp(req) + '|' + day + '|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32);
+      const visitor = visitorId(req, day);
       pendingViews.set(day + '|' + visitor, [day, visitor]);
+      if (page) recordPage(req, day, visitor, page, { ref: req.headers.referer });
     } catch {}
   }
+  // Which page, and where the visitor came from. Batched and flushed with the counts above.
+  const pendingPages = new Map();
+  function recordPage(req, day, visitor, page, { ref, utm } = {}) {
+    const k = day + '|' + visitor + '|' + page;
+    if (pendingPages.has(k) || pendingPages.size >= 50_000) return;
+    pendingPages.set(k, [day, visitor, page, classifySource({ ref, utm, ua: req.headers['user-agent'], ownHosts })]);
+  }
   function flushPageviews() {
+    if (pendingPages.size) {
+      const pages = [...pendingPages.values()];
+      pendingPages.clear();
+      try { D.recordVisitsBulk(db, pages); } catch (e) { log('visit flush failed: ' + (e.message || e)); }
+    }
     if (!pendingViews.size) return;
     const entries = [...pendingViews.values()];
     pendingViews.clear();
@@ -187,6 +209,19 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/api/health') return json(req, res, 200, { ok: true });
 
     if (m === 'GET' && p === '/api/config') return json(req, res, 200, { scan: !!cfg.anthropicKey });
+
+    // Beacon the browser app sends on each page it shows: {page, ref, utm}. Only whitelisted
+    // page names are kept, and bots are ignored, so this can't be used to stuff the stats.
+    if (m === 'POST' && p === '/api/track') {
+      const b = await readJson(req, 4000).catch(() => null);
+      const page = typeof b?.page === 'string' ? pageFromHash(b.page) : null;
+      if (page && !isBot(req.headers['user-agent'])) {
+        const day = D.todayIso(), visitor = visitorId(req, day);
+        pendingViews.set(day + '|' + visitor, [day, visitor]);
+        recordPage(req, day, visitor, page, { ref: typeof b.ref === 'string' ? b.ref.slice(0, 500) : '', utm: typeof b.utm === 'string' ? b.utm : '' });
+      }
+      return send(req, res, 204, '');
+    }
 
     if (m === 'GET' && p === '/api/places') {
       const state = normalizeState(url.searchParams.get('state'));
@@ -273,7 +308,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (p.startsWith('/api/admin/')) {
       admin(req);
       if (m === 'GET' && p === '/api/admin/summary') return json(req, res, 200, D.summary(db));
-      if (m === 'GET' && p === '/api/admin/pageviews') { flushPageviews(); return json(req, res, 200, D.pageviewCounts(db)); }
+      if (m === 'GET' && p === '/api/admin/pageviews') {
+        flushPageviews();
+        const traffic = D.visitBreakdown(db);
+        traffic.pages = traffic.pages.map(r => ({ ...r, label: PAGES[r.page] || r.page }));
+        return json(req, res, 200, { ...D.pageviewCounts(db), traffic });
+      }
       if (m === 'GET' && p === '/api/admin/pending') return json(req, res, 200, { tournaments: D.listPending(db) });
       if (m === 'POST' && p === '/api/admin/sync') return json(req, res, 200, await syncNow());
       if ((x = p.match(/^\/api\/admin\/(claims|reports)\/(\d+)\/done$/)) && m === 'POST') return json(req, res, 200, { ok: D.resolveItem(db, x[1], Number(x[2])) });
@@ -307,19 +347,19 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return send(req, res, 200, card, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' });
     }
     if (m === 'GET' && (x = p.match(/^\/t\/(\d+)$/))) {
-      trackVisit(req);
+      trackVisit(req, 'tournament-page');
       const t = D.getTournament(db, Number(x[1]));
       return t ? send(req, res, 200, tournamentPage(t, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' })
         : send(req, res, 404, '<h1>Tournament not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
     }
     if (m === 'GET' && (x = p.match(/^\/venue\/(\d+)$/))) {
-      trackVisit(req);
+      trackVisit(req, 'venue-page');
       const all = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published' && Number(t.venue.id) === Number(x[1]));
       if (!all.length) return send(req, res, 404, '<h1>Venue not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
       return send(req, res, 200, venuePage(all[0].venue, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
     }
     if (m === 'GET' && (x = p.match(/^\/state\/([a-zA-Z]{2})\/?$/))) {
-      trackVisit(req);
+      trackVisit(req, 'state-page');
       const code = normalizeState(x[1]);
       if (!code) return send(req, res, 404, '<h1>State not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
       const name = statesList().find(s => s.code === code)?.name || code;
@@ -327,7 +367,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return send(req, res, 200, statePage(code, name, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
     }
     if (m === 'GET' && (p === '/state' || p === '/state/')) {
-      trackVisit(req);
+      trackVisit(req, 'states-page');
       const published = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published');
       const counts = new Map();
       for (const t of published) counts.set(t.venue.state, (counts.get(t.venue.state) || 0) + 1);

@@ -72,6 +72,13 @@ CREATE TABLE IF NOT EXISTS pageviews (
   PRIMARY KEY (day, visitor)
 );
 CREATE INDEX IF NOT EXISTS idx_pv_day ON pageviews(day);
+-- which page each visitor viewed and where they came from, one row per (day, visitor, page).
+-- Same privacy rules as pageviews: visitor is the salted daily hash, no IPs stored.
+CREATE TABLE IF NOT EXISTS visits (
+  day TEXT NOT NULL, visitor TEXT NOT NULL, page TEXT NOT NULL, source TEXT NOT NULL,
+  PRIMARY KEY (day, visitor, page)
+);
+CREATE INDEX IF NOT EXISTS idx_visits_day ON visits(day);
 `;
 
 export function openDb(file) {
@@ -292,6 +299,36 @@ export function pageviewCounts(db, todayStr = todayIso()) {
     weekly: one('SELECT COUNT(DISTINCT visitor) n FROM pageviews WHERE day >= ?', daysAgo(6)),
     monthly: one('SELECT COUNT(DISTINCT visitor) n FROM pageviews WHERE day >= ?', daysAgo(29)),
     total: one('SELECT COUNT(DISTINCT visitor) n FROM pageviews')
+  };
+}
+
+// ---- page + traffic-source tracking (fed by the browser beacon at /api/track) ----
+export function recordVisitsBulk(db, entries) {
+  if (!entries.length) return;
+  tx(db, () => {
+    const stmt = db.prepare('INSERT OR IGNORE INTO visits (day, visitor, page, source) VALUES (?,?,?,?)');
+    for (const [day, visitor, page, source] of entries) stmt.run(day, visitor, page, source);
+  });
+}
+export function visitBreakdown(db, { days = 30, dailyDays = 14, todayStr = todayIso() } = {}) {
+  const daysAgo = n => { const d = new Date(todayStr + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - n); return d.toISOString().slice(0, 10); };
+  const since = daysAgo(days - 1), dailySince = daysAgo(dailyDays - 1);
+  // A visitor's source is the one on their first recorded page that day, so a person who
+  // arrives from Google and clicks around five pages counts once for Google, not five times.
+  const firstSource = `SELECT day, visitor, MIN(rowid) r FROM visits WHERE day >= ? GROUP BY day, visitor`;
+  const sources = db.prepare(`SELECT v.source, COUNT(*) visitors FROM visits v JOIN (${firstSource}) f ON v.rowid = f.r
+    GROUP BY v.source ORDER BY visitors DESC LIMIT 25`).all(since);
+  const pages = db.prepare(`SELECT page, COUNT(*) views FROM visits WHERE day >= ? GROUP BY page ORDER BY views DESC LIMIT 25`).all(since);
+  const dailyRows = db.prepare(`SELECT day, COUNT(DISTINCT visitor) visitors FROM visits WHERE day >= ? GROUP BY day`).all(dailySince);
+  const byDay = new Map(dailyRows.map(r => [r.day, Number(r.visitors)]));
+  const daily = [];
+  for (let i = dailyDays - 1; i >= 0; i--) { const d = daysAgo(i); daily.push({ day: d, visitors: byDay.get(d) || 0 }); }
+  const visitors = db.prepare(`SELECT COUNT(*) n FROM (SELECT DISTINCT day, visitor FROM visits WHERE day >= ?)`).get(since).n;
+  return {
+    days, visitors: Number(visitors),
+    sources: sources.map(r => ({ source: r.source, visitors: Number(r.visitors) })),
+    pages: pages.map(r => ({ page: r.page, views: Number(r.views) })),
+    daily
   };
 }
 

@@ -859,6 +859,22 @@
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
     let pv;
     try { pv = await api('/api/admin/pageviews'); } catch { pv = { daily: 0, weekly: 0, monthly: 0, total: 0 }; }
+    const tr = pv.traffic || { visitors: 0, sources: [], pages: [], daily: [] };
+    const barRows = (rows, labelKey, countKey) => {
+      const max = Math.max(1, ...rows.map(r => r[countKey]));
+      return rows.map(r => `<tr><td>${esc(r[labelKey])}</td><td style="width:45%"><div style="background:currentColor;opacity:.35;height:10px;border-radius:5px;width:${Math.max(2, Math.round(r[countKey] / max * 100))}%"></div></td><td style="text-align:right">${r[countKey]}</td></tr>`).join('');
+    };
+    const dayLabel = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
+    const trafficHtml = `
+      <h2>Where Visitors Come From <span class="muted" style="font-size:.7em;font-weight:400">last ${tr.days || 30} days · ${tr.visitors} visitors</span></h2>
+      ${tr.sources.length ? `<table class="t"><thead><tr><th>Source</th><th></th><th style="text-align:right">Visitors</th></tr></thead><tbody>${barRows(tr.sources, 'source', 'visitors')}</tbody></table>`
+        : '<p class="muted">No visits recorded yet. Sources show up here as people visit.</p>'}
+      <p class="muted" style="font-size:.85em">Tip: add <code>?utm_source=newsletter</code> to links in your newsletter (for example <code>billiardactiontime.com/?utm_source=newsletter</code>) so those visits show as Newsletter instead of Direct.</p>
+      <h2>Most Viewed Pages <span class="muted" style="font-size:.7em;font-weight:400">last ${tr.days || 30} days</span></h2>
+      ${tr.pages.length ? `<table class="t"><thead><tr><th>Page</th><th></th><th style="text-align:right">Views</th></tr></thead><tbody>${barRows(tr.pages, 'label', 'views')}</tbody></table>`
+        : '<p class="muted">No page views recorded yet.</p>'}
+      <h2>Visitors Per Day <span class="muted" style="font-size:.7em;font-weight:400">last ${tr.daily.length} days</span></h2>
+      <table class="t"><tbody>${barRows(tr.daily.slice().reverse().map(d => ({ ...d, label: dayLabel(d.day) })), 'label', 'visitors')}</tbody></table>`;
     app.innerHTML = `
       <div class="pagehead"><h1>Admin Dashboard</h1>
         <button class="btn btn-out btn-sm" id="logoutBtn">Log Out</button></div>
@@ -869,6 +885,7 @@
         <div class="stat"><strong>${pv.monthly}</strong><span>Last 30 Days</span></div>
         <div class="stat"><strong>${pv.total}</strong><span>All-Time</span></div>
       </div>
+      ${trafficHtml}
       <h2>Listings</h2>
       <div class="stats">
         <div class="stat"><strong>${summary.published}</strong><span>Published</span></div>
@@ -1088,9 +1105,26 @@
     return { pathPart, params, segs };
   }
 
+  // Tells the server which page was shown and where the visitor came from (the referring site
+  // and any ?utm_source= tag on the link). Skipped on devices logged into Admin so the owner's
+  // own browsing doesn't count. Never blocks or breaks the page if it fails.
+  const landing = (() => {
+    const fromSearch = new URLSearchParams(location.search).get('utm_source');
+    const fromHash = new URLSearchParams((location.hash.split('?')[1]) || '').get('utm_source');
+    return { ref: document.referrer || '', utm: fromSearch || fromHash || '' };
+  })();
+  function trackPage(pathPart) {
+    if (adminToken() || pathPart.startsWith('/admin')) return;
+    try {
+      fetch('/api/track', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page: pathPart, ref: landing.ref, utm: landing.utm }) }).catch(() => {});
+    } catch { /* ignore */ }
+  }
+
   async function render() {
     const { pathPart, params, segs } = parseHash();
     window.scrollTo(0, 0);
+    trackPage(pathPart);
     // exact match first
     if (routes[pathPart]) return routes[pathPart](params);
     // /prefix/:id style
