@@ -65,6 +65,13 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE TABLE IF NOT EXISTS subscribers (
   id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+-- one row per (day, visitor) so re-visits the same day don't inflate the count;
+-- visitor is a salted hash, never a raw IP, so nothing identifying is stored.
+CREATE TABLE IF NOT EXISTS pageviews (
+  day TEXT NOT NULL, visitor TEXT NOT NULL,
+  PRIMARY KEY (day, visitor)
+);
+CREATE INDEX IF NOT EXISTS idx_pv_day ON pageviews(day);
 `;
 
 export function openDb(file) {
@@ -251,8 +258,24 @@ export function resolveItem(db, table, id) {
   return db.prepare(`UPDATE ${table} SET status='done' WHERE id=?`).run(id).changes > 0;
 }
 
+// ---- site visit counts (privacy-friendly: day + salted-hash visitor id, no IPs stored) ----
+export function recordPageview(db, day, visitor) {
+  db.prepare('INSERT OR IGNORE INTO pageviews (day, visitor) VALUES (?,?)').run(day, visitor);
+}
+export function pageviewCounts(db, todayStr = todayIso()) {
+  const one = (sql, ...a) => db.prepare(sql).get(...a).n;
+  const daysAgo = n => { const d = new Date(todayStr + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - n); return d.toISOString().slice(0, 10); };
+  return {
+    daily: one('SELECT COUNT(*) n FROM pageviews WHERE day = ?', todayStr),
+    weekly: one('SELECT COUNT(DISTINCT visitor) n FROM pageviews WHERE day >= ?', daysAgo(6)),
+    monthly: one('SELECT COUNT(DISTINCT visitor) n FROM pageviews WHERE day >= ?', daysAgo(29)),
+    total: one('SELECT COUNT(DISTINCT visitor) n FROM pageviews')
+  };
+}
+
 // Distinct city/state pairs that actually have a venue on file, so the city dropdown
 // can include real places even before they have a tournament -- see places.js for the rest.
 export function venueCities(db) {
   return db.prepare(`SELECT DISTINCT city, state FROM venues WHERE city IS NOT NULL AND city <> '' AND state IS NOT NULL AND state <> ''`).all();
 }
+
