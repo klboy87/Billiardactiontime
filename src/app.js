@@ -153,14 +153,25 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   const clientIp = req => (process.env.TRUST_PROXY ? String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() : '') || req.socket.remoteAddress || 'unknown';
   const admin = req => { if (!tokenOk(req, cfg.adminToken)) throw new HttpError(cfg.adminToken ? 401 : 403, cfg.adminToken ? 'Invalid admin token' : 'Admin is disabled until ADMIN_TOKEN is set'); };
   // Privacy-friendly visit counter: hashes IP+day+secret, so nothing identifying is stored
-  // and the same person only counts once per day.
+  // and the same person only counts once per day. Writes are batched in memory and flushed to
+  // SQLite on a timer (never inline on a request) because node:sqlite is synchronous and a
+  // disk write on every page load would stall the whole server's event loop.
+  const pendingViews = new Map();
   function trackVisit(req) {
     try {
       const day = D.todayIso();
       const visitor = sha(clientIp(req) + '|' + day + '|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32);
-      D.recordPageview(db, day, visitor);
+      pendingViews.set(day + '|' + visitor, [day, visitor]);
     } catch {}
   }
+  function flushPageviews() {
+    if (!pendingViews.size) return;
+    const entries = [...pendingViews.values()];
+    pendingViews.clear();
+    try { D.recordPageviewsBulk(db, entries); } catch (e) { log('pageview flush failed: ' + (e.message || e)); }
+  }
+  const pvTimer = setInterval(flushPageviews, 20_000);
+  pvTimer.unref?.();
 
   async function syncNow() {
     const r = await runSync(db, cfg, { fetchFn, log });
@@ -254,7 +265,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (p.startsWith('/api/admin/')) {
       admin(req);
       if (m === 'GET' && p === '/api/admin/summary') return json(req, res, 200, D.summary(db));
-      if (m === 'GET' && p === '/api/admin/pageviews') return json(req, res, 200, D.pageviewCounts(db));
+      if (m === 'GET' && p === '/api/admin/pageviews') { flushPageviews(); return json(req, res, 200, D.pageviewCounts(db)); }
       if (m === 'GET' && p === '/api/admin/pending') return json(req, res, 200, { tournaments: D.listPending(db) });
       if (m === 'POST' && p === '/api/admin/sync') return json(req, res, 200, await syncNow());
       if ((x = p.match(/^\/api\/admin\/(claims|reports)\/(\d+)\/done$/)) && m === 'POST') return json(req, res, 200, { ok: D.resolveItem(db, x[1], Number(x[2])) });
@@ -346,5 +357,6 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     });
   });
   server.syncNow = syncNow;
+  server.flushPageviews = flushPageviews;
   return server;
 }
