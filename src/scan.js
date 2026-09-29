@@ -1,9 +1,11 @@
-import { GAMES, parseDate, parseTime, parseMoney, normalizeState, clean, zip5 } from './normalize.js';
+import { GAMES, TABLE_SIZES, parseDate, parseTime, parseMoney, parseInteger, normalizeState, clean, zip5 } from './normalize.js';
 
 const PROMPT = today => `Read this pool tournament flyer. Today's date is ${today}.
 Reply with ONLY a JSON object using these keys, and null for anything the flyer does not state (do not guess):
 name, date (YYYY-MM-DD; if the year is not printed use the next upcoming occurrence), time (24-hour HH:MM), venue, address, city,
-state (2-letter code), zip, game (one of: ${GAMES.join(', ')}), entry (number in dollars), added (added money, number), race, format, notes (one short sentence).`;
+state (2-letter code), zip, game (one of: ${GAMES.join(', ')}), entry (number in dollars), added (added money, number), race, format,
+tableSize (one of: ${TABLE_SIZES.join(', ')}), limit (max number of players/teams, if stated), directorName (tournament director or contact person),
+directorPhone, notes (one short sentence).`;
 
 export function cleanScan(o) {
   const s = (v, n) => clean(v).slice(0, n) || null;
@@ -11,7 +13,8 @@ export function cleanScan(o) {
     name: s(o.name, 120), date: parseDate(o.date), time: parseTime(o.time), venue: s(o.venue, 120), address: s(o.address, 120),
     city: s(o.city, 80), state: normalizeState(o.state) || null, zip: zip5(o.zip) || null,
     game: GAMES.includes(o.game) ? o.game : null, entry: parseMoney(o.entry), added: parseMoney(o.added),
-    race: s(o.race, 40), format: s(o.format, 60), notes: s(o.notes, 300)
+    race: s(o.race, 40), format: s(o.format, 60), tableSize: TABLE_SIZES.includes(o.tableSize) ? o.tableSize : null,
+    limit: parseInteger(o.limit), directorName: s(o.directorName, 80), directorPhone: s(o.directorPhone, 30), notes: s(o.notes, 300)
   };
 }
 
