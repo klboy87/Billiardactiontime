@@ -857,9 +857,19 @@
     catch { localStorage.removeItem('bat_admin_token'); app.innerHTML = errorBox('Session expired. Reloading login…'); setTimeout(() => { location.hash = '#/admin'; render(); }, 800); return; }
     let pending;
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
+    let pv;
+    try { pv = await api('/api/admin/pageviews'); } catch { pv = { daily: 0, weekly: 0, monthly: 0, total: 0 }; }
     app.innerHTML = `
       <div class="pagehead"><h1>Admin Dashboard</h1>
         <button class="btn btn-out btn-sm" id="logoutBtn">Log Out</button></div>
+      <h2 style="margin-top:0">Site Visitors</h2>
+      <div class="stats">
+        <div class="stat"><strong>${pv.daily}</strong><span>Today</span></div>
+        <div class="stat"><strong>${pv.weekly}</strong><span>Last 7 Days</span></div>
+        <div class="stat"><strong>${pv.monthly}</strong><span>Last 30 Days</span></div>
+        <div class="stat"><strong>${pv.total}</strong><span>All-Time</span></div>
+      </div>
+      <h2>Listings</h2>
       <div class="stats">
         <div class="stat"><strong>${summary.published}</strong><span>Published</span></div>
         <div class="stat"><strong>${summary.upcoming}</strong><span>Upcoming</span></div>
@@ -1088,4 +1098,8 @@
   window.addEventListener('hashchange', render);
   document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('nav').classList.toggle('open'));
   render();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => {}); });
+  }
 })();
