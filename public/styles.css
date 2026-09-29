@@ -139,6 +139,7 @@ input[type=radio],input[type=checkbox]{width:auto;min-height:0;accent-color:var(
 .ftoggle{display:none;width:100%;margin-bottom:12px}
 @media (max-width:860px){.slayout{grid-template-columns:1fr}.filters{position:static;max-height:none;display:none}.filters.open{display:block}.ftoggle{display:inline-flex}}
 .bigsearch{margin-bottom:16px;position:relative}
+.homescan{display:flex;align-items:center;margin-top:4px}
 .bigsearch input{padding-left:42px;min-height:50px;font-size:16px}
 .bigsearch svg{position:absolute;left:13px;top:14px;color:var(--muted)}
 .twosel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
