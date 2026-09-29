@@ -349,9 +349,28 @@
         </div>
         <div class="fg"><label>Registration URL</label><input name="registrationUrl" type="url"></div>
         <div class="fg"><label>Notes</label><textarea name="notes" maxlength="1000" rows="4"></textarea></div>
+        <div class="fg" id="flyerFg"><label>Flyer Photo (optional)</label>
+          <div id="flyerPreviewWrap"></div>
+          <input type="file" id="flyerFile" accept="image/png,image/jpeg,image/webp,image/gif">
+          <p class="muted" style="font-size:12.5px;margin-top:4px">Shown on the tournament's page once approved. Max 2 MB.</p>
+        </div>
         <div id="postMsg"></div>
         <button class="btn btn-blue" type="submit">Submit for Review</button>
       </form>`;
+    let flyerDataUrl = null;
+    function showFlyerPreview(url) {
+      flyerDataUrl = url;
+      const wrap = document.getElementById('flyerPreviewWrap');
+      wrap.innerHTML = url ? `<img class="previewimg" src="${url}" alt="Flyer preview" style="display:block;margin-bottom:8px">` : '';
+    }
+    document.getElementById('flyerFile').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2_000_000) { alert('That image is over 2 MB. Choose a smaller photo.'); e.target.value = ''; return; }
+      const r = new FileReader();
+      r.onload = () => showFlyerPreview(r.result);
+      r.readAsDataURL(file);
+    });
     loadPlaces().then(places => {
       const sel = document.getElementById('postState');
       for (const s of places.states) sel.insertAdjacentHTML('beforeend', `<option value="${esc(s.code)}">${esc(s.name)}</option>`);
@@ -379,6 +398,8 @@
       set('zip', f.zip);
       const extras = [f.race ? `Race to ${f.race}` : '', f.format || ''].filter(Boolean).join(' · ');
       set('notes', extras || null);
+      const img = sessionStorage.getItem('bat_scanned_flyer_image');
+      if (img) { sessionStorage.removeItem('bat_scanned_flyer_image'); showFlyerPreview(img); }
       const banner = document.createElement('div');
       banner.className = 'loadwrap';
       banner.innerHTML = '<p class="muted">✓ Filled in from your scanned flyer. Review everything below before submitting.</p>';
@@ -393,7 +414,8 @@
         entry: f.get('entry') || null, added: f.get('added') || null, notes: f.get('notes') || null,
         registrationUrl: f.get('registrationUrl') || null,
         director: { name: f.get('directorName') || null, phone: f.get('directorPhone') || null, email: f.get('directorEmail') || null },
-        venue: { name: f.get('venueName'), address: f.get('address') || null, city: f.get('city'), state: f.get('state'), zip: f.get('zip') || null }
+        venue: { name: f.get('venueName'), address: f.get('address') || null, city: f.get('city'), state: f.get('state'), zip: f.get('zip') || null },
+        flyer: flyerDataUrl || null
       };
       const msg = document.getElementById('postMsg');
       msg.innerHTML = loading('Submitting…');
@@ -401,6 +423,7 @@
         await api('/api/tournaments', { method: 'POST', body });
         msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted! It will appear once an admin approves it.</p></div>`;
         e.target.reset();
+        showFlyerPreview(null);
       } catch (err) { msg.innerHTML = errorBox(err.message); }
     });
   };
@@ -437,6 +460,7 @@
           const data = await api('/api/scan', { method: 'POST', body: { image: reader.result } });
           const f = data.fields || {};
           sessionStorage.setItem('bat_scanned_flyer', JSON.stringify(f));
+          try { sessionStorage.setItem('bat_scanned_flyer_image', reader.result); } catch { /* image too big for storage, skip it */ }
           result.innerHTML = `<div class="loadwrap"><p class="muted">Got it! Taking you to the post form with these details filled in…</p></div>`;
           location.hash = '#/post';
           render();
