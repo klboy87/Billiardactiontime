@@ -2451,18 +2451,6 @@
       "notes": "Source: findtourneys.com"
     },
     {
-      "id": "ft-arkansas-open-nineball-championship-krome-billiards-2026-10-03",
-      "name": "Arkansas Open Nineball Championship",
-      "date": "2026-10-03",
-      "venue": "Krome Billiards",
-      "address": "2657 Pike Ave.",
-      "city": "North Little Rock",
-      "state": "AR",
-      "zip": "72114",
-      "game": "9 Ball",
-      "notes": "Source: findtourneys.com"
-    },
-    {
       "id": "ft-fargo-handicapped-8-ball-hustlers-pizza-billiards-2026-10-03",
       "name": "Fargo Handicapped 8 Ball",
       "date": "2026-10-03",
@@ -2557,6 +2545,373 @@
       "zip": "47807",
       "game": "8 Ball",
       "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "azbilliards-com-2026-seniors-one-pocket-classic-2026-09-30",
+      "name": "2026 Seniors One Pocket Classic",
+      "date": "2026-09-30",
+      "venue": "Bogies Billiards West",
+      "city": "Houston",
+      "state": "TX",
+      "notes": "Source: azbilliards.com"
+    },
+    {
+      "id": "azbilliards-com-2026-borderline-brunswick-invitational-2026-10-07",
+      "name": "2026 Borderline Brunswick Invitational",
+      "date": "2026-10-07",
+      "venue": "Borderline Billiards",
+      "city": "Bristol",
+      "state": "TN",
+      "notes": "Source: azbilliards.com"
+    },
+    {
+      "id": "azbilliards-com-west-coast-women-s-tour-2026-stop-6-2026-10-17",
+      "name": "West Coast Women's Tour 2026 Stop 6",
+      "date": "2026-10-17",
+      "venue": "Diamond Billiards",
+      "city": "Modesto",
+      "state": "CA",
+      "notes": "Source: azbilliards.com"
+    },
+    {
+      "id": "azbilliards-com-nwpa-tour-2026-stop-7-2026-10-24",
+      "name": "NWPA Tour 2026 Stop 7",
+      "date": "2026-10-24",
+      "venue": "Ox Billiards",
+      "city": "Seattle",
+      "state": "WA",
+      "notes": "Source: azbilliards.com"
+    },
+    {
+      "id": "azbilliards-com-west-coast-women-s-tour-2026-stop-7-2026-11-14",
+      "name": "West Coast Women's Tour 2026 Stop 7",
+      "date": "2026-11-14",
+      "venue": "Hard Times Billiards",
+      "city": "Sacramento",
+      "state": "CA",
+      "notes": "Source: azbilliards.com"
+    },
+    {
+      "id": "azbilliards-com-nwpa-tour-2026-25th-anniversary-stop-2026-11-21",
+      "name": "NWPA Tour 2026 25th Anniversary Stop",
+      "date": "2026-11-21",
+      "venue": "Ox Billiards",
+      "city": "Seattle",
+      "state": "WA",
+      "notes": "Source: azbilliards.com"
+    },
+    {
+      "id": "azbilliards-com-mosconi-cup-xxxiii-2026-11-27",
+      "name": "Mosconi Cup XXXIII",
+      "date": "2026-11-27",
+      "venue": "Caribe Royale",
+      "city": "Orlando",
+      "state": "FL",
+      "notes": "Source: azbilliards.com"
+    },
+    {
+      "id": "azbilliards-com-independent-tournaments-palmetto-state-women-s-championship-2026-09-12",
+      "name": "Palmetto State Women's Championship",
+      "date": "2026-09-12",
+      "venue": "The League Room",
+      "city": "Spartanburg",
+      "state": "SC",
+      "notes": "Source: azbilliards.com independent tournaments. Listed date may be recent past; confirm with organizer"
+    },
+    {
+      "id": "forums-azbilliards-com-joss-event-1-500-500-added-2026-10-03",
+      "name": "Joss Event - $1,500/$500 Added",
+      "date": "2026-10-03",
+      "venue": "Billiard Breakdown",
+      "city": "Rochester",
+      "state": "NY",
+      "notes": "Source: forums.azbilliards.com"
+    },
+    {
+      "id": "mpapool-com-14th-annual-spirit-lake-casino-pool-tour-2026-09-30",
+      "name": "14th Annual Spirit Lake Casino Pool Tournament",
+      "date": "2026-09-30",
+      "venue": "Spirit Lake Casino",
+      "city": "Devils Lake",
+      "state": "ND",
+      "notes": "Source: mpapool.com",
+      "entry": 75
+    },
+    {
+      "id": "mpapool-com-cr-s-4000-added-8-ball-tournament-2026-10-02",
+      "name": "CR'S $4000 Added 8 Ball Tournament",
+      "date": "2026-10-02",
+      "venue": "CR's Sportsbar & Two Stooges",
+      "notes": "Source: mpapool.com",
+      "entry": 65
+    },
+    {
+      "id": "mpapool-com-two-stooges-499-and-under-8-ball-tournam-2026-10-10",
+      "name": "Two Stooges 499 and Under 8 Ball Tournament",
+      "date": "2026-10-10",
+      "venue": "Two Stooges Sport Bar & Grill",
+      "notes": "Source: mpapool.com",
+      "entry": 30
+    },
+    {
+      "id": "mpapool-com-cr-s-sportsbar-1000-added-scotch-doubles-2026-10-17",
+      "name": "CR'S Sportsbar $1000 added Scotch Doubles 8 Ball Tournament",
+      "date": "2026-10-17",
+      "venue": "CR's Sportsbar",
+      "notes": "Source: mpapool.com",
+      "entry": 160
+    },
+    {
+      "id": "mpapool-com-two-stooges-open-9-ball-on-9ft-tables-2026-10-24",
+      "name": "Two Stooges Open 9 Ball on 9ft Tables",
+      "date": "2026-10-24",
+      "venue": "Two Stooges Sport Bar & Grill",
+      "notes": "Source: mpapool.com",
+      "game": "9-Ball",
+      "entry": 40
+    },
+    {
+      "id": "mpapool-com-two-stooges-540-and-under-fargo-rated-8--2026-10-24",
+      "name": "Two Stooges 540 and under Fargo rated 8 ball Tournament",
+      "date": "2026-10-24",
+      "venue": "Two Stooges Sport Bar & Grill",
+      "notes": "Source: mpapool.com",
+      "entry": 40
+    },
+    {
+      "id": "mpapool-com-25-000-added-sky-dancer-casino-pool-tour-2026-11-04",
+      "name": "$25,000 Added Sky Dancer Casino Pool Tournament",
+      "date": "2026-11-04",
+      "venue": "Sky Dancer Casino",
+      "notes": "Source: mpapool.com",
+      "entry": 60
+    },
+    {
+      "id": "mpapool-com-two-stooges-499-and-under-fargo-rated-ba-2026-11-07",
+      "name": "Two Stooges 499 and under Fargo rated Bar Box Shootout",
+      "date": "2026-11-07",
+      "venue": "Two Stooges Sport Bar & Grill",
+      "notes": "Source: mpapool.com",
+      "entry": 40
+    },
+    {
+      "id": "mpapool-com-cr-s-1000-added-3-division-8-ball-tourna-2026-11-14",
+      "name": "CR'S $1000 Added 3 Division 8 Ball Tournament",
+      "date": "2026-11-14",
+      "venue": "CR's Sports Bar",
+      "notes": "Source: mpapool.com",
+      "entry": 40
+    },
+    {
+      "id": "mpapool-com-central-pennsylvania-barbox-shootout-2026-11-19",
+      "name": "Central Pennsylvania BarBox Shootout",
+      "date": "2026-11-19",
+      "venue": "Genetti Hotel",
+      "city": "Williamsport",
+      "state": "PA",
+      "notes": "Source: mpapool.com",
+      "entry": 80
+    },
+    {
+      "id": "mpapool-com-shooting-star-casino-10-000-added-2026-11-26",
+      "name": "Shooting Star Casino $10,000 Added",
+      "date": "2026-11-26",
+      "venue": "Shooting Star Casino",
+      "city": "Mahnomen",
+      "state": "MN",
+      "notes": "Source: mpapool.com",
+      "entry": 20
+    },
+    {
+      "id": "mpapool-com-10-000-added-prairie-knights-casino-pool-2026-12-09",
+      "name": "$10,000 Added Prairie Knights Casino Pool Tournament",
+      "date": "2026-12-09",
+      "venue": "Prairie Knights Casino",
+      "notes": "Source: mpapool.com",
+      "entry": 20
+    },
+    {
+      "id": "mpapool-com-cr-s-sportsbar-mixed-scotch-doubles-tour-2026-12-12",
+      "name": "CR'S Sportsbar Mixed Scotch Doubles Tournament",
+      "date": "2026-12-12",
+      "venue": "CR's Sportsbar",
+      "notes": "Source: mpapool.com",
+      "entry": 120
+    },
+    {
+      "id": "mpapool-com-cr-s-high-roller-8-ball-tournament-2027-01-02",
+      "name": "CR'S HIGH ROLLER 8 BALL Tournament",
+      "date": "2027-01-02",
+      "venue": "CR's Sports Bar",
+      "notes": "Source: mpapool.com",
+      "entry": 500
+    },
+    {
+      "id": "mpapool-com-eastern-south-dakota-shootout-2027-01-06",
+      "name": "Eastern South Dakota Shootout",
+      "date": "2027-01-06",
+      "venue": "Dacotah Bank Center",
+      "city": "Brookings",
+      "state": "SD",
+      "notes": "Source: mpapool.com",
+      "entry": 20
+    },
+    {
+      "id": "mpapool-com-riverside-casino-2027-2027-01-13",
+      "name": "Riverside Casino 2027",
+      "date": "2027-01-13",
+      "venue": "Riverside Casino & Golf Resort",
+      "city": "Riverside",
+      "state": "IA",
+      "notes": "Source: mpapool.com",
+      "entry": 30
+    },
+    {
+      "id": "mpapool-com-northern-lights-casino-2027-2027-01-20",
+      "name": "Northern Lights Casino 2027",
+      "date": "2027-01-20",
+      "venue": "Northern Lights Casino",
+      "city": "Walker",
+      "state": "MN",
+      "notes": "Source: mpapool.com",
+      "entry": 60
+    },
+    {
+      "id": "mpapool-com-cr-s-3-person-team-8-ball-tournament-2027-01-23",
+      "name": "CR'S 3 Person Team 8 Ball Tournament",
+      "date": "2027-01-23",
+      "venue": "CR's Sports Bar",
+      "notes": "Source: mpapool.com",
+      "entry": 240
+    },
+    {
+      "id": "mpapool-com-15-000-added-wild-rose-casino-pool-tourn-2027-02-03",
+      "name": "$15,000 Added Wild Rose Casino Pool Tournament",
+      "date": "2027-02-03",
+      "venue": "Wild Rose Casino",
+      "city": "Clinton",
+      "state": "IA",
+      "notes": "Source: mpapool.com",
+      "entry": 60
+    },
+    {
+      "id": "californiabilliards-com-barbox-8-ball-tournament-2026-09-29",
+      "name": "Barbox 8-Ball Tournament",
+      "date": "2026-09-29",
+      "venue": "California Billiards",
+      "city": "Fremont",
+      "state": "CA",
+      "notes": "Source: californiabilliards.com. Recurring weekly Tuesday",
+      "game": "8-Ball",
+      "entry": 15
+    },
+    {
+      "id": "californiabilliards-com-one-pocket-tournament-2026-10-17",
+      "name": "One Pocket Tournament",
+      "date": "2026-10-17",
+      "venue": "California Billiards",
+      "city": "Fremont",
+      "state": "CA",
+      "notes": "Source: californiabilliards.com. Recurring: third Saturday of the month",
+      "game": "One Pocket",
+      "entry": 30
+    },
+    {
+      "id": "californiabilliards-com-9-ball-tournament-2026-10-18",
+      "name": "9 Ball Tournament",
+      "date": "2026-10-18",
+      "venue": "California Billiards",
+      "city": "Fremont",
+      "state": "CA",
+      "notes": "Source: californiabilliards.com. Recurring: third Sunday of the month",
+      "game": "9-Ball",
+      "entry": 30
+    },
+    {
+      "id": "mrcues2-com-open-9-ball-tournament-2026-10-05",
+      "name": "Open 9-Ball Tournament",
+      "date": "2026-10-05",
+      "venue": "Mr. Cue's II Billiards",
+      "notes": "Source: mrcues2.com. Recurring weekly Monday 8pm",
+      "game": "9-Ball"
+    },
+    {
+      "id": "mrcues2-com-9-ball-c-d-tournament-2026-10-02",
+      "name": "9-Ball C & D Tournament",
+      "date": "2026-10-02",
+      "venue": "Mr. Cue's II Billiards",
+      "notes": "Source: mrcues2.com. Recurring weekly Friday 8pm; longest-running tournament in the Southeast",
+      "game": "9-Ball"
+    },
+    {
+      "id": "mrcues2-com-8ball-tournament-2026-10-04",
+      "name": "8Ball Tournament",
+      "date": "2026-10-04",
+      "venue": "Mr. Cue's II Billiards",
+      "notes": "Source: mrcues2.com. Recurring weekly Sunday 7pm",
+      "game": "8-Ball"
+    },
+    {
+      "id": "legendsjax-com-open-9-ball-tournament-2026-10-04",
+      "name": "Open 9-Ball Tournament",
+      "date": "2026-10-04",
+      "venue": "Legends Billiards",
+      "city": "Jacksonville",
+      "state": "FL",
+      "notes": "Source: legendsjax.com. Recurring weekly Sunday 1pm, 9-ft tables",
+      "game": "9-Ball",
+      "entry": 20
+    },
+    {
+      "id": "legendsjax-com-short-race-8-ball-tournament-2026-10-04",
+      "name": "Short Race 8-Ball Tournament",
+      "date": "2026-10-04",
+      "venue": "Legends Billiards",
+      "city": "Jacksonville",
+      "state": "FL",
+      "notes": "Source: legendsjax.com. Recurring weekly Sunday 4pm, 7-ft tables",
+      "game": "8-Ball",
+      "entry": 20
+    },
+    {
+      "id": "playhoboken-com-casual-tournament-2026-10-04",
+      "name": "Casual Tournament",
+      "date": "2026-10-04",
+      "venue": "Play! Hoboken",
+      "city": "Hoboken",
+      "state": "NJ",
+      "notes": "Source: playhoboken.com. Recurring every Sunday except third Sunday, double elimination",
+      "entry": 35
+    },
+    {
+      "id": "playhoboken-com-competitive-tournament-2026-10-18",
+      "name": "Competitive Tournament",
+      "date": "2026-10-18",
+      "venue": "Play! Hoboken",
+      "city": "Hoboken",
+      "state": "NJ",
+      "notes": "Source: playhoboken.com. Recurring third Sunday of the month, double elimination",
+      "entry": 75
+    },
+    {
+      "id": "billiardsmap-com-griff-s-weekly-9-ball-2026-09-30",
+      "name": "Griff's Weekly 9-Ball",
+      "date": "2026-09-30",
+      "venue": "Griff's Bar & Billiards",
+      "city": "Las Vegas",
+      "state": "NV",
+      "notes": "Source: billiardsmap.com. Recurring every Wednesday",
+      "game": "9-Ball"
+    },
+    {
+      "id": "billiardsmap-com-friday-night-9-ball-action-2026-10-02",
+      "name": "Friday Night 9-Ball Action",
+      "date": "2026-10-02",
+      "venue": "Bull Shooters",
+      "city": "Phoenix",
+      "state": "AZ",
+      "notes": "Source: billiardsmap.com. Recurring every Friday",
+      "game": "9-Ball"
     }
   ]
 }
