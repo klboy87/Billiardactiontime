@@ -82,9 +82,10 @@ input[type=radio],input[type=checkbox]{width:auto;min-height:0;accent-color:var(
 @media (max-width:860px){.hero-in{grid-template-columns:1fr;padding-top:36px}.rack{display:none}}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:6px 20px 30px}
 @media (max-width:860px){.tiles{grid-template-columns:1fr 1fr}}
-.tile{position:relative;border-radius:12px;padding:20px 16px;min-height:150px;color:#fff!important;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none!important;box-shadow:0 8px 22px rgba(0,0,0,.35);transition:transform .15s}
+.tile{position:relative;border-radius:12px;padding:20px 16px;min-height:150px;color:#fff!important;display:flex;flex-direction:column;justify-content:space-between;text-decoration:none!important;box-shadow:0 8px 22px rgba(0,0,0,.35);transition:transform .15s;border:0;font:inherit;text-align:left;cursor:pointer;width:100%}
 .tile:hover{transform:translateY(-3px)}
-.tile .ic{width:52px;height:52px;background:#fff;border-radius:12px;display:grid;place-items:center}
+.tile .ic{width:52px;height:52px;background:#fff;border-radius:12px;display:grid;place-items:center;font-size:26px}
+.tile h3{font-size:20px;margin-top:14px}
 .tile b{font:800 26px/1 var(--display);text-transform:uppercase;letter-spacing:.02em}
 .tile .free{position:absolute;right:12px;top:12px;background:#fff;color:var(--greenD);font:800 13px var(--display);padding:2px 8px;border-radius:999px;letter-spacing:.06em}
 .t-blue{background:linear-gradient(160deg,#2b86ff,#124fae)}.t-blue .ic{color:#124fae}
@@ -99,7 +100,7 @@ input[type=radio],input[type=checkbox]{width:auto;min-height:0;accent-color:var(
 .wk a{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center;color:var(--text);text-decoration:none!important;transition:border-color .15s}
 .wk a:hover{border-color:var(--blue)}
 .wk small{display:block;font:700 14px var(--display);letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
-.wk b{display:block;font:800 60px/1 var(--display);margin:6px 0 2px;color:#fff}
+.wk b{display:block;font:800 60px/1 var(--display);margin:6px 0 2px;color:var(--text)}
 .wk span{color:var(--muted);font-size:14px}
 .near3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media (max-width:760px){.near3{grid-template-columns:1fr}.wk b{font-size:44px}}
