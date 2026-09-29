@@ -15,13 +15,16 @@ export const PAGES = {
   tournament: 'Tournament Details', venues: 'Venues', venue: 'Venue Details', post: 'Post a Tournament',
   scan: 'Flyer Scanner', claim: 'Claim a Tournament', report: 'Report a Problem', alerts: 'Alerts',
   newsletter: 'Newsletter', account: 'My Account', games: 'Games', results: 'Results', scout: 'Scout',
+  stakes: 'Staking Board', stake: 'Staking Match', 'stake-post': 'Post Your Action',
   // server-rendered pages (what Google and shared links open first)
   'tournament-page': 'Tournament Page (from search/links)', 'state-page': 'State Page (from search/links)',
   'states-page': 'All States Page', 'venue-page': 'Venue Page (from search/links)'
 };
 const ROUTE_TO_PAGE = { '': 'home', t: 'tournament' };
 export function pageFromHash(route) {
-  const first = String(route || '').replace(/^#?\/?/, '').split(/[/?]/)[0].toLowerCase();
+  const parts = String(route || '').replace(/^#?\/?/, '').split('?')[0].split('/');
+  const first = parts[0].toLowerCase();
+  if (first === 'stakes' && parts[1]) return parts[1] === 'new' ? 'stake-post' : 'stake';
   const key = ROUTE_TO_PAGE[first] ?? first;
   return key in PAGES && key !== 'admin' ? key : null;
 }

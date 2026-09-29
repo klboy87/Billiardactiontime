@@ -857,6 +857,8 @@
     catch { localStorage.removeItem('bat_admin_token'); app.innerHTML = errorBox('Session expired. Reloading login…'); setTimeout(() => { location.hash = '#/admin'; render(); }, 800); return; }
     let pending;
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
+    let pendingStakes;
+    try { pendingStakes = (await api('/api/admin/stakes/pending')).stakes; } catch { pendingStakes = []; }
     let pv;
     try { pv = await api('/api/admin/pageviews'); } catch { pv = { daily: 0, weekly: 0, monthly: 0, total: 0 }; }
     const tr = pv.traffic || { visitors: 0, sources: [], pages: [], daily: [] };
@@ -907,6 +909,20 @@
             </div>
           </div>`).join('') : '<p class="muted">Nothing waiting on review.</p>'}
       </div>
+      <h2>Staking Board: Needs Review (${pendingStakes.length})</h2>
+      <div id="pendingStakes" class="review">
+        ${pendingStakes.length ? pendingStakes.map(s => `
+          <div class="card" data-sid="${s.id}">
+            <h3>${esc(s.player)}${s.opponent ? ' vs ' + esc(s.opponent) : ''}</h3>
+            <p class="muted">${esc(fmtDate(s.date))} · ${esc(s.game)} · ${cash(s.bet)} a side · selling ${pct(s.offered)} at ${s.markup}x · held by ${esc(s.stakeholder)}${s.contact ? ' · ' + esc(s.contact) : ''}</p>
+            ${s.notes ? `<p>${esc(s.notes)}</p>` : ''}
+            <div class="actbar">
+              <button class="btn btn-blue btn-sm act-approve">Approve</button>
+              <button class="btn btn-out btn-sm act-reject">Reject</button>
+              <a class="btn btn-out btn-sm" href="#/stakes/${s.id}">View</a>
+            </div>
+          </div>`).join('') : '<p class="muted">No staking posts waiting.</p>'}
+      </div>
       <h2>Recent Sync Runs</h2>
       <table class="t"><thead><tr><th>Started</th><th>Status</th><th>Fetched</th><th>Inserted</th><th>Updated</th><th>Removed</th></tr></thead>
       <tbody>${(summary.recentRuns || []).map(r => `<tr><td>${esc((r.started_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(r.status)}</td><td>${r.fetched ?? 0}</td><td>${r.inserted ?? 0}</td><td>${r.updated ?? 0}</td><td>${r.removed ?? 0}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No sync runs yet.</td></tr>'}</tbody></table>`;
@@ -925,6 +941,260 @@
       else return;
       card.remove();
     });
+    document.getElementById('pendingStakes').addEventListener('click', async e => {
+      const card = e.target.closest('[data-sid]'); if (!card) return;
+      const act = e.target.classList.contains('act-approve') ? 'approve' : e.target.classList.contains('act-reject') ? 'reject' : null;
+      if (!act) return;
+      try { await api(`/api/admin/stakes/${card.dataset.sid}/${act}`, { method: 'POST' }); card.remove(); } catch (err) { alert(err.message); }
+    });
+  };
+
+  // ------------------------------------------------------------ STAKING BOARD
+  // Records only: the site never holds or moves money. Cash is held by the stakeholder named
+  // on each match and paid between people directly.
+  const STAKE_KEYS = 'bat_stake_keys';
+  function stakeKey(id) { try { return JSON.parse(localStorage.getItem(STAKE_KEYS) || '{}')[id] || ''; } catch { return ''; } }
+  function saveStakeKey(id, key) {
+    try { const all = JSON.parse(localStorage.getItem(STAKE_KEYS) || '{}'); all[id] = key; localStorage.setItem(STAKE_KEYS, JSON.stringify(all)); } catch { /* ignore */ }
+  }
+  const pct = n => `${Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 })}%`;
+  const cash = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: Number(n) % 1 ? 2 : 0, maximumFractionDigits: 2 });
+  const stakeWhere = s => [s.venue, [s.city, s.state].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+  const stakeTitle = s => `${esc(s.player)}${s.opponent ? ` <span class="muted">vs</span> ${esc(s.opponent)}` : ''}`;
+  const STAKE_NOTE = `<p class="stake-note">Billiard Action Time keeps records only. It never holds or sends money: stakes are held by the stakeholder named on each match and paid between people directly. You must be 18+ and follow the laws where you play.</p>`;
+
+  function stakeCard(s) {
+    const settled = s.status === 'settled';
+    const soldPct = s.offered ? Math.min(100, Math.round(s.sold / s.offered * 100)) : 0;
+    const onePct = cash(s.bet * 0.01 * s.markup);
+    return `<a class="card stakecard${settled ? ' done' : ''}" href="#/stakes/${s.id}">
+      <div class="stake-top">
+        <span class="stake-tag ${settled ? (s.result === 'won' ? 'won' : 'lost') : ''}">${settled ? (s.result === 'won' ? 'Won' : 'Lost') + (s.score ? ' ' + esc(s.score) : '') : 'Open'} · ${esc(s.game)}</span>
+        <span class="muted">${esc(fmtDate(s.date))}${s.time ? ' · ' + esc(fmtTime(s.time)) : ''}</span>
+      </div>
+      <h3>${stakeTitle(s)}</h3>
+      <div class="muted">${[s.race, cash(s.bet) + ' a side', stakeWhere(s)].filter(Boolean).map(esc).join(' · ')}</div>
+      ${settled ? '' : `<div class="stake-nums">
+        <div><small>Selling</small><b>${pct(s.offered)}</b></div>
+        <div><small>Markup</small><b>${s.markup}x</b></div>
+        <div><small>1% costs</small><b>${onePct}</b></div>
+      </div>
+      <div class="stake-bar-label"><span>${pct(s.sold)} of ${pct(s.offered)} sold</span><span class="muted">${s.pieces.length} backer${s.pieces.length === 1 ? '' : 's'}</span></div>
+      <div class="stake-bar"><div style="width:${soldPct}%"></div></div>`}
+      <div class="muted" style="font-size:14px">Stake held by: <b style="color:var(--text)">${esc(s.stakeholder)}</b></div>
+    </a>`;
+  }
+
+  async function stakesBoard(params) {
+    app.innerHTML = `
+      <div class="pagehead"><h1>Staking Board</h1>
+        <p>Back a player's action, see how much is sold, and keep a clear record of every piece from rack to payout.</p>
+        <div class="actbar" style="margin-top:14px"><a class="btn btn-green" href="#/stakes/new">Post Your Action</a>
+        <button class="btn btn-out" id="howBtn" type="button">How It Works</button></div>
+      </div>
+      <div class="card" id="howBox" hidden style="margin-bottom:18px">
+        <ol class="steps3">
+          <li><b>A player posts a match:</b> the bet a side, what percent of their action is for sale, any markup, and who is holding the stake money.</li>
+          <li><b>Backers claim pieces.</b> A 10% piece of a $1,000-a-side match at 1.1x markup costs $110 and pays back $200 if the player wins.</li>
+          <li><b>Pay the stakeholder directly</b> before the match, the way you always have.</li>
+          <li><b>After the match</b> the player records the result, and the board shows what each backer is owed and who has been paid.</li>
+        </ol>
+        ${STAKE_NOTE}
+      </div>
+      <div class="chips" id="gameChips" style="margin-bottom:16px"></div>
+      <div id="stakeList">${loading('Loading the board…')}</div>`;
+    document.getElementById('howBtn').addEventListener('click', () => { const b = document.getElementById('howBox'); b.hidden = !b.hidden; });
+    let board;
+    try { board = await api('/api/stakes'); } catch (e) { document.getElementById('stakeList').innerHTML = errorBox(e.message); return; }
+    const games = [...new Set(board.open.map(s => s.game))];
+    let pick = params.get('game') || '';
+    const draw = () => {
+      document.getElementById('gameChips').innerHTML = games.length > 1 ? ['', ...games].map(g =>
+        `<button type="button" class="chip stake-filter${g === pick ? ' on' : ''}" data-g="${esc(g)}">${esc(g || 'All')}</button>`).join('') : '';
+      const open = board.open.filter(s => !pick || s.game === pick);
+      document.getElementById('stakeList').innerHTML = `
+        <h2 class="stake-h">Open Action</h2>
+        ${open.length ? `<div class="stakegrid">${open.map(stakeCard).join('')}</div>`
+          : `<div class="card"><p class="muted" style="margin:0">No open action right now. <a href="#/stakes/new">Post yours</a> and it will show here once approved.</p></div>`}
+        ${board.settled.length ? `<h2 class="stake-h">Recent Results</h2><div class="stakegrid">${board.settled.map(stakeCard).join('')}</div>` : ''}
+        ${STAKE_NOTE}`;
+    };
+    draw();
+    document.getElementById('gameChips').addEventListener('click', e => {
+      const b = e.target.closest('[data-g]'); if (!b) return;
+      pick = b.dataset.g; draw();
+    });
+  }
+
+  async function stakePostForm() {
+    app.innerHTML = `
+      <div class="crumbs"><a href="#/stakes">Staking Board</a> / Post Your Action</div>
+      <div class="pagehead"><h1>Post Your Action</h1><p>Offer backers a piece of your match. Posts are reviewed before they go on the board.</p></div>
+      <form class="card" id="stakeForm">
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">Player (you) *</label><input name="player" required maxlength="60"></div>
+          <div class="fg"><label class="f">Opponent</label><input name="opponent" maxlength="60"></div>
+        </div>
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">Game</label><select name="game">${GAMES.map(g => `<option>${esc(g)}</option>`).join('')}</select></div>
+          <div class="fg"><label class="f">Race</label><input name="race" maxlength="40" placeholder="e.g. Race to 11"></div>
+        </div>
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">Date *</label><input name="date" type="date" required></div>
+          <div class="fg"><label class="f">Time</label><input name="time" type="time"></div>
+        </div>
+        <div class="row3">
+          <div class="fg"><label class="f">Bet a side ($) *</label><input name="bet" type="number" min="1" step="1" required inputmode="numeric"></div>
+          <div class="fg"><label class="f">% for sale *</label><input name="offered" type="number" min="1" max="100" step="1" required inputmode="numeric"></div>
+          <div class="fg"><label class="f">Markup</label><input name="markup" type="number" min="1" max="2" step="0.05" value="1"></div>
+        </div>
+        <p class="muted" id="stakeCalc" style="font-size:14px"></p>
+        <div class="fg"><label class="f">Pool hall</label><input name="venue" maxlength="120"></div>
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">City</label><input name="city" maxlength="80"></div>
+          <div class="fg"><label class="f">State</label><select name="state" id="stakeState"><option value="">Select a state</option></select></div>
+        </div>
+        <div class="fg"><label class="f">Who is holding the stake money? *</label><input name="stakeholder" required maxlength="80" placeholder="e.g. the house man, or a friend both sides trust"></div>
+        <div class="fg"><label class="f">How backers can reach you</label><input name="contact" maxlength="120" placeholder="Phone, Facebook, or Instagram handle (shown publicly)"></div>
+        <div class="fg"><label class="f">Notes</label><textarea name="notes" maxlength="500" rows="3"></textarea></div>
+        <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I understand this site only keeps records and does not hold or send money. I'm 18+ and follow the laws where I play.</label>
+        <div id="stakeMsg"></div>
+        <button class="btn btn-green" type="submit">Submit for Review</button>
+      </form>`;
+    loadPlaces().then(p => {
+      const sel = document.getElementById('stakeState');
+      if (sel) for (const s of p.states) sel.insertAdjacentHTML('beforeend', `<option value="${esc(s.code)}">${esc(s.name)}</option>`);
+    }).catch(() => {});
+    const form = document.getElementById('stakeForm');
+    const calc = () => {
+      const f = new FormData(form), bet = Number(f.get('bet')), mk = Number(f.get('markup')) || 1;
+      document.getElementById('stakeCalc').textContent = bet > 0 ? `Each 1% costs a backer ${cash(bet * 0.01 * mk)} and pays back ${cash(bet * 0.02)} if you win.` : '';
+    };
+    form.addEventListener('input', calc);
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const body = Object.fromEntries(new FormData(form));
+      const msg = document.getElementById('stakeMsg');
+      try {
+        const r = await api('/api/stakes', { method: 'POST', body });
+        saveStakeKey(r.id, r.manageKey);
+        const link = `${location.origin}/#/stakes/${r.id}?key=${encodeURIComponent(r.manageKey)}`;
+        app.innerHTML = `
+          <div class="pagehead"><h1>Submitted</h1><p>Your match goes on the Staking Board as soon as it's approved.</p></div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">Save your private link</h3>
+            <p class="muted">You'll use it to record the result and mark backers paid. It's saved on this phone too, but keep a copy in case you switch devices. Don't share it.</p>
+            <input id="mkLink" readonly value="${esc(link)}">
+            <div class="actbar" style="margin-top:12px"><button class="btn btn-blue" id="copyLink" type="button">Copy Link</button><a class="btn btn-out" href="#/stakes/${r.id}">View Match</a></div>
+          </div>`;
+        document.getElementById('copyLink').addEventListener('click', async () => {
+          const el = document.getElementById('mkLink'); el.select();
+          try { await navigator.clipboard.writeText(link); } catch { document.execCommand && document.execCommand('copy'); }
+          document.getElementById('copyLink').textContent = 'Copied';
+        });
+      } catch (err) { msg.innerHTML = errorBox(err.message); }
+    });
+  }
+
+  async function stakeDetail(params, id) {
+    const fromLink = params.get('key');
+    if (fromLink) { saveStakeKey(id, fromLink); history.replaceState(null, '', `#/stakes/${id}`); }
+    const key = fromLink || stakeKey(id);
+    const headers = {};
+    if (key) headers['X-Manage-Key'] = key;
+    if (adminToken()) headers.Authorization = 'Bearer ' + adminToken();
+    const call = (path, opts = {}) => api(path, { ...opts, headers });
+    app.innerHTML = loading('Loading match…');
+    let s;
+    try { s = await call('/api/stakes/' + id); } catch { app.innerHTML = errorBox('Match not found.'); return; }
+    const settled = s.status === 'settled';
+    const pieceRows = s.pieces.map(p => `<tr data-pid="${p.id}">
+        <td>${esc(p.backer)}${s.canManage && p.contact ? `<br><small class="muted">${esc(p.contact)}</small>` : ''}</td>
+        <td>${pct(p.percent)}</td><td>${cash(p.cost)}</td>
+        <td>${settled ? (s.result === 'won' ? `<b>${cash(p.returnIfWon)}</b> ${p.paid ? '<span class="chip g">Paid</span>' : '<span class="chip gold">Owed</span>'}` : '$0') : cash(p.returnIfWon)}
+          ${s.canManage ? `<div class="actbar" style="margin-top:6px">${settled && s.result === 'won' ? `<button type="button" class="btn btn-out btn-sm" data-act="${p.paid ? 'unpaid' : 'paid'}">${p.paid ? 'Undo Paid' : 'Mark Paid'}</button>` : ''}${settled ? '' : '<button type="button" class="btn btn-out btn-sm" data-act="remove">Remove</button>'}</div>` : ''}</td>
+      </tr>`).join('');
+    app.innerHTML = `
+      <div class="crumbs"><a href="#/stakes">Staking Board</a> / ${esc(s.player)}</div>
+      <div class="card">
+        <div class="stake-top"><span class="stake-tag ${settled ? (s.result === 'won' ? 'won' : 'lost') : ''}">${
+          { pending: 'Waiting for approval', open: 'Open', settled: (s.result === 'won' ? 'Won' : 'Lost') + (s.score ? ' ' + esc(s.score) : ''), cancelled: 'Cancelled', rejected: 'Not approved' }[s.status] || esc(s.status)} · ${esc(s.game)}</span></div>
+        <h1 class="dtitle" style="margin-top:8px">${stakeTitle(s)}</h1>
+        <table class="t"><tbody>
+          <tr><th>When</th><td>${esc(fmtDate(s.date))}${s.time ? ' at ' + esc(fmtTime(s.time)) : ''}</td></tr>
+          ${stakeWhere(s) ? `<tr><th>Where</th><td>${esc(stakeWhere(s))}</td></tr>` : ''}
+          ${s.race ? `<tr><th>Race</th><td>${esc(s.race)}</td></tr>` : ''}
+          <tr><th>Bet</th><td>${cash(s.bet)} a side</td></tr>
+          <tr><th>Selling</th><td>${pct(s.offered)} of the action at ${s.markup}x markup · each 1% costs ${cash(s.bet * 0.01 * s.markup)}</td></tr>
+          <tr><th>Sold</th><td>${pct(s.sold)} · ${pct(s.remaining)} left</td></tr>
+          <tr><th>Stake held by</th><td>${esc(s.stakeholder)}</td></tr>
+          ${s.contact ? `<tr><th>Reach the player</th><td>${esc(s.contact)}</td></tr>` : ''}
+        </tbody></table>
+        ${s.notes ? `<p style="margin-top:12px">${esc(s.notes)}</p>` : ''}
+      </div>
+
+      <h2 class="stake-h">Backers</h2>
+      ${s.pieces.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t"><thead><tr><th>Backer</th><th>Piece</th><th>Cost</th><th>${settled ? 'Owed' : 'Pays if won'}</th></tr></thead><tbody id="pieceRows">${pieceRows}</tbody></table></div>`
+        : '<div class="card"><p class="muted" style="margin:0">No backers yet.</p></div>'}
+
+      ${s.status === 'open' && s.remaining > 0 ? `
+      <h2 class="stake-h">Claim a Piece</h2>
+      <form class="card" id="claimPiece">
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">Your name *</label><input name="backer" required maxlength="60"></div>
+          <div class="fg"><label class="f">Percent (1 to ${s.remaining}) *</label><input name="percent" type="number" min="1" max="${s.remaining}" step="1" required inputmode="numeric"></div>
+        </div>
+        <div class="fg"><label class="f">Phone or handle (only the player sees this)</label><input name="contact" maxlength="120"></div>
+        <p class="muted" id="pieceCalc" style="font-size:14px"></p>
+        <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I'll pay ${esc(s.stakeholder)} directly. This site doesn't hold or send money. I'm 18+.</label>
+        <div id="pieceMsg"></div>
+        <button class="btn btn-green" type="submit">Claim Piece</button>
+      </form>` : ''}
+
+      ${s.canManage && ['open', 'settled'].includes(s.status) ? `
+      <h2 class="stake-h">Record the Result</h2>
+      <form class="card" id="resultForm">
+        <p class="muted">Only you can see this, because you posted the match${adminToken() ? ' (or you are logged in as Admin)' : ''}.</p>
+        <div class="row3">
+          <div class="fg"><label class="f">Result</label><select name="result"><option value="won"${s.result === 'won' ? ' selected' : ''}>Won</option><option value="lost"${s.result === 'lost' ? ' selected' : ''}>Lost</option><option value="cancelled">Cancelled / didn't play</option></select></div>
+          <div class="fg"><label class="f">Score</label><input name="score" maxlength="20" placeholder="e.g. 11-7" value="${esc(s.score || '')}"></div>
+        </div>
+        <div id="resultMsg"></div>
+        <button class="btn btn-blue" type="submit">Save Result</button>
+      </form>` : ''}
+      ${STAKE_NOTE}`;
+
+    const claim = document.getElementById('claimPiece');
+    if (claim) {
+      claim.addEventListener('input', () => {
+        const n = Number(new FormData(claim).get('percent'));
+        document.getElementById('pieceCalc').textContent = n > 0 ? `${pct(n)} costs ${cash(s.bet * n / 100 * s.markup)} and pays back ${cash(s.bet * 2 * n / 100)} if ${s.player} wins.` : '';
+      });
+      claim.addEventListener('submit', async e => {
+        e.preventDefault();
+        try { await api(`/api/stakes/${id}/pieces`, { method: 'POST', body: Object.fromEntries(new FormData(claim)) }); render(); }
+        catch (err) { document.getElementById('pieceMsg').innerHTML = errorBox(err.message); }
+      });
+    }
+    const resultForm = document.getElementById('resultForm');
+    if (resultForm) resultForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      try { await call(`/api/stakes/${id}/result`, { method: 'POST', body: Object.fromEntries(new FormData(resultForm)) }); render(); }
+      catch (err) { document.getElementById('resultMsg').innerHTML = errorBox(err.message); }
+    });
+    const rows = document.getElementById('pieceRows');
+    if (rows && s.canManage) rows.addEventListener('click', async e => {
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      const pid = b.closest('[data-pid]').dataset.pid;
+      if (b.dataset.act === 'remove' && !confirm('Remove this backer?')) return;
+      try { await call(`/api/stakes/${id}/pieces/${pid}/${b.dataset.act}`, { method: 'POST' }); render(); } catch (err) { alert(err.message); }
+    });
+  }
+
+  routes['/stakes'] = async (params, id) => {
+    if (id === 'new') return stakePostForm();
+    if (id && /^\d+$/.test(id)) return stakeDetail(params, id);
+    return stakesBoard(params);
   };
 
   routes['/account'] = async () => {

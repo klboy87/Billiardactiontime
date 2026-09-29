@@ -351,3 +351,26 @@ table.t td{padding:10px 8px;border-bottom:1px solid var(--line)}
 .modal{position:fixed;inset:0;background:rgba(3,10,20,.7);display:grid;place-items:center;z-index:150;padding:20px}
 .modal .box{background:var(--surface);color:var(--text);border-radius:14px;max-width:640px;width:100%;padding:22px;max-height:88vh;overflow:auto}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- Staking Board ---- */
+.stakegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+@media (max-width:420px){.stakegrid{grid-template-columns:1fr}}
+.stakecard{display:flex;flex-direction:column;gap:10px;color:var(--text);text-decoration:none!important;transition:border-color .15s}
+.stakecard:hover{border-color:var(--green)}
+.stakecard h3{font-size:28px;text-transform:none}
+.stakecard.done{background:var(--surface2)}
+.stake-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
+.stake-tag{font:800 13px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--greenD);background:#e1f2e6;border-radius:999px;padding:3px 10px}
+.stake-tag.won{color:#0d5a26;background:#c9ecd4}.stake-tag.lost{color:#8c1f24;background:#fbe0e1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stake-tag{background:#12402a;color:#9fe8b8}:root:not([data-theme="light"]) .stake-tag.lost{background:#4a1a1d;color:#ffb3b6}}
+:root[data-theme="dark"] .stake-tag{background:#12402a;color:#9fe8b8}:root[data-theme="dark"] .stake-tag.lost{background:#4a1a1d;color:#ffb3b6}
+.stake-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stake-nums div{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.stake-nums small{display:block;font-size:12px;color:var(--muted)}.stake-nums b{font:800 20px/1.1 var(--display)}
+.stake-bar-label{display:flex;justify-content:space-between;font-size:14px}
+.stake-bar{height:10px;border-radius:5px;background:var(--surface2);border:1px solid var(--line);overflow:hidden}
+.stake-bar div{height:100%;background:var(--green)}
+.stakes-t td,.stakes-t th{padding:8px 6px}
+.stake-h{font-size:30px;margin:26px 0 12px}
+.stake-note{font-size:13px;color:var(--muted);margin-top:18px;max-width:70ch}
+.stake-filter{cursor:pointer;min-height:36px;padding:4px 14px}.stake-filter.on{background:var(--green);border-color:var(--green);color:#fff}

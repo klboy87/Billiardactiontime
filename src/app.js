@@ -13,6 +13,7 @@ import { readFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
 import { renderSiteCard, renderTournamentCard } from './ogcard.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
+import * as S from './stakes.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -305,8 +306,47 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return json(req, res, 200, { ...counts, reasons: [...new Set(skips)] });
     }
 
+    // ---- Staking Board ----
+    if (m === 'GET' && p === '/api/stakes') return json(req, res, 200, S.listBoard(db), { 'Cache-Control': 'no-cache' });
+    if (m === 'POST' && p === '/api/stakes') {
+      if (limited(clientIp(req) + ':stake')) return json(req, res, 429, { error: 'Too many posts. Try again in an hour.' });
+      const v = S.validateStake(await readJson(req, 20_000));
+      if (v.error) return json(req, res, 400, { error: v.error });
+      const { id, key } = S.createStake(db, v.value);
+      return json(req, res, 201, { id, manageKey: key, status: 'pending' });
+    }
+    if ((x = p.match(/^\/api\/stakes\/(\d+)(\/.*)?$/))) {
+      const id = Number(x[1]), rest = x[2] || '';
+      const canManage = tokenOk(req, cfg.adminToken) || S.manageKeyOk(db, id, req.headers['x-manage-key']);
+      if (m === 'GET' && rest === '') {
+        const st = S.getStake(db, id, { privateView: canManage });
+        if (!st || (!canManage && !['open', 'settled'].includes(st.status))) return json(req, res, 404, { error: 'Match not found' });
+        return json(req, res, 200, { ...st, canManage });
+      }
+      if (m === 'POST' && rest === '/pieces') {
+        if (limited(clientIp(req) + ':piece')) return json(req, res, 429, { error: 'Too many claims. Try again in an hour.' });
+        const r = S.claimPiece(db, id, await readJson(req, 5000));
+        return json(req, res, r.status, r.error ? { error: r.error } : r);
+      }
+      if (!canManage) return json(req, res, 403, { error: 'Only the person who posted this match can change it' });
+      if (m === 'POST' && rest === '/result') {
+        const r = S.recordResult(db, id, await readJson(req, 5000));
+        return json(req, res, r.error ? 400 : 200, r);
+      }
+      if (m === 'POST' && (x = rest.match(/^\/pieces\/(\d+)\/(paid|unpaid|remove)$/))) {
+        const ok = x[2] === 'remove' ? S.removePiece(db, id, Number(x[1])) : S.setPiecePaid(db, id, Number(x[1]), x[2] === 'paid');
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Piece not found' });
+      }
+      return json(req, res, 404, { error: 'Not found' });
+    }
+
     if (p.startsWith('/api/admin/')) {
       admin(req);
+      if (m === 'GET' && p === '/api/admin/stakes/pending') return json(req, res, 200, { stakes: S.listPendingStakes(db) });
+      if ((x = p.match(/^\/api\/admin\/stakes\/(\d+)\/(approve|reject)$/)) && m === 'POST') {
+        const ok = S.setStakeStatus(db, Number(x[1]), x[2] === 'approve' ? 'open' : 'rejected');
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Match not found' });
+      }
       if (m === 'GET' && p === '/api/admin/summary') return json(req, res, 200, D.summary(db));
       if (m === 'GET' && p === '/api/admin/pageviews') {
         flushPageviews();

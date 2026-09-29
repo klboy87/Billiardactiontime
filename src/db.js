@@ -79,6 +79,33 @@ CREATE TABLE IF NOT EXISTS visits (
   PRIMARY KEY (day, visitor, page)
 );
 CREATE INDEX IF NOT EXISTS idx_visits_day ON visits(day);
+-- Staking Board: players offer pieces of their action; backers claim pieces. The site only keeps
+-- the record -- money is held by the named stakeholder and paid between people off the site.
+CREATE TABLE IF NOT EXISTS stakes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player TEXT NOT NULL, opponent TEXT, game TEXT NOT NULL, race TEXT,
+  bet REAL NOT NULL,              -- amount a side
+  offered REAL NOT NULL,          -- % of the player's action for sale
+  markup REAL NOT NULL DEFAULT 1,
+  date TEXT NOT NULL, time TEXT,
+  venue TEXT, city TEXT, state TEXT,
+  stakeholder TEXT, contact TEXT, notes TEXT,
+  status TEXT NOT NULL DEFAULT 'pending',   -- pending | open | settled | cancelled | rejected
+  result TEXT, score TEXT,                  -- won | lost, and e.g. "11-7"
+  manage_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_stakes_status ON stakes(status, date);
+CREATE TABLE IF NOT EXISTS stake_pieces (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  stake_id INTEGER NOT NULL REFERENCES stakes(id),
+  backer TEXT NOT NULL, percent REAL NOT NULL,
+  contact TEXT,                   -- private: only the poster and admin see it
+  paid INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_pieces_stake ON stake_pieces(stake_id);
 `;
 
 export function openDb(file) {
