@@ -259,8 +259,18 @@ export function resolveItem(db, table, id) {
 }
 
 // ---- site visit counts (privacy-friendly: day + salted-hash visitor id, no IPs stored) ----
+// Writes are batched by the caller (see trackVisit/flushPageviews in app.js) -- SQLite writes
+// are synchronous and block Node's single event loop thread, so we never want one on the hot
+// path of every page request. This bulk form is what the periodic flush actually calls.
 export function recordPageview(db, day, visitor) {
   db.prepare('INSERT OR IGNORE INTO pageviews (day, visitor) VALUES (?,?)').run(day, visitor);
+}
+export function recordPageviewsBulk(db, entries) {
+  if (!entries.length) return;
+  tx(db, () => {
+    const stmt = db.prepare('INSERT OR IGNORE INTO pageviews (day, visitor) VALUES (?,?)');
+    for (const [day, visitor] of entries) stmt.run(day, visitor);
+  });
 }
 export function pageviewCounts(db, todayStr = todayIso()) {
   const one = (sql, ...a) => db.prepare(sql).get(...a).n;
@@ -278,4 +288,3 @@ export function pageviewCounts(db, todayStr = todayIso()) {
 export function venueCities(db) {
   return db.prepare(`SELECT DISTINCT city, state FROM venues WHERE city IS NOT NULL AND city <> '' AND state IS NOT NULL AND state <> ''`).all();
 }
-
