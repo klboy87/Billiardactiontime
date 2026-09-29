@@ -134,34 +134,40 @@
       <section class="hero">
         <div class="hero-in">
           <h1>Find your next pool tournament</h1>
-          <p>Search hundreds of 8-ball, 9-ball, 10-ball and one-pocket tournaments happening across the USA.</p>
-          <form class="bigsearch" id="homeSearch">
-            ${stateCitySelects({ idPrefix: 'home' })}
-            <button class="btn btn-blue" type="submit">Search Tournaments</button>
+          <p>Search pool tournaments by date, location, game, entry fee, and more.</p>
+          <form class="hsearch" id="homeSearch">
+            <input type="text" id="homeQuery" placeholder="Search tournaments, cities, venues, games…">
+            <button type="submit" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
           </form>
-          <div class="homescan">
-            <input type="file" id="homeFlyerInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
-            <button class="btn btn-out" id="homeFlyerBtn" type="button">📷 Scan a Flyer</button>
-            <span class="muted" id="homeFlyerStatus" style="margin-left:10px"></span>
-          </div>
+          <p class="eg">Example: 9-Ball Battle Creek</p>
         </div>
+      </section>
+      <section class="sec tiles">
+        <a class="tile t-blue" href="#/search"><div class="ic">🔍</div><h3>Find a Tournament</h3></a>
+        <a class="tile t-orange" href="#/calendar"><div class="ic">📅</div><h3>Find by Date</h3></a>
+        <button class="tile t-purple" id="homeFlyerBtn" type="button"><div class="ic">📷</div><h3>Scan a Flyer</h3></button>
+        <a class="tile t-green" href="#/post"><span class="free">FREE</span><div class="ic">➕</div><h3>Post a Tournament</h3></a>
+      </section>
+      <input type="file" id="homeFlyerInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
+      <p class="muted" id="homeFlyerStatus" style="text-align:center"></p>
+      <section class="sec">
+        <h2>This Weekend</h2>
+        <div id="weekendStats" class="wk">${loading()}</div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Tournaments Near You</h2></div>
+        <div id="nearHome" class="loadwrap"><button class="btn btn-out" id="nearHomeBtn">📍 Show Tournaments Near Me</button></div>
       </section>
       <section class="sec">
         <div class="sec-head"><h2>Upcoming Tournaments</h2><a href="#/search">See all →</a></div>
         <div id="homeList" class="results">${loading()}</div>
-      </section>
-      <section class="sec tiles">
-        <a class="tile" href="#/calendar"><h3>📅 Calendar</h3><p class="muted">Browse tournaments day by day</p></a>
-        <a class="tile" href="#/near"><h3>📍 Near Me</h3><p class="muted">Find tournaments close to you</p></a>
-        <a class="tile" href="#/venues"><h3>🏢 Venues</h3><p class="muted">Pool halls that run tournaments</p></a>
-        <a class="tile" href="#/scan"><h3>📷 Flyer Scanner</h3><p class="muted">Snap a flyer, we'll fill in the details</p></a>
       </section>`;
-    wireStateCitySelects(app, 'home', {});
+
     document.getElementById('homeSearch').addEventListener('submit', e => {
       e.preventDefault();
-      const state = document.getElementById('homeState').value, city = document.getElementById('homeCity').value;
-      location.hash = '#/search?' + qs({ state, city });
+      location.hash = '#/search?' + qs({ q: document.getElementById('homeQuery').value.trim() });
     });
+
     document.getElementById('homeFlyerBtn').addEventListener('click', () => document.getElementById('homeFlyerInput').click());
     document.getElementById('homeFlyerInput').addEventListener('change', async e => {
       const file = e.target.files[0];
@@ -184,6 +190,50 @@
       };
       reader.readAsDataURL(file);
     });
+
+    // This Weekend
+    (async () => {
+      const wrap = document.getElementById('weekendStats');
+      const today = new Date(); const dow = today.getDay();
+      const friOffset = (5 - dow + 7) % 7;
+      const days = [0, 1, 2].map(n => { const d = new Date(today); d.setDate(today.getDate() + friOffset + n); return d; });
+      const iso = d => d.toISOString().slice(0, 10);
+      const labels = ['Friday', 'Saturday', 'Sunday'];
+      try {
+        const data = await api('/api/tournaments?' + qs({ from: iso(days[0]), to: iso(days[2]), limit: 5000 }));
+        const counts = [0, 0, 0];
+        for (const t of data.tournaments) { const idx = days.findIndex(d => iso(d) === t.date); if (idx !== -1) counts[idx]++; }
+        wrap.innerHTML = labels.map((lab, i) => `
+          <a href="#/calendar">
+            <small>${esc(lab).toUpperCase()}</small>
+            <b>${counts[i]}</b>
+            <span>Tournament${counts[i] === 1 ? '' : 's'}</span>
+          </a>`).join('');
+      } catch (e) { wrap.innerHTML = errorBox(e.message); }
+    })();
+
+    // Tournaments Near You (opt-in, since it needs location permission)
+    document.getElementById('nearHomeBtn').addEventListener('click', () => {
+      const box = document.getElementById('nearHome');
+      if (!navigator.geolocation) { box.innerHTML = '<p class="muted">Location is not available in this browser.</p>'; return; }
+      box.innerHTML = loading('Finding tournaments near you…');
+      navigator.geolocation.getCurrentPosition(async pos => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const data = await api('/api/tournaments?limit=5000');
+          const R = 3958.8;
+          const withDist = data.tournaments.filter(t => t.venue.lat != null && t.venue.lng != null).map(t => {
+            const dLat = (t.venue.lat - latitude) * Math.PI / 180, dLng = (t.venue.lng - longitude) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(latitude * Math.PI / 180) * Math.cos(t.venue.lat * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+            return { t, dist: R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) };
+          }).sort((a, b) => a.dist - b.dist).slice(0, 3);
+          box.className = 'results';
+          box.innerHTML = withDist.length ? withDist.map(({ t, dist }) => tournamentCard(t).replace('</h3>', `</h3><div class="dist">${dist.toFixed(1)} mi away</div>`)).join('')
+            : '<div class="loadwrap"><p class="muted">No geocoded tournaments nearby yet.</p></div>';
+        } catch (e) { box.className = 'loadwrap'; box.innerHTML = errorBox(e.message); }
+      }, () => { box.innerHTML = '<p class="muted">Could not get your location. Check your browser\'s location permission and try again.</p>'; });
+    });
+
     try {
       const data = await api('/api/tournaments?limit=9');
       document.getElementById('homeList').innerHTML = data.tournaments.length
@@ -193,11 +243,12 @@
   };
 
   routes['/search'] = async (params) => {
-    const state = params.get('state') || '', city = params.get('city') || '', game = params.get('game') || '';
+    const state = params.get('state') || '', city = params.get('city') || '', game = params.get('game') || '', q = params.get('q') || '';
     app.innerHTML = `
       <div class="pagehead"><h1>Find Tournaments</h1></div>
       <div class="slayout">
         <form class="filters card" id="filters">
+          <div class="fg"><label for="fQuery">Search</label><input type="text" id="fQuery" placeholder="Name, city, venue, game…" value="${esc(q)}"></div>
           ${stateCitySelects({ state, city, idPrefix: 'f' })}
           <div class="fg">
             <label for="fGame">Game</label>
@@ -217,8 +268,9 @@
     document.getElementById('fGame').value = game;
 
     async function runSearch() {
+      const qv = document.getElementById('fQuery').value.trim();
       const st = document.getElementById('fState').value, ct = document.getElementById('fCity').value, gm = document.getElementById('fGame').value;
-      history.replaceState(null, '', '#/search?' + qs({ state: st, city: ct, game: gm }));
+      history.replaceState(null, '', '#/search?' + qs({ q: qv, state: st, city: ct, game: gm }));
       const results = document.getElementById('results');
       results.innerHTML = loading();
       try {
@@ -226,8 +278,12 @@
         let list = data.tournaments;
         if (ct) list = list.filter(t => t.venue.city.toLowerCase() === ct.toLowerCase());
         if (gm) list = list.filter(t => t.game === gm);
+        if (qv) {
+          const needle = qv.toLowerCase();
+          list = list.filter(t => [t.name, t.venue.name, t.venue.city, t.venue.state, t.game].filter(Boolean).some(v => v.toLowerCase().includes(needle)));
+        }
         results.innerHTML = list.length ? list.map(tournamentCard).join('')
-          : `<div class="loadwrap"><p class="muted">No tournaments found${ct ? ` in ${esc(ct)}, ${esc(st)}` : st ? ` in ${esc(st)}` : ''} yet.
+          : `<div class="loadwrap"><p class="muted">No tournaments found${qv ? ` for "${esc(qv)}"` : ''}${ct ? ` in ${esc(ct)}, ${esc(st)}` : st ? ` in ${esc(st)}` : ''} yet.
              You can still <a href="#/post">post one</a> so players know it's happening here.</p></div>`;
       } catch (e) { results.innerHTML = errorBox(e.message); }
     }
@@ -658,3 +714,4 @@
   document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('nav').classList.toggle('open'));
   render();
 })();
+
