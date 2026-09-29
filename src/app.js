@@ -10,7 +10,7 @@ import { safeUrl } from './mapping.js';
 import { ingest, runSync } from './sync.js';
 import { geocodePending } from './geocode.js';
 import { readFlyer } from './scan.js';
-import { placesPayload, citiesForState } from './places.js';
+import { placesPayload, citiesForState, statesList } from './places.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -114,6 +114,30 @@ function venuePage(v, tournaments, base) {
 ${rows ? `<table class="t"><thead><tr><th>Tournament</th><th>Date</th><th>Game</th></tr></thead><tbody>${rows}</tbody></table>`
   : `<p class="muted">No upcoming tournaments listed right now.</p>`}
 <p style="margin-top:16px"><a class="btn btn-blue" href="/#/venue/${v.id}">Open full details</a></p></div></main></body></html>`;
+}
+
+function statePage(code, name, tournaments, base) {
+  const desc = `${tournaments.length} upcoming pool tournament${tournaments.length === 1 ? '' : 's'} in ${name}. Browse dates, venues, entry fees and games.`;
+  const rows = tournaments.map(t => `<tr><td><a href="/t/${t.id}">${esc(t.name)}</a></td><td>${esc(t.date)}</td><td>${esc(t.venue.name)}, ${esc(t.venue.city)}</td><td>${esc(t.game)}</td></tr>`).join('');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pool Tournaments in ${esc(name)} | Billiard Action Time</title><meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${esc(base)}/state/${esc(code.toLowerCase())}"><meta property="og:title" content="Pool Tournaments in ${esc(name)}"><meta property="og:description" content="${esc(desc)}">
+<link rel="stylesheet" href="/styles.css"></head>
+<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
+<main class="wrap page"><div class="card"><h1 class="dtitle">Pool Tournaments in ${esc(name)}</h1><p class="muted">${esc(desc)}</p>
+${rows ? `<table class="t"><thead><tr><th>Tournament</th><th>Date</th><th>Venue</th><th>Game</th></tr></thead><tbody>${rows}</tbody></table>`
+  : `<p class="muted">No tournaments posted in ${esc(name)} yet. <a href="/#/post">Be the first to post one</a>.</p>`}
+<p style="margin-top:16px"><a class="btn btn-blue" href="/#/search?state=${esc(code)}">Open full search &amp; filters</a></p></div></main></body></html>`;
+}
+
+function statesIndexPage(counts, base) {
+  const rows = statesList().map(s => `<li><a href="/state/${s.code.toLowerCase()}">${esc(s.name)}</a> <span class="muted">(${counts.get(s.code) || 0})</span></li>`).join('');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Browse Pool Tournaments by State | Billiard Action Time</title><meta name="description" content="Find pool tournaments by state across the US.">
+<link rel="canonical" href="${esc(base)}/state/"><link rel="stylesheet" href="/styles.css"></head>
+<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
+<main class="wrap page"><div class="card"><h1 class="dtitle">Browse Pool Tournaments by State</h1>
+<ul class="statelist">${rows}</ul></div></main></body></html>`;
 }
 
 // ---- the server ------------------------------------------------------------
@@ -252,13 +276,28 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (!all.length) return send(req, res, 404, '<h1>Venue not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
       return send(req, res, 200, venuePage(all[0].venue, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
     }
+    if (m === 'GET' && (x = p.match(/^\/state\/([a-zA-Z]{2})\/?$/))) {
+      const code = normalizeState(x[1]);
+      if (!code) return send(req, res, 404, '<h1>State not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
+      const name = statesList().find(s => s.code === code)?.name || code;
+      const all = D.listTournaments(db, { limit: 50000, state: code }).filter(t => t.status === 'published');
+      return send(req, res, 200, statePage(code, name, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
+    }
+    if (m === 'GET' && (p === '/state' || p === '/state/')) {
+      const published = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published');
+      const counts = new Map();
+      for (const t of published) counts.set(t.venue.state, (counts.get(t.venue.state) || 0) + 1);
+      return send(req, res, 200, statesIndexPage(counts, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
+    }
     if (m === 'GET' && p === '/sitemap.xml') {
       const published = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published');
       const tUrls = published.map(t => `<url><loc>${esc(cfg.publicUrl)}/t/${t.id}</loc><lastmod>${esc((t.updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
       const venueIds = new Map();
       for (const t of published) if (!venueIds.has(t.venue.id)) venueIds.set(t.venue.id, t.updatedAt);
       const vUrls = [...venueIds.entries()].map(([id, updatedAt]) => `<url><loc>${esc(cfg.publicUrl)}/venue/${id}</loc><lastmod>${esc((updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
-      return send(req, res, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${esc(cfg.publicUrl)}/</loc></url>${tUrls}${vUrls}</urlset>`, { 'Content-Type': 'application/xml; charset=utf-8' });
+      const stateCodes = new Set(published.map(t => t.venue.state).filter(Boolean));
+      const sUrls = [...stateCodes].map(code => `<url><loc>${esc(cfg.publicUrl)}/state/${esc(code.toLowerCase())}</loc></url>`).join('');
+      return send(req, res, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${esc(cfg.publicUrl)}/</loc></url><url><loc>${esc(cfg.publicUrl)}/state/</loc></url>${sUrls}${tUrls}${vUrls}</urlset>`, { 'Content-Type': 'application/xml; charset=utf-8' });
     }
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
