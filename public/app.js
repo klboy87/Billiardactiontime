@@ -937,12 +937,20 @@
       ${stakeAdmin.archived.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminStakesArch"><thead><tr><th>Match</th><th>Was</th><th>Sold</th><th>Backers</th></tr></thead><tbody>
         ${stakeAdmin.archived.map(p => adminStakeRow(p, `<button type="button" class="btn btn-green btn-sm" data-sact="repost" data-sid="${p.id}">Repost</button> <a class="btn btn-out btn-sm" href="#/stakes/${p.id}">View</a> <button type="button" class="btn btn-out btn-sm" data-sact="purge" data-sid="${p.id}">Delete Forever</button>`, true)).join('')}
       </tbody></table></div>` : '<p class="muted">Nothing archived. Deleted posts land here so you can repost them.</p>'}
-      <h2>Calcutta Auctions (${allAuctions.length})</h2>
-      ${allAuctions.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminAuctions"><thead><tr><th>Auction</th><th>Status</th><th>Players</th><th>Bidders</th><th>Pot</th><th></th></tr></thead><tbody>
-        ${allAuctions.map(a => `<tr data-code="${esc(a.code)}"><td><a href="#/a/${esc(a.code)}">${esc(a.title)}</a><br><small class="muted">${esc(a.code)} · ${a.mode === 'silent' ? 'Silent' : 'Live'}${a.listed ? ' · Public' : ''}</small></td>
-          <td>${esc(aStatusLabel[a.status] || a.status)}</td><td>${a.players}</td><td>${a.bidders}</td><td>${cash(a.pot)}</td>
-          <td><button type="button" class="btn btn-out btn-sm" data-adel="${esc(a.code)}">Delete</button></td></tr>`).join('')}
-      </tbody></table></div>` : '<p class="muted">No auctions yet.</p>'}
+      ${(() => {
+        const live = allAuctions.filter(a => a.status !== 'archived'), gone = allAuctions.filter(a => a.status === 'archived');
+        const row = (a, buttons, st) => `<tr class="noline"><td><a href="#/a/${esc(a.code)}">${esc(a.title)}</a><br><small class="muted">${esc(a.code)} · ${a.mode === 'silent' ? 'Silent' : 'Live'}${a.listed ? ' · Public' : ''}</small></td>
+          <td>${esc(aStatusLabel[st] || st || '')}</td><td>${a.players}</td><td>${a.bidders}</td><td>${cash(a.pot)}</td></tr>
+          <tr><td colspan="5" style="padding-top:0"><div class="actbar">${buttons}</div></td></tr>`;
+        const head = '<thead><tr><th>Auction</th><th>Status</th><th>Players</th><th>Bidders</th><th>Pot</th></tr></thead>';
+        return `<h2>Calcutta Auctions (${live.length})</h2>
+        ${live.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t aadmin">${head}<tbody>${live.map(a => row(a,
+          `<a class="btn btn-out btn-sm" href="#/a/${esc(a.code)}">Open</a> <button type="button" class="btn btn-out btn-sm" data-aact="delete" data-code="${esc(a.code)}">Delete</button>`, a.status)).join('')}</tbody></table></div>` : '<p class="muted">No auctions yet.</p>'}
+        <h2>Calcutta Auctions: Archived (${gone.length})</h2>
+        ${gone.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t aadmin">${head.replace('Status', 'Was')}<tbody>${gone.map(a => row(a,
+          `<button type="button" class="btn btn-green btn-sm" data-aact="restore" data-code="${esc(a.code)}">Restore</button> <a class="btn btn-out btn-sm" href="#/a/${esc(a.code)}">View</a> <button type="button" class="btn btn-out btn-sm" data-aact="purge" data-code="${esc(a.code)}">Delete Forever</button>`, a.prevStatus)).join('')}</tbody></table></div>`
+          : '<p class="muted">Nothing archived. Deleted auctions land here so you can restore them.</p>'}`;
+      })()}
       <h2>Recent Sync Runs</h2>
       <table class="t"><thead><tr><th>Started</th><th>Status</th><th>Fetched</th><th>Inserted</th><th>Updated</th><th>Removed</th></tr></thead>
       <tbody>${(summary.recentRuns || []).map(r => `<tr><td>${esc((r.started_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(r.status)}</td><td>${r.fetched ?? 0}</td><td>${r.inserted ?? 0}</td><td>${r.updated ?? 0}</td><td>${r.removed ?? 0}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No sync runs yet.</td></tr>'}</tbody></table>`;
@@ -970,12 +978,12 @@
         try { await api(`/api/admin/stakes/${b.dataset.sid}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
       });
     }
-    const adminAuctions = document.getElementById('adminAuctions');
-    if (adminAuctions) adminAuctions.addEventListener('click', async e => {
-      const b = e.target.closest('[data-adel]'); if (!b) return;
-      if (!tapTwice(b, 'adel' + b.dataset.adel, 'Tap again')) return;
-      try { await api(`/api/admin/auctions/${b.dataset.adel}/delete`, { method: 'POST' }); b.closest('tr').remove(); } catch (err) { b.textContent = err.message; }
-    });
+    document.querySelectorAll('.aadmin').forEach(tbl => tbl.addEventListener('click', async e => {
+      const b = e.target.closest('[data-aact]'); if (!b) return;
+      const act = b.dataset.aact;
+      if (act !== 'restore' && !tapTwice(b, act + b.dataset.code, act === 'purge' ? 'Tap again: gone for good' : 'Tap again to delete')) return;
+      try { await api(`/api/admin/auctions/${b.dataset.code}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
+    }));
     document.getElementById('pendingStakes').addEventListener('click', async e => {
       const card = e.target.closest('[data-sid]'); if (!card) return;
       const act = e.target.classList.contains('act-approve') ? 'approve' : e.target.classList.contains('act-reject') ? 'reject' : null;
@@ -1610,7 +1618,7 @@
 
     async function hostDo(action, extra = {}, btn = null) {
       if (action === 'end' && !tapTwice(btn, 'end', 'Tap again to end')) return;
-      if (action === 'delete' && !tapTwice(btn, 'delete', 'Tap again to delete for good')) return;
+      if (action === 'delete' && !tapTwice(btn, 'delete', 'Tap again to delete')) return;
       try {
         await call('/host', { method: 'POST', body: { action, ...extra } });
         if (action === 'delete') { location.hash = '#/auctions'; return; }

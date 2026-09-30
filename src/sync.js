@@ -1,4 +1,8 @@
 import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 import { mapRecord, getPath } from './mapping.js';
 import { tx, upsertSourceTournament, nowIso, todayIso } from './db.js';
 
@@ -43,8 +47,14 @@ export function parseItems(text, src) {
   throw new Error('Could not find a list of tournaments in the response. Set SOURCE_ITEMS_PATH.');
 }
 
-async function load(src, { fetchFn, since, page }) {
+async function load(src, { fetchFn, since, page, publicUrl }) {
   if (!/^https?:\/\//i.test(src.url)) return fs.readFileSync(src.url, 'utf8'); // local file, handy for testing
+  // The feed is a file on this same site. Read it straight from disk: fetching our own
+  // address while a new version is starting up returns an error (it failed that way before).
+  if (publicUrl && src.url.startsWith(publicUrl + '/')) {
+    const file = path.resolve(PUBLIC_DIR, decodeURIComponent(new URL(src.url).pathname).replace(/^\/+/, ''));
+    if (file.startsWith(PUBLIC_DIR + path.sep) && fs.existsSync(file)) return fs.readFileSync(file, 'utf8');
+  }
   const url = new URL(src.url);
   if (since && src.mode === 'incremental') url.searchParams.set('updated_since', since);
   if (src.pageParam) { url.searchParams.set(src.pageParam, String(page)); url.searchParams.set('per_page', String(src.pageSize)); }
@@ -64,7 +74,7 @@ export async function fetchRecords(cfg, { fetchFn = fetch, since } = {}) {
   if (!src.url) throw new Error('SOURCE_URL is not set');
   const all = [];
   for (let page = 1; page <= 500; page++) {
-    const items = parseItems(await load(src, { fetchFn, since, page }), src);
+    const items = parseItems(await load(src, { fetchFn, since, page, publicUrl: cfg.publicUrl }), src);
     all.push(...items);
     if (!src.pageParam || !/^https?:/i.test(src.url) || items.length === 0 || items.length < src.pageSize) break;
   }

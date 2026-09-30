@@ -263,9 +263,10 @@ export function hostAction(db, a, action, b = {}, now = Date.now()) {
         if (a.status !== 'setup') db.prepare("UPDATE auction_items SET ends_at=? WHERE auction_id=? AND status='open'").run(end, a.id);
         return { ok: true };
       }
-      case 'delete': {
-        for (const t of ['auction_bids', 'auction_chat', 'auction_items', 'auction_bidders']) db.prepare(`DELETE FROM ${t} WHERE auction_id=?`).run(a.id);
-        db.prepare('DELETE FROM auctions WHERE id=?').run(a.id);
+      case 'delete': {   // "Delete" moves the auction to the archive; the owner can restore it from Admin
+        if (a.status === 'archived') return { ok: true, deleted: true };
+        // a running live auction is paused first so nothing moves while it's archived
+        db.prepare("UPDATE auctions SET prev_status=CASE status WHEN 'running' THEN (CASE mode WHEN 'live' THEN 'paused' ELSE 'running' END) ELSE status END, status='archived', next_at=NULL WHERE id=?").run(a.id);
         return { ok: true, deleted: true };
       }
       default: return { error: 'Unknown action' };
@@ -320,18 +321,32 @@ export function listedAuctions(db) {
   return db.prepare(`SELECT a.code, a.title, a.starts_at, a.mode, a.status, a.ends_ms, a.starts_ms,
       (SELECT COUNT(*) FROM auction_items i WHERE i.auction_id=a.id) players,
       (SELECT COALESCE(SUM(high_bid),0) FROM auction_items i WHERE i.auction_id=a.id AND i.status='sold') pot
-    FROM auctions a WHERE a.listed=1 AND (a.status <> 'done' OR a.created_at >= datetime('now','-14 days'))
+    FROM auctions a WHERE a.listed=1 AND a.status <> 'archived' AND (a.status <> 'done' OR a.created_at >= datetime('now','-14 days'))
     ORDER BY CASE a.status WHEN 'running' THEN 0 WHEN 'paused' THEN 0 WHEN 'setup' THEN 1 ELSE 2 END, a.id DESC LIMIT 50`).all()
     .map(r => ({ code: r.code, title: r.title, startsAt: r.starts_at, startsMs: r.starts_ms, endsMs: r.ends_ms, mode: r.mode, status: r.status, players: Number(r.players), pot: Number(r.pot) }));
 }
 
+export function restoreAuction(db, a) {
+  if (!a || a.status !== 'archived') return false;
+  db.prepare("UPDATE auctions SET status=COALESCE(prev_status,'setup'), prev_status=NULL, rev=rev+1 WHERE id=?").run(a.id);
+  return true;
+}
+export function purgeAuction(db, a) {
+  if (!a || a.status !== 'archived') return false;
+  tx(db, () => {
+    for (const t of ['auction_bids', 'auction_chat', 'auction_items', 'auction_bidders']) db.prepare(`DELETE FROM ${t} WHERE auction_id=?`).run(a.id);
+    db.prepare('DELETE FROM auctions WHERE id=?').run(a.id);
+  });
+  return true;
+}
+
 // Every auction, for the site owner's Admin page.
 export function allAuctions(db) {
-  return db.prepare(`SELECT a.code, a.title, a.mode, a.status, a.listed, a.created_at,
+  return db.prepare(`SELECT a.code, a.title, a.mode, a.status, a.prev_status, a.listed, a.created_at,
       (SELECT COUNT(*) FROM auction_items i WHERE i.auction_id=a.id) players,
       (SELECT COUNT(*) FROM auction_bidders b WHERE b.auction_id=a.id) bidders,
       (SELECT COALESCE(SUM(high_bid),0) FROM auction_items i WHERE i.auction_id=a.id AND i.status='sold') pot
     FROM auctions a ORDER BY a.id DESC LIMIT 200`).all()
-    .map(r => ({ code: r.code, title: r.title, mode: r.mode, status: r.status, listed: !!r.listed, createdAt: r.created_at,
+    .map(r => ({ code: r.code, title: r.title, mode: r.mode, status: r.status, prevStatus: r.prev_status, listed: !!r.listed, createdAt: r.created_at,
       players: Number(r.players), bidders: Number(r.bidders), pot: Number(r.pot) }));
 }

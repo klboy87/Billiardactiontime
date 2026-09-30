@@ -326,7 +326,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     }
     if ((x = p.match(/^\/api\/auctions\/([A-Za-z0-9]{4,10})(\/[a-z]+)?$/))) {
       let a = A.getAuction(db, x[1]);
-      if (!a) return json(req, res, 404, { error: 'Auction not found. Check the code.' });
+      if (!a || (a.status === 'archived' && !tokenOk(req, cfg.adminToken))) return json(req, res, 404, { error: 'Auction not found. Check the code.' });
       a = A.tick(db, a);
       const rest = x[2] || '';
       const host = A.isHost(a, req.headers['x-host-key']);
@@ -405,12 +405,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (p.startsWith('/api/admin/')) {
       admin(req);
       if (m === 'GET' && p === '/api/admin/auctions') return json(req, res, 200, { auctions: A.allAuctions(db) });
-      if ((x = p.match(/^\/api\/admin\/auctions\/([A-Za-z0-9]{4,10})\/delete$/)) && m === 'POST') {
+      if ((x = p.match(/^\/api\/admin\/auctions\/([A-Za-z0-9]{4,10})\/(delete|restore|purge)$/)) && m === 'POST') {
         const a = A.getAuction(db, x[1]);
         if (!a) return json(req, res, 404, { error: 'Auction not found' });
-        A.hostAction(db, a, 'delete');
-        log(`auction ${a.code} deleted by admin`);
-        return json(req, res, 200, { ok: true });
+        const ok = x[2] === 'delete' ? !A.hostAction(db, a, 'delete').error : x[2] === 'restore' ? A.restoreAuction(db, a) : A.purgeAuction(db, a);
+        log(`auction ${a.code} ${x[2]} by admin: ${ok ? 'ok' : 'failed'}`);
+        return json(req, res, ok ? 200 : 400, ok ? { ok: true } : { error: 'Could not do that' });
       }
       if (m === 'GET' && p === '/api/admin/stakes/all') return json(req, res, 200, S.adminStakes(db));
       if ((x = p.match(/^\/api\/admin\/stakes\/(\d+)\/(archive|repost|purge)$/)) && m === 'POST') {
