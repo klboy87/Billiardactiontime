@@ -1315,7 +1315,7 @@
       document.getElementById('liveOpts').hidden = silent;
       document.getElementById('silentOpts').hidden = !silent;
       document.getElementById('aEnds').required = silent;
-      document.getElementById('startHint').textContent = silent ? 'Bidding opens by itself at this time. Leave blank to open it yourself.' : 'Leave blank and start it yourself from the host screen.';
+      document.getElementById('startHint').textContent = silent ? 'Bidding opens by itself at this time. Leave blank to open bidding right away.' : 'You start it yourself from the host screen when everyone is ready.';
     });
     document.getElementById('aForm').addEventListener('submit', async e => {
       e.preventDefault();
@@ -1441,7 +1441,6 @@
     }
 
     function bidButtons(item) {
-      if (!st.you) return '';
       const a = st.auction, base = item.minNext;
       const opts = [base, base + a.increment * 2, base + a.increment * 5];
       return `<div class="abids" data-item="${item.id}">
@@ -1533,14 +1532,14 @@
       const a = st.auction, cur = st.items.find(i => i.id === a.currentItem);
       const btn = (act, label, cls = 'btn-out') => `<button type="button" class="btn ${cls} btn-sm" data-host="${act}">${label}</button>`;
       const controls = [];
-      if (a.status === 'setup') controls.push(btn('start', 'Start Auction', 'btn-green'));
+      if (a.status === 'setup') controls.push(btn('start', a.mode === 'silent' ? 'Open Bidding Now' : 'Start Auction', 'btn-green'));
       if (a.status === 'running' && a.mode === 'live') controls.push(btn('pause', 'Pause'));
       if (a.status === 'paused') controls.push(btn('resume', 'Resume', 'btn-green'));
       if (a.mode === 'live' && cur && cur.status === 'open' && a.status !== 'done') controls.push(btn('sell', 'Sell Now', 'btn-blue'), btn('pass', 'Pass (No Sale)'));
       if (a.mode === 'live' && a.status === 'running' && (!cur || cur.status !== 'open')) controls.push(btn('next', 'Next Player Now'));
       if (a.status === 'running' || a.status === 'paused') controls.push(btn('end', 'End Auction'));
       document.getElementById('aHostBar').innerHTML = `
-        <div class="card ahostbar"><small class="muted">Host controls</small>
+        <div class="card ahostbar">${a.status === 'setup' ? `<p style="margin:0 0 8px;font-weight:700">Bidding isn't open yet. Tap <span style="color:var(--green)">${a.mode === 'silent' ? 'Open Bidding Now' : 'Start Auction'}</span> when you're ready.</p>` : '<small class="muted">Host controls</small>'}
           <div class="actbar" style="margin-top:6px">${controls.join('') || '<span class="muted">The auction is over. Set finishes on the Results tab.</span>'}</div>
           <div id="hostMsg"></div></div>`;
       el.innerHTML = `
@@ -1591,6 +1590,13 @@
 
     async function bid(itemId, amount) {
       const errBox = document.getElementById('bidErr');
+      if (!st.you) {
+        const input = document.querySelector('#joinForm [name=name]');
+        const msg = document.getElementById('joinMsg');
+        if (msg) msg.innerHTML = '<p class="aerr">Type your name and tap Join first, then place your bid.</p>';
+        if (input) { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); input.focus(); }
+        return;
+      }
       try { await call('/bid', { method: 'POST', body: { itemId, amount } }); if (errBox) errBox.innerHTML = ''; refresh(true); }
       catch (err) { if (errBox) errBox.innerHTML = `<p class="aerr">${esc(err.message)}</p>`; else alert(err.message); refresh(true); }
     }

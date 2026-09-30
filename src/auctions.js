@@ -58,6 +58,7 @@ export function validateAuction(b) {
     if (endsMs > nowMs + MAX_SPAN_MS) return { error: 'The end date must be within a year' };
   }
   if (mode !== 'silent') endsMs = null;
+  if (mode === 'silent' && startsMs == null) startsMs = nowMs;   // no start time: open bidding right away
   const payouts = parsePayouts(b.payouts || '50,25,15,10');
   if (payouts.error) return payouts;
   const items = parseItems(b.items);
