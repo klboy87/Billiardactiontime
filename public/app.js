@@ -861,6 +861,8 @@
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
     let pendingStakes;
     try { pendingStakes = (await api('/api/admin/stakes/pending')).stakes; } catch { pendingStakes = []; }
+    let stakeAdmin;
+    try { stakeAdmin = await api('/api/admin/stakes/all'); } catch { stakeAdmin = { posts: [], archived: [] }; }
     let allAuctions;
     try { allAuctions = (await api('/api/admin/auctions')).auctions; } catch { allAuctions = []; }
     let pv;
@@ -927,6 +929,14 @@
             </div>
           </div>`).join('') : '<p class="muted">No staking posts waiting.</p>'}
       </div>
+      <h2>Staking Board: All Approved Posts (${stakeAdmin.posts.length})</h2>
+      ${stakeAdmin.posts.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminStakes"><thead><tr><th>Match</th><th>Status</th><th>Sold</th><th>Backers</th></tr></thead><tbody>
+        ${stakeAdmin.posts.map(p => adminStakeRow(p, `<a class="btn btn-out btn-sm" href="#/stakes/${p.id}">View</a> <button type="button" class="btn btn-out btn-sm" data-sact="archive" data-sid="${p.id}">Delete</button>`)).join('')}
+      </tbody></table></div>` : '<p class="muted">No approved posts yet.</p>'}
+      <h2>Staking Board: Archived (${stakeAdmin.archived.length})</h2>
+      ${stakeAdmin.archived.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminStakesArch"><thead><tr><th>Match</th><th>Was</th><th>Sold</th><th>Backers</th></tr></thead><tbody>
+        ${stakeAdmin.archived.map(p => adminStakeRow(p, `<button type="button" class="btn btn-green btn-sm" data-sact="repost" data-sid="${p.id}">Repost</button> <a class="btn btn-out btn-sm" href="#/stakes/${p.id}">View</a> <button type="button" class="btn btn-out btn-sm" data-sact="purge" data-sid="${p.id}">Delete Forever</button>`, true)).join('')}
+      </tbody></table></div>` : '<p class="muted">Nothing archived. Deleted posts land here so you can repost them.</p>'}
       <h2>Calcutta Auctions (${allAuctions.length})</h2>
       ${allAuctions.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminAuctions"><thead><tr><th>Auction</th><th>Status</th><th>Players</th><th>Bidders</th><th>Pot</th><th></th></tr></thead><tbody>
         ${allAuctions.map(a => `<tr data-code="${esc(a.code)}"><td><a href="#/a/${esc(a.code)}">${esc(a.title)}</a><br><small class="muted">${esc(a.code)} · ${a.mode === 'silent' ? 'Silent' : 'Live'}${a.listed ? ' · Public' : ''}</small></td>
@@ -951,6 +961,15 @@
       else return;
       card.remove();
     });
+    for (const tid of ['adminStakes', 'adminStakesArch']) {
+      const tbl = document.getElementById(tid);
+      if (tbl) tbl.addEventListener('click', async e => {
+        const b = e.target.closest('[data-sact]'); if (!b) return;
+        const act = b.dataset.sact;
+        if (act !== 'repost' && !tapTwice(b, act + b.dataset.sid, act === 'purge' ? 'Tap again: gone for good' : 'Tap again to delete')) return;
+        try { await api(`/api/admin/stakes/${b.dataset.sid}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
+      });
+    }
     const adminAuctions = document.getElementById('adminAuctions');
     if (adminAuctions) adminAuctions.addEventListener('click', async e => {
       const b = e.target.closest('[data-adel]'); if (!b) return;
@@ -1139,17 +1158,26 @@
     let s;
     try { s = await call('/api/stakes/' + id); } catch { app.innerHTML = errorBox('Match not found.'); return; }
     const settled = s.status === 'settled';
+    const won = settled && s.result === 'won';
+    // One "paid" switch per backer. Before a win it tracks the backer paying for their piece;
+    // after a win it tracks the backer's payout being sent.
+    const isPaid = p => (won ? p.paid : p.paidIn);
+    const paidChip = p => won ? (p.paid ? '<span class="chip g">Paid out</span>' : '<span class="chip gold">Owed</span>')
+      : s.canManage ? (p.paidIn ? '<span class="chip g">Paid</span>' : '<span class="chip gold">Not paid yet</span>') : '';
     const pieceRows = s.pieces.map(p => `<tr data-pid="${p.id}">
         <td>${esc(p.backer)}${s.canManage && p.contact ? `<br><small class="muted">${esc(p.contact)}</small>` : ''}</td>
         <td>${pct(p.percent)}</td><td>${cash(p.cost)}</td>
-        <td>${settled ? (s.result === 'won' ? `<b>${cash(p.returnIfWon)}</b> ${p.paid ? '<span class="chip g">Paid</span>' : '<span class="chip gold">Owed</span>'}` : '$0') : cash(p.returnIfWon)}
-          ${s.canManage ? `<div class="actbar" style="margin-top:6px">${settled && s.result === 'won' ? `<button type="button" class="btn btn-out btn-sm" data-act="${p.paid ? 'unpaid' : 'paid'}">${p.paid ? 'Undo Paid' : 'Mark Paid'}</button>` : ''}${settled ? '' : '<button type="button" class="btn btn-out btn-sm" data-act="remove">Remove</button>'}</div>` : ''}</td>
+        <td>${settled ? (won ? `<b>${cash(p.returnIfWon)}</b>` : '$0') : cash(p.returnIfWon)} ${paidChip(p)}
+          ${s.canManage ? `<div class="actbar" style="margin-top:6px">
+            <button type="button" class="btn ${isPaid(p) ? 'btn-out' : 'btn-green'} btn-sm" data-act="${won ? (p.paid ? 'unpaid' : 'paid') : (p.paidIn ? 'unpaidin' : 'paidin')}">${isPaid(p) ? 'Undo Paid' : won ? 'Mark Paid Out' : 'Mark Paid'}</button>
+            ${settled ? '' : '<button type="button" class="btn btn-out btn-sm" data-act="remove">Remove</button>'}</div>` : ''}</td>
       </tr>`).join('');
+    const allPaid = s.pieces.length && s.pieces.every(isPaid);
     app.innerHTML = `
       <div class="crumbs"><a href="#/stakes">Staking Board</a> / ${esc(s.player)}</div>
       <div class="card">
         <div class="stake-top"><span class="stake-tag ${settled ? (s.result === 'won' ? 'won' : 'lost') : ''}">${
-          { pending: 'Waiting for approval', open: 'Open', settled: (s.result === 'won' ? 'Won' : 'Lost') + (s.score ? ' ' + esc(s.score) : ''), cancelled: 'Cancelled', rejected: 'Not approved' }[s.status] || esc(s.status)} · ${esc(s.game)}</span></div>
+          { pending: 'Waiting for approval', archived: 'Archived: hidden from the board', open: 'Open', settled: (s.result === 'won' ? 'Won' : 'Lost') + (s.score ? ' ' + esc(s.score) : ''), cancelled: 'Cancelled', rejected: 'Not approved' }[s.status] || esc(s.status)} · ${esc(s.game)}</span></div>
         <h1 class="dtitle" style="margin-top:8px">${stakeTitle(s)}</h1>
         <table class="t"><tbody>
           <tr><th>When</th><td>${esc(fmtDate(s.date))}${s.time ? ' at ' + esc(fmtTime(s.time)) : ''}</td></tr>
@@ -1165,7 +1193,8 @@
       </div>
 
       <h2 class="stake-h">Backers</h2>
-      ${s.pieces.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t"><thead><tr><th>Backer</th><th>Piece</th><th>Cost</th><th>${settled ? 'Owed' : 'Pays if won'}</th></tr></thead><tbody id="pieceRows">${pieceRows}</tbody></table></div>`
+      ${s.pieces.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t"><thead><tr><th>Backer</th><th>Piece</th><th>Cost</th><th>${settled ? 'Owed' : 'Pays if won'}</th></tr></thead><tbody id="pieceRows">${pieceRows}</tbody></table>
+        ${s.canManage ? `<div class="actbar allpaid">${allPaid ? `<span class="chip g">✓ Everyone is paid</span>` : `<button type="button" class="btn btn-green" id="allPaidBtn">Everyone Is Paid</button><small class="muted">${won ? 'Marks every backer\'s payout as sent.' : 'Marks every backer as paid for their piece.'}</small>`}</div>` : ''}</div>`
         : '<div class="card"><p class="muted" style="margin:0">No backers yet.</p></div>'}
 
       ${s.status === 'open' && s.remaining > 0 ? `
@@ -1213,6 +1242,11 @@
       try { await call(`/api/stakes/${id}/result`, { method: 'POST', body: Object.fromEntries(new FormData(resultForm)) }); render(); }
       catch (err) { document.getElementById('resultMsg').innerHTML = errorBox(err.message); }
     });
+    const allBtn = document.getElementById('allPaidBtn');
+    if (allBtn) allBtn.addEventListener('click', async () => {
+      if (!tapTwice(allBtn, 'allpaid' + id, 'Tap again to confirm')) return;
+      try { await call(`/api/stakes/${id}/allpaid`, { method: 'POST' }); render(); } catch (err) { allBtn.textContent = err.message; }
+    });
     const rows = document.getElementById('pieceRows');
     if (rows && s.canManage) rows.addEventListener('click', async e => {
       const b = e.target.closest('[data-act]'); if (!b) return;
@@ -1227,6 +1261,17 @@
     if (id && /^\d+$/.test(id)) return stakeDetail(params, id);
     return stakesBoard(params);
   };
+
+  function adminStakeRow(p, buttons, archived = false) {
+    const st = archived ? (p.prevStatus || '') : p.status;
+    const today = new Date().toISOString().slice(0, 10);
+    const label = p.status === 'settled' || (archived && p.result) ? (p.result === 'won' ? 'Won' : 'Lost') + (p.score ? ' ' + p.score : '')
+      : st === 'cancelled' ? 'Cancelled' : p.date < today ? 'Open · date passed' : 'Open';
+    const paid = p.pieces.length ? `${p.pieces.filter(x => (p.result === 'won' ? x.paid : x.paidIn)).length}/${p.pieces.length} paid` : '';
+    return `<tr class="noline"><td><b>${esc(p.player)}${p.opponent ? ' vs ' + esc(p.opponent) : ''}</b><br><small class="muted">${esc(fmtDate(p.date))} · ${esc(p.game)} · ${cash(p.bet)} a side</small></td>
+      <td>${esc(label)}</td><td>${pct(p.sold)} of ${pct(p.offered)}</td><td>${p.pieces.length}${paid ? `<br><small class="muted">${paid}</small>` : ''}</td></tr>
+      <tr><td colspan="4" style="padding-top:0"><div class="actbar">${buttons}</div></td></tr>`;
+  }
 
   // ------------------------------------------------------------ CALCUTTA / LIVE AUCTIONS
   // Records only, like the Staking Board: the site never takes, holds or pays out money.

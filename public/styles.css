@@ -414,3 +414,5 @@ table.t td{padding:10px 8px;border-bottom:1px solid var(--line)}
 @media (min-width:861px){.tiles{display:flex;flex-wrap:wrap}.tiles .tile{flex:1 1 118px;width:auto}}
 .btn.armed{background:var(--red)!important;border-color:var(--red)!important;color:#fff!important}
 [hidden]{display:none!important}
+.allpaid{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);align-items:center}
+table.t tr.noline td{border-bottom:0}

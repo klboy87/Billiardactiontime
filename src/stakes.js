@@ -64,10 +64,10 @@ function shapeStake(row, pieces, { privateView = false } = {}) {
     id: row.id, player: row.player, opponent: row.opponent, game: row.game, race: row.race,
     bet: row.bet, offered: row.offered, markup: row.markup, date: row.date, time: row.time,
     venue: row.venue, city: row.city, state: row.state, stakeholder: row.stakeholder, contact: row.contact, notes: row.notes,
-    status: row.status, result: row.result, score: row.score, createdAt: row.created_at,
+    status: row.status, prevStatus: row.prev_status || null, result: row.result, score: row.score, createdAt: row.created_at,
     sold, remaining: round2(Math.max(0, row.offered - sold)),
     pieces: pieces.map(p => ({
-      id: p.id, backer: p.backer, percent: p.percent, paid: !!p.paid, createdAt: p.created_at,
+      id: p.id, backer: p.backer, percent: p.percent, paid: !!p.paid, paidIn: !!p.paid_in, createdAt: p.created_at,
       ...pieceMath(row.bet, row.markup, p.percent),
       ...(privateView ? { contact: p.contact } : {})
     }))
@@ -127,6 +127,43 @@ export function recordResult(db, id, b) {
 
 export function setPiecePaid(db, stakeId, pieceId, paid) {
   return db.prepare('UPDATE stake_pieces SET paid=? WHERE id=? AND stake_id=?').run(paid ? 1 : 0, pieceId, stakeId).changes > 0;
+}
+// "Paid in": the backer has paid for their piece. "Paid" (above): the backer has received their payout.
+export function setPiecePaidIn(db, stakeId, pieceId, paid) {
+  return db.prepare('UPDATE stake_pieces SET paid_in=? WHERE id=? AND stake_id=?').run(paid ? 1 : 0, pieceId, stakeId).changes > 0;
+}
+// Everyone is paid: every backer has paid in, and if the player won, every payout is done too.
+export function markAllPaid(db, stakeId) {
+  const row = db.prepare('SELECT status, result FROM stakes WHERE id=?').get(stakeId);
+  if (!row) return false;
+  const won = row.status === 'settled' && row.result === 'won';
+  db.prepare(`UPDATE stake_pieces SET paid_in=1${won ? ', paid=1' : ''} WHERE stake_id=?`).run(stakeId);
+  return true;
+}
+
+// ---- admin: every approved post, plus an archive that posts can be reposted from ----
+export function adminStakes(db) {
+  const shape = r => shapeStake(r, piecesFor(db, r.id), { privateView: true });
+  return {
+    posts: db.prepare(`SELECT * FROM stakes WHERE status IN ('open','settled','cancelled') ORDER BY date DESC, id DESC LIMIT 500`).all().map(shape),
+    archived: db.prepare(`SELECT * FROM stakes WHERE status='archived' ORDER BY updated_at DESC, id DESC LIMIT 500`).all().map(shape)
+  };
+}
+export function archiveStake(db, id) {
+  return db.prepare("UPDATE stakes SET prev_status=status, status='archived', updated_at=datetime('now') WHERE id=? AND status <> 'archived'").run(id).changes > 0;
+}
+// Repost puts it back exactly as it was before it was archived (open posts go back on the board).
+export function repostStake(db, id) {
+  return db.prepare("UPDATE stakes SET status=COALESCE(NULLIF(prev_status,'pending'),'open'), prev_status=NULL, updated_at=datetime('now') WHERE id=? AND status='archived'").run(id).changes > 0;
+}
+export function purgeStake(db, id) {
+  return tx(db, () => {
+    const row = db.prepare("SELECT status FROM stakes WHERE id=?").get(id);
+    if (!row || row.status !== 'archived') return false;
+    db.prepare('DELETE FROM stake_pieces WHERE stake_id=?').run(id);
+    db.prepare('DELETE FROM stakes WHERE id=?').run(id);
+    return true;
+  });
 }
 export function removePiece(db, stakeId, pieceId) {
   return db.prepare('DELETE FROM stake_pieces WHERE id=? AND stake_id=?').run(pieceId, stakeId).changes > 0;

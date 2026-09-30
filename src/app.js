@@ -391,8 +391,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         const r = S.recordResult(db, id, await readJson(req, 5000));
         return json(req, res, r.error ? 400 : 200, r);
       }
-      if (m === 'POST' && (x = rest.match(/^\/pieces\/(\d+)\/(paid|unpaid|remove)$/))) {
-        const ok = x[2] === 'remove' ? S.removePiece(db, id, Number(x[1])) : S.setPiecePaid(db, id, Number(x[1]), x[2] === 'paid');
+      if (m === 'POST' && rest === '/allpaid') return json(req, res, S.markAllPaid(db, id) ? 200 : 404, { ok: true });
+      if (m === 'POST' && (x = rest.match(/^\/pieces\/(\d+)\/(paid|unpaid|paidin|unpaidin|remove)$/))) {
+        const pid = Number(x[1]);
+        const ok = x[2] === 'remove' ? S.removePiece(db, id, pid)
+          : x[2] === 'paidin' || x[2] === 'unpaidin' ? S.setPiecePaidIn(db, id, pid, x[2] === 'paidin')
+          : S.setPiecePaid(db, id, pid, x[2] === 'paid');
         return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Piece not found' });
       }
       return json(req, res, 404, { error: 'Not found' });
@@ -407,6 +411,13 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         A.hostAction(db, a, 'delete');
         log(`auction ${a.code} deleted by admin`);
         return json(req, res, 200, { ok: true });
+      }
+      if (m === 'GET' && p === '/api/admin/stakes/all') return json(req, res, 200, S.adminStakes(db));
+      if ((x = p.match(/^\/api\/admin\/stakes\/(\d+)\/(archive|repost|purge)$/)) && m === 'POST') {
+        const sid = Number(x[1]);
+        const ok = x[2] === 'archive' ? S.archiveStake(db, sid) : x[2] === 'repost' ? S.repostStake(db, sid) : S.purgeStake(db, sid);
+        log(`stake ${sid} ${x[2]} by admin: ${ok ? 'ok' : 'not found'}`);
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Post not found' });
       }
       if (m === 'GET' && p === '/api/admin/stakes/pending') return json(req, res, 200, { stakes: S.listPendingStakes(db) });
       if ((x = p.match(/^\/api\/admin\/stakes\/(\d+)\/(approve|reject)$/)) && m === 'POST') {
