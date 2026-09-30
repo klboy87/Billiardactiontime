@@ -861,6 +861,8 @@
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
     let pendingStakes;
     try { pendingStakes = (await api('/api/admin/stakes/pending')).stakes; } catch { pendingStakes = []; }
+    let allAuctions;
+    try { allAuctions = (await api('/api/admin/auctions')).auctions; } catch { allAuctions = []; }
     let pv;
     try { pv = await api('/api/admin/pageviews'); } catch { pv = { daily: 0, weekly: 0, monthly: 0, total: 0 }; }
     const tr = pv.traffic || { visitors: 0, sources: [], pages: [], daily: [] };
@@ -925,6 +927,12 @@
             </div>
           </div>`).join('') : '<p class="muted">No staking posts waiting.</p>'}
       </div>
+      <h2>Calcutta Auctions (${allAuctions.length})</h2>
+      ${allAuctions.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminAuctions"><thead><tr><th>Auction</th><th>Status</th><th>Players</th><th>Bidders</th><th>Pot</th><th></th></tr></thead><tbody>
+        ${allAuctions.map(a => `<tr data-code="${esc(a.code)}"><td><a href="#/a/${esc(a.code)}">${esc(a.title)}</a><br><small class="muted">${esc(a.code)} · ${a.mode === 'silent' ? 'Silent' : 'Live'}${a.listed ? ' · Public' : ''}</small></td>
+          <td>${esc(aStatusLabel[a.status] || a.status)}</td><td>${a.players}</td><td>${a.bidders}</td><td>${cash(a.pot)}</td>
+          <td><button type="button" class="btn btn-out btn-sm" data-adel="${esc(a.code)}">Delete</button></td></tr>`).join('')}
+      </tbody></table></div>` : '<p class="muted">No auctions yet.</p>'}
       <h2>Recent Sync Runs</h2>
       <table class="t"><thead><tr><th>Started</th><th>Status</th><th>Fetched</th><th>Inserted</th><th>Updated</th><th>Removed</th></tr></thead>
       <tbody>${(summary.recentRuns || []).map(r => `<tr><td>${esc((r.started_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(r.status)}</td><td>${r.fetched ?? 0}</td><td>${r.inserted ?? 0}</td><td>${r.updated ?? 0}</td><td>${r.removed ?? 0}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No sync runs yet.</td></tr>'}</tbody></table>`;
@@ -943,6 +951,12 @@
       else return;
       card.remove();
     });
+    const adminAuctions = document.getElementById('adminAuctions');
+    if (adminAuctions) adminAuctions.addEventListener('click', async e => {
+      const b = e.target.closest('[data-adel]'); if (!b) return;
+      if (!tapTwice(b, 'adel' + b.dataset.adel, 'Tap again')) return;
+      try { await api(`/api/admin/auctions/${b.dataset.adel}/delete`, { method: 'POST' }); b.closest('tr').remove(); } catch (err) { b.textContent = err.message; }
+    });
     document.getElementById('pendingStakes').addEventListener('click', async e => {
       const card = e.target.closest('[data-sid]'); if (!card) return;
       const act = e.target.classList.contains('act-approve') ? 'approve' : e.target.classList.contains('act-reject') ? 'reject' : null;
@@ -950,6 +964,21 @@
       try { await api(`/api/admin/stakes/${card.dataset.sid}/${act}`, { method: 'POST' }); card.remove(); } catch (err) { alert(err.message); }
     });
   };
+
+  // Two-tap confirm for risky buttons. Browser confirm() popups are silently blocked in some
+  // browsers and in-app views, which made those buttons look dead, so confirm in the page instead.
+  const armedAt = new Map();
+  function tapTwice(btn, key, prompt) {
+    const t = armedAt.get(key);
+    if (t && Date.now() - t < 5000) { armedAt.delete(key); return true; }
+    armedAt.set(key, Date.now());
+    if (btn) {
+      const old = btn.textContent;
+      btn.textContent = prompt; btn.classList.add('armed');
+      setTimeout(() => { if (btn.isConnected && btn.classList.contains('armed')) { btn.textContent = old; btn.classList.remove('armed'); } }, 5000);
+    }
+    return false;
+  }
 
   // ------------------------------------------------------------ STAKING BOARD
   // Records only: the site never holds or moves money. Cash is held by the stakeholder named
@@ -1188,7 +1217,7 @@
     if (rows && s.canManage) rows.addEventListener('click', async e => {
       const b = e.target.closest('[data-act]'); if (!b) return;
       const pid = b.closest('[data-pid]').dataset.pid;
-      if (b.dataset.act === 'remove' && !confirm('Remove this backer?')) return;
+      if (b.dataset.act === 'remove' && !tapTwice(b, 'rm' + pid, 'Tap again to remove')) return;
       try { await call(`/api/stakes/${id}/pieces/${pid}/${b.dataset.act}`, { method: 'POST' }); render(); } catch (err) { alert(err.message); }
     });
   }
@@ -1378,10 +1407,10 @@
 
     function drawJoin() {
       const el = document.getElementById('aJoin');
-      if (st.you || st.host || st.auction.status === 'done') { el.innerHTML = st.you ? `<p class="muted" style="margin:-4px 0 12px">Bidding as <b style="color:var(--text)">${esc(st.you.name)}</b></p>` : ''; return; }
+      if (st.you || st.auction.status === 'done') { el.innerHTML = st.you ? `<p class="muted" style="margin:-4px 0 12px">Bidding as <b style="color:var(--text)">${esc(st.you.name)}</b></p>` : ''; return; }
       if (focusedIn(el)) return;
       el.innerHTML = `<form class="card" id="joinForm" style="margin-bottom:14px">
-          <label class="f">Join to bid: pick the name everyone will see</label>
+          <label class="f">${st.host ? 'Want to bid too? Join with the name everyone will see' : 'Join to bid: pick the name everyone will see'}</label>
           <div style="display:flex;gap:8px"><input name="name" maxlength="30" required placeholder="Your name"><button class="btn btn-green" type="submit">Join</button></div>
           <div id="joinMsg"></div></form>`;
       document.getElementById('joinForm').addEventListener('submit', async e => {
@@ -1482,7 +1511,7 @@
     function drawHost() {
       const el = document.getElementById('aHost');
       if (!st.host) { el.innerHTML = ''; document.getElementById('aHostBar').innerHTML = ''; return; }
-      if (focusedIn(el)) return;
+      if (focusedIn(el) || document.querySelector('#aHost .armed, #aHostBar .armed')) return;
       const a = st.auction, cur = st.items.find(i => i.id === a.currentItem);
       const btn = (act, label, cls = 'btn-out') => `<button type="button" class="btn ${cls} btn-sm" data-host="${act}">${label}</button>`;
       const controls = [];
@@ -1510,9 +1539,9 @@
       });
     }
 
-    async function hostDo(action, extra = {}) {
-      if (action === 'end' && !confirm('End the auction now? Any player still open is sold to the high bidder; the rest go unsold.')) return;
-      if (action === 'delete' && !confirm('Delete this auction and all its bids for everyone? This cannot be undone.')) return;
+    async function hostDo(action, extra = {}, btn = null) {
+      if (action === 'end' && !tapTwice(btn, 'end', 'Tap again to end')) return;
+      if (action === 'delete' && !tapTwice(btn, 'delete', 'Tap again to delete for good')) return;
       try {
         await call('/host', { method: 'POST', body: { action, ...extra } });
         if (action === 'delete') { location.hash = '#/auctions'; return; }
@@ -1554,7 +1583,7 @@
       const b = e.target.closest('[data-bid]');
       if (b) { bid(Number(b.closest('[data-item]').dataset.item), Number(b.dataset.bid)); return; }
       const r = e.target.closest('[data-remove]');
-      if (r) hostDo('remove', { itemId: Number(r.dataset.remove) });
+      if (r) hostDo('remove', { itemId: Number(r.dataset.remove) }, r);
     });
     main.addEventListener('submit', e => {
       const f = e.target.closest('.abidform'); if (!f) return;
@@ -1568,7 +1597,7 @@
       if (s) { s.blur(); hostDo('finish', { itemId: Number(s.dataset.finish), finish: s.value }); }
     });
     main.addEventListener('focusout', () => setTimeout(() => { if (pendingRender && !focusedIn(main)) draw(); }, 50));
-    for (const id of ['aHost', 'aHostBar']) document.getElementById(id).addEventListener('click', e => { const b = e.target.closest('[data-host]'); if (b) hostDo(b.dataset.host); });
+    for (const id of ['aHost', 'aHostBar']) document.getElementById(id).addEventListener('click', e => { const b = e.target.closest('[data-host]'); if (b) hostDo(b.dataset.host, {}, b); });
     document.getElementById('chatForm').addEventListener('submit', async e => {
       e.preventDefault();
       const input = e.target.elements.text;

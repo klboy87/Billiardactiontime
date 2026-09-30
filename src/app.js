@@ -358,6 +358,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         if (!host) return json(req, res, 403, { error: 'Only the host can do that' });
         const b = (await readJson(req, 50_000)) || {};
         const r = A.hostAction(db, a, String(b.action || ''), b);
+        log(`auction ${a.code} host ${String(b.action || '').slice(0, 20)}: ${r.error || 'ok'}`);
         return json(req, res, r.error ? 400 : 200, r);
       }
       return json(req, res, 404, { error: 'Not found' });
@@ -399,6 +400,14 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
 
     if (p.startsWith('/api/admin/')) {
       admin(req);
+      if (m === 'GET' && p === '/api/admin/auctions') return json(req, res, 200, { auctions: A.allAuctions(db) });
+      if ((x = p.match(/^\/api\/admin\/auctions\/([A-Za-z0-9]{4,10})\/delete$/)) && m === 'POST') {
+        const a = A.getAuction(db, x[1]);
+        if (!a) return json(req, res, 404, { error: 'Auction not found' });
+        A.hostAction(db, a, 'delete');
+        log(`auction ${a.code} deleted by admin`);
+        return json(req, res, 200, { ok: true });
+      }
       if (m === 'GET' && p === '/api/admin/stakes/pending') return json(req, res, 200, { stakes: S.listPendingStakes(db) });
       if ((x = p.match(/^\/api\/admin\/stakes\/(\d+)\/(approve|reject)$/)) && m === 'POST') {
         const ok = S.setStakeStatus(db, Number(x[1]), x[2] === 'approve' ? 'open' : 'rejected');

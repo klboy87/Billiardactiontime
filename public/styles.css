@@ -412,3 +412,4 @@ table.t td{padding:10px 8px;border-bottom:1px solid var(--line)}
 .t-red{background:linear-gradient(160deg,#e0454b,#9c1d23)}.t-red .ic{color:#9c1d23}.t-red .free{color:#9c1d23}
 @media (min-width:861px){.tiles .tile h3{font-size:17px}.tiles .tile{padding:18px 14px}}
 @media (min-width:861px){.tiles{display:flex;flex-wrap:wrap}.tiles .tile{flex:1 1 118px;width:auto}}
+.btn.armed{background:var(--red)!important;border-color:var(--red)!important;color:#fff!important}

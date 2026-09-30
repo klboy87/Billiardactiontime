@@ -293,3 +293,14 @@ export function listedAuctions(db) {
     ORDER BY CASE a.status WHEN 'running' THEN 0 WHEN 'paused' THEN 0 WHEN 'setup' THEN 1 ELSE 2 END, a.id DESC LIMIT 50`).all()
     .map(r => ({ code: r.code, title: r.title, startsAt: r.starts_at, mode: r.mode, status: r.status, players: Number(r.players), pot: Number(r.pot) }));
 }
+
+// Every auction, for the site owner's Admin page.
+export function allAuctions(db) {
+  return db.prepare(`SELECT a.code, a.title, a.mode, a.status, a.listed, a.created_at,
+      (SELECT COUNT(*) FROM auction_items i WHERE i.auction_id=a.id) players,
+      (SELECT COUNT(*) FROM auction_bidders b WHERE b.auction_id=a.id) bidders,
+      (SELECT COALESCE(SUM(high_bid),0) FROM auction_items i WHERE i.auction_id=a.id AND i.status='sold') pot
+    FROM auctions a ORDER BY a.id DESC LIMIT 200`).all()
+    .map(r => ({ code: r.code, title: r.title, mode: r.mode, status: r.status, listed: !!r.listed, createdAt: r.created_at,
+      players: Number(r.players), bidders: Number(r.bidders), pot: Number(r.pot) }));
+}
