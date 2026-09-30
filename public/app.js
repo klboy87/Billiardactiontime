@@ -217,6 +217,7 @@
         <a class="tile t-green" href="#/post"><span class="free">FREE</span><div class="ic">➕</div><h3>Post a Tournament</h3></a>
         <a class="tile t-gold" href="#/stakes"><span class="free">NEW</span><div class="ic">🐎</div><h3>Stake Horse Board</h3></a>
         <a class="tile t-red" href="#/auctions"><span class="free">NEW</span><div class="ic">🔨</div><h3>Calcutta Auctions</h3></a>
+        <a class="tile t-teal" href="#/matches"><span class="free">NEW</span><div class="ic">🎯</div><h3>Match Finder</h3></a>
       </section>
       <input type="file" id="homeFlyerInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
       <p class="muted" id="homeFlyerStatus" style="text-align:center"></p>
@@ -866,6 +867,8 @@
     try { stakeAdmin = await api('/api/admin/stakes/all'); } catch { stakeAdmin = { posts: [], archived: [] }; }
     let allAuctions;
     try { allAuctions = (await api('/api/admin/auctions')).auctions; } catch { allAuctions = []; }
+    let allMatches;
+    try { allMatches = (await api('/api/admin/matches')).posts; } catch { allMatches = []; }
     let pv;
     try { pv = await api('/api/admin/pageviews'); } catch { pv = { daily: 0, weekly: 0, monthly: 0, total: 0 }; }
     const tr = pv.traffic || { visitors: 0, sources: [], pages: [], daily: [] };
@@ -952,6 +955,13 @@
           `<button type="button" class="btn btn-green btn-sm" data-aact="restore" data-code="${esc(a.code)}">Restore</button> <a class="btn btn-out btn-sm" href="#/a/${esc(a.code)}">View</a> <button type="button" class="btn btn-out btn-sm" data-aact="purge" data-code="${esc(a.code)}">Delete Forever</button>`, a.prevStatus)).join('')}</tbody></table></div>`
           : '<p class="muted">Nothing archived. Deleted auctions land here so you can restore them.</p>'}`;
       })()}
+      <h2>Match Finder Posts (${allMatches.length})</h2>
+      ${allMatches.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminMatches"><thead><tr><th>Player</th><th>Where / When</th><th>Status</th><th>In</th></tr></thead><tbody>
+        ${allMatches.map(m => { const st = m.status === 'removed' ? 'Removed' : m.status === 'closed' ? 'Closed' : m.expiresMs > Date.now() ? 'Open' : 'Ended';
+          return `<tr class="noline"><td><a href="#/matches/${m.id}">${esc(m.name)}</a><br><small class="muted">${esc(m.game === 'Other' ? 'Any game' : m.game)} · ${esc(stakeLabel(m))}</small></td>
+          <td>${esc(m.city)}, ${esc(m.state)}<br><small class="muted">${esc(fmtDate(m.date))}${m.until !== m.date ? ' – ' + esc(fmtDate(m.until)) : ''}</small></td><td>${st}</td><td>${m.replyCount || 0}</td></tr>
+          <tr><td colspan="4" style="padding-top:0"><div class="actbar">${m.status === 'removed' ? `<button type="button" class="btn btn-green btn-sm" data-mmact="restore" data-mid="${m.id}">Restore</button>` : `<button type="button" class="btn btn-out btn-sm" data-mmact="remove" data-mid="${m.id}">Remove</button>`} <a class="btn btn-out btn-sm" href="#/matches/${m.id}">View</a></div></td></tr>`; }).join('')}
+      </tbody></table></div>` : '<p class="muted">No Match Finder posts yet.</p>'}
       <h2>Recent Sync Runs</h2>
       <table class="t"><thead><tr><th>Started</th><th>Status</th><th>Fetched</th><th>Inserted</th><th>Updated</th><th>Removed</th></tr></thead>
       <tbody>${(summary.recentRuns || []).map(r => `<tr><td>${esc((r.started_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(r.status)}</td><td>${r.fetched ?? 0}</td><td>${r.inserted ?? 0}</td><td>${r.updated ?? 0}</td><td>${r.removed ?? 0}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No sync runs yet.</td></tr>'}</tbody></table>`;
@@ -985,6 +995,13 @@
       if (act !== 'restore' && !tapTwice(b, act + b.dataset.code, act === 'purge' ? 'Tap again: gone for good' : 'Tap again to delete')) return;
       try { await api(`/api/admin/auctions/${b.dataset.code}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
     }));
+    const mtbl = document.getElementById('adminMatches');
+    if (mtbl) mtbl.addEventListener('click', async e => {
+      const b = e.target.closest('[data-mmact]'); if (!b) return;
+      const act = b.dataset.mmact;
+      if (act === 'remove' && !tapTwice(b, 'mremove' + b.dataset.mid, 'Tap again to remove')) return;
+      try { await api(`/api/admin/matches/${b.dataset.mid}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
+    });
     document.getElementById('pendingStakes').addEventListener('click', async e => {
       const card = e.target.closest('[data-sid]'); if (!card) return;
       const act = e.target.classList.contains('act-approve') ? 'approve' : e.target.classList.contains('act-reject') ? 'reject' : null;
@@ -1281,6 +1298,214 @@
       <td>${esc(label)}</td><td>${pct(p.sold)} of ${pct(p.offered)}</td><td>${p.pieces.length}${paid ? `<br><small class="muted">${paid}</small>` : ''}</td></tr>
       <tr><td colspan="4" style="padding-top:0"><div class="actbar">${buttons}</div></td></tr>`;
   }
+
+  // ------------------------------------------------------------ MATCH FINDER
+  // Players post that they're looking for action; others tap "I'm In" and the poster gets their
+  // contact privately. The site only connects players and never handles money.
+  const MATCH_NOTE = `<p class="stake-note">Match Finder only connects players. Billiard Action Time never takes, holds or pays out money, and doesn't check anyone's identity: meet at a public pool room. You must be 18+ and follow the laws where you play.</p>`;
+  const localIso = d => { const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return z.toISOString().slice(0, 10); };
+  const addDays = (iso, n) => { const [y, m, d] = iso.split('-').map(Number); return localIso(new Date(y, m - 1, d + n)); };
+  const weekday = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).getDay(); };
+  // This (or next) Friday–Sunday. On Fri/Sat/Sun it's the current weekend.
+  function weekendRange(today) {
+    const wd = weekday(today);
+    if (wd === 5 || wd === 6 || wd === 0) return [today, addDays(today, wd === 0 ? 0 : 7 - wd)];
+    const fri = addDays(today, 5 - wd); return [fri, addDays(fri, 2)];
+  }
+  const endOfLocalDay = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d + 1, 3, 0, 0).getTime(); }; // 3 AM next day: late-night sets count
+  function whenLabel(p) {
+    const today = localIso(new Date()), tom = addDays(today, 1);
+    const one = iso => iso === today ? 'Tonight' : iso === tom ? 'Tomorrow' : new Date(...(a => [a[0], a[1] - 1, a[2]])(iso.split('-').map(Number))).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const start = p.date < today && p.until >= today ? today : p.date;
+    let s = start === p.until ? one(start) : `${one(start)} – ${one(p.until)}`;
+    if (p.time && start === p.date) s += ' · ' + fmtTime(p.time);
+    return s;
+  }
+  const stakeLabel = p => p.stakeMin != null && p.stakeMax != null ? (p.stakeMin === p.stakeMax ? cash(p.stakeMin) : `${cash(p.stakeMin)}–${cash(p.stakeMax)}`)
+    : p.stakeMin != null ? `${cash(p.stakeMin)}+` : p.stakeMax != null ? `Up to ${cash(p.stakeMax)}` : 'Stakes open';
+  const STAKE_BANDS = [['', 'Any stakes'], ['0-49', 'Under $50'], ['50-200', '$50–$200'], ['200-500', '$200–$500'], ['500-', '$500+']];
+  const inBand = (p, band) => { if (!band) return true; const [lo, hi] = band.split('-').map(v => (v === '' ? null : Number(v))); const pmin = p.stakeMin ?? 0, pmax = p.stakeMax ?? Infinity; return pmax >= (lo ?? 0) && pmin <= (hi ?? Infinity); };
+  function matchWhen(p, when) {
+    if (!when) return true;
+    const today = localIso(new Date());
+    if (when === 'tonight') return p.date <= today && p.until >= today;
+    if (when === 'tomorrow') { const t = addDays(today, 1); return p.date <= t && p.until >= t; }
+    const [a, b] = weekendRange(today); return p.date <= b && p.until >= a;
+  }
+  function matchKeys() { try { return JSON.parse(localStorage.getItem('bat_match_keys') || '{}'); } catch { return {}; } }
+  function saveMatchKey(id, key) { try { const k = matchKeys(); k[id] = key; localStorage.setItem('bat_match_keys', JSON.stringify(k)); } catch { /* ignore */ } }
+
+  function matchCard(p, { full = false } = {}) {
+    return `<article class="card matchcard" data-mid="${p.id}">
+      <div class="stake-top"><b class="match-name">${esc(p.name)}</b>${p.fargo ? `<span class="chip b">Fargo ${p.fargo}</span>` : ''}</div>
+      <ul class="match-facts">
+        <li><span aria-hidden="true">📍</span> ${esc(p.city)}, ${esc(p.state)}${p.room ? ` · ${esc(p.room)}` : ''}</li>
+        <li><span aria-hidden="true">🎱</span> ${esc(p.game === 'Other' ? 'Any game' : p.game)}</li>
+        <li><span aria-hidden="true">💰</span> ${esc(stakeLabel(p))}</li>
+        <li><span aria-hidden="true">📅</span> ${esc(whenLabel(p))}</li>
+      </ul>
+      ${p.note ? `<p class="match-note">“${esc(p.note)}”</p>` : ''}
+      ${p.contact ? `<p class="muted" style="margin:0 0 8px;font-size:14px">Reach them: <b style="color:var(--text)">${esc(p.contact)}</b></p>` : ''}
+      ${full ? '' : `<div class="actbar"><button type="button" class="btn btn-green" data-im-in="${p.id}">I'm In</button><a class="btn btn-out" href="#/matches/${p.id}">Details</a>${p.replyCount ? `<span class="muted" style="align-self:center;font-size:14px">${p.replyCount} interested</span>` : ''}</div>
+      <div class="im-in" hidden></div>`}
+    </article>`;
+  }
+  function imInForm(id) {
+    return `<form class="im-in-form" data-reply="${id}">
+      <p class="muted" style="margin:10px 0 8px;font-size:14px">Only the player who posted sees this.</p>
+      <div class="two" style="margin-top:0"><div class="fg"><label class="f">Your name *</label><input name="name" required maxlength="40"></div>
+      <div class="fg"><label class="f">Phone or handle *</label><input name="contact" required maxlength="80" placeholder="How they can reach you"></div></div>
+      <div class="fg"><label class="f">Message</label><input name="message" maxlength="280" placeholder="e.g. Race to 7, $100 a set?"></div>
+      <div class="reply-msg"></div><button class="btn btn-green" type="submit">Send</button></form>`;
+  }
+  async function sendReply(form) {
+    const id = form.dataset.reply, msg = form.querySelector('.reply-msg');
+    try {
+      await api(`/api/matches/${id}/reply`, { method: 'POST', body: Object.fromEntries(new FormData(form)) });
+      form.outerHTML = `<p class="amine" style="margin-top:10px">✓ Sent. They'll reach out to you.</p>`;
+    } catch (err) { msg.innerHTML = `<p class="aerr">${esc(err.message)}</p>`; }
+  }
+
+  async function matchBoard(params) {
+    let f; try { f = JSON.parse(localStorage.getItem('bat_match_filter') || '{}'); } catch { f = {}; }
+    for (const k of ['state', 'city', 'game', 'stakes', 'when']) if (params.get(k) != null) f[k] = params.get(k);
+    app.innerHTML = `
+      <section class="match-hero">
+        <h1>Looking for a Match?</h1>
+        <div class="match-filters">
+          <label><span aria-hidden="true">📍</span><select id="mfState" aria-label="State"><option value="">Anywhere</option></select></label>
+          <label><span aria-hidden="true">🏙️</span><select id="mfCity" aria-label="City"><option value="">All cities</option></select></label>
+          <label><span aria-hidden="true">🎱</span><select id="mfGame" aria-label="Game"><option value="">Any game</option>${GAMES.filter(g => g !== 'Other').map(g => `<option>${esc(g)}</option>`).join('')}</select></label>
+          <label><span aria-hidden="true">💰</span><select id="mfStakes" aria-label="Stakes">${STAKE_BANDS.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select></label>
+          <label><span aria-hidden="true">📅</span><select id="mfWhen" aria-label="When"><option value="">Any day</option><option value="tonight">Tonight</option><option value="tomorrow">Tomorrow</option><option value="weekend">This weekend</option></select></label>
+        </div>
+        <p class="match-count" id="mfCount">Loading…</p>
+        <a class="btn btn-gold btn-lg" href="#/matches/new">Post Your Action</a>
+      </section>
+      <div id="mfList" class="matchgrid"></div>
+      ${MATCH_NOTE}`;
+    let posts = [];
+    try { posts = (await api('/api/matches')).posts; } catch (e) { document.getElementById('mfList').innerHTML = errorBox(e.message); }
+    const sel = id => document.getElementById(id);
+    const states = [...new Set(posts.map(p => p.state))].sort();
+    sel('mfState').insertAdjacentHTML('beforeend', states.map(s => `<option>${esc(s)}</option>`).join(''));
+    const fillCities = () => {
+      const cities = [...new Set(posts.filter(p => !f.state || p.state === f.state).map(p => p.city))].sort();
+      sel('mfCity').innerHTML = `<option value="">All cities</option>${cities.map(c => `<option>${esc(c)}</option>`).join('')}`;
+      if (!cities.includes(f.city)) f.city = '';
+      sel('mfCity').value = f.city || '';
+    };
+    const draw = () => {
+      try { localStorage.setItem('bat_match_filter', JSON.stringify(f)); } catch { /* ignore */ }
+      const list = posts.filter(p => (!f.state || p.state === f.state) && (!f.city || p.city === f.city) && (!f.game || p.game === f.game || p.game === 'Other') && inBand(p, f.stakes) && matchWhen(p, f.when));
+      const where = f.city ? ` in ${f.city}` : f.state ? ` in ${f.state}` : '';
+      sel('mfCount').innerHTML = list.length ? `<b>${list.length}</b> player${list.length === 1 ? '' : 's'} looking for action${esc(where)}` : `Nobody's posted${esc(where)} yet. Be the first.`;
+      sel('mfList').innerHTML = list.map(p => matchCard(p)).join('') || `<div class="card"><p style="margin:0">No matches for these filters. <a href="#/matches/new">Post your action</a> and players nearby will see it.</p></div>`;
+    };
+    sel('mfState').value = states.includes(f.state) ? f.state : (f.state = '', '');
+    fillCities();
+    sel('mfGame').value = f.game || ''; sel('mfStakes').value = f.stakes || ''; sel('mfWhen').value = f.when || '';
+    sel('mfState').addEventListener('change', e => { f.state = e.target.value; fillCities(); draw(); });
+    for (const [id, key] of [['mfCity', 'city'], ['mfGame', 'game'], ['mfStakes', 'stakes'], ['mfWhen', 'when']]) sel(id).addEventListener('change', e => { f[key] = e.target.value; draw(); });
+    draw();
+    sel('mfList').addEventListener('click', e => {
+      const b = e.target.closest('[data-im-in]'); if (!b) return;
+      const box = b.closest('.matchcard').querySelector('.im-in');
+      box.hidden = !box.hidden; if (!box.hidden && !box.innerHTML) { box.innerHTML = imInForm(b.dataset.imIn); box.querySelector('input').focus(); }
+    });
+    sel('mfList').addEventListener('submit', e => { const fm = e.target.closest('[data-reply]'); if (fm) { e.preventDefault(); sendReply(fm); } });
+  }
+
+  async function matchPostForm() {
+    const today = localIso(new Date());
+    app.innerHTML = `
+      <div class="crumbs"><a href="#/matches">Match Finder</a> / Post Your Action</div>
+      <div class="pagehead"><h1>Post Your Action</h1><p>Tell players where you'll be, what you play and what you're playing for. Your post goes up right away and comes down by itself after the day you pick.</p></div>
+      <form class="card" id="matchForm">
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">Name or nickname *</label><input name="name" required maxlength="40"></div>
+          <div class="fg"><label class="f">Fargo rating</label><input name="fargo" type="number" min="100" max="900" inputmode="numeric" placeholder="Optional"></div>
+        </div>
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">City *</label><input name="city" required maxlength="60"></div>
+          <div class="fg"><label class="f">State *</label><select name="state" id="mpState" required><option value="">Select a state</option></select></div>
+        </div>
+        <div class="fg"><label class="f">Pool room</label><input name="room" maxlength="80" placeholder="Where you want to play (optional)"></div>
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f">Game</label><select name="game">${GAMES.map(g => `<option value="${esc(g)}">${esc(g === 'Other' ? 'Any game' : g)}</option>`).join('')}</select></div>
+          <div class="fg"><label class="f">Stakes ($)</label><div style="display:flex;gap:8px;align-items:center"><input name="stakeMin" type="number" min="1" inputmode="numeric" placeholder="50"><span>to</span><input name="stakeMax" type="number" min="1" inputmode="numeric" placeholder="200"></div></div>
+        </div>
+        <fieldset class="fg when-pick"><legend class="f">When *</legend>
+          <label><input type="radio" name="when" value="tonight" checked> Tonight</label>
+          <label><input type="radio" name="when" value="tomorrow"> Tomorrow</label>
+          <label><input type="radio" name="when" value="weekend"> This weekend</label>
+          <label><input type="radio" name="when" value="date"> Pick a day</label>
+          <input type="date" name="pickDate" min="${today}" hidden>
+        </fieldset>
+        <div class="fg"><label class="f">Around what time?</label><input name="time" type="time"></div>
+        <div class="fg"><label class="f">Public contact</label><input name="contact" maxlength="80" placeholder="Optional: shown on your post (phone, Facebook, IG)"></div>
+        <div class="fg"><label class="f">Anything else?</label><textarea name="note" maxlength="280" rows="2" placeholder="e.g. Looking for 9-ball, race to 7, will play anybody under 600"></textarea></div>
+        <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I'm 18+. I understand this site only connects players and never handles money, and I'll follow the laws where I play.</label>
+        <div id="matchMsg"></div>
+        <button class="btn btn-green" type="submit">Post It</button>
+      </form>`;
+    loadPlaces().then(p => { const s = document.getElementById('mpState'); if (s) for (const st of p.states) s.insertAdjacentHTML('beforeend', `<option value="${esc(st.code)}">${esc(st.name)}</option>`); }).catch(() => {});
+    const form = document.getElementById('matchForm');
+    form.addEventListener('change', e => { if (e.target.name === 'when') form.pickDate.hidden = e.target.value !== 'date'; form.pickDate.required = e.target.value === 'date' && e.target.checked; });
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const b = Object.fromEntries(new FormData(form));
+      const t = localIso(new Date());
+      let date = t, until = t;
+      if (b.when === 'tomorrow') date = until = addDays(t, 1);
+      else if (b.when === 'weekend') [date, until] = weekendRange(t);
+      else if (b.when === 'date') date = until = b.pickDate;
+      Object.assign(b, { date, until, expiresMs: endOfLocalDay(until) });
+      try {
+        const r = await api('/api/matches', { method: 'POST', body: b });
+        saveMatchKey(r.id, r.manageKey);
+        location.hash = `#/matches/${r.id}?key=${encodeURIComponent(r.manageKey)}&new=1`;
+      } catch (err) { document.getElementById('matchMsg').innerHTML = errorBox(err.message); }
+    });
+  }
+
+  async function matchDetail(params, id) {
+    if (params.get('key')) saveMatchKey(id, params.get('key'));
+    const key = params.get('key') || matchKeys()[id];
+    const isNew = params.get('new');
+    if (params.get('key')) history.replaceState(null, '', `#/matches/${id}`);
+    const headers = {};
+    if (key) headers['X-Manage-Key'] = key;
+    if (adminToken()) headers.Authorization = 'Bearer ' + adminToken();
+    app.innerHTML = loading();
+    let p;
+    try { p = await api(`/api/matches/${id}`, { headers }); } catch { app.innerHTML = errorBox('This post is gone.'); return; }
+    const open = p.status === 'open' && p.expiresMs > Date.now();
+    const shareUrl = `${location.origin}/#/matches/${p.id}`;
+    const manageUrl = key ? `${location.origin}/#/matches/${p.id}?key=${encodeURIComponent(key)}` : '';
+    app.innerHTML = `
+      <div class="crumbs"><a href="#/matches">Match Finder</a> / ${esc(p.name)}</div>
+      ${isNew ? `<div class="card" style="margin-bottom:14px;border-color:var(--green)"><h3 style="margin-bottom:6px">You're posted ✓</h3><p class="muted" style="margin:0">Players who tap "I'm In" show up below with their contact. This phone remembers your post. To check it from another device, save your private link: <input readonly value="${esc(manageUrl)}" style="margin-top:6px"></p></div>` : ''}
+      ${!open ? `<p class="seo-ended">${p.status === 'closed' ? 'This player found a match. The post is closed.' : 'This post has ended.'}</p>` : ''}
+      ${matchCard(p, { full: true })}
+      ${p.canManage ? `
+        <h2 class="stake-h">Players Who Are In (${p.replies.length})</h2>
+        ${p.replies.length ? p.replies.map(r => `<div class="card" style="margin-bottom:10px"><b>${esc(r.name)}</b> · <a href="${/^[\d\s()+.-]{7,}$/.test(r.contact) ? 'tel:' + esc(r.contact.replace(/[^\d+]/g, '')) : '#'}">${esc(r.contact)}</a>${r.message ? `<p style="margin:6px 0 0">${esc(r.message)}</p>` : ''}<small class="muted">${esc((r.createdAt || '').replace(' ', ' at ').slice(0, 19))} UTC</small></div>`).join('') : '<div class="card"><p class="muted" style="margin:0">Nobody yet. Share your post to get it in front of more players.</p></div>'}
+        <div class="actbar" style="margin-top:14px">${open ? '<button type="button" class="btn btn-blue" data-mact="close">Found a Match (Close Post)</button>' : p.status === 'closed' && p.expiresMs > Date.now() ? '<button type="button" class="btn btn-out" data-mact="reopen">Reopen Post</button>' : ''}</div>`
+      : open ? `<div class="card"><h3 style="margin-bottom:4px">Want this action?</h3>${imInForm(p.id)}</div>` : ''}
+      <div class="actbar" style="margin-top:14px"><button type="button" class="btn btn-out" id="shareMatch">Share This Post</button><a class="btn btn-out" href="#/matches">All Players Looking</a></div>
+      ${MATCH_NOTE}`;
+    const replyForm = app.querySelector('form[data-reply]');
+    if (replyForm) replyForm.addEventListener('submit', e => { e.preventDefault(); sendReply(replyForm); });
+    const act = document.querySelector('[data-mact]');
+    if (act) act.addEventListener('click', async () => { try { await api(`/api/matches/${id}/${act.dataset.mact}`, { method: 'POST', headers }); render(); } catch (err) { act.textContent = err.message; } });
+    document.getElementById('shareMatch').addEventListener('click', async () => {
+      const text = `${p.name} is looking for ${p.game === 'Other' ? 'a match' : p.game + ' action'} in ${p.city}, ${p.state} (${stakeLabel(p)}, ${whenLabel(p)}). Want it?`;
+      try { if (navigator.share) await navigator.share({ title: 'Looking for a match', text, url: shareUrl }); else { await navigator.clipboard.writeText(`${text} ${shareUrl}`); document.getElementById('shareMatch').textContent = 'Link copied'; } } catch { /* ignore */ }
+    });
+  }
+
+  routes['/matches'] = async (params, id) => (id === 'new' ? matchPostForm() : id && /^\d+$/.test(id) ? matchDetail(params, id) : matchBoard(params));
 
   // ------------------------------------------------------------ CALCUTTA / LIVE AUCTIONS
   // Records only, like the Staking Board: the site never takes, holds or pays out money.

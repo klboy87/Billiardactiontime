@@ -26,6 +26,7 @@ import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
 import * as A from './auctions.js';
 import * as SEO from './seo.js';
+import * as M from './matches.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -313,6 +314,34 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return json(req, res, 404, { error: 'Not found' });
     }
 
+    // ---- Match Finder ----
+    if (m === 'GET' && p === '/api/matches') return json(req, res, 200, { posts: M.listOpen(db) }, { 'Cache-Control': 'no-store' });
+    if (m === 'POST' && p === '/api/matches') {
+      if (limitedBy(joinHits, clientIp(req) + ':match', 6, 3_600_000)) return json(req, res, 429, { error: 'Too many posts. Try again in an hour.' });
+      const v = M.validatePost(await readJson(req, 10_000));
+      if (v.error) return json(req, res, 400, { error: v.error });
+      return json(req, res, 201, M.createPost(db, v.value));
+    }
+    if ((x = p.match(/^\/api\/matches\/(\d+)(\/[a-z]+)?$/))) {
+      const id = Number(x[1]), rest = x[2] || '';
+      const mine = tokenOk(req, cfg.adminToken) || M.canManage(db, id, req.headers['x-manage-key']);
+      if (m === 'GET' && rest === '') {
+        const post = M.getPost(db, id, { withReplies: mine });
+        if (!post || (post.status === 'removed' && !mine)) return json(req, res, 404, { error: 'Post not found' });
+        return json(req, res, 200, { ...post, canManage: mine });
+      }
+      if (m === 'POST' && rest === '/reply') {
+        if (limitedBy(joinHits, clientIp(req) + ':mreply', 20, 3_600_000)) return json(req, res, 429, { error: 'Too many replies. Try again later.' });
+        const r = M.reply(db, id, await readJson(req, 4000));
+        return json(req, res, r.status, r.error ? { error: r.error } : r);
+      }
+      if (m === 'POST' && (rest === '/close' || rest === '/reopen')) {
+        if (!mine) return json(req, res, 403, { error: 'Only the person who posted can change this' });
+        return json(req, res, 200, { ok: M.setStatus(db, id, rest === '/close' ? 'closed' : 'open') });
+      }
+      return json(req, res, 404, { error: 'Not found' });
+    }
+
     // ---- Staking Board ----
     if (m === 'GET' && p === '/api/stakes') return json(req, res, 200, S.listBoard(db), { 'Cache-Control': 'no-cache' });
     if (m === 'POST' && p === '/api/stakes') {
@@ -360,6 +389,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         const ok = x[2] === 'delete' ? !A.hostAction(db, a, 'delete').error : x[2] === 'restore' ? A.restoreAuction(db, a) : A.purgeAuction(db, a);
         log(`auction ${a.code} ${x[2]} by admin: ${ok ? 'ok' : 'failed'}`);
         return json(req, res, ok ? 200 : 400, ok ? { ok: true } : { error: 'Could not do that' });
+      }
+      if (m === 'GET' && p === '/api/admin/matches') return json(req, res, 200, { posts: M.adminList(db) });
+      if ((x = p.match(/^\/api\/admin\/matches\/(\d+)\/(remove|restore)$/)) && m === 'POST') {
+        const ok = M.setStatus(db, Number(x[1]), x[2] === 'remove' ? 'removed' : 'open');
+        log(`match post ${x[1]} ${x[2]} by admin`);
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Post not found' });
       }
       if (m === 'GET' && p === '/api/admin/stakes/all') return json(req, res, 200, S.adminStakes(db));
       if ((x = p.match(/^\/api\/admin\/stakes\/(\d+)\/(archive|repost|purge)$/)) && m === 'POST') {
