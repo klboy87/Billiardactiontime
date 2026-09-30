@@ -469,3 +469,5 @@ table.t tr.noline td{border-bottom:0}
 .mcomment{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .mcomment-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mcomment-top .btn{margin-left:auto;padding:6px 10px}
 .mcomment p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.mcontact{margin:6px 0 0!important;font-size:14px;font-weight:600}
+.mcomment a,.matchcard a{overflow-wrap:anywhere}

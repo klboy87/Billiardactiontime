@@ -56,7 +56,7 @@ export function validatePost(b, now = Date.now()) {
   if (until < date) return { error: 'The end date is before the start date' };
   if (!(expires > now && expires < now + 62 * DAY)) return { error: 'Pick a day within the next two months' };
   return { value: { name, city, state, room: s(b.room, 80) || null, game, stakeMin: min, stakeMax: max, fargo, date, until, time: parseTime(b.time),
-    expiresMs: expires, contact: s(b.contact, 80) || null, note: s(b.note, 280) || null } };
+    expiresMs: expires, contact: s(b.contact, 120) || null, note: s(b.note, 280) || null } };
 }
 
 export function createPost(db, v) {
@@ -149,10 +149,10 @@ export function adminList(db) {
     ORDER BY p.id DESC LIMIT 300`).all().map(r => shape(r));
 }
 
-// Public comments anyone can read. The poster and the site admin can delete them.
+// Public comments anyone can read. Only the site admin can delete them.
 export function listComments(db, id) {
-  return db.prepare('SELECT id, name, body, created_at FROM match_comments WHERE post_id=? AND deleted=0 ORDER BY id LIMIT 300').all(id)
-    .map(c => ({ id: c.id, name: c.name, body: c.body, createdAt: c.created_at }));
+  return db.prepare('SELECT id, name, body, contact, created_at FROM match_comments WHERE post_id=? AND deleted=0 ORDER BY id LIMIT 300').all(id)
+    .map(c => ({ id: c.id, name: c.name, body: c.body, contact: c.contact || null, createdAt: c.created_at }));
 }
 export function addComment(db, id, b) {
   const p = db.prepare('SELECT status FROM match_posts WHERE id=?').get(id);
@@ -162,7 +162,8 @@ export function addComment(db, id, b) {
   if (!body) return { status: 400, error: 'Write a comment' };
   const dup = db.prepare('SELECT 1 FROM match_comments WHERE post_id=? AND name=? AND body=? AND deleted=0').get(id, name, body);
   if (dup) return { status: 400, error: 'You already posted that' };
-  const r = db.prepare('INSERT INTO match_comments (post_id, name, body) VALUES (?,?,?)').run(id, name, body);
+  const contact = clean(b?.contact).slice(0, 120) || null;
+  const r = db.prepare('INSERT INTO match_comments (post_id, name, body, contact) VALUES (?,?,?,?)').run(id, name, body, contact);
   return { status: 201, ok: true, id: Number(r.lastInsertRowid) };
 }
 export function deleteComment(db, id, cid) {

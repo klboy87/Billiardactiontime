@@ -1353,8 +1353,8 @@
         <li><span aria-hidden="true">💰</span> ${esc(stakeLabel(p))}</li>
         <li><span aria-hidden="true">📅</span> ${esc(whenLabel(p))}</li>
       </ul>
-      ${p.note ? `<p class="match-note">“${esc(p.note)}”</p>` : ''}
-      ${p.contact ? `<p class="muted" style="margin:0 0 8px;font-size:14px">Reach them: <b style="color:var(--text)">${esc(p.contact)}</b></p>` : ''}
+      ${p.note ? `<p class="match-note">“${linkContacts(p.note)}”</p>` : ''}
+      ${p.contact ? `<p class="muted" style="margin:0 0 8px;font-size:14px">Reach them: <b style="color:var(--text)">${linkContacts(p.contact)}</b></p>` : ''}
       ${full ? '' : `<p class="match-stats"><a href="#/matches/${p.id}?c=1">💬 ${p.commentCount ? `${p.commentCount} comment${p.commentCount === 1 ? '' : 's'}` : 'Comment'}</a>${p.replyCount ? `<span>🙋 ${p.replyCount} in</span>` : ''}</p>
       <div class="actbar"><button type="button" class="btn btn-green" data-im-in="${p.id}">I'm In</button><a class="btn btn-out" href="#/matches/${p.id}">Details</a><button type="button" class="btn btn-out" data-mshare="${p.id}">Share</button></div>
       <div class="im-in" hidden></div>`}
@@ -1376,6 +1376,19 @@
     } catch (err) { msg.innerHTML = `<p class="aerr">${esc(err.message)}</p>`; }
   }
 
+
+  // Turns phone numbers, emails and Facebook/Messenger links in text into tap-to-contact links.
+  // Everything else stays plain text (so spam links don't become clickable).
+  const CONTACT_RE = /((?:https?:\/\/)?(?:www\.|m\.|web\.)?(?:facebook\.com|fb\.com|fb\.me|m\.me|messenger\.com)\/[^\s<>"']+)|([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})|((?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b)/gi;
+  function linkContacts(text) {
+    const s = String(text ?? ''); let out = '', last = 0;
+    for (const m of s.matchAll(CONTACT_RE)) {
+      out += esc(s.slice(last, m.index)); last = m.index + m[0].length;
+      const href = m[1] ? (/^https?:/i.test(m[1]) ? m[1] : 'https://' + m[1]) : m[2] ? 'mailto:' + m[2] : 'tel:' + m[3].replace(/[^\d+]/g, '');
+      out += `<a href="${esc(href)}"${m[1] ? ' target="_blank" rel="noopener nofollow ugc"' : ''}>${esc(m[0])}</a>`;
+    }
+    return out + esc(s.slice(last));
+  }
   const matchShareUrl = p => `${location.origin}/match/${p.id}`;
   const matchShareText = p => `${p.name} is looking for ${p.game === 'Other' ? 'a match' : p.game + ' action'} in ${p.city}, ${p.state} (${stakeLabel(p)}, ${whenLabel(p)}). Want it?`;
   // Phone share sheet when there is one (Facebook, Messenger, TikTok, texts…); otherwise copy the link.
@@ -1398,17 +1411,19 @@
   function commentHtml(c, canDel) {
     const when = (c.createdAt || '').replace(' ', 'T') + 'Z';
     const d = new Date(when), ago = isNaN(d) ? '' : d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-    return `<div class="mcomment" data-cid="${c.id}"><div class="mcomment-top"><b>${esc(c.name)}</b><small class="muted">${esc(ago)}</small>${canDel ? `<button type="button" class="btn btn-out btn-sm" data-cdel="${c.id}">Delete</button>` : ''}</div><p>${esc(c.body)}</p></div>`;
+    return `<div class="mcomment" data-cid="${c.id}"><div class="mcomment-top"><b>${esc(c.name)}</b><small class="muted">${esc(ago)}</small>${canDel ? `<button type="button" class="btn btn-out btn-sm" data-cdel="${c.id}">Delete</button>` : ''}</div><p>${linkContacts(c.body)}</p>${c.contact ? `<p class="mcontact">📞 ${linkContacts(c.contact)}</p>` : ''}</div>`;
   }
   function commentSection(p) {
-    let saved = ''; try { saved = localStorage.getItem('bat_match_name') || ''; } catch { /* ignore */ }
+    let saved = '', savedContact = ''; try { saved = localStorage.getItem('bat_match_name') || ''; savedContact = localStorage.getItem('bat_match_contact') || ''; } catch { /* ignore */ }
+    const isAdminView = !!adminToken();
     return `<section id="comments" class="mcomments-wrap"><h2 class="stake-h">Comments (<span id="cCount">${p.comments.length}</span>)</h2>
-      <div class="mcomments" id="cList">${p.comments.map(c => commentHtml(c, p.canManage)).join('') || '<p class="muted" id="cEmpty">No comments yet. Start the conversation.</p>'}</div>
+      <div class="mcomments" id="cList">${p.comments.map(c => commentHtml(c, isAdminView)).join('') || '<p class="muted" id="cEmpty">No comments yet. Start the conversation.</p>'}</div>
       <form class="card" id="cForm" style="margin-top:12px">
         <div class="fg"><label class="f">Your name *</label><input name="name" required maxlength="40" value="${esc(saved)}"></div>
         <div class="fg"><label class="f">Comment *</label><textarea name="body" required maxlength="500" rows="3" placeholder="Ask a question, talk some trash, set up the race…"></textarea></div>
+        <div class="fg"><label class="f">How to reach you</label><input name="contact" maxlength="120" value="${esc(savedContact)}" placeholder="Optional: phone, email or Facebook link"></div>
         <div id="cMsg"></div><button class="btn btn-green" type="submit">Post Comment</button>
-        <p class="muted" style="font-size:13px;margin:8px 0 0">Comments are public. Keep it respectful. Don't post anyone's phone number here; use I'm In to send yours privately.</p>
+        <p class="muted" style="font-size:13px;margin:8px 0 0">Comments are public, including any contact info you add. Keep it respectful. Want to share your number privately instead? Use I'm In.</p>
       </form></section>`;
   }
 
@@ -1493,7 +1508,7 @@
           <p class="muted" style="font-size:13px;margin:0">Your post shows from the start date and comes down by itself after the end date.</p>
         </fieldset>
         <div class="fg"><label class="f">Around what time? (start day)</label><input name="time" type="time"></div>
-        <div class="fg"><label class="f">Public contact</label><input name="contact" maxlength="80" placeholder="Optional: shown on your post (phone, Facebook, IG)"></div>
+        <div class="fg"><label class="f">How players can reach you</label><input name="contact" maxlength="120" placeholder="Optional: phone, email or Facebook link (shown on your post)"></div>
         <div class="fg"><label class="f">Anything else?</label><textarea name="note" maxlength="280" rows="2" placeholder="e.g. Looking for 9-ball, race to 7, will play anybody under 600"></textarea></div>
         <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I'm 18+. I understand this site only connects players and never handles money, and I'll follow the laws where I play.</label>
         <div id="matchMsg"></div>
@@ -1570,14 +1585,14 @@
     });
     const cList = document.getElementById('cList'), cForm = document.getElementById('cForm');
     if (!cForm) return;
-    const drawComments = list => { document.getElementById('cCount').textContent = list.length; cList.innerHTML = list.map(c => commentHtml(c, p.canManage)).join('') || '<p class="muted">No comments yet. Start the conversation.</p>'; };
+    const drawComments = list => { document.getElementById('cCount').textContent = list.length; cList.innerHTML = list.map(c => commentHtml(c, !!adminToken())).join('') || '<p class="muted">No comments yet. Start the conversation.</p>'; };
     cForm.addEventListener('submit', async e => {
       e.preventDefault();
       const b = Object.fromEntries(new FormData(cForm)), btn = cForm.querySelector('button[type=submit]');
       btn.disabled = true;
       try {
         const r = await api(`/api/matches/${id}/comment`, { method: 'POST', body: b });
-        try { localStorage.setItem('bat_match_name', b.name); } catch { /* ignore */ }
+        try { localStorage.setItem('bat_match_name', b.name); localStorage.setItem('bat_match_contact', b.contact || ''); } catch { /* ignore */ }
         cForm.body.value = ''; document.getElementById('cMsg').innerHTML = ''; drawComments(r.comments);
         cList.lastElementChild?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       } catch (err) { document.getElementById('cMsg').innerHTML = errorBox(err.message); }

@@ -383,6 +383,20 @@ export function sitemapXml(db, cfg) {
 export function ensureFooter(db) { if (!footCache || Date.now() - footCache.at > 300_000) buildFooter(db); }
 export const legacyStatePath = code => facetPath({ state: code });
 
+
+// Turns phone numbers, emails and Facebook/Messenger links in text into tap-to-contact links.
+// Everything else stays plain text (so spam links don't become clickable).
+const CONTACT_RE = /((?:https?:\/\/)?(?:www\.|m\.|web\.)?(?:facebook\.com|fb\.com|fb\.me|m\.me|messenger\.com)\/[^\s<>"']+)|([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})|((?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b)/gi;
+function linkContacts(text) {
+  const s = String(text ?? ''); let out = '', last = 0;
+  for (const m of s.matchAll(CONTACT_RE)) {
+    out += esc(s.slice(last, m.index)); last = m.index + m[0].length;
+    const href = m[1] ? (/^https?:/i.test(m[1]) ? m[1] : 'https://' + m[1]) : m[2] ? 'mailto:' + m[2] : 'tel:' + m[3].replace(/[^\d+]/g, '');
+    out += `<a href="${esc(href)}"${m[1] ? ' target="_blank" rel="noopener nofollow ugc"' : ''}>${esc(m[0])}</a>`;
+  }
+  return out + esc(s.slice(last));
+}
+
 // ---- shareable Match Finder post: /match/<id> ----
 // A real page (not an app hash link) so Facebook, X and texts show who's looking for action.
 // Posts expire within days, so these pages are kept out of search results.
@@ -404,10 +418,11 @@ export function matchPage(cfg, p, comments) {
     <ul class="match-facts"><li><span aria-hidden="true">📍</span> ${esc(p.city)}, ${esc(p.state)}${p.room ? ' · ' + esc(p.room) : ''}</li>
     <li><span aria-hidden="true">🎱</span> ${esc(p.game === 'Other' ? 'Any game' : p.game)}</li><li><span aria-hidden="true">💰</span> ${esc(matchStakes(p))}</li>
     <li><span aria-hidden="true">📅</span> ${esc(when)}</li></ul>
-    ${p.note ? `<p class="match-note">“${esc(p.note)}”</p>` : ''}
+    ${p.note ? `<p class="match-note">“${linkContacts(p.note)}”</p>` : ''}
+    ${p.contact ? `<p>Reach them: <b>${linkContacts(p.contact)}</b></p>` : ''}
     <div class="actbar"><a class="btn btn-green" href="${app}">${open ? "I'm In" : 'See Details'}</a><a class="btn btn-gold" href="/#/matches">Find More Action</a></div></article>
   <h2 class="seo-h2">Comments (${comments.length})</h2>
-  ${comments.length ? `<div class="mcomments">${comments.map(c => `<div class="mcomment"><b>${esc(c.name)}</b><p>${esc(c.body)}</p></div>`).join('')}</div>` : '<p class="muted">No comments yet.</p>'}
+  ${comments.length ? `<div class="mcomments">${comments.map(c => `<div class="mcomment"><b>${esc(c.name)}</b><p>${linkContacts(c.body)}</p>${c.contact ? `<p class="mcontact">📞 ${linkContacts(c.contact)}</p>` : ''}</div>`).join('')}</div>` : '<p class="muted">No comments yet.</p>'}
   <p><a class="btn btn-out" href="/#/matches/${p.id}?c=1">Add a Comment</a></p>
   <p class="stake-note">Match Finder only connects players. Billiard Action Time never takes, holds or pays out money. You must be 18+ and follow the laws where you play.</p>`;
   return layout(cfg, { title, description, path: `/match/${p.id}`, body, noindex: true });

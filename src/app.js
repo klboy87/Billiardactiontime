@@ -324,7 +324,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     }
     if (m === 'POST' && (x = p.match(/^\/api\/matches\/(\d+)\/comments\/(\d+)\/delete$/))) {
       const id = Number(x[1]);
-      if (!(tokenOk(req, cfg.adminToken) || M.canManage(db, id, req.headers['x-manage-key']))) return json(req, res, 403, { error: 'Only the person who posted can delete comments' });
+      if (!tokenOk(req, cfg.adminToken)) return json(req, res, 403, { error: 'Only the site admin can delete comments' });
       return json(req, res, 200, { ok: M.deleteComment(db, id, Number(x[2])), comments: M.listComments(db, id) });
     }
     if ((x = p.match(/^\/api\/matches\/(\d+)(\/[a-z]+)?$/))) {
