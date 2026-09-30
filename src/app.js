@@ -9,9 +9,9 @@ import { GAMES, TABLE_SIZES, normalizeState, parseDate, parseTime, parseMoney, p
 import { safeUrl } from './mapping.js';
 import { ingest, runSync } from './sync.js';
 import { geocodePending } from './geocode.js';
-import { readFlyer } from './scan.js';
+import { readFlyer, readMoneyFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
-import { renderShareCard, renderSiteShareCard } from './sharecard.js';
+import { renderShareCard, renderSiteShareCard, moneyMatchContent } from './sharecard.js';
 
 // Drawing a card takes a fraction of a second, so keep the most recent ones in memory.
 const cardCache = new Map();
@@ -27,6 +27,8 @@ import * as S from './stakes.js';
 import * as A from './auctions.js';
 import * as SEO from './seo.js';
 import * as M from './matches.js';
+import * as MM from './moneymatches.js';
+import * as MP from './moneypages.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -314,6 +316,57 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return json(req, res, 404, { error: 'Not found' });
     }
 
+    // ---- Money Matches ----
+    if (m === 'GET' && p === '/api/money-matches') {
+      const { upcoming, results } = MM.listPublic(db);
+      return json(req, res, 200, { upcoming, results: results.slice(0, 100), spotlight: MM.spotlight(db) }, { 'Cache-Control': 'no-cache' });
+    }
+    if (m === 'POST' && p === '/api/money-matches/scan') {
+      if (!cfg.anthropicKey) return json(req, res, 501, { error: 'Flyer reading is not set up on this site' });
+      if (limited(clientIp(req) + ':scan')) return json(req, res, 429, { error: 'Too many flyers. Try again in an hour.' });
+      const b = await readJson(req);
+      if (!b || typeof b.image !== 'string' || b.image.length > 2_800_000) return json(req, res, 400, { error: 'Send a flyer image' });
+      try { return json(req, res, 200, { fields: await readMoneyFlyer(b.image, cfg, { fetchFn }) }); }
+      catch (e) { return json(req, res, 502, { error: e.message }); }
+    }
+    if (m === 'POST' && p === '/api/money-matches') {
+      const isAdmin = tokenOk(req, cfg.adminToken);
+      if (!isAdmin && limitedBy(joinHits, clientIp(req) + ':mmpost', 5, 3_600_000)) return json(req, res, 429, { error: 'Too many posts. Try again in an hour.' });
+      const v = MM.validate(await readJson(req, 3_500_000));
+      if (v.error) return json(req, res, 400, { error: v.error });
+      const id = MM.create(db, v.value, v.flyer, { status: isAdmin ? 'published' : 'pending' });
+      log(`money match ${id} posted${isAdmin ? ' by admin' : ' (pending review)'}`);
+      const mm = MM.get(db, id);
+      return json(req, res, 201, { id, status: mm.status, path: mm.path });
+    }
+    if ((x = p.match(/^\/api\/money-matches\/(\d+)(\/[a-z]+)?$/))) {
+      const id = Number(x[1]), rest = x[2] || '';
+      const isAdmin = tokenOk(req, cfg.adminToken);
+      const mm = MM.get(db, id, { admin: isAdmin });
+      if (!mm || (mm.status !== 'published' && !isAdmin)) return json(req, res, 404, { error: 'Match not found' });
+      const voter = clean(req.headers['x-voter']).slice(0, 64);
+      const key = voter.length >= 16 ? MM.voterKey(voter, cfg.adminToken || 'bat') : null;
+      if (m === 'GET' && rest === '') return json(req, res, 200, { match: mm, tally: MM.tally(db, id), myPick: MM.myPick(db, id, key), comments: MM.listComments(db, id), stakes: MM.linkedStakes(db, id) }, { 'Cache-Control': 'no-store' });
+      if (m === 'POST' && rest === '/vote') {
+        if (!key) return json(req, res, 400, { error: 'Your browser blocked voting. Try again.' });
+        if (limitedBy(joinHits, clientIp(req) + ':mmvote', 60, 3_600_000)) return json(req, res, 429, { error: 'Too many votes from here. Try again later.' });
+        const b = (await readJson(req, 2000)) || {};
+        const r = MM.vote(db, id, key, Number(b.pick));
+        return json(req, res, r.status, r.error ? { error: r.error } : { ok: true, tally: MM.tally(db, id), myPick: Number(b.pick) });
+      }
+      if (m === 'POST' && rest === '/comment') {
+        if (limitedBy(joinHits, clientIp(req) + ':mmcomment', 30, 3_600_000)) return json(req, res, 429, { error: 'Too many comments. Try again later.' });
+        if (limitedBy(fastHits, clientIp(req) + ':mmc', 1, 5000)) return json(req, res, 429, { error: 'Slow down a little' });
+        const r = MM.addComment(db, id, await readJson(req, 4000));
+        return json(req, res, r.status, r.error ? { error: r.error } : { ok: true, comments: MM.listComments(db, id) });
+      }
+      return json(req, res, 404, { error: 'Not found' });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/money-matches\/(\d+)\/comments\/(\d+)\/delete$/))) {
+      if (!tokenOk(req, cfg.adminToken)) return json(req, res, 403, { error: 'Only the site admin can delete comments' });
+      return json(req, res, 200, { ok: MM.deleteComment(db, Number(x[1]), Number(x[2])), comments: MM.listComments(db, Number(x[1])) });
+    }
+
     // ---- Match Finder ----
     if (m === 'GET' && p === '/api/matches') return json(req, res, 200, { posts: M.listOpen(db) }, { 'Cache-Control': 'no-store' });
     if (m === 'POST' && p === '/api/matches') {
@@ -408,6 +461,20 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         log(`auction ${a.code} ${x[2]} by admin: ${ok ? 'ok' : 'failed'}`);
         return json(req, res, ok ? 200 : 400, ok ? { ok: true } : { error: 'Could not do that' });
       }
+      if (m === 'GET' && p === '/api/admin/money-matches') return json(req, res, 200, { matches: MM.adminList(db) });
+      if ((x = p.match(/^\/api\/admin\/money-matches\/(\d+)$/)) && m === 'PUT') {
+        const v = MM.validate(await readJson(req, 3_500_000));
+        if (v.error) return json(req, res, 400, { error: v.error });
+        return MM.update(db, Number(x[1]), v.value, v.flyer) ? json(req, res, 200, { ok: true, match: MM.get(db, Number(x[1])) }) : json(req, res, 404, { error: 'Match not found' });
+      }
+      if ((x = p.match(/^\/api\/admin\/money-matches\/(\d+)\/(publish|feature|unfeature|result|archive|repost|purge)$/)) && m === 'POST') {
+        const id = Number(x[1]), act = x[2];
+        const r = act === 'publish' ? MM.publish(db, id) : act === 'feature' ? MM.setFeatured(db, id, true) : act === 'unfeature' ? MM.setFeatured(db, id, false)
+          : act === 'result' ? MM.setResult(db, id, (await readJson(req, 2000)) || {}) : act === 'archive' ? MM.archive(db, id) : act === 'repost' ? MM.repost(db, id) : MM.purge(db, id);
+        if (r && r.error) return json(req, res, 400, { error: r.error });
+        log(`money match ${id} ${act} by admin: ${r ? 'ok' : 'failed'}`);
+        return json(req, res, r ? 200 : 400, r ? { ok: true } : { error: 'Could not do that' });
+      }
       if (m === 'GET' && p === '/api/admin/matches') return json(req, res, 200, { posts: M.adminList(db) });
       if ((x = p.match(/^\/api\/admin\/matches\/(\d+)\/(archive|repost|purge)$/)) && m === 'POST') {
         const id = Number(x[1]);
@@ -492,6 +559,45 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       trackVisit(req, parts.length ? 'listing-page' : 'states-page');
       return html(200, out);
     }
+    // ---- Money Match pages, flyers, calendar files and share graphics ----
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/money-match-flyer\/(\d+)\.img$/))) {
+      const mm = String(MM.getFlyer(db, Number(x[1])) || '').match(/^data:(image\/[a-z]+);base64,(.+)$/);
+      if (!mm) return send(req, res, 404, 'No flyer', { 'Content-Type': 'text/plain' });
+      return send(req, res, 200, Buffer.from(mm[2], 'base64'), { 'Content-Type': mm[1], 'Cache-Control': 'public, max-age=86400' });
+    }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/money-match\/(\d+)\/card-(og|square|story)\.png$/))) {
+      const mm = MM.get(db, Number(x[1]));
+      if (!mm || mm.status !== 'published') return send(req, res, 404, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png' });
+      const format = { og: 'landscape', square: 'square', story: 'story' }[x[2]];
+      const png = cachedCard(`mm${mm.id}|${format}|${mm.updatedAt}`, () => renderShareCard(mm, format, host, moneyMatchContent(mm)));
+      const dl = url.searchParams.has('download') ? { 'Content-Disposition': `attachment; filename="money-match-${mm.id}-${format}.png"` } : {};
+      return send(req, res, 200, png, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600', ...dl });
+    }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/money-match\/(\d+)\.ics$/))) {
+      const mm = MM.get(db, Number(x[1]));
+      if (!mm || mm.status !== 'published') return notFoundPage();
+      return send(req, res, 200, MP.ics(cfg, mm), { 'Content-Type': 'text/calendar; charset=utf-8', 'Content-Disposition': `attachment; filename="money-match-${mm.id}.ics"` });
+    }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/money-match\/([a-z0-9-]{3,200})\/?$/))) {
+      SEO.ensureFooter(db);
+      const mm = MM.getBySlug(db, x[1]);
+      if (!mm || mm.status !== 'published') return notFoundPage();
+      trackVisit(req, 'money-page');
+      return html(200, MP.matchPage(cfg, mm, { tally: MM.tally(db, mm.id), comments: MM.listComments(db, mm.id), stakes: MM.linkedStakes(db, mm.id) }), { 'Cache-Control': 'no-cache' });
+    }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/money-matches' || p === '/money-matches/')) {
+      if (p === '/money-matches') return moved('/money-matches/');
+      SEO.ensureFooter(db);
+      trackVisit(req, 'money-hub');
+      return html(200, MP.hubPage(cfg, MM.listPublic(db)), { 'Cache-Control': 'no-cache' });
+    }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/money-matches\/player\/([a-z0-9-]{1,120})\/?$/))) {
+      SEO.ensureFooter(db);
+      const r = MM.playerMatches(db, x[1]);
+      if (!r.name) return notFoundPage();
+      trackVisit(req, 'money-player');
+      return html(200, MP.playerPage(cfg, x[1], r.name, r.matches));
+    }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/match\/(\d+)\/?$/))) {   // shareable Match Finder post
       SEO.ensureFooter(db);
       const post = M.getPost(db, Number(x[1]));
@@ -516,7 +622,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return code ? moved(SEO.legacyStatePath(code)) : notFoundPage();
     }
     if (m === 'GET' && (p === '/state' || p === '/state/')) return moved('/tournaments/');
-    if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
+    if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
+      const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
+      const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
+      return [{ path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
+        ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
+    })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
     if (m === 'GET' || m === 'HEAD') {

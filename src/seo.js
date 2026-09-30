@@ -107,7 +107,7 @@ function parseFacets(db, parts) {
 const matches = (t, f) => (!f.state || t.venue.state === f.state) && (!f.city || slugify(t.venue.city) === f.city) && (!f.game || t.game === f.game);
 
 // ---- shared page chrome ----
-function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage }) {
+export function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage }) {
   const url = cfg.publicUrl + path;
   const ld = jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('');
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -119,7 +119,7 @@ function layout(cfg, { title, description, path, body, jsonld = [], noindex = fa
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
 <link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script></head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
-<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/#/calendar">Calendar</a><a href="/#/stakes">Staking Board</a><a href="/#/auctions">Calcutta</a><a class="cta" href="/#/post">Post a Tournament</a></nav></div></header>
+<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/money-matches/">Money Matches</a><a href="/#/calendar">Calendar</a><a href="/#/stakes">Staking Board</a><a href="/#/auctions">Calcutta</a><a class="cta" href="/#/post">Post a Tournament</a></nav></div></header>
 <main class="wrap page seo">${body}</main>
 ${footer(cfg)}</body></html>`;
 }
@@ -359,7 +359,7 @@ export function venuePage(db, cfg, venueId) {
 }
 
 // ---- sitemap ----
-export function sitemapXml(db, cfg) {
+export function sitemapXml(db, cfg, extra = []) {
   const ix = index(db), today = todayIso();
   const cutoff = new Date(Date.now() - 90 * 86_400_000).toISOString().slice(0, 10);
   const up = ix.all.filter(t => t.date >= today);
@@ -376,6 +376,7 @@ export function sitemapXml(db, cfg) {
   for (const f of facets) { const o = JSON.parse(f); add(facetPath(o), today, o.city ? '0.6' : o.state ? '0.8' : '0.8'); }
   for (const t of ix.all) if (t.date >= cutoff) add(tournamentPath(db, t), (t.updatedAt || today).slice(0, 10), t.date >= today ? '0.7' : '0.3');
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
+  for (const e of extra) add(e.path, e.lastmod || today, e.pri || '0.6');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...urls].map(([p, u]) =>
     `<url><loc>${esc(cfg.publicUrl + p)}</loc><lastmod>${u.lastmod}</lastmod><priority>${u.pri}</priority></url>`).join('\n')}\n</urlset>`;
 }
@@ -387,7 +388,7 @@ export const legacyStatePath = code => facetPath({ state: code });
 // Turns phone numbers, emails and Facebook/Messenger links in text into tap-to-contact links.
 // Everything else stays plain text (so spam links don't become clickable).
 const CONTACT_RE = /((?:https?:\/\/)?(?:www\.|m\.|web\.)?(?:facebook\.com|fb\.com|fb\.me|m\.me|messenger\.com)\/[^\s<>"']+)|([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})|((?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b)/gi;
-function linkContacts(text) {
+export function linkContacts(text) {
   const s = String(text ?? ''); let out = '', last = 0;
   for (const m of s.matchAll(CONTACT_RE)) {
     out += esc(s.slice(last, m.index)); last = m.index + m[0].length;

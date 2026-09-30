@@ -232,11 +232,22 @@ const LAYOUTS = {
   story: { w: 1080, h: 1920, pad: 80, glow: [540, 420], ball: [540, 420, 200], textW: 920, brand: 32, head: [124, 108, 94, 82, 72, 62], headLines: 3, subSize: 42, row: 54, rowGap: 104, icon: 68, cta: 46, centered: true }
 };
 
-export function renderShareCard(t, format = 'landscape', siteHost = 'billiardactiontime.com') {
+// A money match card uses the same design with its own words.
+export function moneyMatchContent(m) {
+  const up = s => clean(s).toUpperCase();
+  const game = m.game && m.game !== 'Other' ? m.game : '';
+  const rows = [['date', when(m), null, m.date], ['pin', `${up(m.city)}, ${m.state}`, clean(m.room)]];
+  if (m.winner) rows.push(['trophy', `${up(m.winner === 1 ? m.player1 : m.player2)} WINS ${Math.max(m.score1, m.score2)}-${Math.min(m.score1, m.score2)}`]);
+  else if (m.stakes) rows.push(['money', `${up(m.stakes)} ON THE LINE`]);
+  if (game || m.race) rows.push(['target', [game.toUpperCase(), m.race ? `RACE TO ${m.race}` : ''].filter(Boolean).join(' · ')]);
+  return { headline: `${up(m.player1)} VS ${up(m.player2)}`, sub: `${game ? game + ' ' : ''}money match`, rows: rows.slice(0, 4), game: m.game, cta: 'VIEW MATCH' };
+}
+
+export function renderShareCard(t, format = 'landscape', siteHost = 'billiardactiontime.com', content = null) {
   const L = LAYOUTS[format] || LAYOUTS.landscape;
   const c = canvas(L.w, L.h);
   background(c, ...L.glow);
-  const k = cardContent(t);
+  const k = content || cardContent(t);
   const P = L.pad;
 
   // gold rail along the top
@@ -302,7 +313,7 @@ export function renderShareCard(t, format = 'landscape', siteHost = 'billiardact
   });
 
   // call to action + address
-  const cf = font('black', L.cta), label = 'VIEW EVENT';
+  const cf = font('black', L.cta), label = k.cta || 'VIEW EVENT';
   const lw = measure(cf, label, 1), aw = L.cta * 1.1, pw = lw + aw + L.cta * 1.9, ph = L.cta * 2.1;
   const px = L.centered ? (L.w - pw) / 2 : P, py = ctaTop;
   roundRect(c, px, py, pw, ph, ph / 2, GOLD);

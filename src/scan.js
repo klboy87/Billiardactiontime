@@ -18,7 +18,31 @@ export function cleanScan(o) {
   };
 }
 
+const MONEY_PROMPT = today => `Read this pool (billiards) money match / challenge match flyer. Today's date is ${today}.
+Reply with ONLY a JSON object using these keys, and null for anything the flyer does not state (do not guess):
+player1, player2 (the two players' full names as printed), game (one of: ${GAMES.join(', ')}), race (the race number only, e.g. 21),
+stakes (what is on the line exactly as printed, e.g. "$10,000+"), date (YYYY-MM-DD; if only a weekday like "Saturday" is printed, use the next upcoming one; if the year is not printed use the next upcoming occurrence),
+time (24-hour HH:MM), room (pool room / venue name), address, city, state (2-letter code), streamUrl (a livestream link if printed), notes (one short sentence of anything else useful).`;
+
+export function cleanMoneyScan(o) {
+  const s = (v, n) => clean(v).slice(0, n) || null;
+  return {
+    player1: s(o.player1, 60), player2: s(o.player2, 60), game: GAMES.includes(o.game) ? o.game : null,
+    race: parseInteger(o.race), stakes: s(o.stakes, 40), date: parseDate(o.date), time: parseTime(o.time),
+    room: s(o.room, 120), address: s(o.address, 160), city: s(o.city, 80), state: normalizeState(o.state) || null,
+    streamUrl: s(o.streamUrl, 300), notes: s(o.notes, 300)
+  };
+}
+
+export async function readMoneyFlyer(dataUrl, cfg, { fetchFn = fetch } = {}) {
+  return cleanMoneyScan(await askAboutImage(dataUrl, cfg, MONEY_PROMPT, fetchFn));
+}
+
 export async function readFlyer(dataUrl, cfg, { fetchFn = fetch } = {}) {
+  return cleanScan(await askAboutImage(dataUrl, cfg, PROMPT, fetchFn));
+}
+
+async function askAboutImage(dataUrl, cfg, promptFor, fetchFn) {
   const m = String(dataUrl).match(/^data:(image\/(?:png|jpeg|webp|gif));base64,([A-Za-z0-9+/=]+)$/);
   if (!m) throw new Error('Flyer must be a PNG, JPG, WebP or GIF image');
   const res = await fetchFn('https://api.anthropic.com/v1/messages', {
@@ -28,7 +52,7 @@ export async function readFlyer(dataUrl, cfg, { fetchFn = fetch } = {}) {
       model: cfg.scanModel, max_tokens: 800,
       messages: [{ role: 'user', content: [
         { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
-        { type: 'text', text: PROMPT(new Date().toISOString().slice(0, 10)) }] }]
+        { type: 'text', text: promptFor(new Date().toISOString().slice(0, 10)) }] }]
     })
   });
   if (!res.ok) throw new Error(`The flyer reader returned HTTP ${res.status}`);
@@ -36,5 +60,5 @@ export async function readFlyer(dataUrl, cfg, { fetchFn = fetch } = {}) {
   const text = (j.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
   const raw = text.match(/\{[\s\S]*\}/);
   if (!raw) throw new Error('The flyer reader did not return details');
-  try { return cleanScan(JSON.parse(raw[0])); } catch { throw new Error('The flyer reader returned something unreadable'); }
+  try { return JSON.parse(raw[0]); } catch { throw new Error('The flyer reader returned something unreadable'); }
 }

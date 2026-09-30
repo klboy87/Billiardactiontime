@@ -4,6 +4,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { slugify, zip5 } from './normalize.js';
 import { SCHEMA as MATCH_SCHEMA } from './matches.js';
+import { SCHEMA as MONEY_SCHEMA } from './moneymatches.js';
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS venues (
@@ -154,6 +155,7 @@ export function openDb(file) {
   db.exec('PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;');
   db.exec(SCHEMA);
   db.exec(MATCH_SCHEMA);
+  db.exec(MONEY_SCHEMA);
   // Columns added after launch: add them to databases created before they existed.
   for (const sql of ['ALTER TABLE auctions ADD COLUMN ends_ms INTEGER', 'ALTER TABLE auctions ADD COLUMN starts_ms INTEGER',
     'ALTER TABLE stakes ADD COLUMN prev_status TEXT',
@@ -161,7 +163,8 @@ export function openDb(file) {
     'ALTER TABLE stake_pieces ADD COLUMN paid_in INTEGER NOT NULL DEFAULT 0',   // backer paid for their piece
     'ALTER TABLE match_posts ADD COLUMN prev_status TEXT',                       // Match Finder archive
     'ALTER TABLE match_posts ADD COLUMN archived_by TEXT', 'ALTER TABLE match_posts ADD COLUMN archived_at TEXT',
-    'ALTER TABLE match_comments ADD COLUMN contact TEXT']) {
+    'ALTER TABLE match_comments ADD COLUMN contact TEXT',
+    'ALTER TABLE stakes ADD COLUMN money_match_id INTEGER']) {       // Staking Board post linked to a money match
     try { db.exec(sql); } catch { /* already there */ }
   }
   db.exec("UPDATE match_posts SET prev_status=COALESCE(prev_status,'open'), status='archived', archived_by=COALESCE(archived_by,'admin') WHERE status='removed'");

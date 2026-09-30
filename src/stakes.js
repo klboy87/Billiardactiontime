@@ -37,16 +37,18 @@ export function validateStake(b) {
       player, opponent: s(b.opponent, 60) || null, game: GAMES.includes(b.game) ? b.game : 'Other', race: s(b.race, 40) || null,
       bet: round2(bet), offered: Math.round(offered), markup: round2(markup), date, time: parseTime(b.time),
       venue: s(b.venue, 120) || null, city: s(b.city, 80) || null, state: normalizeState(b.state) || null,
-      stakeholder, contact: s(b.contact, 120) || null, notes: s(b.notes, 500) || null
+      stakeholder, contact: s(b.contact, 120) || null, notes: s(b.notes, 500) || null,
+      moneyMatchId: Number.isInteger(Number(b.moneyMatchId)) && Number(b.moneyMatchId) > 0 ? Number(b.moneyMatchId) : null
     }
   };
 }
 
 export function createStake(db, v) {
   const key = crypto.randomBytes(18).toString('base64url');
-  const r = db.prepare(`INSERT INTO stakes (player,opponent,game,race,bet,offered,markup,date,time,venue,city,state,stakeholder,contact,notes,manage_hash)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(v.player, v.opponent, v.game, v.race, v.bet, v.offered, v.markup, v.date, v.time,
-    v.venue, v.city, v.state, v.stakeholder, v.contact, v.notes, hashKey(key));
+  const mmId = v.moneyMatchId && db.prepare("SELECT id FROM money_matches WHERE id=? AND status='published'").get(v.moneyMatchId) ? v.moneyMatchId : null;
+  const r = db.prepare(`INSERT INTO stakes (player,opponent,game,race,bet,offered,markup,date,time,venue,city,state,stakeholder,contact,notes,manage_hash,money_match_id)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(v.player, v.opponent, v.game, v.race, v.bet, v.offered, v.markup, v.date, v.time,
+    v.venue, v.city, v.state, v.stakeholder, v.contact, v.notes, hashKey(key), mmId);
   return { id: Number(r.lastInsertRowid), key };
 }
 
@@ -64,6 +66,7 @@ function shapeStake(row, pieces, { privateView = false } = {}) {
     id: row.id, player: row.player, opponent: row.opponent, game: row.game, race: row.race,
     bet: row.bet, offered: row.offered, markup: row.markup, date: row.date, time: row.time,
     venue: row.venue, city: row.city, state: row.state, stakeholder: row.stakeholder, contact: row.contact, notes: row.notes,
+    moneyMatchId: row.money_match_id || null,
     status: row.status, prevStatus: row.prev_status || null, result: row.result, score: row.score, createdAt: row.created_at,
     sold, remaining: round2(Math.max(0, row.offered - sold)),
     pieces: pieces.map(p => ({

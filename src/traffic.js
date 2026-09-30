@@ -21,7 +21,9 @@ export const PAGES = {
   // server-rendered pages (what Google and shared links open first)
   'tournament-page': 'Tournament Page (from search/links)', 'state-page': 'State Page (from search/links)',
   'states-page': 'All States Page', 'venue-page': 'Venue Page (from search/links)',
-  'match-page': 'Match Finder Post (shared link)'
+  'match-page': 'Match Finder Post (shared link)',
+  money: 'Money Matches (app)', 'money-post': 'Post a Money Match', 'money-hub': 'Money Matches Page',
+  'money-page': 'Money Match Page', 'money-player': 'Money Match Player Page'
 };
 const ROUTE_TO_PAGE = { '': 'home', t: 'tournament' };
 export function pageFromHash(route) {
@@ -29,6 +31,7 @@ export function pageFromHash(route) {
   const first = parts[0].toLowerCase();
   if (first === 'stakes' && parts[1]) return parts[1] === 'new' ? 'stake-post' : 'stake';
   if (first === 'matches' && parts[1]) return parts[1] === 'new' ? 'match-post' : 'match-view';
+  if (first === 'money' && parts[1]) return 'money-post';
   if (first === 'auctions' && parts[1] === 'new') return 'auction-new';
   if (first === 'a' && parts[1]) return 'auction-room';
   const key = ROUTE_TO_PAGE[first] ?? first;

@@ -209,6 +209,7 @@
           <div class="totalstat" id="totalStat"><span class="ic">🎱</span> <span id="totalStatText">Loading tournament count…</span></div>
         </div>
       </section>
+      <div id="mmSpot"></div>
       <section class="sec tiles">
         <a class="tile t-blue" href="#/search"><div class="ic">🔍</div><h3>Find a Tournament</h3></a>
         <a class="tile t-orange" href="#/calendar"><div class="ic">📅</div><h3>Find by Date</h3></a>
@@ -218,6 +219,7 @@
         <a class="tile t-gold" href="#/stakes"><span class="free">NEW</span><div class="ic">🐎</div><h3>Stake Horse Board</h3></a>
         <a class="tile t-red" href="#/auctions"><span class="free">NEW</span><div class="ic">🔨</div><h3>Calcutta Auctions</h3></a>
         <a class="tile t-teal" href="#/matches"><span class="free">NEW</span><div class="ic">🎯</div><h3>Match Finder</h3></a>
+        <a class="tile t-money" href="#/money"><span class="free">NEW</span><div class="ic">💰</div><h3>Money Matches</h3></a>
       </section>
       <input type="file" id="homeFlyerInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
       <p class="muted" id="homeFlyerStatus" style="text-align:center"></p>
@@ -242,6 +244,7 @@
         </div>
       </section>`;
 
+    homeMoneySpot();
     document.getElementById('homeSearch').addEventListener('submit', e => {
       e.preventDefault();
       location.hash = '#/search?' + qs({ q: document.getElementById('homeQuery').value.trim() });
@@ -867,6 +870,8 @@
     try { stakeAdmin = await api('/api/admin/stakes/all'); } catch { stakeAdmin = { posts: [], archived: [] }; }
     let allAuctions;
     try { allAuctions = (await api('/api/admin/auctions')).auctions; } catch { allAuctions = []; }
+    let moneyAdmin;
+    try { moneyAdmin = (await api('/api/admin/money-matches')).matches; } catch { moneyAdmin = []; }
     let allMatches;
     try { allMatches = (await api('/api/admin/matches')).posts; } catch { allMatches = []; }
     let pv;
@@ -972,6 +977,7 @@
           `<button type="button" class="btn btn-green btn-sm" data-mmact="repost" data-mid="${m.id}">Repost</button> <a class="btn btn-out btn-sm" href="#/matches/${m.id}">View</a> <button type="button" class="btn btn-out btn-sm" data-mmact="purge" data-mid="${m.id}">Delete Forever</button>${m.expiresMs <= Date.now() ? '<br><small class="muted">Dates passed: Repost puts it up for today.</small>' : ''}`)).join('')}</tbody></table></div>`
           : '<p class="muted">Nothing archived. Posts players or you delete land here so you can repost them.</p>'}`;
       })()}
+      ${moneyAdminHtml(moneyAdmin)}
       <h2>Recent Sync Runs</h2>
       <table class="t"><thead><tr><th>Started</th><th>Status</th><th>Fetched</th><th>Inserted</th><th>Updated</th><th>Removed</th></tr></thead>
       <tbody>${(summary.recentRuns || []).map(r => `<tr><td>${esc((r.started_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(r.status)}</td><td>${r.fetched ?? 0}</td><td>${r.inserted ?? 0}</td><td>${r.updated ?? 0}</td><td>${r.removed ?? 0}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No sync runs yet.</td></tr>'}</tbody></table>`;
@@ -1011,6 +1017,7 @@
       if (act !== 'repost' && !tapTwice(b, act + 'm' + b.dataset.mid, act === 'purge' ? 'Tap again: gone for good' : 'Tap again to delete')) return;
       try { await api(`/api/admin/matches/${b.dataset.mid}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
     }));
+    wireMoneyAdmin();
     document.getElementById('pendingStakes').addEventListener('click', async e => {
       const card = e.target.closest('[data-sid]'); if (!card) return;
       const act = e.target.classList.contains('act-approve') ? 'approve' : e.target.classList.contains('act-reject') ? 'reject' : null;
@@ -1111,7 +1118,7 @@
     });
   }
 
-  async function stakePostForm() {
+  async function stakePostForm(params = new URLSearchParams()) {
     app.innerHTML = `
       <div class="crumbs"><a href="#/stakes">Staking Board</a> / Post Your Action</div>
       <div class="pagehead"><h1>Post Your Action</h1><p>Offer backers a piece of your match. Posts are reviewed before they go on the board.</p></div>
@@ -1142,6 +1149,7 @@
         <div class="fg"><label class="f">Who is holding the stake money? *</label><input name="stakeholder" required maxlength="80" placeholder="e.g. the house man, or a friend both sides trust"></div>
         <div class="fg"><label class="f">How backers can reach you</label><input name="contact" maxlength="120" placeholder="Phone, Facebook, or Instagram handle (shown publicly)"></div>
         <div class="fg"><label class="f">Notes</label><textarea name="notes" maxlength="500" rows="3"></textarea></div>
+        <input type="hidden" name="moneyMatchId" id="stakeMm" value="">
         <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I understand this site only keeps records and does not hold or send money. I'm 18+ and follow the laws where I play.</label>
         <div id="stakeMsg"></div>
         <button class="btn btn-green" type="submit">Submit for Review</button>
@@ -1151,6 +1159,16 @@
       if (sel) for (const s of p.states) sel.insertAdjacentHTML('beforeend', `<option value="${esc(s.code)}">${esc(s.name)}</option>`);
     }).catch(() => {});
     const form = document.getElementById('stakeForm');
+    // Selling pieces for a Money Match: fill in what we know about the match.
+    if (params.get('mm')) api('/api/money-matches/' + encodeURIComponent(params.get('mm'))).then(r => {
+      const m = r.match; if (!m || !form.isConnected) return;
+      form.moneyMatchId.value = m.id;
+      form.insertAdjacentHTML('afterbegin', `<div class="card" style="background:#fff4d6;border-color:#f3c34a;margin-bottom:12px;padding:10px 12px">💰 For the money match <b>${esc(m.player1)} vs ${esc(m.player2)}</b> (${esc(fmtDate(m.date))}). Enter which player you are below.</div>`);
+      form.opponent.placeholder = `${m.player1} or ${m.player2}`;
+      const set = (n, val) => { if (form.elements[n] && val != null && !form.elements[n].value) form.elements[n].value = val; };
+      set('game', m.game); set('race', m.race ? 'Race to ' + m.race : null); set('date', m.date); set('time', m.time); set('venue', m.room); set('city', m.city);
+      loadPlaces().then(() => setTimeout(() => { if (form.state) form.state.value = m.state; }, 50)).catch(() => {});
+    }).catch(() => {});
     const calc = () => {
       const f = new FormData(form), bet = Number(f.get('bet')), mk = Number(f.get('markup')) || 1;
       document.getElementById('stakeCalc').textContent = bet > 0 ? `Each 1% costs a backer ${cash(bet * 0.01 * mk)} and pays back ${cash(bet * 0.02)} if you win.` : '';
@@ -1292,7 +1310,7 @@
   }
 
   routes['/stakes'] = async (params, id) => {
-    if (id === 'new') return stakePostForm();
+    if (id === 'new') return stakePostForm(params);
     if (id && /^\d+$/.test(id)) return stakeDetail(params, id);
     return stakesBoard(params);
   };
@@ -1306,6 +1324,222 @@
     return `<tr class="noline"><td><b>${esc(p.player)}${p.opponent ? ' vs ' + esc(p.opponent) : ''}</b><br><small class="muted">${esc(fmtDate(p.date))} · ${esc(p.game)} · ${cash(p.bet)} a side</small></td>
       <td>${esc(label)}</td><td>${pct(p.sold)} of ${pct(p.offered)}</td><td>${p.pieces.length}${paid ? `<br><small class="muted">${paid}</small>` : ''}</td></tr>
       <tr><td colspan="4" style="padding-top:0"><div class="actbar">${buttons}</div></td></tr>`;
+  }
+
+  // ------------------------------------------------------------ MONEY MATCHES
+  // Big challenge matches. Each match has its own server page (/money-match/<slug>) with the
+  // flyer, fan vote, comments, staking and share graphic; the app has the list, the home-page
+  // spotlight, the red banner, the post form (reads the flyer) and the admin tools.
+  let moneyCache = null;
+  function loadMoney(force) {
+    if (force || !moneyCache || Date.now() - moneyCache.at > 60_000) moneyCache = { at: Date.now(), p: api('/api/money-matches').catch(e => { moneyCache = null; throw e; }) };
+    return moneyCache.p;
+  }
+  const mmGame = m => (m.game && m.game !== 'Other' ? m.game : 'Pool');
+  const mmShortDate = iso => { const [y, mo, d] = iso.split('-').map(Number); return new Date(y, mo - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
+  const mmPoster = m => (m.flyerUrl ? `<img src="${esc(m.flyerUrl)}" alt="Flyer: ${esc(m.player1)} vs ${esc(m.player2)}" loading="lazy">`
+    : `<div class="mm-poster"><b>${esc(mmGame(m).toUpperCase())}</b><span>MONEY MATCH</span><i>${esc(m.player1)}</i><em>VS</em><i>${esc(m.player2)}</i></div>`);
+  const mmScore = m => { if (!m.winner) return ''; const [w, l, ws, ls] = m.winner === 1 ? [m.player1, m.player2, m.score1, m.score2] : [m.player2, m.player1, m.score2, m.score1]; return `🏆 <b>${esc(w)}</b> beat ${esc(l)} ${ws}–${ls}`; };
+  function mmCardHtml(m) {
+    return `<a class="card mm-card" href="${esc(m.path)}"><div class="mm-thumb">${mmPoster(m)}</div>
+      <div><b class="mm-card-title">${esc(m.player1)} vs ${esc(m.player2)}</b>
+      <div class="mm-card-facts">🎱 ${esc(mmGame(m))}${m.race ? ` · Race to ${m.race}` : ''}${m.stakes ? `<br>💰 <b>${esc(m.stakes)}</b> on the line` : ''}<br>📅 ${esc(mmShortDate(m.date))}${m.time ? ' · ' + esc(fmtTime(m.time)) : ''}<br>📍 ${esc(m.city)}, ${esc(m.state)}</div>
+      ${m.winner ? `<div class="mm-result-line">${mmScore(m)}</div>` : m.isToday ? '<span class="live">TODAY</span>' : ''}</div></a>`;
+  }
+  // live countdown boxes; stops by itself once the element leaves the page
+  function startCountdown(el, m) {
+    const [y, mo, d] = m.date.split('-').map(Number), [h, mi] = (m.time || '19:00').split(':').map(Number);
+    const at = new Date(y, mo - 1, d, h, mi).getTime();
+    const tick = () => {
+      if (!el.isConnected) return clearInterval(timer);
+      const ms = at - Date.now();
+      if (ms <= 0) { el.innerHTML = ms > -6 * 3600e3 ? '<span class="live">HAPPENING NOW</span>' : ''; return; }
+      const s = Math.floor(ms / 1000);
+      el.innerHTML = [[Math.floor(s / 86400), 'DAYS'], [Math.floor(s % 86400 / 3600), 'HRS'], [Math.floor(s % 3600 / 60), 'MIN'], [s % 60, 'SEC']]
+        .map(([v, l]) => `<div><b>${l === 'DAYS' ? v : String(v).padStart(2, '0')}</b><span>${l}</span></div>`).join('');
+    };
+    const timer = setInterval(tick, 1000); tick();
+  }
+  async function homeMoneySpot() {
+    const box = document.getElementById('mmSpot');
+    if (!box) return;
+    let d; try { d = await loadMoney(); } catch { return; }
+    const m = d.spotlight; if (!m || !box.isConnected) return;
+    box.innerHTML = `<section class="mm-spot">
+      <a class="mm-spot-img" href="${esc(m.path)}">${mmPoster(m)}<span class="mm-badge">💰 ${m.featured ? 'MONEY MATCH OF THE WEEK' : 'NEXT MONEY MATCH'}</span></a>
+      <div class="mm-spot-body"><h2>${esc(m.player1)} <em>VS</em> ${esc(m.player2)}</h2>
+        <div class="mm-chips"><span>🎱 ${esc(mmGame(m))}</span>${m.race ? `<span>🏁 Race to ${m.race}</span>` : ''}${m.stakes ? `<span>💰 ${esc(m.stakes)}</span>` : ''}<span>📅 ${esc(mmShortDate(m.date))}${m.time ? ' · ' + esc(fmtTime(m.time)) : ''}</span><span>📍 ${esc(m.city)}, ${esc(m.state)}</span></div>
+        <div class="mm-count" id="mmSpotCount"></div>
+        <div class="actbar"><a class="btn btn-gold" href="${esc(m.path)}" style="flex:1">See the Match</a><a class="btn btn-out" href="${esc(m.path)}#vote" style="flex:1">Who Ya Got?</a></div>
+      </div></section>`;
+    startCountdown(document.getElementById('mmSpotCount'), m);
+  }
+  // red banner under the header on every app page
+  async function moneyTicker() {
+    const el = document.getElementById('mmTicker');
+    if (!el) return;
+    let d; try { d = await loadMoney(); } catch { return; }
+    const m = d.spotlight; if (!m) return;
+    const bits = [`${mmShortDate(m.date).split(',')[0].toUpperCase()}: ${m.player1.split(' ').pop().toUpperCase()} vs ${m.player2.split(' ').pop().toUpperCase()}`, mmGame(m).toUpperCase(), m.race ? `RACE TO ${m.race}` : '', m.stakes ? `${m.stakes.toUpperCase()} ON THE LINE` : '', `${m.city.toUpperCase()}, ${m.state}`].filter(Boolean);
+    el.href = m.path;
+    el.innerHTML = `<span>🔥 ${esc(bits.join(' · '))} 🔥</span>`;
+    el.hidden = false;
+  }
+
+  async function moneyList(params) {
+    const tab = params.get('tab') || 'all';
+    app.innerHTML = `<div class="pagehead"><h1>💰 Money Matches</h1><p>Big-money challenge matches across the country.</p></div>
+      <div class="actbar" style="margin-bottom:12px"><a class="btn btn-gold" href="#/money/new">Post a Money Match</a><a class="btn btn-out" href="/money-matches/">Open the Full Page</a></div>
+      <div class="mm-filterbar" id="mmTabs"></div><div id="mmList" class="mm-grid">${loading()}</div>
+      <p class="stake-note">Billiard Action Time lists these matches for fans. It never takes, holds or pays out money. You must be 18+ and follow the laws where you play.</p>`;
+    let d; try { d = await loadMoney(true); } catch (e) { document.getElementById('mmList').innerHTML = errorBox(e.message); return; }
+    const today = localIso(new Date()), week = addDays(today, 7);
+    const games = [...new Set(d.upcoming.map(m => m.game).filter(g => g && g !== 'Other'))];
+    const tabs = [['all', 'All Upcoming'], ['week', 'This Week'], ...games.map(g => ['g:' + g, g]), ['results', '🏆 Results']];
+    document.getElementById('mmTabs').innerHTML = tabs.map(([k, l]) => `<a class="chip${k === tab ? ' on' : ''}" href="#/money?tab=${encodeURIComponent(k)}" style="${k === tab ? 'background:#0f1b2d;color:#fff;border-color:#0f1b2d' : ''}">${esc(l)}</a>`).join('');
+    const list = tab === 'results' ? d.results : tab === 'week' ? d.upcoming.filter(m => m.date <= week) : tab.startsWith('g:') ? d.upcoming.filter(m => m.game === tab.slice(2)) : d.upcoming;
+    document.getElementById('mmList').innerHTML = list.map(mmCardHtml).join('') ||
+      `<div class="card"><p style="margin:0">${tab === 'results' ? 'Final scores show here after each match.' : 'No money matches posted here yet.'} <a href="#/money/new">Know of one? Post it.</a></p></div>`;
+  }
+
+  // Shrinks a photo to a reasonable size (JPEG, 1400px max) so it uploads quickly.
+  function shrinkImage(file, max = 1400) {
+    return new Promise((resolve, reject) => {
+      const img = new Image(), url = URL.createObjectURL(file);
+      img.onload = () => {
+        const s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Couldn't open that image. Try a JPG or PNG.")); };
+      img.src = url;
+    });
+  }
+
+  async function moneyPostForm(params) {
+    const editId = params.get('edit'), admin = !!adminToken();
+    let existing = null;
+    if (editId) {
+      try { existing = (await api(`/api/money-matches/${editId}`, { headers: { Authorization: 'Bearer ' + adminToken() } })).match; }
+      catch { app.innerHTML = errorBox("Couldn't load that match."); return; }
+    }
+    const v = existing || {};
+    const f = (name, label, attrs = '', val = v[name]) => `<div class="fg"><label class="f" for="mm_${name}">${label}</label><input id="mm_${name}" name="${name}" value="${esc(val ?? '')}" ${attrs}></div>`;
+    app.innerHTML = `
+      <div class="crumbs"><a href="#/money">Money Matches</a> / ${existing ? 'Edit' : 'Post a Money Match'}</div>
+      <div class="pagehead"><h1>${existing ? 'Edit Money Match' : 'Post a Money Match'}</h1><p>${existing ? 'Change anything and save.' : `Upload the flyer and we'll fill in the details for you. ${admin ? 'You are logged in as admin, so it goes live right away.' : 'The site owner checks it before it goes live.'}`}</p></div>
+      <form class="card" id="mmForm">
+        <div class="mm-flyerbox empty" id="mmFlyerBox">
+          ${v.flyerUrl ? `<img src="${esc(v.flyerUrl)}" alt="">` : '<div style="font-size:40px">🖼️</div>'}
+          <div><b id="mmFlyerTitle">${v.flyerUrl ? 'Current flyer' : 'Add the flyer'}</b><div class="muted" id="mmFlyerMsg" style="font-size:13.5px">${v.flyerUrl ? 'Choose a new image to replace it.' : 'A photo or screenshot of the flyer.'}</div>
+          <label class="btn btn-green btn-sm" style="margin-top:8px">📷 Choose Flyer<input type="file" id="mmFlyer" accept="image/*" hidden></label></div>
+        </div>
+        <div class="two" style="margin-top:0">${f('player1', 'Player 1 *', 'required maxlength="60"')}${f('player2', 'Player 2 *', 'required maxlength="60"')}</div>
+        <div class="two" style="margin-top:0">
+          <div class="fg"><label class="f" for="mm_game">Game</label><select id="mm_game" name="game">${GAMES.map(g => `<option value="${esc(g)}"${(v.game || '9-Ball') === g ? ' selected' : ''}>${esc(g === 'Other' ? 'Other / mixed' : g)}</option>`).join('')}</select></div>
+          ${f('race', 'Race to', 'inputmode="numeric" maxlength="3" placeholder="e.g. 21"')}
+        </div>
+        ${f('stakes', 'Amount on the line', 'maxlength="40" placeholder="e.g. $10,000+"')}
+        <div class="two" style="margin-top:0">${f('date', 'Date *', 'type="date" required')}${f('time', 'Start time', 'type="time"')}</div>
+        ${f('room', 'Pool room', 'maxlength="120" placeholder="Where it is being played"')}
+        ${f('address', 'Street address', 'maxlength="160" placeholder="Optional"')}
+        <div class="two" style="margin-top:0">${f('city', 'City *', 'required maxlength="80"')}
+          <div class="fg"><label class="f" for="mm_state">State *</label><select id="mm_state" name="state" required><option value="">Select a state</option></select></div></div>
+        ${f('streamUrl', 'Livestream link', 'maxlength="300" placeholder="Optional: YouTube, Facebook Live…"')}
+        <div class="fg"><label class="f" for="mm_notes">Anything else?</label><textarea id="mm_notes" name="notes" maxlength="600" rows="2">${esc(v.notes || '')}</textarea></div>
+        ${existing ? '' : `<p class="muted" style="font-size:13.5px;margin:4px 0 8px">Only the site owner sees these two (in case there's a question about the post):</p>
+        <div class="two" style="margin-top:0">${f('submitterName', 'Your name', 'maxlength="80"')}${f('submitterContact', 'Your phone or email', 'maxlength="120"')}</div>
+        <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I'm 18+. I understand this site only lists the match and never handles money.</label>`}
+        <div id="mmMsg"></div>
+        <button class="btn btn-green" type="submit">${existing ? 'Save Changes' : admin ? 'Post Money Match' : 'Submit for Review'}</button>
+      </form>`;
+    const form = document.getElementById('mmForm'), msg = document.getElementById('mmMsg');
+    loadPlaces().then(pl => { const s = document.getElementById('mm_state'); if (s) { for (const st of pl.states) s.insertAdjacentHTML('beforeend', `<option value="${esc(st.code)}">${esc(st.name)}</option>`); if (v.state) s.value = v.state; } }).catch(() => {});
+    let flyer = null;
+    let cfg = { scan: false }; api('/api/config').then(c => { cfg = c; }).catch(() => {});
+    document.getElementById('mmFlyer').addEventListener('change', async e => {
+      const file = e.target.files[0]; if (!file) return;
+      const box = document.getElementById('mmFlyerBox'), m2 = () => document.getElementById('mmFlyerMsg'), title = () => document.getElementById('mmFlyerTitle');
+      try { flyer = await shrinkImage(file); } catch (err) { m2().textContent = err.message; return; }
+      box.classList.remove('empty'); box.firstElementChild.outerHTML = `<img src="${flyer}" alt="">`;
+      if (existing || !cfg.scan) { title().textContent = '✓ Flyer added'; m2().textContent = cfg.scan || existing ? '' : 'Fill in the details below.'; return; }
+      title().textContent = 'Reading the flyer…'; m2().textContent = 'This takes a few seconds.';
+      try {
+        const r = await api('/api/money-matches/scan', { method: 'POST', body: { image: flyer } });
+        let n = 0;
+        for (const [k, val] of Object.entries(r.fields || {})) {
+          const el = form.elements[k];
+          if (!el || val == null || val === '' || (el.value && k !== 'game')) continue;
+          el.value = val; el.classList.add('mm-scanned'); n++;
+        }
+        title().textContent = n ? '✓ Flyer read automatically' : '✓ Flyer added';
+        m2().textContent = n ? 'Check the highlighted details, fix anything that is off, then post.' : "We couldn't read the details. Fill them in below.";
+      } catch { title().textContent = '✓ Flyer added'; m2().textContent = "We couldn't read it automatically. Fill in the details below."; }
+    });
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const body = Object.fromEntries(new FormData(form));
+      if (flyer) body.flyer = flyer;
+      const btn = form.querySelector('button[type=submit]'); btn.disabled = true; msg.innerHTML = '';
+      try {
+        if (existing) {
+          const r = await api(`/api/admin/money-matches/${existing.id}`, { method: 'PUT', body });
+          moneyCache = null; location.href = r.match.status === 'published' ? r.match.path : '/#/admin';
+        } else {
+          const r = await api('/api/money-matches', { method: 'POST', body });
+          moneyCache = null;
+          if (r.status === 'published') { location.href = r.path; return; }
+          app.innerHTML = `<div class="card" style="max-width:560px;margin:20px auto;text-align:center"><div style="font-size:44px">💰</div><h2>Thanks! Your match was sent in.</h2>
+            <p class="muted">The site owner checks it, then it goes up on the Money Matches page with its own page, share graphic and fan vote.</p>
+            <div class="actbar" style="justify-content:center"><a class="btn btn-out" href="#/money">See Money Matches</a><a class="btn btn-green" href="#/money/new">Post Another</a></div></div>`;
+        }
+      } catch (err) { msg.innerHTML = errorBox(err.message); btn.disabled = false; }
+    });
+  }
+  routes['/money'] = async (params, id) => (id === 'new' ? moneyPostForm(params) : moneyList(params));
+
+  // Admin: approve, feature, enter the final score, edit, delete (archive), repost, delete forever.
+  function moneyAdminHtml(list) {
+    const pending = list.filter(m => m.status === 'pending'), live = list.filter(m => m.status === 'published'), gone = list.filter(m => m.status === 'archived');
+    const head = m => `<div style="display:flex;gap:10px;align-items:flex-start"><div class="mm-thumb" style="width:64px;height:84px;flex:none">${mmPoster(m)}</div>
+      <div style="min-width:0"><b>${esc(m.player1)} vs ${esc(m.player2)}</b>${m.featured ? ' <span class="chip" style="background:#fff4d6;border-color:#f3c34a">⭐ Featured</span>' : ''}
+      <div class="muted" style="font-size:13.5px">${esc(mmGame(m))}${m.race ? ' · Race to ' + m.race : ''}${m.stakes ? ' · ' + esc(m.stakes) : ''}<br>${esc(fmtDate(m.date))}${m.time ? ' ' + esc(fmtTime(m.time)) : ''} · ${esc(m.city)}, ${esc(m.state)}
+      ${m.submitterName || m.submitterContact ? `<br>Sent by: ${esc(m.submitterName || '')} ${esc(m.submitterContact || '')}` : ''}${m.status === 'published' ? `<br>${m.votes} vote${m.votes === 1 ? "" : "s"} · ${m.comments} comment${m.comments === 1 ? "" : "s"}` : ''}</div>
+      ${m.winner ? `<div style="font-size:14px;color:var(--green)">${mmScore(m)}</div>` : ''}</div></div>`;
+    const card = (m, buttons, extra = '') => `<div class="card" style="margin-bottom:10px" data-mmid="${m.id}">${head(m)}${extra}<div class="actbar" style="margin-top:10px">${buttons}</div></div>`;
+    const resultForm = m => `<form class="mm-resultf" data-mmid="${m.id}" style="display:flex;gap:6px;align-items:end;flex-wrap:wrap;margin-top:10px">
+      <div class="fg" style="margin:0;flex:1;min-width:110px"><label class="f" style="font-size:12px">${esc(m.player1)}</label><input name="score1" inputmode="numeric" value="${m.score1 ?? ''}" placeholder="Score"></div>
+      <div class="fg" style="margin:0;flex:1;min-width:110px"><label class="f" style="font-size:12px">${esc(m.player2)}</label><input name="score2" inputmode="numeric" value="${m.score2 ?? ''}" placeholder="Score"></div>
+      <button class="btn btn-blue btn-sm" type="submit">${m.winner ? 'Update Score' : 'Save Final Score'}</button>${m.winner ? '<button class="btn btn-out btn-sm" type="button" data-mmact="clear">Clear</button>' : ''}</form>`;
+    return `<h2>Money Matches: Needs Review (${pending.length})</h2>
+      <div class="mmadmin">${pending.map(m => card(m, `<button type="button" class="btn btn-green btn-sm" data-mmact="publish">Approve</button><a class="btn btn-out btn-sm" href="#/money/new?edit=${m.id}">Edit</a>${m.flyerUrl ? `<a class="btn btn-out btn-sm" href="${esc(m.flyerUrl)}" target="_blank">Flyer</a>` : ''}<button type="button" class="btn btn-out btn-sm" data-mmact="archive">Delete</button>`)).join('') || '<p class="muted">No money matches waiting.</p>'}</div>
+      <h2>Money Matches: Live (${live.length})</h2>
+      <p class="muted" style="font-size:14px">⭐ Feature puts a match on the home page as Money Match of the Week (otherwise the next upcoming match shows). Enter the final score after the match.</p>
+      <div class="mmadmin">${live.map(m => card(m, `<a class="btn btn-out btn-sm" href="${esc(m.path)}">View</a>${m.upcoming ? `<button type="button" class="btn btn-${m.featured ? 'out' : 'gold'} btn-sm" data-mmact="${m.featured ? 'unfeature' : 'feature'}">${m.featured ? 'Unfeature' : '⭐ Feature'}</button>` : ''}<a class="btn btn-out btn-sm" href="#/money/new?edit=${m.id}">Edit</a><button type="button" class="btn btn-out btn-sm" data-mmact="archive">Delete</button>`, resultForm(m))).join('') || '<p class="muted">No live money matches.</p>'}</div>
+      <h2>Money Matches: Archived (${gone.length})</h2>
+      <div class="mmadmin">${gone.map(m => card(m, `<button type="button" class="btn btn-green btn-sm" data-mmact="repost">Repost</button><button type="button" class="btn btn-out btn-sm" data-mmact="purge">Delete Forever</button>`)).join('') || '<p class="muted">Nothing archived. Deleted money matches land here so you can repost them.</p>'}</div>`;
+  }
+  function wireMoneyAdmin() {
+    document.querySelectorAll('.mmadmin').forEach(el => {
+      el.addEventListener('click', async e => {
+        const b = e.target.closest('[data-mmact]'); if (!b) return;
+        const id = b.closest('[data-mmid]').dataset.mmid, act = b.dataset.mmact;
+        if ((act === 'archive' || act === 'purge') && !tapTwice(b, 'mm' + act + id, act === 'purge' ? 'Tap again: gone for good' : 'Tap again to delete')) return;
+        try {
+          if (act === 'clear') await api(`/api/admin/money-matches/${id}/result`, { method: 'POST', body: { clear: true } });
+          else await api(`/api/admin/money-matches/${id}/${act}`, { method: 'POST' });
+          moneyCache = null; render();
+        } catch (err) { b.textContent = err.message; }
+      });
+      el.addEventListener('submit', async e => {
+        const fm = e.target.closest('.mm-resultf'); if (!fm) return;
+        e.preventDefault();
+        const btn = fm.querySelector('button[type=submit]');
+        try { await api(`/api/admin/money-matches/${fm.dataset.mmid}/result`, { method: 'POST', body: Object.fromEntries(new FormData(fm)) }); moneyCache = null; render(); }
+        catch (err) { btn.textContent = err.message; }
+      });
+    });
   }
 
   // ------------------------------------------------------------ MATCH FINDER
@@ -2270,6 +2504,7 @@
   });
 
   memberSince();
+  moneyTicker();
   window.addEventListener('hashchange', render);
   document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('nav').classList.toggle('open'));
   render();
