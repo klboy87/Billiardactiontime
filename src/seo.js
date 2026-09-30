@@ -24,13 +24,24 @@ const gameWord = g => (g && g !== 'Other' ? g : '');
 let cache = null;
 function index(db) {
   if (cache && Date.now() - cache.at < 60_000) return cache;
-  const all = D.listTournaments(db, { from: '0001-01-01', limit: 100_000 }).filter(t => t.status === 'published');
+  const listed = D.listTournaments(db, { from: '0001-01-01', limit: 100_000 }).filter(t => t.status === 'published');
+  // Collapse duplicate listings of the same event (same day, same room, same words in the name,
+  // e.g. "Friday Night Friday Night 8 Ball" vs "Friday Night 8 Ball"): one page, the others redirect to it.
+  const words = n => [...new Set(String(n || '').toLowerCase().replace(/['’]/g, '').split(/[^a-z0-9]+/).filter(Boolean))].sort().join(' ');
+  const room = v => `${slugify(String(v.name || '').replace(/['’]/g, ''))}|${slugify(v.city)}|${v.state}`;
+  const firstOf = new Map(), dupeOf = new Map();
+  for (const t of [...listed].sort((a, b) => a.id - b.id)) {
+    const k = `${t.date}|${room(t.venue)}|${words(t.name)}`;
+    if (firstOf.has(k)) dupeOf.set(t.id, firstOf.get(k)); else firstOf.set(k, t.id);
+  }
+  const all = listed.filter(t => !dupeOf.has(t.id));
   const bySlug = new Map(), pathById = new Map();
   for (const t of [...all].sort((a, b) => a.id - b.id)) {
     let s = baseSlug(t);
     if (bySlug.has(s)) s = `${s}-${t.id}`;             // same name, place and day: keep both addressable
     bySlug.set(s, t.id); pathById.set(t.id, `/tournament/${s}`);
   }
+  for (const [dup, keep] of dupeOf) pathById.set(dup, pathById.get(keep));
   // The same pool room sometimes exists twice (slightly different address). Treat same name + city + state
   // as one room: one venue page, at the lowest id, listing all of its tournaments.
   const roomKey = v => `${slugify(String(v.name || '').replace(/['’]/g, ''))}|${slugify(v.city)}|${v.state}`;
