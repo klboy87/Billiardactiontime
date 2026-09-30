@@ -561,6 +561,7 @@
         <div class="actbar">
           ${t.registrationUrl ? `<a class="btn btn-blue" href="${esc(t.registrationUrl)}" target="_blank" rel="noopener">Register</a>` : ''}
           ${t.website ? `<a class="btn btn-out" href="${esc(t.website)}" target="_blank" rel="noopener">Website</a>` : ''}
+          ${t.pageUrl ? `<a class="btn btn-green" href="${esc(t.pageUrl)}#share">Share / Get Graphic</a>` : ''}
           <a class="btn btn-out" href="#/claim/${t.id}">Claim This Tournament</a>
           <a class="btn btn-out" href="#/report/${t.id}">Report a Problem</a>
         </div>

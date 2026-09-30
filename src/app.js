@@ -11,7 +11,17 @@ import { ingest, runSync } from './sync.js';
 import { geocodePending } from './geocode.js';
 import { readFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
-import { renderSiteCard, renderTournamentCard } from './ogcard.js';
+import { renderShareCard, renderSiteShareCard } from './sharecard.js';
+
+// Drawing a card takes a fraction of a second, so keep the most recent ones in memory.
+const cardCache = new Map();
+function cachedCard(key, make) {
+  if (cardCache.has(key)) { const v = cardCache.get(key); cardCache.delete(key); cardCache.set(key, v); return v; }
+  const png = make();
+  cardCache.set(key, png);
+  if (cardCache.size > 300) cardCache.delete(cardCache.keys().next().value);
+  return png;
+}
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
 import * as A from './auctions.js';
@@ -229,7 +239,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     }
     if (m === 'GET' && (x = p.match(/^\/api\/tournaments\/(\d+)$/))) {
       const t = D.getTournament(db, Number(x[1]));
-      return t ? json(req, res, 200, t) : json(req, res, 404, { error: 'Tournament not found' });
+      return t ? json(req, res, 200, { ...t, pageUrl: t.status === 'published' ? cfg.publicUrl + SEO.tournamentPath(db, t) : null }) : json(req, res, 404, { error: 'Tournament not found' });
     }
     if (m === 'GET' && (x = p.match(/^\/api\/tournaments\/(\d+)\/flyer$/))) {
       const data = D.getFlyer(db, Number(x[1]));
@@ -393,14 +403,18 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return json(req, res, 404, { error: 'Not found' });
     }
 
-    if (m === 'GET' && p === '/og.png') {
-      return send(req, res, 200, renderSiteCard(), { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
+    // ---- share cards (see sharecard.js): og.png = link-preview size, square = posts, story = TikTok/Stories ----
+    const host = (() => { try { return new URL(cfg.publicUrl).host; } catch { return 'billiardactiontime.com'; } })();
+    if ((m === 'GET' || m === 'HEAD') && p === '/og.png') {
+      return send(req, res, 200, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
     }
-    if (m === 'GET' && (x = p.match(/^\/t\/(\d+)\/og\.png$/))) {
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/t\/(\d+)\/(og|card-square|card-story)\.png$/))) {
       const t = D.getTournament(db, Number(x[1]));
-      if (!t) return send(req, res, 404, renderSiteCard(), { 'Content-Type': 'image/png' });
-      const card = renderTournamentCard({ name: t.name, game: t.game, date: t.date, venue: t.venue?.name, city: t.venue?.city, state: t.venue?.state });
-      return send(req, res, 200, card, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' });
+      if (!t) return send(req, res, 404, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png' });
+      const format = { og: 'landscape', 'card-square': 'square', 'card-story': 'story' }[x[2]];
+      const png = cachedCard(`${t.id}|${format}|${t.updatedAt}`, () => renderShareCard(t, format, host));
+      const dl = url.searchParams.has('download') ? { 'Content-Disposition': `attachment; filename="billiard-action-time-${t.id}-${format}.png"` } : {};
+      return send(req, res, 200, png, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600', ...dl });
     }
     // ---- search-engine pages (see seo.js) ----
     const html = (status, body, extra = {}) => send(req, res, status, body, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300', ...extra });

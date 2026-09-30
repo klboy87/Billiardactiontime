@@ -431,3 +431,7 @@ table.t tr.noline td{border-bottom:0}
 .seo-home{padding:6px 20px 18px;font-size:14px;line-height:1.9}.seo-home h4{color:#fff;margin-bottom:6px}.seo-home a{display:inline;color:#a9bbd2}
 .chips a.chip{text-decoration:none}.chips a.chip:hover{border-color:var(--blue)}
 @media (max-width:860px){.seo-nav{display:none}}
+.share-box{margin-top:18px}
+.share-grid{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:start}
+.share-preview{width:100%;height:auto;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+@media (max-width:700px){.share-grid{grid-template-columns:1fr}.share-preview{max-width:340px}}

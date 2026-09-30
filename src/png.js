@@ -33,14 +33,20 @@ export function encodePng({ width, height, pixels }) {
   ihdr[9] = 2; // color type: RGB
   ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
 
-  // add a filter-type byte (0 = none) before each scanline
+  // Paeth filter on every scanline (type 4): smooth gradients compress several times smaller than unfiltered.
   const stride = width * 3;
   const raw = Buffer.alloc((stride + 1) * height);
   for (let y = 0; y < height; y++) {
-    raw[y * (stride + 1)] = 0;
-    pixels.copy(raw, y * (stride + 1) + 1, y * stride, y * stride + stride);
+    const o = y * (stride + 1), row = y * stride, prev = row - stride;
+    raw[o] = 4;
+    for (let i = 0; i < stride; i++) {
+      const a = i >= 3 ? pixels[row + i - 3] : 0, b = y ? pixels[prev + i] : 0, c = y && i >= 3 ? pixels[prev + i - 3] : 0;
+      const pa = Math.abs(b - c), pb = Math.abs(a - c), pc = Math.abs(a + b - 2 * c);
+      const pred = pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+      raw[o + 1 + i] = (pixels[row + i] - pred) & 0xff;
+    }
   }
-  const idat = zlib.deflateSync(raw, { level: 9 });
+  const idat = zlib.deflateSync(raw, { level: 6 });
   return Buffer.concat([sig, chunk('IHDR', ihdr), chunk('IDAT', idat), chunk('IEND', Buffer.alloc(0))]);
 }
 

@@ -115,8 +115,9 @@ function layout(cfg, { title, description, path, body, jsonld = [], noindex = fa
 <link rel="canonical" href="${esc(url)}">${noindex ? '<meta name="robots" content="noindex,follow">' : ''}
 <meta property="og:type" content="website"><meta property="og:site_name" content="Billiard Action Time"><meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
-<link rel="stylesheet" href="/styles.css">${ld}</head>
+<link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script></head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/#/calendar">Calendar</a><a href="/#/stakes">Staking Board</a><a href="/#/auctions">Calcutta</a><a class="cta" href="/#/post">Post a Tournament</a></nav></div></header>
 <main class="wrap page seo">${body}</main>
@@ -220,6 +221,7 @@ export function tournamentPage(db, cfg, t) {
     ${t.notes && !/^source:/i.test(t.notes) ? `<p style="margin-top:12px">${esc(t.notes.replace(/\s*Source:.*$/i, ''))}</p>` : ''}
     <p class="muted" style="font-size:13px;margin-top:14px">Details can change. Confirm with the room before you go. Run this event? <a href="/#/claim/${t.id}">Claim it</a> · <a href="/#/report/${t.id}">Report a problem</a></p>
   </article>
+  ${shareBox(cfg, db, t, g)}
   ${sameVenue.length ? `<section class="sec seo-sec"><h2>More at ${esc(v.name)}</h2><ul class="seo-list">${mini(sameVenue)}</ul><a href="${venuePath(db, v)}">All tournaments at ${esc(v.name)} →</a></section>` : ''}
   ${sameCity.length ? `<section class="sec seo-sec"><h2>More pool tournaments in ${esc(v.city)}</h2><ul class="seo-list">${mini(sameCity)}</ul><a href="${facetPath({ state: v.state, city: v.city })}">All ${esc(v.city)} tournaments →</a></section>` : ''}
   ${sameGameState.length ? `<section class="sec seo-sec"><h2>${esc(g)} tournaments elsewhere in ${esc(STATE_NAMES[v.state] || v.state)}</h2><ul class="seo-list">${mini(sameGameState)}</ul><a href="${facetPath({ state: v.state, game: t.game })}">All ${esc(g)} tournaments in ${esc(STATE_NAMES[v.state] || v.state)} →</a></section>` : ''}
@@ -229,6 +231,26 @@ export function tournamentPage(db, cfg, t) {
     ${g && gameSlug(t.game) ? `<a class="chip" href="${facetPath({ state: v.state, city: v.city, game: t.game })}">${esc(g)} in ${esc(v.city)}</a><a class="chip" href="${facetPath({ game: t.game })}">${esc(g)} tournaments nationwide</a>` : ''}
   </div></section>`;
   return layout(cfg, { title, description, path, body, jsonld: [eventLd(cfg, db, t), bc.ld], ogImage: `${cfg.publicUrl}/t/${t.id}/og.png` });
+}
+
+function shareBox(cfg, db, t, g) {
+  const url = cfg.publicUrl + tournamentPath(db, t), v = t.venue;
+  const text = `${t.added ? money(t.added) + ' added ' : ''}${g || 'Pool'} tournament: ${t.name} at ${v.name}, ${v.city}, ${v.state} on ${shortDate(t.date)}${t.entry != null ? `. ${money(t.entry)} entry` : ''}.`;
+  const u = encodeURIComponent(url), tx = encodeURIComponent(text);
+  return `<section id="share" class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(t.name)}" data-share-text="${esc(text)}" data-share-card="/t/${t.id}/card-square.png">
+    <div class="share-grid"><img class="share-preview" src="/t/${t.id}/card-square.png" alt="Share card for ${esc(t.name)}" width="1080" height="1080" loading="lazy">
+    <div><h2 class="seo-h2" style="margin-top:0">Share this tournament</h2>
+    <p class="muted">Post it and help fill the bracket. The link shows this graphic automatically on Facebook, TikTok, X and in texts.</p>
+    <div class="actbar"><button type="button" class="btn btn-green" data-share="native" hidden>Share…</button>
+      <a class="btn btn-blue" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${u}">Facebook</a>
+      <a class="btn btn-out" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=${u}&amp;text=${tx}">X</a>
+      <a class="btn btn-out" href="sms:?&amp;body=${tx}%20${u}">Text</a>
+      <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
+    <p class="muted" style="margin:14px 0 6px;font-size:14px">Download the graphic:</p>
+    <div class="actbar"><a class="btn btn-out btn-sm" href="/t/${t.id}/card-square.png?download" download>Square post (Instagram / Facebook)</a>
+      <a class="btn btn-out btn-sm" href="/t/${t.id}/card-story.png?download" download>Tall (TikTok / Reels / Stories)</a>
+      <a class="btn btn-out btn-sm" href="/t/${t.id}/og.png?download" download>Wide</a></div></div></div>
+  </section>`;
 }
 
 // ---- landing pages: /tournaments/, /tournaments/<state>[/<city>][/<game>], /tournaments/<game> ----
