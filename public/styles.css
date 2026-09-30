@@ -416,3 +416,18 @@ table.t td{padding:10px 8px;border-bottom:1px solid var(--line)}
 [hidden]{display:none!important}
 .allpaid{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);align-items:center}
 table.t tr.noline td{border-bottom:0}
+
+/* ---- search-engine pages ---- */
+.seo .pagehead p{max-width:75ch}
+.seo .lead-muted{color:var(--muted);font-size:17px;max-width:70ch}
+.seo-h2{font-size:26px;margin:22px 0 8px}
+.seo-sec{padding:22px 0 0}.seo-sec h2{font-size:clamp(24px,3vw,32px);margin-bottom:10px}
+.seo-list{margin:0 0 10px;padding-left:18px}.seo-list li{padding:4px 0}
+.seo-cols{columns:2;column-gap:28px}@media (max-width:700px){.seo-cols{columns:1}}
+.seo-month{font-size:22px;margin:20px 0 8px}
+.seo-tbl{padding:4px 14px}.seo-tbl table.t td{vertical-align:top}.seo-date{white-space:nowrap;width:1%;font-weight:700}
+.seo-ended{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-weight:600}
+.seo-ftr{grid-template-columns:1.4fr 1fr 1fr 1fr}@media (max-width:860px){.seo-ftr{grid-template-columns:1fr 1fr}}
+.seo-home{padding:6px 20px 18px;font-size:14px;line-height:1.9}.seo-home h4{color:#fff;margin-bottom:6px}.seo-home a{display:inline;color:#a9bbd2}
+.chips a.chip{text-decoration:none}.chips a.chip:hover{border-color:var(--blue)}
+@media (max-width:860px){.seo-nav{display:none}}

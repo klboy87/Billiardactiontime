@@ -15,6 +15,7 @@ import { renderSiteCard, renderTournamentCard } from './ogcard.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
 import * as A from './auctions.js';
+import * as SEO from './seo.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -81,68 +82,6 @@ export function validateSubmission(b) {
       venue: { name: venueName, address: s(b.venue?.address, 120), city, state, zip: zip5(b.venue?.zip), phone: s(b.venue?.phone, 30) || null, lat: null, lng: null, tables: null }
     }
   };
-}
-
-// ---- server-rendered tournament page (for search engines and link previews) ----
-function tournamentPage(t, base) {
-  const v = t.venue, where = [v.address, v.city, v.state, v.zip].filter(Boolean).join(', ');
-  const money = n => (n == null ? null : '$' + Number(n).toLocaleString('en-US'));
-  const desc = `${t.game} tournament at ${v.name} in ${v.city}, ${v.state} on ${t.date}${t.entry != null ? `. ${money(t.entry)} entry` : ''}${t.added ? `, ${money(t.added)} added` : ''}.`;
-  const ld = {
-    '@context': 'https://schema.org', '@type': 'SportsEvent', name: t.name, startDate: t.time ? `${t.date}T${t.time}` : t.date,
-    eventStatus: 'https://schema.org/EventScheduled', sport: 'Pool',
-    location: { '@type': 'Place', name: v.name, address: { '@type': 'PostalAddress', streetAddress: v.address || undefined, addressLocality: v.city, addressRegion: v.state, postalCode: v.zip || undefined, addressCountry: 'US' } },
-    ...(t.entry != null ? { offers: { '@type': 'Offer', price: t.entry, priceCurrency: 'USD' } } : {})
-  };
-  const rows = [['Date', t.date + (t.time ? ' at ' + t.time : '')], ['Venue', `${v.name}, ${where}`], ['Game', t.game], ['Entry', money(t.entry)], ['Added money', money(t.added)], ['Race', t.race], ['Format', t.format], ['Table Size', t.tableSize], ['Player/Team Limit', t.limit]]
-    .filter(r => r[1]).map(r => `<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td></tr>`).join('');
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(t.name)} | ${esc(v.city)}, ${esc(v.state)} ${esc(t.game)} Tournament</title><meta name="description" content="${esc(desc)}">
-<link rel="canonical" href="${esc(base)}/t/${t.id}"><meta property="og:title" content="${esc(t.name)}"><meta property="og:description" content="${esc(desc)}">
-<meta property="og:type" content="website"><meta property="og:image" content="${esc(base)}/t/${t.id}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${esc(base)}/t/${t.id}/og.png">
-<link rel="stylesheet" href="/styles.css"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>
-<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
-<main class="wrap page"><div class="card"><h1 class="dtitle">${esc(t.name)}</h1><p class="muted">${esc(desc)}</p><table class="t"><tbody>${rows}</tbody></table>
-<p style="margin-top:16px"><a class="btn btn-blue" href="/#/t/${t.id}">Open full details</a></p></div></main></body></html>`;
-}
-
-function venuePage(v, tournaments, base) {
-  const where = [v.address, v.city, v.state, v.zip].filter(Boolean).join(', ');
-  const desc = `Upcoming pool tournaments at ${v.name} in ${v.city}, ${v.state}.`;
-  const rows = tournaments.map(t => `<tr><td><a href="/t/${t.id}">${esc(t.name)}</a></td><td>${esc(t.date)}${t.time ? ' ' + esc(t.time) : ''}</td><td>${esc(t.game)}</td></tr>`).join('');
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(v.name)} | ${esc(v.city)}, ${esc(v.state)} Pool Tournaments</title><meta name="description" content="${esc(desc)}">
-<link rel="canonical" href="${esc(base)}/venue/${v.id}"><meta property="og:title" content="${esc(v.name)}"><meta property="og:description" content="${esc(desc)}">
-<link rel="stylesheet" href="/styles.css"></head>
-<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
-<main class="wrap page"><div class="card"><h1 class="dtitle">${esc(v.name)}</h1><p class="muted">${esc(where)}</p>
-${rows ? `<table class="t"><thead><tr><th>Tournament</th><th>Date</th><th>Game</th></tr></thead><tbody>${rows}</tbody></table>`
-  : `<p class="muted">No upcoming tournaments listed right now.</p>`}
-<p style="margin-top:16px"><a class="btn btn-blue" href="/#/venue/${v.id}">Open full details</a></p></div></main></body></html>`;
-}
-
-function statePage(code, name, tournaments, base) {
-  const desc = `${tournaments.length} upcoming pool tournament${tournaments.length === 1 ? '' : 's'} in ${name}. Browse dates, venues, entry fees and games.`;
-  const rows = tournaments.map(t => `<tr><td><a href="/t/${t.id}">${esc(t.name)}</a></td><td>${esc(t.date)}</td><td>${esc(t.venue.name)}, ${esc(t.venue.city)}</td><td>${esc(t.game)}</td></tr>`).join('');
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pool Tournaments in ${esc(name)} | Billiard Action Time</title><meta name="description" content="${esc(desc)}">
-<link rel="canonical" href="${esc(base)}/state/${esc(code.toLowerCase())}"><meta property="og:title" content="Pool Tournaments in ${esc(name)}"><meta property="og:description" content="${esc(desc)}">
-<link rel="stylesheet" href="/styles.css"></head>
-<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
-<main class="wrap page"><div class="card"><h1 class="dtitle">Pool Tournaments in ${esc(name)}</h1><p class="muted">${esc(desc)}</p>
-${rows ? `<table class="t"><thead><tr><th>Tournament</th><th>Date</th><th>Venue</th><th>Game</th></tr></thead><tbody>${rows}</tbody></table>`
-  : `<p class="muted">No tournaments posted in ${esc(name)} yet. <a href="/#/post">Be the first to post one</a>.</p>`}
-<p style="margin-top:16px"><a class="btn btn-blue" href="/#/search?state=${esc(code)}">Open full search &amp; filters</a></p></div></main></body></html>`;
-}
-
-function statesIndexPage(counts, base) {
-  const rows = statesList().map(s => `<li><a href="/state/${s.code.toLowerCase()}">${esc(s.name)}</a> <span class="muted">(${counts.get(s.code) || 0})</span></li>`).join('');
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Browse Pool Tournaments by State | Billiard Action Time</title><meta name="description" content="Find pool tournaments by state across the US.">
-<link rel="canonical" href="${esc(base)}/state/"><link rel="stylesheet" href="/styles.css"></head>
-<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
-<main class="wrap page"><div class="card"><h1 class="dtitle">Browse Pool Tournaments by State</h1>
-<ul class="statelist">${rows}</ul></div></main></body></html>`;
 }
 
 // ---- the server ------------------------------------------------------------
@@ -463,43 +402,46 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const card = renderTournamentCard({ name: t.name, game: t.game, date: t.date, venue: t.venue?.name, city: t.venue?.city, state: t.venue?.state });
       return send(req, res, 200, card, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' });
     }
-    if (m === 'GET' && (x = p.match(/^\/t\/(\d+)$/))) {
+    // ---- search-engine pages (see seo.js) ----
+    const html = (status, body, extra = {}) => send(req, res, status, body, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300', ...extra });
+    const moved = to => { res.writeHead(301, { Location: to, 'Cache-Control': 'public, max-age=86400' }); res.end(); };
+    const notFoundPage = () => { SEO.ensureFooter(db); return html(404, SEO.listingPage(db, cfg, []).replace('<h1>Pool Tournaments by State</h1>', '<h1>Page not found</h1><p>That page moved or never existed. Browse tournaments by state below.</p>')); };
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tournament\/([a-z0-9-]{3,220})\/?$/))) {
+      SEO.ensureFooter(db);
+      const t = SEO.findTournamentBySlug(db, x[1]);
+      if (!t) return notFoundPage();
+      const canon = SEO.tournamentPath(db, t);
+      if (canon !== '/tournament/' + x[1]) return moved(canon);
       trackVisit(req, 'tournament-page');
+      return html(200, SEO.tournamentPage(db, cfg, t));
+    }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tournaments(\/.*)?$/))) {
+      if (p === '/tournaments') return moved('/tournaments/');
+      SEO.ensureFooter(db);
+      const parts = (x[1] || '').split('/').filter(Boolean);
+      const out = SEO.listingPage(db, cfg, parts);
+      if (!out) return notFoundPage();
+      trackVisit(req, parts.length ? 'listing-page' : 'states-page');
+      return html(200, out);
+    }
+    if (m === 'GET' && (x = p.match(/^\/t\/(\d+)$/))) {           // old tournament links
       const t = D.getTournament(db, Number(x[1]));
-      return t ? send(req, res, 200, tournamentPage(t, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' })
-        : send(req, res, 404, '<h1>Tournament not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
+      return t && t.status === 'published' ? moved(SEO.tournamentPath(db, t)) : notFoundPage();
     }
     if (m === 'GET' && (x = p.match(/^\/venue\/(\d+)$/))) {
+      SEO.ensureFooter(db);
+      const out = SEO.venuePage(db, cfg, Number(x[1]));
+      if (!out) return notFoundPage();
+      if (out.redirect) return moved(out.redirect);
       trackVisit(req, 'venue-page');
-      const all = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published' && Number(t.venue.id) === Number(x[1]));
-      if (!all.length) return send(req, res, 404, '<h1>Venue not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
-      return send(req, res, 200, venuePage(all[0].venue, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
+      return html(200, out);
     }
-    if (m === 'GET' && (x = p.match(/^\/state\/([a-zA-Z]{2})\/?$/))) {
-      trackVisit(req, 'state-page');
+    if (m === 'GET' && (x = p.match(/^\/state\/([a-zA-Z]{2})\/?$/))) {   // old state links
       const code = normalizeState(x[1]);
-      if (!code) return send(req, res, 404, '<h1>State not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
-      const name = statesList().find(s => s.code === code)?.name || code;
-      const all = D.listTournaments(db, { limit: 50000, state: code }).filter(t => t.status === 'published');
-      return send(req, res, 200, statePage(code, name, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
+      return code ? moved(SEO.legacyStatePath(code)) : notFoundPage();
     }
-    if (m === 'GET' && (p === '/state' || p === '/state/')) {
-      trackVisit(req, 'states-page');
-      const published = D.listTournaments(db, { limit: 50000 }).filter(t => t.status === 'published');
-      const counts = new Map();
-      for (const t of published) counts.set(t.venue.state, (counts.get(t.venue.state) || 0) + 1);
-      return send(req, res, 200, statesIndexPage(counts, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
-    }
-    if (m === 'GET' && p === '/sitemap.xml') {
-      const published = D.listTournaments(db, { from: '0001-01-01', limit: 50000 }).filter(t => t.status === 'published');
-      const tUrls = published.map(t => `<url><loc>${esc(cfg.publicUrl)}/t/${t.id}</loc><lastmod>${esc((t.updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
-      const venueIds = new Map();
-      for (const t of published) if (!venueIds.has(t.venue.id)) venueIds.set(t.venue.id, t.updatedAt);
-      const vUrls = [...venueIds.entries()].map(([id, updatedAt]) => `<url><loc>${esc(cfg.publicUrl)}/venue/${id}</loc><lastmod>${esc((updatedAt || '').slice(0, 10))}</lastmod></url>`).join('');
-      const stateCodes = new Set(published.map(t => t.venue.state).filter(Boolean));
-      const sUrls = [...stateCodes].map(code => `<url><loc>${esc(cfg.publicUrl)}/state/${esc(code.toLowerCase())}</loc></url>`).join('');
-      return send(req, res, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${esc(cfg.publicUrl)}/</loc></url><url><loc>${esc(cfg.publicUrl)}/state/</loc></url>${sUrls}${tUrls}${vUrls}</urlset>`, { 'Content-Type': 'application/xml; charset=utf-8' });
-    }
+    if (m === 'GET' && (p === '/state' || p === '/state/')) return moved('/tournaments/');
+    if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
     if (m === 'GET' || m === 'HEAD') {
@@ -508,7 +450,10 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (file.startsWith(PUBLIC_DIR + path.sep) && fs.existsSync(file) && fs.statSync(file).isFile()) {
         const ext = path.extname(file);
         if (rel === 'index.html' && m === 'GET') trackVisit(req);
-        return send(req, res, 200, fs.readFileSync(file), { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
+        let body = fs.readFileSync(file);
+        // Crawlable links to the state/city/game pages, so search engines can find them from the home page.
+        if (rel === 'index.html') { try { body = Buffer.from(body.toString('utf8').replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db))); } catch (e) { log('seo links failed: ' + e.message); } }
+        return send(req, res, 200, body, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
       }
     }
     return json(req, res, 404, { error: 'Not found' });
