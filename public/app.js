@@ -1332,8 +1332,6 @@
   }
   const stakeLabel = p => p.stakeMin != null && p.stakeMax != null ? (p.stakeMin === p.stakeMax ? cash(p.stakeMin) : `${cash(p.stakeMin)}–${cash(p.stakeMax)}`)
     : p.stakeMin != null ? `${cash(p.stakeMin)}+` : p.stakeMax != null ? `Up to ${cash(p.stakeMax)}` : 'Stakes open';
-  const STAKE_BANDS = [['', 'Any stakes'], ['0-49', 'Under $50'], ['50-200', '$50–$200'], ['200-500', '$200–$500'], ['500-', '$500+']];
-  const inBand = (p, band) => { if (!band) return true; const [lo, hi] = band.split('-').map(v => (v === '' ? null : Number(v))); const pmin = p.stakeMin ?? 0, pmax = p.stakeMax ?? Infinity; return pmax >= (lo ?? 0) && pmin <= (hi ?? Infinity); };
   function matchWhen(p, when) {
     if (!when) return true;
     const today = localIso(new Date());
@@ -1429,17 +1427,22 @@
 
   async function matchBoard(params) {
     let f; try { f = JSON.parse(localStorage.getItem('bat_match_filter') || '{}'); } catch { f = {}; }
-    for (const k of ['state', 'city', 'game', 'stakes', 'when']) if (params.get(k) != null) f[k] = params.get(k);
+    if (f.state && !f.where) f.where = f.state;                              // filters saved by the older version
+    if (f.stakes != null && !/^\d+$/.test(String(f.stakes))) f.stakes = '';
+    delete f.state;
+    for (const [k, to] of [['where', 'where'], ['state', 'where'], ['city', 'city'], ['game', 'game'], ['stakes', 'stakes'], ['when', 'when']]) if (params.get(k) != null) f[to] = params.get(k);
+    const box = (id, emoji, control, hint) => `<div class="mf"><label class="mf-box" for="${id}"><span aria-hidden="true">${emoji}</span>${control}</label><small class="mf-hint">${hint}</small></div>`;
     app.innerHTML = `
       <section class="match-hero">
         <h1>Looking for a Match?</h1>
         <div class="match-filters">
-          <label><span aria-hidden="true">📍</span><select id="mfState" aria-label="State"><option value="">Anywhere</option></select></label>
-          <label><span aria-hidden="true">🏙️</span><select id="mfCity" aria-label="City"><option value="">All cities</option></select></label>
-          <label><span aria-hidden="true">🎱</span><select id="mfGame" aria-label="Game"><option value="">Any game</option>${GAMES.filter(g => g !== 'Other').map(g => `<option>${esc(g)}</option>`).join('')}</select></label>
-          <label><span aria-hidden="true">💰</span><select id="mfStakes" aria-label="Stakes">${STAKE_BANDS.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select></label>
-          <label><span aria-hidden="true">📅</span><select id="mfWhen" aria-label="When"><option value="">Any day</option><option value="tonight">Tonight</option><option value="tomorrow">Tomorrow</option><option value="weekend">This weekend</option></select></label>
+          ${box('mfWhere', '📍', `<input id="mfWhere" type="search" maxlength="60" placeholder="Anywhere" autocomplete="off" enterkeyhint="search">`, 'Type a state or pool hall (e.g. Michigan, MI or Airway Lanes)')}
+          ${box('mfCity', '🏙️', `<input id="mfCity" type="search" maxlength="60" placeholder="Any city" autocomplete="off" enterkeyhint="search">`, 'Type the city you want to play in (e.g. Kalamazoo)')}
+          ${box('mfGame', '🎱', `<select id="mfGame"><option value="">Any game</option>${GAMES.filter(g => g !== 'Other').map(g => `<option>${esc(g)}</option>`).join('')}</select><span class="mf-caret" aria-hidden="true">▾</span>`, 'Pick the game you want to play')}
+          ${box('mfStakes', '💰', `<input id="mfStakes" type="text" inputmode="numeric" maxlength="9" placeholder="Any stakes" autocomplete="off">`, 'Type how much you want to play for, in dollars (e.g. 100)')}
+          ${box('mfWhen', '📅', `<select id="mfWhen"><option value="">Any day</option><option value="tonight">Tonight</option><option value="tomorrow">Tomorrow</option><option value="weekend">This weekend</option></select><span class="mf-caret" aria-hidden="true">▾</span>`, 'Pick the day you want to play')}
         </div>
+        <button type="button" class="mf-clear" id="mfClear" hidden>Clear search</button>
         ${params.get('deleted') ? '<p class="match-count">✓ Your post was deleted.</p>' : ''}
         <p class="match-count" id="mfCount">Loading…</p>
         <a class="btn btn-gold btn-lg" href="#/matches/new">Post Your Action</a>
@@ -1449,26 +1452,38 @@
     let posts = [];
     try { posts = (await api('/api/matches')).posts; } catch (e) { document.getElementById('mfList').innerHTML = errorBox(e.message); }
     const sel = id => document.getElementById(id);
-    const states = [...new Set(posts.map(p => p.state))].sort();
-    sel('mfState').insertAdjacentHTML('beforeend', states.map(s => `<option>${esc(s)}</option>`).join(''));
-    const fillCities = () => {
-      const cities = [...new Set(posts.filter(p => !f.state || p.state === f.state).map(p => p.city))].sort();
-      sel('mfCity').innerHTML = `<option value="">All cities</option>${cities.map(c => `<option>${esc(c)}</option>`).join('')}`;
-      if (!cities.includes(f.city)) f.city = '';
-      sel('mfCity').value = f.city || '';
+    let stateNames = {};
+    loadPlaces().then(pl => { for (const st of pl.states || []) stateNames[st.code] = st.name; if (f.where) draw(); }).catch(() => {});
+    const norm = v => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    // "Where" matches a state (code or name) or a pool hall name.
+    const whereOk = (p, q) => {
+      if (!q) return true;
+      const n = norm(q);
+      if (n.length === 2 && p.state.toLowerCase() === n) return true;
+      return [stateNames[p.state], p.room, p.city].some(v => v && norm(v).includes(n));
     };
+    const stakesOk = (p, amt) => { if (!amt) return true; return (p.stakeMin == null || p.stakeMin <= amt) && (p.stakeMax == null || p.stakeMax >= amt); };
     const draw = () => {
       try { localStorage.setItem('bat_match_filter', JSON.stringify(f)); } catch { /* ignore */ }
-      const list = posts.filter(p => (!f.state || p.state === f.state) && (!f.city || p.city === f.city) && (!f.game || p.game === f.game || p.game === 'Other') && inBand(p, f.stakes) && matchWhen(p, f.when));
-      const where = f.city ? ` in ${f.city}` : f.state ? ` in ${f.state}` : '';
-      sel('mfCount').innerHTML = list.length ? `<b>${list.length}</b> player${list.length === 1 ? '' : 's'} looking for action${esc(where)}` : `Nobody's posted${esc(where)} yet. Be the first.`;
-      sel('mfList').innerHTML = list.map(p => matchCard(p)).join('') || `<div class="card"><p style="margin:0">No matches for these filters. <a href="#/matches/new">Post your action</a> and players nearby will see it.</p></div>`;
+      const amt = Number(String(f.stakes || '').replace(/[^\d]/g, '')) || 0;
+      const list = posts.filter(p => whereOk(p, f.where) && (!f.city || norm(p.city).includes(norm(f.city))) && (!f.game || p.game === f.game || p.game === 'Other') && stakesOk(p, amt) && matchWhen(p, f.when));
+      const place = [f.city, f.where].map(v => (v || '').trim()).filter(Boolean).join(', ');
+      const where = place ? ` in ${place}` : '';
+      sel('mfCount').innerHTML = list.length ? `<b>${list.length}</b> player${list.length === 1 ? '' : 's'} looking for action${esc(where)}` : `Nobody's posted${esc(where)}${amt || f.game || f.when ? ' for that' : ''} yet. Be the first.`;
+      sel('mfList').innerHTML = list.map(p => matchCard(p)).join('') || `<div class="card"><p style="margin:0">No matches for this search. <a href="#/matches/new">Post your action</a> and players nearby will see it.</p></div>`;
+      sel('mfClear').hidden = !(f.where || f.city || f.game || f.stakes || f.when);
     };
-    sel('mfState').value = states.includes(f.state) ? f.state : (f.state = '', '');
-    fillCities();
-    sel('mfGame').value = f.game || ''; sel('mfStakes').value = f.stakes || ''; sel('mfWhen').value = f.when || '';
-    sel('mfState').addEventListener('change', e => { f.state = e.target.value; fillCities(); draw(); });
-    for (const [id, key] of [['mfCity', 'city'], ['mfGame', 'game'], ['mfStakes', 'stakes'], ['mfWhen', 'when']]) sel(id).addEventListener('change', e => { f[key] = e.target.value; draw(); });
+    sel('mfWhere').value = f.where || ''; sel('mfCity').value = f.city || ''; sel('mfStakes').value = f.stakes ? cash(Number(f.stakes)) : '';
+    sel('mfGame').value = f.game || ''; sel('mfWhen').value = f.when || '';
+    sel('mfWhere').addEventListener('input', e => { f.where = e.target.value.trim(); draw(); });
+    sel('mfCity').addEventListener('input', e => { f.city = e.target.value.trim(); draw(); });
+    sel('mfStakes').addEventListener('input', e => { const d = e.target.value.replace(/[^\d]/g, '').slice(0, 7); f.stakes = d; draw(); });
+    sel('mfStakes').addEventListener('blur', e => { e.target.value = f.stakes ? cash(Number(f.stakes)) : ''; });
+    sel('mfStakes').addEventListener('focus', e => { e.target.value = f.stakes || ''; });
+    sel('mfGame').addEventListener('change', e => { f.game = e.target.value; draw(); });
+    sel('mfWhen').addEventListener('change', e => { f.when = e.target.value; draw(); });
+    sel('mfClear').addEventListener('click', () => { f = {}; for (const id of ['mfWhere', 'mfCity', 'mfStakes', 'mfGame', 'mfWhen']) sel(id).value = ''; draw(); });
+    for (const id of ['mfWhere', 'mfCity', 'mfStakes']) sel(id).addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
     draw();
     sel('mfList').addEventListener('click', e => {
       const sh = e.target.closest('[data-mshare]');
