@@ -7,7 +7,9 @@ import { clean } from './normalize.js';
 const hash = s => crypto.createHash('sha256').update(String(s)).digest('hex');
 const eq = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && crypto.timingSafeEqual(x, y); };
 const round2 = n => Math.round(n * 100) / 100;
-const PAUSE_BETWEEN_MS = 6000;   // live mode: show "SOLD" for a moment before the next player opens
+const PAUSE_BETWEEN_MS = 6000;
+const MAX_SPAN_MS = 366 * 86_400_000;  // auctions can run up to a year out
+const silentEnd = (a, now) => (a.ends_ms && a.ends_ms > now + 60_000 ? a.ends_ms : now + a.silent_minutes * 60_000);   // live mode: show "SOLD" for a moment before the next player opens
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 function newCode(db) {
@@ -44,13 +46,25 @@ export function validateAuction(b) {
   if (!(resetSec >= 5 && resetSec <= 120)) return { error: 'Late-bid reset must be 5 to 120 seconds' };
   if (!(silentMin >= 5 && silentMin <= 10080)) return { error: 'Silent auction length must be 5 minutes to 7 days' };
   if (!(cut >= 0 && cut <= 50)) return { error: 'House cut must be 0 to 50%' };
+  // Silent auctions close on a date the host picks (days or weeks out). The browser sends
+  // it as a timestamp so the host's own time zone is respected.
+  const nowMs = Date.now();
+  let endsMs = b.endsMs === '' || b.endsMs == null ? null : Math.round(Number(b.endsMs));
+  let startsMs = b.startsMs === '' || b.startsMs == null ? null : Math.round(Number(b.startsMs));
+  if (startsMs != null && !(startsMs > nowMs - 86_400_000 && startsMs < nowMs + MAX_SPAN_MS)) return { error: 'Pick a start time within the next year' };
+  if (mode === 'silent' && endsMs != null) {
+    const from = Math.max(nowMs, startsMs || 0);
+    if (!(endsMs > from + 5 * 60_000)) return { error: 'The end date must be at least 5 minutes after the auction opens' };
+    if (endsMs > nowMs + MAX_SPAN_MS) return { error: 'The end date must be within a year' };
+  }
+  if (mode !== 'silent') endsMs = null;
   const payouts = parsePayouts(b.payouts || '50,25,15,10');
   if (payouts.error) return payouts;
   const items = parseItems(b.items);
   if (!items.length) return { error: 'Add at least one player (one per line)' };
   return {
     value: {
-      title, mode, startsAt: clean(b.startsAt).slice(0, 30) || null, listed: b.listed ? 1 : 0,
+      title, mode, startsAt: clean(b.startsAt).slice(0, 30) || null, listed: b.listed ? 1 : 0, endsMs, startsMs,
       minBid: round2(minBid), increment: round2(inc), bidSeconds: bidSec, resetSeconds: resetSec, silentMinutes: silentMin,
       houseCut: round2(cut), payouts: payouts.value, items
     }
@@ -61,9 +75,9 @@ export function createAuction(db, v) {
   const hostKey = crypto.randomBytes(18).toString('base64url');
   return tx(db, () => {
     const code = newCode(db);
-    const r = db.prepare(`INSERT INTO auctions (code,title,starts_at,mode,listed,min_bid,increment,bid_seconds,reset_seconds,silent_minutes,house_cut,payouts,host_hash)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(code, v.title, v.startsAt, v.mode, v.listed, v.minBid, v.increment, v.bidSeconds,
-      v.resetSeconds, v.silentMinutes, v.houseCut, JSON.stringify(v.payouts), hash(hostKey));
+    const r = db.prepare(`INSERT INTO auctions (code,title,starts_at,mode,listed,min_bid,increment,bid_seconds,reset_seconds,silent_minutes,house_cut,payouts,host_hash,ends_ms,starts_ms)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(code, v.title, v.startsAt, v.mode, v.listed, v.minBid, v.increment, v.bidSeconds,
+      v.resetSeconds, v.silentMinutes, v.houseCut, JSON.stringify(v.payouts), hash(hostKey), v.endsMs, v.startsMs);
     const id = Number(r.lastInsertRowid);
     const ins = db.prepare('INSERT INTO auction_items (auction_id, name, sort) VALUES (?,?,?)');
     v.items.forEach((name, i) => ins.run(id, name, i + 1));
@@ -97,6 +111,10 @@ function closeItem(db, itemId, forceUnsold = false) {
 // Moves the clock forward: closes players whose time ran out and opens the next one.
 // Called on every read and write, so no background timer is needed.
 export function tick(db, a, now = Date.now()) {
+  if (a && a.status === 'setup' && a.mode === 'silent' && a.starts_ms && a.starts_ms <= now) {
+    const r = hostAction(db, a, 'start', {}, now);
+    if (r.ok) a = db.prepare('SELECT * FROM auctions WHERE id=?').get(a.id);
+  }
   if (!a || a.status !== 'running') return a;
   let changed = false;
   tx(db, () => {
@@ -171,7 +189,9 @@ export function hostAction(db, a, action, b = {}, now = Date.now()) {
         if (!db.prepare('SELECT 1 FROM auction_items WHERE auction_id=?').get(a.id)) return { error: 'Add players first' };
         db.prepare("UPDATE auctions SET status='running' WHERE id=?").run(a.id);
         if (a.mode === 'silent') {
-          db.prepare("UPDATE auction_items SET status='open', ends_at=? WHERE auction_id=? AND status='waiting'").run(now + a.silent_minutes * 60_000, a.id);
+          const end = silentEnd(a, now);
+          db.prepare("UPDATE auction_items SET status='open', ends_at=? WHERE auction_id=? AND status='waiting'").run(end, a.id);
+          db.prepare('UPDATE auctions SET ends_ms=? WHERE id=?').run(end, a.id);
         } else openNext(db, { ...a, status: 'running' }, now);
         return { ok: true };
       }
@@ -217,7 +237,7 @@ export function hostAction(db, a, action, b = {}, now = Date.now()) {
         if (!names.length) return { error: 'Type at least one name' };
         let sort = db.prepare('SELECT COALESCE(MAX(sort),0) n FROM auction_items WHERE auction_id=?').get(a.id).n;
         const silentOpen = a.mode === 'silent' && a.status !== 'setup';
-        const endsAt = silentOpen ? (db.prepare("SELECT MAX(ends_at) n FROM auction_items WHERE auction_id=? AND status='open'").get(a.id).n || now + a.silent_minutes * 60_000) : null;
+        const endsAt = silentOpen ? (db.prepare("SELECT MAX(ends_at) n FROM auction_items WHERE auction_id=? AND status='open'").get(a.id).n || silentEnd(a, now)) : null;
         const ins = db.prepare('INSERT INTO auction_items (auction_id, name, sort, status, ends_at) VALUES (?,?,?,?,?)');
         for (const n of names) ins.run(a.id, n, ++sort, silentOpen ? 'open' : 'waiting', endsAt);
         return { ok: true };
@@ -231,6 +251,16 @@ export function hostAction(db, a, action, b = {}, now = Date.now()) {
         if (place != null && !(place >= 1 && place <= 256)) return { error: 'Finish must be a place like 1, 2, 3' };
         const r = db.prepare('UPDATE auction_items SET finish=? WHERE id=? AND auction_id=?').run(place, Number(b.itemId), a.id);
         return r.changes ? { ok: true } : { error: 'Player not found' };
+      }
+      case 'setend': {
+        if (a.mode !== 'silent') return { error: 'Only silent auctions have an end date' };
+        if (a.status === 'done') return { error: 'The auction is already over' };
+        const end = Math.round(Number(b.endsMs));
+        if (!(end > now + 60_000)) return { error: 'Pick an end time in the future' };
+        if (end > now + MAX_SPAN_MS) return { error: 'The end date must be within a year' };
+        db.prepare('UPDATE auctions SET ends_ms=? WHERE id=?').run(end, a.id);
+        if (a.status !== 'setup') db.prepare("UPDATE auction_items SET ends_at=? WHERE auction_id=? AND status='open'").run(end, a.id);
+        return { ok: true };
       }
       case 'delete': {
         for (const t of ['auction_bids', 'auction_chat', 'auction_items', 'auction_bidders']) db.prepare(`DELETE FROM ${t} WHERE auction_id=?`).run(a.id);
@@ -270,7 +300,7 @@ export function roomState(db, a, { you = null, host = false, now = Date.now() } 
     auction: {
       code: a.code, title: a.title, startsAt: a.starts_at, mode: a.mode, status: a.status, listed: !!a.listed,
       minBid: a.min_bid, increment: a.increment, bidSeconds: a.bid_seconds, resetSeconds: a.reset_seconds,
-      silentMinutes: a.silent_minutes, houseCut: a.house_cut, payouts, currentItem: a.current_item, nextAt: a.next_at,
+      silentMinutes: a.silent_minutes, endsMs: a.ends_ms, startsMs: a.starts_ms, houseCut: a.house_cut, payouts, currentItem: a.current_item, nextAt: a.next_at,
       pausedLeftMs: a.paused_left_ms
     },
     items: shaped,
@@ -286,12 +316,12 @@ export function roomState(db, a, { you = null, host = false, now = Date.now() } 
 }
 
 export function listedAuctions(db) {
-  return db.prepare(`SELECT a.code, a.title, a.starts_at, a.mode, a.status,
+  return db.prepare(`SELECT a.code, a.title, a.starts_at, a.mode, a.status, a.ends_ms, a.starts_ms,
       (SELECT COUNT(*) FROM auction_items i WHERE i.auction_id=a.id) players,
       (SELECT COALESCE(SUM(high_bid),0) FROM auction_items i WHERE i.auction_id=a.id AND i.status='sold') pot
     FROM auctions a WHERE a.listed=1 AND (a.status <> 'done' OR a.created_at >= datetime('now','-14 days'))
     ORDER BY CASE a.status WHEN 'running' THEN 0 WHEN 'paused' THEN 0 WHEN 'setup' THEN 1 ELSE 2 END, a.id DESC LIMIT 50`).all()
-    .map(r => ({ code: r.code, title: r.title, startsAt: r.starts_at, mode: r.mode, status: r.status, players: Number(r.players), pot: Number(r.pot) }));
+    .map(r => ({ code: r.code, title: r.title, startsAt: r.starts_at, startsMs: r.starts_ms, endsMs: r.ends_ms, mode: r.mode, status: r.status, players: Number(r.players), pot: Number(r.pot) }));
 }
 
 // Every auction, for the site owner's Admin page.

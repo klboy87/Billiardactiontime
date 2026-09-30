@@ -1234,6 +1234,9 @@
   function aStore(code) { try { return JSON.parse(localStorage.getItem('bat_auction_' + code) || '{}'); } catch { return {}; } }
   function aSave(code, patch) { try { localStorage.setItem('bat_auction_' + code, JSON.stringify({ ...aStore(code), ...patch })); } catch { /* ignore */ } }
   const aStatusLabel = { setup: 'Not started', running: 'Live', paused: 'Paused', done: 'Finished' };
+  const fmtWhen = ms => new Date(ms).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const toLocalInput = ms => { const d = new Date(ms); return new Date(ms - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
+  const fromLocalInput = v => (v ? new Date(v).getTime() : null);
 
   async function auctionsHome() {
     app.innerHTML = `
@@ -1268,7 +1271,7 @@
         <a class="card stakecard" href="#/a/${esc(a.code)}">
           <div class="stake-top"><span class="stake-tag ${a.status === 'done' ? 'lost' : ''}">${esc(aStatusLabel[a.status] || a.status)} · ${a.mode === 'silent' ? 'Silent' : 'Live'}</span><span class="muted">Code ${esc(a.code)}</span></div>
           <h3>${esc(a.title)}</h3>
-          <div class="muted">${a.players} players${a.pot ? ' · Pot ' + cash(a.pot) : ''}${a.startsAt ? ' · ' + esc(a.startsAt.replace('T', ' ')) : ''}</div>
+          <div class="muted">${a.players} players${a.pot ? ' · Pot ' + cash(a.pot) : ''}${a.startsMs && a.status === 'setup' ? ' · Opens ' + esc(fmtWhen(a.startsMs)) : a.startsAt && a.status === 'setup' ? ' · ' + esc(a.startsAt.replace('T', ' ')) : ''}${a.mode === 'silent' && a.endsMs && a.status !== 'done' ? ' · Ends ' + esc(fmtWhen(a.endsMs)) : ''}</div>
         </a>`).join('')}</div>` : '<div class="card"><p class="muted" style="margin:0">No public auctions right now. Most hosts share their code directly with bidders.</p></div>';
     } catch (e) { document.getElementById('aList').innerHTML = errorBox(e.message); }
   }
@@ -1280,7 +1283,7 @@
       <form class="card" id="aForm">
         <div class="fg"><label class="f">Auction name *</label><input name="title" required maxlength="100" placeholder="e.g. Friday 9-Ball Calcutta"></div>
         <div class="two" style="margin-top:0">
-          <div class="fg"><label class="f">Starts</label><input name="startsAt" type="datetime-local"></div>
+          <div class="fg"><label class="f">Starts</label><input name="startsAt" type="datetime-local"><small class="muted" id="startHint">Leave blank and start it yourself from the host screen.</small></div>
           <div class="fg"><label class="f">Type</label><select name="mode" id="aMode"><option value="live">Live: one player at a time</option><option value="silent">Silent: all players at once</option></select></div>
         </div>
         <div class="row3">
@@ -1292,7 +1295,12 @@
           <div class="fg"><label class="f">Clock per player (sec)</label><input name="bidSeconds" type="number" min="10" max="300" value="30" inputmode="numeric"></div>
           <div class="fg"><label class="f">Late bid resets to (sec)</label><input name="resetSeconds" type="number" min="5" max="120" value="15" inputmode="numeric"></div>
         </div>
-        <div class="fg" id="silentOpts" hidden><label class="f">Silent auction length (minutes)</label><input name="silentMinutes" type="number" min="5" max="10080" value="60" inputmode="numeric"></div>
+        <div id="silentOpts" hidden>
+          <div class="two" style="margin-top:0">
+            <div class="fg"><label class="f">Bidding ends *</label><input name="endsAt" type="datetime-local" id="aEnds"><small class="muted">Can be days or weeks away. You can change it later.</small></div>
+            <div class="fg"><label class="f">Late bid adds (sec)</label><input name="silentReset" type="number" min="5" max="120" value="60" inputmode="numeric"><small class="muted">A bid in the final moments pushes that player's close back so nobody gets sniped.</small></div>
+          </div>
+        </div>
         <div class="fg"><label class="f">Payout split by finish (%)</label><input name="payouts" value="50, 25, 15, 10" placeholder="1st, 2nd, 3rd, ..."><small class="muted">1st, 2nd, 3rd… as percentages of the pot after any house cut.</small></div>
         <div class="fg"><label class="f">Players, one per line *</label><textarea name="items" rows="8" required placeholder="Player One&#10;Player Two&#10;Player Three"></textarea></div>
         <label style="display:flex;gap:8px;align-items:center;margin-bottom:12px;font-size:14px"><input type="checkbox" name="listed"> Show this auction on the public Auctions page</label>
@@ -1301,14 +1309,21 @@
         <button class="btn btn-green" type="submit">Create Auction</button>
       </form>`;
     const mode = document.getElementById('aMode');
+    document.getElementById('aEnds').value = toLocalInput(Date.now() + 7 * 86_400_000);
     mode.addEventListener('change', () => {
-      document.getElementById('liveOpts').hidden = mode.value === 'silent';
-      document.getElementById('silentOpts').hidden = mode.value !== 'silent';
+      const silent = mode.value === 'silent';
+      document.getElementById('liveOpts').hidden = silent;
+      document.getElementById('silentOpts').hidden = !silent;
+      document.getElementById('aEnds').required = silent;
+      document.getElementById('startHint').textContent = silent ? 'Bidding opens by itself at this time. Leave blank to open it yourself.' : 'Leave blank and start it yourself from the host screen.';
     });
     document.getElementById('aForm').addEventListener('submit', async e => {
       e.preventDefault();
       const body = Object.fromEntries(new FormData(e.target));
       body.listed = !!body.listed;
+      body.startsMs = fromLocalInput(body.startsAt);
+      if (body.mode === 'silent') { body.endsMs = fromLocalInput(body.endsAt); body.resetSeconds = body.silentReset; }
+      delete body.endsAt; delete body.silentReset;
       try {
         const r = await api('/api/auctions', { method: 'POST', body });
         aSave(r.code, { hostKey: r.hostKey });
@@ -1384,7 +1399,9 @@
     }
 
     function secsLeft(endsAt) { return Math.max(0, Math.ceil((endsAt - now()) / 1000)); }
-    const clock = s => s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : String(s);
+    const clock = s => s >= 86400 ? `${Math.floor(s / 86400)}d ${Math.floor(s % 86400 / 3600)}h`
+      : s >= 3600 ? `${Math.floor(s / 3600)}h ${Math.floor(s % 3600 / 60)}m`
+      : s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : String(s);
 
     function drawHead() {
       const a = st.auction;
@@ -1445,7 +1462,8 @@
       if (a.mode === 'silent') {
         const list = st.items.filter(i => i.status === 'open' || i.status === 'waiting');
         main.innerHTML = `
-          ${a.status === 'setup' ? `<div class="card aup"><p class="muted" style="margin:0">Waiting for the host to start. When it starts, every player opens for bidding at once for ${a.silentMinutes} minutes. A bid in the last ${a.resetSeconds} seconds adds time.</p></div>` : ''}
+          ${a.status === 'setup' ? `<div class="card aup"><p class="muted" style="margin:0">${a.startsMs ? `Bidding opens <b style="color:var(--text)">${esc(fmtWhen(a.startsMs))}</b>.` : 'Waiting for the host to open bidding.'}${a.endsMs ? ` Bidding closes <b style="color:var(--text)">${esc(fmtWhen(a.endsMs))}</b>.` : ''} Every player is open at once. A bid in the last ${a.resetSeconds} seconds adds time to that player.</p></div>` : ''}
+          ${a.status === 'running' && a.endsMs ? `<div class="card aup" style="margin-bottom:12px"><p style="margin:0">Bidding closes <b>${esc(fmtWhen(a.endsMs))}</b> <span class="aclock sm" data-ends="${a.endsMs}"></span></p><small class="muted">A bid in the last ${a.resetSeconds} seconds adds time to that player.</small></div>` : ''}
           <div class="silentgrid">${list.map(i => `
             <div class="card aitem${i.mine ? ' mine' : ''}">
               <div class="stake-top"><b style="font-size:18px">${esc(i.name)}</b>${i.status === 'open' ? `<span class="aclock sm" data-ends="${i.endsAt}"></span>` : ''}</div>
@@ -1528,9 +1546,16 @@
       el.innerHTML = `
         <h2 class="stake-h">Host Tools</h2>
         <div class="card">
+          ${a.mode === 'silent' && a.status !== 'done' ? `<form id="setEnd"><label class="f">Bidding ends</label><div style="display:flex;gap:8px"><input name="endsAt" type="datetime-local" required value="${a.endsMs ? toLocalInput(a.endsMs) : ''}"><button class="btn btn-out btn-sm" type="submit">Save</button></div>${a.endsMs ? `<small class="muted">Now: ${esc(fmtWhen(a.endsMs))}</small>` : ''}</form><hr class="hr">` : ''}
           ${a.status !== 'done' ? `<form id="addPlayers"><label class="f">Add players (one per line)</label><textarea name="items" rows="3"></textarea><button class="btn btn-out btn-sm" type="submit" style="margin-top:8px">Add</button></form><hr class="hr">` : ''}
           <button type="button" class="btn btn-sm btn-out" data-host="delete" style="color:var(--red)">Delete Auction</button>
         </div>`;
+      const setEnd = document.getElementById('setEnd');
+      if (setEnd) setEnd.addEventListener('submit', async e => {
+        e.preventDefault();
+        document.activeElement && document.activeElement.blur();
+        await hostDo('setend', { endsMs: fromLocalInput(new FormData(setEnd).get('endsAt')) });
+      });
       const add = document.getElementById('addPlayers');
       if (add) add.addEventListener('submit', async e => {
         e.preventDefault();

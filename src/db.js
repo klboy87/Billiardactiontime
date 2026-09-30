@@ -152,6 +152,10 @@ export function openDb(file) {
   const db = new DatabaseSync(file);
   db.exec('PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;');
   db.exec(SCHEMA);
+  // Columns added after launch: add them to databases created before they existed.
+  for (const sql of ['ALTER TABLE auctions ADD COLUMN ends_ms INTEGER', 'ALTER TABLE auctions ADD COLUMN starts_ms INTEGER']) {
+    try { db.exec(sql); } catch { /* already there */ }
+  }
   return db;
 }
 
