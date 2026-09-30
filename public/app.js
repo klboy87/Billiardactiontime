@@ -955,13 +955,23 @@
           `<button type="button" class="btn btn-green btn-sm" data-aact="restore" data-code="${esc(a.code)}">Restore</button> <a class="btn btn-out btn-sm" href="#/a/${esc(a.code)}">View</a> <button type="button" class="btn btn-out btn-sm" data-aact="purge" data-code="${esc(a.code)}">Delete Forever</button>`, a.prevStatus)).join('')}</tbody></table></div>`
           : '<p class="muted">Nothing archived. Deleted auctions land here so you can restore them.</p>'}`;
       })()}
-      <h2>Match Finder Posts (${allMatches.length})</h2>
-      ${allMatches.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t" id="adminMatches"><thead><tr><th>Player</th><th>Where / When</th><th>Status</th><th>In</th></tr></thead><tbody>
-        ${allMatches.map(m => { const st = m.status === 'removed' ? 'Removed' : m.status === 'closed' ? 'Closed' : m.expiresMs > Date.now() ? 'Open' : 'Ended';
-          return `<tr class="noline"><td><a href="#/matches/${m.id}">${esc(m.name)}</a><br><small class="muted">${esc(m.game === 'Other' ? 'Any game' : m.game)} · ${esc(stakeLabel(m))}</small></td>
-          <td>${esc(m.city)}, ${esc(m.state)}<br><small class="muted">${esc(fmtDate(m.date))}${m.until !== m.date ? ' – ' + esc(fmtDate(m.until)) : ''}</small></td><td>${st}</td><td>${m.replyCount || 0}</td></tr>
-          <tr><td colspan="4" style="padding-top:0"><div class="actbar">${m.status === 'removed' ? `<button type="button" class="btn btn-green btn-sm" data-mmact="restore" data-mid="${m.id}">Restore</button>` : `<button type="button" class="btn btn-out btn-sm" data-mmact="remove" data-mid="${m.id}">Remove</button>`} <a class="btn btn-out btn-sm" href="#/matches/${m.id}">View</a></div></td></tr>`; }).join('')}
-      </tbody></table></div>` : '<p class="muted">No Match Finder posts yet.</p>'}
+      ${(() => {
+        const live = allMatches.filter(m => m.status !== 'archived'), gone = allMatches.filter(m => m.status === 'archived');
+        const when = m => esc(fmtDate(m.date)) + (m.until !== m.date ? ' – ' + esc(fmtDate(m.until)) : '');
+        const stOf = m => m.status === 'closed' ? 'Closed' : m.expiresMs > Date.now() ? 'Open' : 'Ended';
+        const row = (m, status, buttons) => `<tr class="noline"><td><a href="#/matches/${m.id}">${esc(m.name)}</a><br><small class="muted">${esc(m.game === 'Other' ? 'Any game' : m.game)} · ${esc(stakeLabel(m))}</small></td>
+          <td>${esc(m.city)}, ${esc(m.state)}<br><small class="muted">${when(m)}</small></td><td>${status}</td><td>${m.replyCount || 0} in<br><small class="muted">${m.commentCount || 0} cmts</small></td></tr>
+          <tr><td colspan="4" style="padding-top:0"><div class="actbar">${buttons}</div></td></tr>`;
+        const head = s => `<thead><tr><th>Player</th><th>Start – End</th><th>${s}</th><th>Activity</th></tr></thead>`;
+        return `<h2>Match Finder Posts (${live.length})</h2>
+        ${live.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t madmin">${head('Status')}<tbody>${live.map(m => row(m, stOf(m),
+          `<a class="btn btn-out btn-sm" href="#/matches/${m.id}">View</a> <button type="button" class="btn btn-out btn-sm" data-mmact="archive" data-mid="${m.id}">Delete</button>`)).join('')}</tbody></table></div>` : '<p class="muted">No Match Finder posts yet.</p>'}
+        <h2>Match Finder: Archived (${gone.length})</h2>
+        ${gone.length ? `<div class="card" style="overflow-x:auto"><table class="t stakes-t madmin">${head('Deleted')}<tbody>${gone.map(m => row(m,
+          `By ${m.archivedBy === 'admin' ? 'admin' : 'player'}${m.archivedAt ? `<br><small class="muted">${esc(fmtDate(m.archivedAt.slice(0, 10)))}</small>` : ''}`,
+          `<button type="button" class="btn btn-green btn-sm" data-mmact="repost" data-mid="${m.id}">Repost</button> <a class="btn btn-out btn-sm" href="#/matches/${m.id}">View</a> <button type="button" class="btn btn-out btn-sm" data-mmact="purge" data-mid="${m.id}">Delete Forever</button>${m.expiresMs <= Date.now() ? '<br><small class="muted">Dates passed: Repost puts it up for today.</small>' : ''}`)).join('')}</tbody></table></div>`
+          : '<p class="muted">Nothing archived. Posts players or you delete land here so you can repost them.</p>'}`;
+      })()}
       <h2>Recent Sync Runs</h2>
       <table class="t"><thead><tr><th>Started</th><th>Status</th><th>Fetched</th><th>Inserted</th><th>Updated</th><th>Removed</th></tr></thead>
       <tbody>${(summary.recentRuns || []).map(r => `<tr><td>${esc((r.started_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(r.status)}</td><td>${r.fetched ?? 0}</td><td>${r.inserted ?? 0}</td><td>${r.updated ?? 0}</td><td>${r.removed ?? 0}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No sync runs yet.</td></tr>'}</tbody></table>`;
@@ -995,13 +1005,12 @@
       if (act !== 'restore' && !tapTwice(b, act + b.dataset.code, act === 'purge' ? 'Tap again: gone for good' : 'Tap again to delete')) return;
       try { await api(`/api/admin/auctions/${b.dataset.code}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
     }));
-    const mtbl = document.getElementById('adminMatches');
-    if (mtbl) mtbl.addEventListener('click', async e => {
+    document.querySelectorAll('.madmin').forEach(tbl => tbl.addEventListener('click', async e => {
       const b = e.target.closest('[data-mmact]'); if (!b) return;
       const act = b.dataset.mmact;
-      if (act === 'remove' && !tapTwice(b, 'mremove' + b.dataset.mid, 'Tap again to remove')) return;
+      if (act !== 'repost' && !tapTwice(b, act + 'm' + b.dataset.mid, act === 'purge' ? 'Tap again: gone for good' : 'Tap again to delete')) return;
       try { await api(`/api/admin/matches/${b.dataset.mid}/${act}`, { method: 'POST' }); render(); } catch (err) { b.textContent = err.message; }
-    });
+    }));
     document.getElementById('pendingStakes').addEventListener('click', async e => {
       const card = e.target.closest('[data-sid]'); if (!card) return;
       const act = e.target.classList.contains('act-approve') ? 'approve' : e.target.classList.contains('act-reject') ? 'reject' : null;
@@ -1416,6 +1425,7 @@
           <label><span aria-hidden="true">💰</span><select id="mfStakes" aria-label="Stakes">${STAKE_BANDS.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select></label>
           <label><span aria-hidden="true">📅</span><select id="mfWhen" aria-label="When"><option value="">Any day</option><option value="tonight">Tonight</option><option value="tomorrow">Tomorrow</option><option value="weekend">This weekend</option></select></label>
         </div>
+        ${params.get('deleted') ? '<p class="match-count">✓ Your post was deleted.</p>' : ''}
         <p class="match-count" id="mfCount">Loading…</p>
         <a class="btn btn-gold btn-lg" href="#/matches/new">Post Your Action</a>
       </section>
@@ -1474,14 +1484,15 @@
           <div class="fg"><label class="f">Game</label><select name="game">${GAMES.map(g => `<option value="${esc(g)}">${esc(g === 'Other' ? 'Any game' : g)}</option>`).join('')}</select></div>
           <div class="fg"><label class="f">Stakes ($)</label><div style="display:flex;gap:8px;align-items:center"><input name="stakeMin" type="number" min="1" inputmode="numeric" placeholder="50"><span>to</span><input name="stakeMax" type="number" min="1" inputmode="numeric" placeholder="200"></div></div>
         </div>
-        <fieldset class="fg when-pick"><legend class="f">When *</legend>
-          <label><input type="radio" name="when" value="tonight" checked> Tonight</label>
-          <label><input type="radio" name="when" value="tomorrow"> Tomorrow</label>
-          <label><input type="radio" name="when" value="weekend"> This weekend</label>
-          <label><input type="radio" name="when" value="date"> Pick a day</label>
-          <input type="date" name="pickDate" min="${today}" hidden>
+        <fieldset class="fg when-pick"><legend class="f">When are you looking to play? *</legend>
+          <div class="when-quick"><button type="button" class="chipbtn on" data-quick="tonight">Tonight</button><button type="button" class="chipbtn" data-quick="tomorrow">Tomorrow</button><button type="button" class="chipbtn" data-quick="weekend">This weekend</button><button type="button" class="chipbtn" data-quick="week">Next 7 days</button></div>
+          <div class="two" style="margin-top:8px">
+            <div class="fg"><label class="f" for="mpStart">Start date *</label><input type="date" id="mpStart" name="date" required min="${today}" max="${addDays(today, 60)}" value="${today}"></div>
+            <div class="fg"><label class="f" for="mpEnd">End date *</label><input type="date" id="mpEnd" name="until" required min="${today}" max="${addDays(today, 60)}" value="${today}"></div>
+          </div>
+          <p class="muted" style="font-size:13px;margin:0">Your post shows from the start date and comes down by itself after the end date.</p>
         </fieldset>
-        <div class="fg"><label class="f">Around what time?</label><input name="time" type="time"></div>
+        <div class="fg"><label class="f">Around what time? (start day)</label><input name="time" type="time"></div>
         <div class="fg"><label class="f">Public contact</label><input name="contact" maxlength="80" placeholder="Optional: shown on your post (phone, Facebook, IG)"></div>
         <div class="fg"><label class="f">Anything else?</label><textarea name="note" maxlength="280" rows="2" placeholder="e.g. Looking for 9-ball, race to 7, will play anybody under 600"></textarea></div>
         <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;font-size:14px"><input type="checkbox" required style="margin-top:4px"> I'm 18+. I understand this site only connects players and never handles money, and I'll follow the laws where I play.</label>
@@ -1490,16 +1501,26 @@
       </form>`;
     loadPlaces().then(p => { const s = document.getElementById('mpState'); if (s) for (const st of p.states) s.insertAdjacentHTML('beforeend', `<option value="${esc(st.code)}">${esc(st.name)}</option>`); }).catch(() => {});
     const form = document.getElementById('matchForm');
-    form.addEventListener('change', e => { if (e.target.name === 'when') form.pickDate.hidden = e.target.value !== 'date'; form.pickDate.required = e.target.value === 'date' && e.target.checked; });
+    const startEl = document.getElementById('mpStart'), endEl = document.getElementById('mpEnd');
+    const chips = [...form.querySelectorAll('[data-quick]')];
+    const setDates = (a, b) => { startEl.value = a; endEl.value = b; endEl.min = a; };
+    form.querySelector('.when-quick').addEventListener('click', e => {
+      const c = e.target.closest('[data-quick]'); if (!c) return;
+      chips.forEach(x => x.classList.toggle('on', x === c));
+      const q = c.dataset.quick;
+      if (q === 'tonight') setDates(today, today);
+      else if (q === 'tomorrow') setDates(addDays(today, 1), addDays(today, 1));
+      else if (q === 'weekend') setDates(...weekendRange(today));
+      else setDates(today, addDays(today, 6));
+    });
+    startEl.addEventListener('change', () => { chips.forEach(x => x.classList.remove('on')); endEl.min = startEl.value || today; if (!endEl.value || endEl.value < startEl.value) endEl.value = startEl.value; });
+    endEl.addEventListener('change', () => chips.forEach(x => x.classList.remove('on')));
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const b = Object.fromEntries(new FormData(form));
-      const t = localIso(new Date());
-      let date = t, until = t;
-      if (b.when === 'tomorrow') date = until = addDays(t, 1);
-      else if (b.when === 'weekend') [date, until] = weekendRange(t);
-      else if (b.when === 'date') date = until = b.pickDate;
-      Object.assign(b, { date, until, expiresMs: endOfLocalDay(until) });
+      if (!b.date || !b.until) { document.getElementById('matchMsg').innerHTML = errorBox('Pick a start date and an end date'); return; }
+      if (b.until < b.date) { document.getElementById('matchMsg').innerHTML = errorBox('The end date is before the start date'); return; }
+      b.expiresMs = endOfLocalDay(b.until);
       try {
         const r = await api('/api/matches', { method: 'POST', body: b });
         saveMatchKey(r.id, r.manageKey);
@@ -1524,15 +1545,14 @@
     app.innerHTML = `
       <div class="crumbs"><a href="#/matches">Match Finder</a> / ${esc(p.name)}</div>
       ${isNew ? `<div class="card" style="margin-bottom:14px;border-color:var(--green)"><h3 style="margin-bottom:6px">You're posted ✓</h3><p class="muted" style="margin:0">Players who tap "I'm In" show up below with their contact. This phone remembers your post. To check it from another device, save your private link: <input readonly value="${esc(manageUrl)}" style="margin-top:6px"></p></div>` : ''}
-      ${!open ? `<p class="seo-ended">${p.status === 'closed' ? 'This player found a match. The post is closed.' : 'This post has ended.'}</p>` : ''}
+      ${p.status === 'archived' ? `<p class="seo-ended">This post was deleted${p.archivedBy === 'admin' ? ' by the site' : ''}. It's in the admin archive.</p>` : !open ? `<p class="seo-ended">${p.status === 'closed' ? 'This player found a match. The post is closed.' : 'This post has ended.'}</p>` : ''}
       ${matchCard(p, { full: true })}
       ${p.canManage ? `
         <h2 class="stake-h">Players Who Are In (${p.replies.length})</h2>
         ${p.replies.length ? p.replies.map(r => `<div class="card" style="margin-bottom:10px"><b>${esc(r.name)}</b> · <a href="${/^[\d\s()+.-]{7,}$/.test(r.contact) ? 'tel:' + esc(r.contact.replace(/[^\d+]/g, '')) : '#'}">${esc(r.contact)}</a>${r.message ? `<p style="margin:6px 0 0">${esc(r.message)}</p>` : ''}<small class="muted">${esc((r.createdAt || '').replace(' ', ' at ').slice(0, 19))} UTC</small></div>`).join('') : '<div class="card"><p class="muted" style="margin:0">Nobody yet. Share your post to get it in front of more players.</p></div>'}
-        <div class="actbar" style="margin-top:14px">${open ? '<button type="button" class="btn btn-blue" data-mact="close">Found a Match (Close Post)</button>' : p.status === 'closed' && p.expiresMs > Date.now() ? '<button type="button" class="btn btn-out" data-mact="reopen">Reopen Post</button>' : ''}</div>`
+        <div class="actbar" style="margin-top:14px">${open ? '<button type="button" class="btn btn-blue" data-mact="close">Found a Match (Close Post)</button>' : p.status === 'closed' && p.expiresMs > Date.now() ? '<button type="button" class="btn btn-out" data-mact="reopen">Reopen Post</button>' : ''}${p.status !== 'archived' ? '<button type="button" class="btn btn-red" id="mDelete">Delete Post</button>' : ''}</div>`
       : open ? `<div class="card"><h3 style="margin-bottom:4px">Want this action?</h3>${imInForm(p.id)}</div>` : ''}
-      ${p.status !== 'removed' ? matchShareBar(p) : ''}
-      ${commentSection(p)}
+      ${p.status !== 'archived' ? matchShareBar(p) + commentSection(p) : ''}
       <div class="actbar" style="margin-top:14px"><a class="btn btn-out" href="#/matches">All Players Looking</a></div>
       ${MATCH_NOTE}`;
     const replyForm = app.querySelector('form[data-reply]');
@@ -1543,7 +1563,13 @@
     if (nat) { if (!navigator.share) nat.hidden = true; nat.addEventListener('click', () => shareMatch(p, nat)); }
     const cp = app.querySelector('[data-mshare-copy]');
     if (cp) cp.addEventListener('click', async () => { try { await navigator.clipboard.writeText(matchShareUrl(p)); cp.textContent = 'Link copied'; } catch { window.prompt('Copy this link:', matchShareUrl(p)); } });
+    const del = document.getElementById('mDelete');
+    if (del) del.addEventListener('click', async () => {
+      if (!tapTwice(del, 'mdel' + id, 'Tap again to delete')) return;
+      try { await api(`/api/matches/${id}/delete`, { method: 'POST', headers }); location.hash = '#/matches?deleted=1'; } catch (err) { del.textContent = err.message; }
+    });
     const cList = document.getElementById('cList'), cForm = document.getElementById('cForm');
+    if (!cForm) return;
     const drawComments = list => { document.getElementById('cCount').textContent = list.length; cList.innerHTML = list.map(c => commentHtml(c, p.canManage)).join('') || '<p class="muted">No comments yet. Start the conversation.</p>'; };
     cForm.addEventListener('submit', async e => {
       e.preventDefault();

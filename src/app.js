@@ -332,7 +332,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const mine = tokenOk(req, cfg.adminToken) || M.canManage(db, id, req.headers['x-manage-key']);
       if (m === 'GET' && rest === '') {
         const post = M.getPost(db, id, { withReplies: mine });
-        if (!post || (post.status === 'removed' && !mine)) return json(req, res, 404, { error: 'Post not found' });
+        if (!post || (post.status === 'archived' && !mine)) return json(req, res, 404, { error: 'This post was deleted' });
         return json(req, res, 200, { ...post, comments: M.listComments(db, id), canManage: mine }, { 'Cache-Control': 'no-store' });
       }
       if (m === 'POST' && rest === '/reply') {
@@ -345,6 +345,13 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         if (limitedBy(fastHits, clientIp(req) + ':mc', 1, 5000)) return json(req, res, 429, { error: 'Slow down a little' });
         const r = M.addComment(db, id, await readJson(req, 4000));
         return json(req, res, r.status, r.error ? { error: r.error } : { ok: true, id: r.id, comments: M.listComments(db, id) });
+      }
+      if (m === 'POST' && rest === '/delete') {
+        if (!mine) return json(req, res, 403, { error: 'Only the person who posted can delete this' });
+        const by = tokenOk(req, cfg.adminToken) ? 'admin' : 'poster';
+        const ok = M.archive(db, id, by);
+        log(`match post ${id} deleted by ${by}`);
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Already deleted' });
       }
       if (m === 'POST' && (rest === '/close' || rest === '/reopen')) {
         if (!mine) return json(req, res, 403, { error: 'Only the person who posted can change this' });
@@ -402,8 +409,9 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         return json(req, res, ok ? 200 : 400, ok ? { ok: true } : { error: 'Could not do that' });
       }
       if (m === 'GET' && p === '/api/admin/matches') return json(req, res, 200, { posts: M.adminList(db) });
-      if ((x = p.match(/^\/api\/admin\/matches\/(\d+)\/(remove|restore)$/)) && m === 'POST') {
-        const ok = M.setStatus(db, Number(x[1]), x[2] === 'remove' ? 'removed' : 'open');
+      if ((x = p.match(/^\/api\/admin\/matches\/(\d+)\/(archive|repost|purge)$/)) && m === 'POST') {
+        const id = Number(x[1]);
+        const ok = x[2] === 'archive' ? M.archive(db, id, 'admin') : x[2] === 'repost' ? M.repost(db, id) : M.purge(db, id);
         log(`match post ${x[1]} ${x[2]} by admin`);
         return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Post not found' });
       }
@@ -487,7 +495,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/match\/(\d+)\/?$/))) {   // shareable Match Finder post
       SEO.ensureFooter(db);
       const post = M.getPost(db, Number(x[1]));
-      if (!post || post.status === 'removed') return notFoundPage();
+      if (!post || post.status === 'archived') return notFoundPage();
       trackVisit(req, 'match-page');
       return html(200, SEO.matchPage(cfg, post, M.listComments(db, post.id)), { 'Cache-Control': 'public, max-age=60' });
     }

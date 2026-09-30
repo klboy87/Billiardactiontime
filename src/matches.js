@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS match_posts (
   date TEXT NOT NULL, until TEXT NOT NULL, time TEXT,     -- local dates the poster picked
   expires_ms INTEGER NOT NULL,                              -- end of the poster's last day
   contact TEXT, note TEXT,
-  status TEXT NOT NULL DEFAULT 'open',                      -- open | closed | removed
+  status TEXT NOT NULL DEFAULT 'open',                      -- open | closed | archived (deleted; admin can repost or purge)
   manage_hash TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -51,7 +51,9 @@ export function validatePost(b, now = Date.now()) {
   if (fargo != null && !(fargo >= 100 && fargo <= 900)) return { error: 'Fargo rating should be between 100 and 900' };
   const date = parseDate(b.date), until = parseDate(b.until) || date;
   const expires = Math.round(Number(b.expiresMs));
-  if (!date || !until || until < date) return { error: 'Pick when you want to play' };
+  if (!date) return { error: 'Pick a start date' };
+  if (!until) return { error: 'Pick an end date' };
+  if (until < date) return { error: 'The end date is before the start date' };
   if (!(expires > now && expires < now + 62 * DAY)) return { error: 'Pick a day within the next two months' };
   return { value: { name, city, state, room: s(b.room, 80) || null, game, stakeMin: min, stakeMax: max, fargo, date, until, time: parseTime(b.time),
     expiresMs: expires, contact: s(b.contact, 80) || null, note: s(b.note, 280) || null } };
@@ -73,6 +75,7 @@ export function canManage(db, id, key) {
 const shape = (r, replies = null) => ({
   id: r.id, name: r.name, city: r.city, state: r.state, room: r.room, game: r.game, stakeMin: r.stake_min, stakeMax: r.stake_max, fargo: r.fargo,
   date: r.date, until: r.until, time: r.time, expiresMs: r.expires_ms, contact: r.contact, note: r.note, status: r.status, createdAt: r.created_at,
+  prevStatus: r.prev_status || null, archivedBy: r.archived_by || null, archivedAt: r.archived_at || null,
   replyCount: r.reply_count ?? undefined, commentCount: r.comment_count ?? 0, ...(replies ? { replies } : {})
 });
 
@@ -99,8 +102,46 @@ export function reply(db, id, b, now = Date.now()) {
   return { status: 201, ok: true };
 }
 
+// Close / reopen (found a match). Doesn't touch deleted posts.
 export function setStatus(db, id, status) {
-  return db.prepare('UPDATE match_posts SET status=? WHERE id=?').run(status, id).changes > 0;
+  return db.prepare("UPDATE match_posts SET status=? WHERE id=? AND status IN ('open','closed')").run(status, id).changes > 0;
+}
+
+// Delete = move to the admin's archive. by: 'poster' | 'admin'.
+export function archive(db, id, by) {
+  return db.prepare("UPDATE match_posts SET prev_status=status, status='archived', archived_by=?, archived_at=datetime('now') WHERE id=? AND status<>'archived'")
+    .run(by, id).changes > 0;
+}
+
+// Today's date and the end of today (3 AM tomorrow) on Michigan time, for reposting a post whose dates have passed.
+function detroitToday(now = Date.now()) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Detroit', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    .formatToParts(new Date(now)).map(p => [p.type, p.value]));
+  const mins = Number(parts.hour) * 60 + Number(parts.minute);
+  return { iso: `${parts.year}-${parts.month}-${parts.day}`, endMs: now + ((27 * 60 - mins) * 60_000) };
+}
+
+// Put an archived post back on the board. If its end date already passed, it's reposted for today.
+export function repost(db, id, now = Date.now()) {
+  const p = db.prepare("SELECT * FROM match_posts WHERE id=? AND status='archived'").get(id);
+  if (!p) return false;
+  const status = p.prev_status === 'closed' ? 'closed' : 'open';
+  if (p.expires_ms > now) db.prepare('UPDATE match_posts SET status=?, prev_status=NULL, archived_by=NULL, archived_at=NULL WHERE id=?').run(status, id);
+  else {
+    const t = detroitToday(now);
+    db.prepare("UPDATE match_posts SET status='open', prev_status=NULL, archived_by=NULL, archived_at=NULL, date=?, until=?, time=NULL, expires_ms=? WHERE id=?").run(t.iso, t.iso, t.endMs, id);
+  }
+  return true;
+}
+
+// Delete forever (only from the archive): the post, its private replies and its comments.
+export function purge(db, id) {
+  const p = db.prepare("SELECT 1 FROM match_posts WHERE id=? AND status='archived'").get(id);
+  if (!p) return false;
+  db.prepare('DELETE FROM match_replies WHERE post_id=?').run(id);
+  db.prepare('DELETE FROM match_comments WHERE post_id=?').run(id);
+  db.prepare('DELETE FROM match_posts WHERE id=?').run(id);
+  return true;
 }
 
 export function adminList(db) {
@@ -115,7 +156,7 @@ export function listComments(db, id) {
 }
 export function addComment(db, id, b) {
   const p = db.prepare('SELECT status FROM match_posts WHERE id=?').get(id);
-  if (!p || p.status === 'removed') return { status: 404, error: 'This post is gone' };
+  if (!p || p.status === 'archived') return { status: 404, error: 'This post was deleted' };
   const name = clean(b?.name).slice(0, 40), body = String(b?.body ?? '').replace(/\r/g, '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 500);
   if (!name) return { status: 400, error: 'Enter your name' };
   if (!body) return { status: 400, error: 'Write a comment' };

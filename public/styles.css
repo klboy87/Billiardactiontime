@@ -456,12 +456,12 @@ table.t tr.noline td{border-bottom:0}
 .match-facts span{display:inline-block;width:24px}
 .match-note{font-style:italic;margin:0 0 10px;color:var(--muted)}
 .matchcard .actbar{margin-top:auto}
-.when-pick{border:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.when-pick{border:0;padding:0;margin-bottom:12px}
 .when-pick legend{margin-bottom:6px}
-.when-pick label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;background:var(--surface)}
-.when-pick label:has(input:checked){border-color:var(--green);background:var(--green);color:#fff}
-.when-pick input[type=radio]{margin:0}
-.when-pick input[type=date]{flex-basis:100%}
+.when-quick{display:flex;flex-wrap:wrap;gap:8px}
+.chipbtn{border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;background:var(--surface);color:var(--text);font:600 14px/1.1 var(--body)}
+.chipbtn.on{border-color:var(--green);background:var(--green);color:#fff}
+.when-pick .fg{margin-bottom:6px}
 .match-stats{display:flex;gap:14px;margin:0 0 10px;font-size:14px;color:var(--muted)}.match-stats a{font-weight:600}
 .mshare{margin-top:16px}.mshare h3{margin:0 0 4px}.mshare p{margin:0 0 10px;font-size:14px}
 .mcomments-wrap{margin-top:8px}

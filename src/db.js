@@ -158,9 +158,12 @@ export function openDb(file) {
   for (const sql of ['ALTER TABLE auctions ADD COLUMN ends_ms INTEGER', 'ALTER TABLE auctions ADD COLUMN starts_ms INTEGER',
     'ALTER TABLE stakes ADD COLUMN prev_status TEXT',
     'ALTER TABLE auctions ADD COLUMN prev_status TEXT',                          // status before it was archived                            // status before it was archived
-    'ALTER TABLE stake_pieces ADD COLUMN paid_in INTEGER NOT NULL DEFAULT 0']) {  // backer paid for their piece
+    'ALTER TABLE stake_pieces ADD COLUMN paid_in INTEGER NOT NULL DEFAULT 0',   // backer paid for their piece
+    'ALTER TABLE match_posts ADD COLUMN prev_status TEXT',                       // Match Finder archive
+    'ALTER TABLE match_posts ADD COLUMN archived_by TEXT', 'ALTER TABLE match_posts ADD COLUMN archived_at TEXT']) {
     try { db.exec(sql); } catch { /* already there */ }
   }
+  db.exec("UPDATE match_posts SET prev_status=COALESCE(prev_status,'open'), status='archived', archived_by=COALESCE(archived_by,'admin') WHERE status='removed'");
   return db;
 }
 
