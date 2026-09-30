@@ -72,7 +72,7 @@ input[type=radio],input[type=checkbox]{width:auto;min-height:0;accent-color:var(
 .hero{position:relative;overflow:hidden;background:radial-gradient(60% 90% at 85% 20%,rgba(28,111,230,.42),transparent 62%),radial-gradient(45% 60% at 0% 100%,rgba(20,138,56,.28),transparent 70%),linear-gradient(#07111f,#0a1a2e)}
 .hero-in{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:center;padding:56px 20px 30px}
 .hero h1{font-size:clamp(46px,8vw,96px);font-weight:800;line-height:.9;color:#fff}
-.hero p.lead{font-size:18px;color:#c7d6ea;max-width:44ch;margin:18px 0 22px}
+.hero p.lead{font-size:18px;color:#fff;max-width:44ch;margin:18px 0 22px}
 .hsearch{display:flex;max-width:560px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .hsearch input{border:0;border-radius:0;color:#0f1b2d;background:#fff;min-height:54px;font-size:16px}
 .hsearch button{border:0;background:var(--green);color:#fff;width:64px;cursor:pointer;display:grid;place-items:center}

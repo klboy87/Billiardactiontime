@@ -200,7 +200,7 @@
       <section class="hero">
         <div class="hero-in">
           <h1>Find your next pool tournament</h1>
-          <p>Search pool tournaments by date, location, game, entry fee, and more.</p>
+          <p class="lead">Search pool tournaments by date, location, game, entry fee, and more.</p>
           <form class="hsearch" id="homeSearch">
             <input type="text" id="homeQuery" placeholder="Search tournaments, cities, venues, games…">
             <button type="submit" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
