@@ -382,3 +382,33 @@ export function sitemapXml(db, cfg) {
 
 export function ensureFooter(db) { if (!footCache || Date.now() - footCache.at > 300_000) buildFooter(db); }
 export const legacyStatePath = code => facetPath({ state: code });
+
+// ---- shareable Match Finder post: /match/<id> ----
+// A real page (not an app hash link) so Facebook, X and texts show who's looking for action.
+// Posts expire within days, so these pages are kept out of search results.
+export function matchStakes(p) {
+  return p.stakeMin != null && p.stakeMax != null ? (p.stakeMin === p.stakeMax ? money(p.stakeMin) : `${money(p.stakeMin)}–${money(p.stakeMax)}`)
+    : p.stakeMin != null ? `${money(p.stakeMin)}+` : p.stakeMax != null ? `Up to ${money(p.stakeMax)}` : 'Stakes open';
+}
+export function matchPage(cfg, p, comments) {
+  const game = p.game === 'Other' ? 'any game' : p.game;
+  const when = (p.until !== p.date ? `${shortDate(p.date)} – ${shortDate(p.until)}` : shortDate(p.date)) + (p.time ? ' · ' + fmtTime(p.time) : '');
+  const open = p.status === 'open' && p.expiresMs > Date.now();
+  const title = `${p.name} is looking for ${game} action in ${p.city}, ${p.state}`;
+  const description = `${matchStakes(p)} · ${when}${p.room ? ' at ' + p.room : ''}. Want it? Tap I'm In on Billiard Action Time.`;
+  const app = `/#/matches/${p.id}`;
+  const body = `<div class="crumbs"><a href="/#/matches">Match Finder</a> / ${esc(p.name)}</div>
+  <h1>Looking for a Match</h1>
+  ${open ? '' : `<p class="seo-ended">${p.status === 'closed' ? 'This player found a match. The post is closed.' : 'This post has ended.'}</p>`}
+  <article class="card matchcard"><div class="stake-top"><b class="match-name">${esc(p.name)}</b>${p.fargo ? `<span class="chip b">Fargo ${p.fargo}</span>` : ''}</div>
+    <ul class="match-facts"><li><span aria-hidden="true">📍</span> ${esc(p.city)}, ${esc(p.state)}${p.room ? ' · ' + esc(p.room) : ''}</li>
+    <li><span aria-hidden="true">🎱</span> ${esc(p.game === 'Other' ? 'Any game' : p.game)}</li><li><span aria-hidden="true">💰</span> ${esc(matchStakes(p))}</li>
+    <li><span aria-hidden="true">📅</span> ${esc(when)}</li></ul>
+    ${p.note ? `<p class="match-note">“${esc(p.note)}”</p>` : ''}
+    <div class="actbar"><a class="btn btn-green" href="${app}">${open ? "I'm In" : 'See Details'}</a><a class="btn btn-gold" href="/#/matches">Find More Action</a></div></article>
+  <h2 class="seo-h2">Comments (${comments.length})</h2>
+  ${comments.length ? `<div class="mcomments">${comments.map(c => `<div class="mcomment"><b>${esc(c.name)}</b><p>${esc(c.body)}</p></div>`).join('')}</div>` : '<p class="muted">No comments yet.</p>'}
+  <p><a class="btn btn-out" href="/#/matches/${p.id}?c=1">Add a Comment</a></p>
+  <p class="stake-note">Match Finder only connects players. Billiard Action Time never takes, holds or pays out money. You must be 18+ and follow the laws where you play.</p>`;
+  return layout(cfg, { title, description, path: `/match/${p.id}`, body, noindex: true });
+}

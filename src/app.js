@@ -322,18 +322,29 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (v.error) return json(req, res, 400, { error: v.error });
       return json(req, res, 201, M.createPost(db, v.value));
     }
+    if (m === 'POST' && (x = p.match(/^\/api\/matches\/(\d+)\/comments\/(\d+)\/delete$/))) {
+      const id = Number(x[1]);
+      if (!(tokenOk(req, cfg.adminToken) || M.canManage(db, id, req.headers['x-manage-key']))) return json(req, res, 403, { error: 'Only the person who posted can delete comments' });
+      return json(req, res, 200, { ok: M.deleteComment(db, id, Number(x[2])), comments: M.listComments(db, id) });
+    }
     if ((x = p.match(/^\/api\/matches\/(\d+)(\/[a-z]+)?$/))) {
       const id = Number(x[1]), rest = x[2] || '';
       const mine = tokenOk(req, cfg.adminToken) || M.canManage(db, id, req.headers['x-manage-key']);
       if (m === 'GET' && rest === '') {
         const post = M.getPost(db, id, { withReplies: mine });
         if (!post || (post.status === 'removed' && !mine)) return json(req, res, 404, { error: 'Post not found' });
-        return json(req, res, 200, { ...post, canManage: mine });
+        return json(req, res, 200, { ...post, comments: M.listComments(db, id), canManage: mine }, { 'Cache-Control': 'no-store' });
       }
       if (m === 'POST' && rest === '/reply') {
         if (limitedBy(joinHits, clientIp(req) + ':mreply', 20, 3_600_000)) return json(req, res, 429, { error: 'Too many replies. Try again later.' });
         const r = M.reply(db, id, await readJson(req, 4000));
         return json(req, res, r.status, r.error ? { error: r.error } : r);
+      }
+      if (m === 'POST' && rest === '/comment') {
+        if (limitedBy(joinHits, clientIp(req) + ':mcomment', 30, 3_600_000)) return json(req, res, 429, { error: 'Too many comments. Try again later.' });
+        if (limitedBy(fastHits, clientIp(req) + ':mc', 1, 5000)) return json(req, res, 429, { error: 'Slow down a little' });
+        const r = M.addComment(db, id, await readJson(req, 4000));
+        return json(req, res, r.status, r.error ? { error: r.error } : { ok: true, id: r.id, comments: M.listComments(db, id) });
       }
       if (m === 'POST' && (rest === '/close' || rest === '/reopen')) {
         if (!mine) return json(req, res, 403, { error: 'Only the person who posted can change this' });
@@ -472,6 +483,13 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (!out) return notFoundPage();
       trackVisit(req, parts.length ? 'listing-page' : 'states-page');
       return html(200, out);
+    }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/match\/(\d+)\/?$/))) {   // shareable Match Finder post
+      SEO.ensureFooter(db);
+      const post = M.getPost(db, Number(x[1]));
+      if (!post || post.status === 'removed') return notFoundPage();
+      trackVisit(req, 'match-page');
+      return html(200, SEO.matchPage(cfg, post, M.listComments(db, post.id)), { 'Cache-Control': 'public, max-age=60' });
     }
     if (m === 'GET' && (x = p.match(/^\/t\/(\d+)$/))) {           // old tournament links
       const t = D.getTournament(db, Number(x[1]));

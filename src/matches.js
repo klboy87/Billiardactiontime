@@ -27,6 +27,12 @@ CREATE TABLE IF NOT EXISTS match_replies (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_match_replies ON match_replies(post_id);
+CREATE TABLE IF NOT EXISTS match_comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL REFERENCES match_posts(id),
+  name TEXT NOT NULL, body TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_match_comments ON match_comments(post_id, deleted);
 `;
 
 export function validatePost(b, now = Date.now()) {
@@ -67,16 +73,16 @@ export function canManage(db, id, key) {
 const shape = (r, replies = null) => ({
   id: r.id, name: r.name, city: r.city, state: r.state, room: r.room, game: r.game, stakeMin: r.stake_min, stakeMax: r.stake_max, fargo: r.fargo,
   date: r.date, until: r.until, time: r.time, expiresMs: r.expires_ms, contact: r.contact, note: r.note, status: r.status, createdAt: r.created_at,
-  replyCount: r.reply_count ?? undefined, ...(replies ? { replies } : {})
+  replyCount: r.reply_count ?? undefined, commentCount: r.comment_count ?? 0, ...(replies ? { replies } : {})
 });
 
 export function listOpen(db, now = Date.now()) {
-  return db.prepare(`SELECT p.*, (SELECT COUNT(*) FROM match_replies r WHERE r.post_id=p.id) reply_count FROM match_posts p
+  return db.prepare(`SELECT p.*, (SELECT COUNT(*) FROM match_replies r WHERE r.post_id=p.id) reply_count, (SELECT COUNT(*) FROM match_comments c WHERE c.post_id=p.id AND c.deleted=0) comment_count FROM match_posts p
     WHERE p.status='open' AND p.expires_ms > ? ORDER BY p.date, COALESCE(p.time,'99:99'), p.id DESC LIMIT 500`).all(now).map(r => shape(r));
 }
 
 export function getPost(db, id, { withReplies = false } = {}) {
-  const r = db.prepare(`SELECT p.*, (SELECT COUNT(*) FROM match_replies r WHERE r.post_id=p.id) reply_count FROM match_posts p WHERE p.id=?`).get(id);
+  const r = db.prepare(`SELECT p.*, (SELECT COUNT(*) FROM match_replies r WHERE r.post_id=p.id) reply_count, (SELECT COUNT(*) FROM match_comments c WHERE c.post_id=p.id AND c.deleted=0) comment_count FROM match_posts p WHERE p.id=?`).get(id);
   if (!r) return null;
   const replies = withReplies ? db.prepare('SELECT id, name, contact, message, created_at FROM match_replies WHERE post_id=? ORDER BY id DESC').all(id)
     .map(x => ({ id: x.id, name: x.name, contact: x.contact, message: x.message, createdAt: x.created_at })) : null;
@@ -98,6 +104,26 @@ export function setStatus(db, id, status) {
 }
 
 export function adminList(db) {
-  return db.prepare(`SELECT p.*, (SELECT COUNT(*) FROM match_replies r WHERE r.post_id=p.id) reply_count FROM match_posts p
+  return db.prepare(`SELECT p.*, (SELECT COUNT(*) FROM match_replies r WHERE r.post_id=p.id) reply_count, (SELECT COUNT(*) FROM match_comments c WHERE c.post_id=p.id AND c.deleted=0) comment_count FROM match_posts p
     ORDER BY p.id DESC LIMIT 300`).all().map(r => shape(r));
+}
+
+// Public comments anyone can read. The poster and the site admin can delete them.
+export function listComments(db, id) {
+  return db.prepare('SELECT id, name, body, created_at FROM match_comments WHERE post_id=? AND deleted=0 ORDER BY id LIMIT 300').all(id)
+    .map(c => ({ id: c.id, name: c.name, body: c.body, createdAt: c.created_at }));
+}
+export function addComment(db, id, b) {
+  const p = db.prepare('SELECT status FROM match_posts WHERE id=?').get(id);
+  if (!p || p.status === 'removed') return { status: 404, error: 'This post is gone' };
+  const name = clean(b?.name).slice(0, 40), body = String(b?.body ?? '').replace(/\r/g, '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 500);
+  if (!name) return { status: 400, error: 'Enter your name' };
+  if (!body) return { status: 400, error: 'Write a comment' };
+  const dup = db.prepare('SELECT 1 FROM match_comments WHERE post_id=? AND name=? AND body=? AND deleted=0').get(id, name, body);
+  if (dup) return { status: 400, error: 'You already posted that' };
+  const r = db.prepare('INSERT INTO match_comments (post_id, name, body) VALUES (?,?,?)').run(id, name, body);
+  return { status: 201, ok: true, id: Number(r.lastInsertRowid) };
+}
+export function deleteComment(db, id, cid) {
+  return db.prepare('UPDATE match_comments SET deleted=1 WHERE id=? AND post_id=?').run(cid, id).changes > 0;
 }

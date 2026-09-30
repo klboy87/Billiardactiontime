@@ -1346,7 +1346,8 @@
       </ul>
       ${p.note ? `<p class="match-note">“${esc(p.note)}”</p>` : ''}
       ${p.contact ? `<p class="muted" style="margin:0 0 8px;font-size:14px">Reach them: <b style="color:var(--text)">${esc(p.contact)}</b></p>` : ''}
-      ${full ? '' : `<div class="actbar"><button type="button" class="btn btn-green" data-im-in="${p.id}">I'm In</button><a class="btn btn-out" href="#/matches/${p.id}">Details</a>${p.replyCount ? `<span class="muted" style="align-self:center;font-size:14px">${p.replyCount} interested</span>` : ''}</div>
+      ${full ? '' : `<p class="match-stats"><a href="#/matches/${p.id}?c=1">💬 ${p.commentCount ? `${p.commentCount} comment${p.commentCount === 1 ? '' : 's'}` : 'Comment'}</a>${p.replyCount ? `<span>🙋 ${p.replyCount} in</span>` : ''}</p>
+      <div class="actbar"><button type="button" class="btn btn-green" data-im-in="${p.id}">I'm In</button><a class="btn btn-out" href="#/matches/${p.id}">Details</a><button type="button" class="btn btn-out" data-mshare="${p.id}">Share</button></div>
       <div class="im-in" hidden></div>`}
     </article>`;
   }
@@ -1364,6 +1365,42 @@
       await api(`/api/matches/${id}/reply`, { method: 'POST', body: Object.fromEntries(new FormData(form)) });
       form.outerHTML = `<p class="amine" style="margin-top:10px">✓ Sent. They'll reach out to you.</p>`;
     } catch (err) { msg.innerHTML = `<p class="aerr">${esc(err.message)}</p>`; }
+  }
+
+  const matchShareUrl = p => `${location.origin}/match/${p.id}`;
+  const matchShareText = p => `${p.name} is looking for ${p.game === 'Other' ? 'a match' : p.game + ' action'} in ${p.city}, ${p.state} (${stakeLabel(p)}, ${whenLabel(p)}). Want it?`;
+  // Phone share sheet when there is one (Facebook, Messenger, TikTok, texts…); otherwise copy the link.
+  async function shareMatch(p, btn) {
+    const url = matchShareUrl(p), text = matchShareText(p);
+    try {
+      if (navigator.share) return await navigator.share({ title: 'Looking for a match', text, url });
+      await navigator.clipboard.writeText(`${text} ${url}`); btn.textContent = 'Link copied';
+    } catch (e) { if (e && e.name !== 'AbortError') window.prompt('Copy this link:', url); }
+  }
+  function matchShareBar(p) {
+    const u = encodeURIComponent(matchShareUrl(p)), tx = encodeURIComponent(matchShareText(p));
+    return `<section class="card mshare"><h3>Share This Post</h3><p class="muted">More eyes, more action. The link shows the post's details on Facebook, X and in texts.</p>
+      <div class="actbar"><button type="button" class="btn btn-green" data-mshare-native>Share…</button>
+      <a class="btn btn-blue" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${u}">Facebook</a>
+      <a class="btn btn-out" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=${u}&text=${tx}">X</a>
+      <a class="btn btn-out" href="sms:?&body=${tx}%20${u}">Text</a>
+      <button type="button" class="btn btn-out" data-mshare-copy>Copy Link</button></div></section>`;
+  }
+  function commentHtml(c, canDel) {
+    const when = (c.createdAt || '').replace(' ', 'T') + 'Z';
+    const d = new Date(when), ago = isNaN(d) ? '' : d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return `<div class="mcomment" data-cid="${c.id}"><div class="mcomment-top"><b>${esc(c.name)}</b><small class="muted">${esc(ago)}</small>${canDel ? `<button type="button" class="btn btn-out btn-sm" data-cdel="${c.id}">Delete</button>` : ''}</div><p>${esc(c.body)}</p></div>`;
+  }
+  function commentSection(p) {
+    let saved = ''; try { saved = localStorage.getItem('bat_match_name') || ''; } catch { /* ignore */ }
+    return `<section id="comments" class="mcomments-wrap"><h2 class="stake-h">Comments (<span id="cCount">${p.comments.length}</span>)</h2>
+      <div class="mcomments" id="cList">${p.comments.map(c => commentHtml(c, p.canManage)).join('') || '<p class="muted" id="cEmpty">No comments yet. Start the conversation.</p>'}</div>
+      <form class="card" id="cForm" style="margin-top:12px">
+        <div class="fg"><label class="f">Your name *</label><input name="name" required maxlength="40" value="${esc(saved)}"></div>
+        <div class="fg"><label class="f">Comment *</label><textarea name="body" required maxlength="500" rows="3" placeholder="Ask a question, talk some trash, set up the race…"></textarea></div>
+        <div id="cMsg"></div><button class="btn btn-green" type="submit">Post Comment</button>
+        <p class="muted" style="font-size:13px;margin:8px 0 0">Comments are public. Keep it respectful. Don't post anyone's phone number here; use I'm In to send yours privately.</p>
+      </form></section>`;
   }
 
   async function matchBoard(params) {
@@ -1409,6 +1446,8 @@
     for (const [id, key] of [['mfCity', 'city'], ['mfGame', 'game'], ['mfStakes', 'stakes'], ['mfWhen', 'when']]) sel(id).addEventListener('change', e => { f[key] = e.target.value; draw(); });
     draw();
     sel('mfList').addEventListener('click', e => {
+      const sh = e.target.closest('[data-mshare]');
+      if (sh) { const p = posts.find(x => String(x.id) === sh.dataset.mshare); if (p) shareMatch(p, sh); return; }
       const b = e.target.closest('[data-im-in]'); if (!b) return;
       const box = b.closest('.matchcard').querySelector('.im-in');
       box.hidden = !box.hidden; if (!box.hidden && !box.innerHTML) { box.innerHTML = imInForm(b.dataset.imIn); box.querySelector('input').focus(); }
@@ -1481,7 +1520,6 @@
     let p;
     try { p = await api(`/api/matches/${id}`, { headers }); } catch { app.innerHTML = errorBox('This post is gone.'); return; }
     const open = p.status === 'open' && p.expiresMs > Date.now();
-    const shareUrl = `${location.origin}/#/matches/${p.id}`;
     const manageUrl = key ? `${location.origin}/#/matches/${p.id}?key=${encodeURIComponent(key)}` : '';
     app.innerHTML = `
       <div class="crumbs"><a href="#/matches">Match Finder</a> / ${esc(p.name)}</div>
@@ -1493,16 +1531,38 @@
         ${p.replies.length ? p.replies.map(r => `<div class="card" style="margin-bottom:10px"><b>${esc(r.name)}</b> · <a href="${/^[\d\s()+.-]{7,}$/.test(r.contact) ? 'tel:' + esc(r.contact.replace(/[^\d+]/g, '')) : '#'}">${esc(r.contact)}</a>${r.message ? `<p style="margin:6px 0 0">${esc(r.message)}</p>` : ''}<small class="muted">${esc((r.createdAt || '').replace(' ', ' at ').slice(0, 19))} UTC</small></div>`).join('') : '<div class="card"><p class="muted" style="margin:0">Nobody yet. Share your post to get it in front of more players.</p></div>'}
         <div class="actbar" style="margin-top:14px">${open ? '<button type="button" class="btn btn-blue" data-mact="close">Found a Match (Close Post)</button>' : p.status === 'closed' && p.expiresMs > Date.now() ? '<button type="button" class="btn btn-out" data-mact="reopen">Reopen Post</button>' : ''}</div>`
       : open ? `<div class="card"><h3 style="margin-bottom:4px">Want this action?</h3>${imInForm(p.id)}</div>` : ''}
-      <div class="actbar" style="margin-top:14px"><button type="button" class="btn btn-out" id="shareMatch">Share This Post</button><a class="btn btn-out" href="#/matches">All Players Looking</a></div>
+      ${p.status !== 'removed' ? matchShareBar(p) : ''}
+      ${commentSection(p)}
+      <div class="actbar" style="margin-top:14px"><a class="btn btn-out" href="#/matches">All Players Looking</a></div>
       ${MATCH_NOTE}`;
     const replyForm = app.querySelector('form[data-reply]');
     if (replyForm) replyForm.addEventListener('submit', e => { e.preventDefault(); sendReply(replyForm); });
     const act = document.querySelector('[data-mact]');
     if (act) act.addEventListener('click', async () => { try { await api(`/api/matches/${id}/${act.dataset.mact}`, { method: 'POST', headers }); render(); } catch (err) { act.textContent = err.message; } });
-    document.getElementById('shareMatch').addEventListener('click', async () => {
-      const text = `${p.name} is looking for ${p.game === 'Other' ? 'a match' : p.game + ' action'} in ${p.city}, ${p.state} (${stakeLabel(p)}, ${whenLabel(p)}). Want it?`;
-      try { if (navigator.share) await navigator.share({ title: 'Looking for a match', text, url: shareUrl }); else { await navigator.clipboard.writeText(`${text} ${shareUrl}`); document.getElementById('shareMatch').textContent = 'Link copied'; } } catch { /* ignore */ }
+    const nat = app.querySelector('[data-mshare-native]');
+    if (nat) { if (!navigator.share) nat.hidden = true; nat.addEventListener('click', () => shareMatch(p, nat)); }
+    const cp = app.querySelector('[data-mshare-copy]');
+    if (cp) cp.addEventListener('click', async () => { try { await navigator.clipboard.writeText(matchShareUrl(p)); cp.textContent = 'Link copied'; } catch { window.prompt('Copy this link:', matchShareUrl(p)); } });
+    const cList = document.getElementById('cList'), cForm = document.getElementById('cForm');
+    const drawComments = list => { document.getElementById('cCount').textContent = list.length; cList.innerHTML = list.map(c => commentHtml(c, p.canManage)).join('') || '<p class="muted">No comments yet. Start the conversation.</p>'; };
+    cForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const b = Object.fromEntries(new FormData(cForm)), btn = cForm.querySelector('button[type=submit]');
+      btn.disabled = true;
+      try {
+        const r = await api(`/api/matches/${id}/comment`, { method: 'POST', body: b });
+        try { localStorage.setItem('bat_match_name', b.name); } catch { /* ignore */ }
+        cForm.body.value = ''; document.getElementById('cMsg').innerHTML = ''; drawComments(r.comments);
+        cList.lastElementChild?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } catch (err) { document.getElementById('cMsg').innerHTML = errorBox(err.message); }
+      btn.disabled = false;
     });
+    cList.addEventListener('click', async e => {
+      const b = e.target.closest('[data-cdel]'); if (!b) return;
+      if (!tapTwice(b, 'cdel' + b.dataset.cdel, 'Tap again to delete')) return;
+      try { const r = await api(`/api/matches/${id}/comments/${b.dataset.cdel}/delete`, { method: 'POST', headers }); drawComments(r.comments); } catch (err) { b.textContent = err.message; }
+    });
+    if (params.get('c')) document.getElementById('comments').scrollIntoView({ block: 'start' });
   }
 
   routes['/matches'] = async (params, id) => (id === 'new' ? matchPostForm() : id && /^\d+$/.test(id) ? matchDetail(params, id) : matchBoard(params));

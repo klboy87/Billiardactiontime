@@ -462,3 +462,10 @@ table.t tr.noline td{border-bottom:0}
 .when-pick label:has(input:checked){border-color:var(--green);background:var(--green);color:#fff}
 .when-pick input[type=radio]{margin:0}
 .when-pick input[type=date]{flex-basis:100%}
+.match-stats{display:flex;gap:14px;margin:0 0 10px;font-size:14px;color:var(--muted)}.match-stats a{font-weight:600}
+.mshare{margin-top:16px}.mshare h3{margin:0 0 4px}.mshare p{margin:0 0 10px;font-size:14px}
+.mcomments-wrap{margin-top:8px}
+.mcomments{display:grid;gap:8px}
+.mcomment{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mcomment-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mcomment-top .btn{margin-left:auto;padding:6px 10px}
+.mcomment p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}

@@ -20,7 +20,8 @@ export const PAGES = {
   auctions: 'Calcutta Auctions', 'auction-new': 'Create an Auction', 'auction-room': 'Auction Room',
   // server-rendered pages (what Google and shared links open first)
   'tournament-page': 'Tournament Page (from search/links)', 'state-page': 'State Page (from search/links)',
-  'states-page': 'All States Page', 'venue-page': 'Venue Page (from search/links)'
+  'states-page': 'All States Page', 'venue-page': 'Venue Page (from search/links)',
+  'match-page': 'Match Finder Post (shared link)'
 };
 const ROUTE_TO_PAGE = { '': 'home', t: 'tournament' };
 export function pageFromHash(route) {
