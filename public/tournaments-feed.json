@@ -3359,6 +3359,18 @@
       "state": "NJ",
       "entry": 35,
       "notes": "Source: playhoboken.com. Recurring every Sunday except third Sunday, double elimination"
+    },
+    {
+      "id": "ft-monday-night-8-ball-suzi-cue-pool-hall-2026-10-05",
+      "name": "Monday Night 8 Ball",
+      "date": "2026-10-05",
+      "venue": "Suzi-Cue Pool Hall",
+      "address": "1950 N. 4th St, Ste L",
+      "city": "Columbus",
+      "state": "OH",
+      "zip": "43201",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com"
     }
   ]
 }
