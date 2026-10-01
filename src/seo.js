@@ -2,6 +2,7 @@
 // every state, city and game (and each combination) that has tournaments. Everything here is
 // plain server-rendered HTML so Google can read it without running the site's JavaScript app.
 import * as D from './db.js';
+import { sponsorBannerHtml } from './sponsor.js';
 import { STATE_NAMES, slugify } from './normalize.js';
 
 const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
@@ -120,6 +121,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script></head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/money-matches/">Money Matches</a><a href="/#/calendar">Calendar</a><a href="/#/stakes">Staking Board</a><a href="/#/auctions">Calcutta</a><a class="cta" href="/#/post">Post a Tournament</a></nav></div></header>
+${sponsorBannerHtml()}
 <main class="wrap page seo">${body}</main>
 ${footer(cfg)}</body></html>`;
 }

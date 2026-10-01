@@ -29,9 +29,10 @@ import * as SEO from './seo.js';
 import * as M from './matches.js';
 import * as MM from './moneymatches.js';
 import * as MP from './moneypages.js';
+import { sponsorBannerHtml } from './sponsor.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
 const CSP = "default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
 const SECURITY = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'X-Frame-Options': 'DENY', 'Content-Security-Policy': CSP };
 
@@ -638,7 +639,10 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         if (rel === 'index.html' && m === 'GET') trackVisit(req);
         let body = fs.readFileSync(file);
         // Crawlable links to the state/city/game pages, so search engines can find them from the home page.
-        if (rel === 'index.html') { try { body = Buffer.from(body.toString('utf8').replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db))); } catch (e) { log('seo links failed: ' + e.message); } }
+        if (rel === 'index.html') {
+          body = Buffer.from(body.toString('utf8').replace('<!--SPONSOR-->', sponsorBannerHtml()));
+          try { body = Buffer.from(body.toString('utf8').replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db))); } catch (e) { log('seo links failed: ' + e.message); }
+        }
         return send(req, res, 200, body, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
       }
     }
