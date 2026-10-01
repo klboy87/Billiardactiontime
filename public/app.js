@@ -1372,7 +1372,8 @@
         <div class="mm-count" id="mmSpotCount"></div>
         <div class="actbar"><a class="btn btn-gold" href="${esc(m.path)}" style="flex:1">See the Match</a><a class="btn btn-out" href="${esc(m.path)}#vote" style="flex:1">Who Ya Got?</a></div>
       </div></section>`;
-    startCountdown(document.getElementById('mmSpotCount'), m);
+    if (/^match canceled/i.test(m.notes || '')) document.getElementById('mmSpotCount').textContent = 'MATCH CANCELED · NO GAME';
+    else startCountdown(document.getElementById('mmSpotCount'), m);
   }
   // red banner under the header on every app page
   async function moneyTicker() {
@@ -1382,7 +1383,8 @@
     const m = d.spotlight; if (!m) return;
     const bits = [`${mmShortDate(m.date).split(',')[0].toUpperCase()}: ${m.player1.split(' ').pop().toUpperCase()} vs ${m.player2.split(' ').pop().toUpperCase()}`, mmGame(m).toUpperCase(), m.race ? `RACE TO ${m.race}` : '', m.stakes ? `${m.stakes.toUpperCase()} ON THE LINE` : '', `${m.city.toUpperCase()}, ${m.state}`].filter(Boolean);
     el.href = m.path;
-    el.innerHTML = `<span>🔥 ${esc(bits.join(' · '))} 🔥</span>`;
+    const canceled = /^match canceled/i.test(m.notes || '');
+    el.innerHTML = canceled ? `<span>❌ MATCH CANCELED · ${esc(bits[0])} · NO GAME ❌</span>` : `<span>🔥 ${esc(bits.join(' · '))} 🔥</span>`;
     el.hidden = false;
   }
 

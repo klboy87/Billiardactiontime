@@ -1,11 +1,13 @@
 import { loadEnvFile, getConfig } from './src/config.js';
 import { openDb } from './src/db.js';
 import { createApp } from './src/app.js';
+import { applyDataFixes } from './src/datafixes.js';
 
 loadEnvFile();
 const cfg = getConfig();
 if (!cfg.adminToken || cfg.adminToken.startsWith('change-me')) console.warn('Warning: set a real ADMIN_TOKEN in .env before going live.');
 const db = openDb(cfg.dbPath);
+applyDataFixes(db, m => console.log(new Date().toISOString(), m));
 const server = createApp(db, cfg, { log: m => console.log(new Date().toISOString(), m) });
 
 server.listen(cfg.port, () => console.log(`Billiard Action Time running at ${cfg.publicUrl} (port ${cfg.port})`));
