@@ -2,9 +2,8 @@ import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { slugify, zip5 } from './normalize.js';
-import { SCHEMA as MATCH_SCHEMA } from './matches.js';
-import { SCHEMA as MONEY_SCHEMA } from './moneymatches.js';
+import { slugify, zip5, GAMES, parseDate, parseTime, parseInteger, normalizeState, clean } from './normalize.js';
+import { safeUrl } from './mapping.js';
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS venues (
@@ -74,79 +73,32 @@ CREATE TABLE IF NOT EXISTS pageviews (
   PRIMARY KEY (day, visitor)
 );
 CREATE INDEX IF NOT EXISTS idx_pv_day ON pageviews(day);
--- which page each visitor viewed and where they came from, one row per (day, visitor, page).
--- Same privacy rules as pageviews: visitor is the salted daily hash, no IPs stored.
-CREATE TABLE IF NOT EXISTS visits (
-  day TEXT NOT NULL, visitor TEXT NOT NULL, page TEXT NOT NULL, source TEXT NOT NULL,
-  PRIMARY KEY (day, visitor, page)
-);
-CREATE INDEX IF NOT EXISTS idx_visits_day ON visits(day);
--- Staking Board: players offer pieces of their action; backers claim pieces. The site only keeps
--- the record -- money is held by the named stakeholder and paid between people off the site.
-CREATE TABLE IF NOT EXISTS stakes (
+CREATE TABLE IF NOT EXISTS money_matches (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  player TEXT NOT NULL, opponent TEXT, game TEXT NOT NULL, race TEXT,
-  bet REAL NOT NULL,              -- amount a side
-  offered REAL NOT NULL,          -- % of the player's action for sale
-  markup REAL NOT NULL DEFAULT 1,
+  slug TEXT NOT NULL UNIQUE,
+  player1 TEXT NOT NULL, player2 TEXT NOT NULL,
+  game TEXT NOT NULL DEFAULT '9-Ball',
+  race TEXT, stakes TEXT,
   date TEXT NOT NULL, time TEXT,
-  venue TEXT, city TEXT, state TEXT,
-  stakeholder TEXT, contact TEXT, notes TEXT,
-  status TEXT NOT NULL DEFAULT 'pending',   -- pending | open | settled | cancelled | rejected
-  result TEXT, score TEXT,                  -- won | lost, and e.g. "11-7"
-  manage_hash TEXT NOT NULL,
+  room TEXT, address TEXT, city TEXT NOT NULL, state TEXT NOT NULL,
+  stream_url TEXT, notes TEXT,
+  flyer_url TEXT, flyer_data TEXT,
+  submitter_name TEXT, submitter_contact TEXT,
+  status TEXT NOT NULL DEFAULT 'pending',   -- pending | published | archived
+  featured INTEGER NOT NULL DEFAULT 0,
+  score1 INTEGER, score2 INTEGER, winner INTEGER,  -- 1 or 2, winner set once a result is saved
+  votes1 INTEGER NOT NULL DEFAULT 0, votes2 INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX IF NOT EXISTS idx_stakes_status ON stakes(status, date);
-CREATE TABLE IF NOT EXISTS stake_pieces (
+CREATE INDEX IF NOT EXISTS idx_mm_date ON money_matches(date, status);
+CREATE TABLE IF NOT EXISTS money_match_comments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  stake_id INTEGER NOT NULL REFERENCES stakes(id),
-  backer TEXT NOT NULL, percent REAL NOT NULL,
-  contact TEXT,                   -- private: only the poster and admin see it
-  paid INTEGER NOT NULL DEFAULT 0,
+  money_match_id INTEGER NOT NULL REFERENCES money_matches(id),
+  name TEXT NOT NULL, body TEXT NOT NULL, contact TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX IF NOT EXISTS idx_pieces_stake ON stake_pieces(stake_id);
--- Calcutta / live auctions. Records only: no money is taken or paid out by the site.
-CREATE TABLE IF NOT EXISTS auctions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  code TEXT NOT NULL UNIQUE, title TEXT NOT NULL, starts_at TEXT,
-  mode TEXT NOT NULL DEFAULT 'live',          -- live (one player at a time) | silent (all at once)
-  status TEXT NOT NULL DEFAULT 'setup',       -- setup | running | paused | done
-  listed INTEGER NOT NULL DEFAULT 0,
-  min_bid REAL NOT NULL DEFAULT 5, increment REAL NOT NULL DEFAULT 5,
-  bid_seconds INTEGER NOT NULL DEFAULT 30,    -- live: clock for each player
-  reset_seconds INTEGER NOT NULL DEFAULT 15,  -- a late bid pushes the clock back up to this
-  silent_minutes INTEGER NOT NULL DEFAULT 60,
-  house_cut REAL NOT NULL DEFAULT 0, payouts TEXT NOT NULL DEFAULT '[]',
-  current_item INTEGER, paused_left_ms INTEGER, next_at INTEGER,
-  host_hash TEXT NOT NULL, rev INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE TABLE IF NOT EXISTS auction_items (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL REFERENCES auctions(id),
-  name TEXT NOT NULL, note TEXT, sort INTEGER NOT NULL DEFAULT 0,
-  status TEXT NOT NULL DEFAULT 'waiting',     -- waiting | open | sold | unsold
-  ends_at INTEGER, high_bid REAL, high_bidder INTEGER, finish INTEGER
-);
-CREATE INDEX IF NOT EXISTS idx_aitems ON auction_items(auction_id, sort);
-CREATE TABLE IF NOT EXISTS auction_bidders (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL REFERENCES auctions(id),
-  name TEXT NOT NULL, name_key TEXT NOT NULL, token_hash TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  UNIQUE (auction_id, name_key)
-);
-CREATE TABLE IF NOT EXISTS auction_bids (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL, item_id INTEGER NOT NULL,
-  bidder_id INTEGER NOT NULL, amount REAL NOT NULL, at INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_abids ON auction_bids(item_id, id);
-CREATE TABLE IF NOT EXISTS auction_chat (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, auction_id INTEGER NOT NULL,
-  name TEXT NOT NULL, host INTEGER NOT NULL DEFAULT 0, text TEXT NOT NULL, at INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_achat ON auction_chat(auction_id, id);
+CREATE INDEX IF NOT EXISTS idx_mmc_match ON money_match_comments(money_match_id);
 `;
 
 export function openDb(file) {
@@ -154,20 +106,6 @@ export function openDb(file) {
   const db = new DatabaseSync(file);
   db.exec('PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;');
   db.exec(SCHEMA);
-  db.exec(MATCH_SCHEMA);
-  db.exec(MONEY_SCHEMA);
-  // Columns added after launch: add them to databases created before they existed.
-  for (const sql of ['ALTER TABLE auctions ADD COLUMN ends_ms INTEGER', 'ALTER TABLE auctions ADD COLUMN starts_ms INTEGER',
-    'ALTER TABLE stakes ADD COLUMN prev_status TEXT',
-    'ALTER TABLE auctions ADD COLUMN prev_status TEXT',                          // status before it was archived                            // status before it was archived
-    'ALTER TABLE stake_pieces ADD COLUMN paid_in INTEGER NOT NULL DEFAULT 0',   // backer paid for their piece
-    'ALTER TABLE match_posts ADD COLUMN prev_status TEXT',                       // Match Finder archive
-    'ALTER TABLE match_posts ADD COLUMN archived_by TEXT', 'ALTER TABLE match_posts ADD COLUMN archived_at TEXT',
-    'ALTER TABLE match_comments ADD COLUMN contact TEXT',
-    'ALTER TABLE stakes ADD COLUMN money_match_id INTEGER']) {       // Staking Board post linked to a money match
-    try { db.exec(sql); } catch { /* already there */ }
-  }
-  db.exec("UPDATE match_posts SET prev_status=COALESCE(prev_status,'open'), status='archived', archived_by=COALESCE(archived_by,'admin') WHERE status='removed'");
   return db;
 }
 
@@ -384,38 +322,159 @@ export function pageviewCounts(db, todayStr = todayIso()) {
   };
 }
 
-// ---- page + traffic-source tracking (fed by the browser beacon at /api/track) ----
-export function recordVisitsBulk(db, entries) {
-  if (!entries.length) return;
-  tx(db, () => {
-    const stmt = db.prepare('INSERT OR IGNORE INTO visits (day, visitor, page, source) VALUES (?,?,?,?)');
-    for (const [day, visitor, page, source] of entries) stmt.run(day, visitor, page, source);
-  });
-}
-export function visitBreakdown(db, { days = 30, dailyDays = 14, todayStr = todayIso() } = {}) {
-  const daysAgo = n => { const d = new Date(todayStr + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - n); return d.toISOString().slice(0, 10); };
-  const since = daysAgo(days - 1), dailySince = daysAgo(dailyDays - 1);
-  // A visitor's source is the one on their first recorded page that day, so a person who
-  // arrives from Google and clicks around five pages counts once for Google, not five times.
-  const firstSource = `SELECT day, visitor, MIN(rowid) r FROM visits WHERE day >= ? GROUP BY day, visitor`;
-  const sources = db.prepare(`SELECT v.source, COUNT(*) visitors FROM visits v JOIN (${firstSource}) f ON v.rowid = f.r
-    GROUP BY v.source ORDER BY visitors DESC LIMIT 25`).all(since);
-  const pages = db.prepare(`SELECT page, COUNT(*) views FROM visits WHERE day >= ? GROUP BY page ORDER BY views DESC LIMIT 25`).all(since);
-  const dailyRows = db.prepare(`SELECT day, COUNT(DISTINCT visitor) visitors FROM visits WHERE day >= ? GROUP BY day`).all(dailySince);
-  const byDay = new Map(dailyRows.map(r => [r.day, Number(r.visitors)]));
-  const daily = [];
-  for (let i = dailyDays - 1; i >= 0; i--) { const d = daysAgo(i); daily.push({ day: d, visitors: byDay.get(d) || 0 }); }
-  const visitors = db.prepare(`SELECT COUNT(*) n FROM (SELECT DISTINCT day, visitor FROM visits WHERE day >= ?)`).get(since).n;
-  return {
-    days, visitors: Number(visitors),
-    sources: sources.map(r => ({ source: r.source, visitors: Number(r.visitors) })),
-    pages: pages.map(r => ({ page: r.page, views: Number(r.views) })),
-    daily
-  };
-}
-
 // Distinct city/state pairs that actually have a venue on file, so the city dropdown
 // can include real places even before they have a tournament -- see places.js for the rest.
 export function venueCities(db) {
   return db.prepare(`SELECT DISTINCT city, state FROM venues WHERE city IS NOT NULL AND city <> '' AND state IS NOT NULL AND state <> ''`).all();
+}
+
+// ---- money matches (fan-facing challenge matches; records only, the site never touches cash) ----
+function mmSlugBase(player1, player2, date) {
+  return `${slugify(player1)}-vs-${slugify(player2)}-${date}`.replace(/-+/g, '-');
+}
+function mmUniqueSlug(db, base) {
+  let slug = base, n = 2;
+  while (db.prepare('SELECT 1 FROM money_matches WHERE slug=?').get(slug)) slug = `${base}-${n++}`;
+  return slug;
+}
+
+export function shapeMoneyMatch(r, commentCount = 0) {
+  const today = todayIso();
+  return {
+    id: r.id, path: `/money-match/${r.slug}`, slug: r.slug,
+    player1: r.player1, player2: r.player2, game: r.game, race: r.race, stakes: r.stakes,
+    date: r.date, time: r.time, room: r.room, address: r.address, city: r.city, state: r.state,
+    streamUrl: r.stream_url, notes: r.notes, flyerUrl: r.flyer_data ? `/api/money-matches/${r.id}/flyer` : null, hasFlyer: !!r.flyer_data,
+    submitterName: r.submitter_name, submitterContact: r.submitter_contact,
+    status: r.status, featured: !!r.featured, upcoming: r.date >= today, isToday: r.date === today,
+    score1: r.score1, score2: r.score2, winner: r.winner || null,
+    votes1: r.votes1, votes2: r.votes2, votes: r.votes1 + r.votes2, comments: commentCount,
+    updatedAt: r.updated_at
+  };
+}
+
+export function validateMoneyMatch(b) {
+  if (!b || typeof b !== 'object') return { error: 'Missing match details' };
+  const s = (v, n) => clean(v).slice(0, n);
+  const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+  const player1 = s(b.player1, 60), player2 = s(b.player2, 60), date = parseDate(b.date);
+  if (!player1 || !player2) return { error: 'Both player names are required' };
+  if (!date || date < yesterday) return { error: 'Enter a date that is today or later' };
+  const city = s(b.city, 80), state = normalizeState(b.state);
+  if (!city || !state) return { error: 'City and state are required' };
+  let flyer = null;
+  if (b.flyer) {
+    if (typeof b.flyer !== 'string' || !/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(b.flyer)) return { error: 'Flyer must be a PNG, JPG, WebP or GIF image' };
+    if (b.flyer.length > 2_000_000) return { error: 'Flyer image is too large (2 MB max)' };
+    flyer = b.flyer;
+  }
+  return {
+    flyer,
+    value: {
+      player1, player2, game: GAMES.includes(b.game) ? b.game : '9-Ball', race: s(b.race, 10) || null, stakes: s(b.stakes, 40) || null,
+      date, time: parseTime(b.time), room: s(b.room, 120) || null, address: s(b.address, 160) || null, city, state,
+      streamUrl: safeUrl ? safeUrl(b.streamUrl) : (s(b.streamUrl, 300) || null), notes: s(b.notes, 600) || null,
+      submitterName: s(b.submitterName, 80) || null, submitterContact: s(b.submitterContact, 120) || null
+    }
+  };
+}
+
+export function createMoneyMatch(db, v, flyerData, { published = false } = {}) {
+  const slug = mmUniqueSlug(db, mmSlugBase(v.player1, v.player2, v.date));
+  const r = db.prepare(`INSERT INTO money_matches
+    (slug, player1, player2, game, race, stakes, date, time, room, address, city, state, stream_url, notes, flyer_data, submitter_name, submitter_contact, status)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+    .run(slug, v.player1, v.player2, v.game, v.race, v.stakes, v.date, v.time, v.room, v.address, v.city, v.state,
+      v.streamUrl, v.notes, flyerData || null, v.submitterName, v.submitterContact, published ? 'published' : 'pending');
+  return { id: Number(r.lastInsertRowid), slug };
+}
+
+function mmCommentCounts(db) {
+  const rows = db.prepare('SELECT money_match_id, COUNT(*) n FROM money_match_comments GROUP BY money_match_id').all();
+  return new Map(rows.map(r => [r.money_match_id, r.n]));
+}
+
+export function listMoneyMatchesPublic(db) {
+  const rows = db.prepare("SELECT * FROM money_matches WHERE status=? ORDER BY date, COALESCE(time,'99:99'), id").all('published');
+  const counts = mmCommentCounts(db);
+  const all = rows.map(r => shapeMoneyMatch(r, counts.get(r.id) || 0));
+  const today = todayIso();
+  const upcoming = all.filter(m => m.date >= today && !m.winner);
+  const results = all.filter(m => m.winner).sort((a, b) => b.date.localeCompare(a.date));
+  const featured = upcoming.find(m => m.featured);
+  const spotlight = featured || upcoming[0] || null;
+  return { spotlight, upcoming, results };
+}
+
+export function listMoneyMatchesAdmin(db) {
+  const rows = db.prepare("SELECT * FROM money_matches ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'published' THEN 1 ELSE 2 END, date DESC, id DESC").all();
+  const counts = mmCommentCounts(db);
+  return rows.map(r => shapeMoneyMatch(r, counts.get(r.id) || 0));
+}
+
+export function getMoneyMatchRaw(db, idOrSlug) {
+  const bySlug = typeof idOrSlug === 'string' && !/^\d+$/.test(idOrSlug);
+  return bySlug ? db.prepare('SELECT * FROM money_matches WHERE slug=?').get(idOrSlug)
+    : db.prepare('SELECT * FROM money_matches WHERE id=?').get(Number(idOrSlug));
+}
+
+export function getMoneyMatch(db, idOrSlug, { includeHidden = false } = {}) {
+  const r = getMoneyMatchRaw(db, idOrSlug);
+  if (!r) return null;
+  if (!includeHidden && r.status !== 'published') return null;
+  const counts = mmCommentCounts(db);
+  return shapeMoneyMatch(r, counts.get(r.id) || 0);
+}
+
+export function getMoneyMatchFlyer(db, id) {
+  const r = db.prepare('SELECT flyer_data FROM money_matches WHERE id=?').get(id);
+  return r ? r.flyer_data : null;
+}
+
+const MM_EDITABLE = { player1: 'player1', player2: 'player2', game: 'game', race: 'race', stakes: 'stakes', date: 'date', time: 'time',
+  room: 'room', address: 'address', city: 'city', state: 'state', streamUrl: 'stream_url', notes: 'notes' };
+export function updateMoneyMatch(db, id, patch, flyerData) {
+  const sets = [], vals = [];
+  for (const [k, c] of Object.entries(MM_EDITABLE)) if (k in patch) { sets.push(`${c}=?`); vals.push(patch[k]); }
+  if (flyerData) { sets.push('flyer_data=?'); vals.push(flyerData); }
+  if (!sets.length) return false;
+  const r = db.prepare(`UPDATE money_matches SET ${sets.join(',')}, updated_at=datetime('now') WHERE id=?`).run(...vals, id);
+  return r.changes > 0;
+}
+
+export function setMoneyMatchStatus(db, id, status) {
+  return db.prepare("UPDATE money_matches SET status=?, updated_at=datetime('now') WHERE id=?").run(status, id).changes > 0;
+}
+export function setMoneyMatchFeatured(db, id, featured) {
+  return db.prepare("UPDATE money_matches SET featured=?, updated_at=datetime('now') WHERE id=?").run(featured ? 1 : 0, id).changes > 0;
+}
+export function setMoneyMatchResult(db, id, { score1, score2, clear } = {}) {
+  if (clear) return db.prepare("UPDATE money_matches SET score1=NULL, score2=NULL, winner=NULL, updated_at=datetime('now') WHERE id=?").run(id).changes > 0;
+  const s1 = parseInteger(score1), s2 = parseInteger(score2);
+  if (s1 == null || s2 == null) return false;
+  const winner = s1 === s2 ? null : (s1 > s2 ? 1 : 2);
+  return db.prepare("UPDATE money_matches SET score1=?, score2=?, winner=?, updated_at=datetime('now') WHERE id=?").run(s1, s2, winner, id).changes > 0;
+}
+export function purgeMoneyMatch(db, id) {
+  tx(db, () => {
+    db.prepare('DELETE FROM money_match_comments WHERE money_match_id=?').run(id);
+    db.prepare('DELETE FROM money_matches WHERE id=?').run(id);
+  });
+  return true;
+}
+export function voteMoneyMatch(db, id, pick) {
+  if (pick !== 1 && pick !== 2) return null;
+  db.prepare(`UPDATE money_matches SET votes${pick}=votes${pick}+1 WHERE id=?`).run(id);
+  return db.prepare('SELECT votes1, votes2 FROM money_matches WHERE id=?').get(id);
+}
+export function addMoneyMatchComment(db, moneyMatchId, { name, body, contact }) {
+  const r = db.prepare('INSERT INTO money_match_comments (money_match_id, name, body, contact) VALUES (?,?,?,?)').run(moneyMatchId, name, body, contact || null);
+  return Number(r.lastInsertRowid);
+}
+export function listMoneyMatchComments(db, moneyMatchId) {
+  return db.prepare('SELECT * FROM money_match_comments WHERE money_match_id=? ORDER BY id').all(moneyMatchId)
+    .map(c => ({ id: c.id, name: c.name, body: c.body, contact: c.contact, createdAt: c.created_at }));
+}
+export function deleteMoneyMatchComment(db, commentId) {
+  return db.prepare('DELETE FROM money_match_comments WHERE id=?').run(commentId).changes > 0;
 }
