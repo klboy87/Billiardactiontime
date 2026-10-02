@@ -12,6 +12,7 @@ import { geocodePending } from './geocode.js';
 import { readFlyer, readMoneyMatchFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
 import { renderSiteCard, renderTournamentCard } from './ogcard.js';
+import { sponsorBannerHtml } from './sponsor.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -762,7 +763,9 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (file.startsWith(PUBLIC_DIR + path.sep) && fs.existsSync(file) && fs.statSync(file).isFile()) {
         const ext = path.extname(file);
         if (rel === 'index.html' && m === 'GET') trackVisit(req);
-        return send(req, res, 200, fs.readFileSync(file), { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
+        let body = fs.readFileSync(file);
+        if (rel === 'index.html') body = Buffer.from(body.toString('utf8').replace('<!--SPONSOR-->', sponsorBannerHtml()));
+        return send(req, res, 200, body, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
       }
     }
     return json(req, res, 404, { error: 'Not found' });
