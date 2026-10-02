@@ -411,6 +411,260 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return json(req, res, 404, { error: 'Not found' });
     }
 
+    // ---- lightweight page/referrer analytics beacon ----
+    if (m === 'POST' && p === '/api/track') {
+      try { const b = await readJson(req); D.recordTrackEvent(db, { page: clean(b?.page).slice(0, 60), ref: clean(b?.ref).slice(0, 300), utm: clean(b?.utm).slice(0, 40) }); } catch {}
+      return json(req, res, 204, '');
+    }
+
+    // ================= MATCH FINDER =================
+    if (m === 'GET' && p === '/api/matches') {
+      return json(req, res, 200, { posts: D.listMatchPostsPublic(db) }, { 'Cache-Control': 'public, max-age=30' });
+    }
+    if (m === 'POST' && p === '/api/matches') {
+      if (limited(clientIp(req) + ':match')) return json(req, res, 429, { error: 'Too many posts. Try again later.' });
+      const b = await readJson(req);
+      const name = clean(b?.name).slice(0, 40), city = clean(b?.city).slice(0, 60), state = normalizeState(b?.state);
+      const date = parseDate(b?.date), until = parseDate(b?.until);
+      if (!name) return json(req, res, 400, { error: 'Your name is required' });
+      if (!city || !state) return json(req, res, 400, { error: 'City and state are required' });
+      if (!date || !until) return json(req, res, 400, { error: 'Pick a start and end date' });
+      if (until < date) return json(req, res, 400, { error: 'The end date is before the start date' });
+      let expiresMs = parseInteger(b?.expiresMs);
+      const fallback = new Date(until + 'T09:00:00Z').getTime() + 86_400_000;
+      if (!expiresMs || expiresMs < Date.now() || expiresMs > Date.now() + 70 * 86_400_000) expiresMs = fallback;
+      const v = {
+        name, fargo: parseInteger(b?.fargo), city, state, room: clean(b?.room).slice(0, 80) || null,
+        game: GAMES.includes(b?.game) ? b.game : 'Other', stakeMin: parseInteger(b?.stakeMin), stakeMax: parseInteger(b?.stakeMax),
+        date, until, time: parseTime(b?.time), contact: clean(b?.contact).slice(0, 120) || null, note: clean(b?.note).slice(0, 280) || null, expiresMs
+      };
+      const { id, manageKey } = D.createMatchPost(db, v);
+      return json(req, res, 201, { id, manageKey });
+    }
+    if (m === 'GET' && (x = p.match(/^\/api\/matches\/(\d+)$/))) {
+      const key = req.headers['x-manage-key'] || '', isAdmin = tokenOk(req, cfg.adminToken);
+      const post = D.getMatchPost(db, Number(x[1]), { key, isAdmin });
+      return post ? json(req, res, 200, post) : json(req, res, 404, { error: 'This post is gone.' });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/matches\/(\d+)\/reply$/))) {
+      if (limited(clientIp(req) + ':mreply')) return json(req, res, 429, { error: 'Too many replies. Try again later.' });
+      const b = await readJson(req);
+      const name = clean(b?.name).slice(0, 40), contact = clean(b?.contact).slice(0, 80), message = clean(b?.message).slice(0, 280) || null;
+      if (!name || !contact) return json(req, res, 400, { error: 'Your name and contact are required' });
+      const post = D.getMatchPostRaw(db, Number(x[1]));
+      if (!post) return json(req, res, 404, { error: 'This post is gone.' });
+      D.addMatchReply(db, Number(x[1]), { name, contact, message });
+      return json(req, res, 201, { ok: true });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/matches\/(\d+)\/(close|reopen|delete)$/))) {
+      const id = Number(x[1]), act = x[2];
+      const key = req.headers['x-manage-key'] || '', isAdmin = tokenOk(req, cfg.adminToken);
+      const row = D.getMatchPostRaw(db, id);
+      if (!row) return json(req, res, 404, { error: 'This post is gone.' });
+      if (!isAdmin && key !== row.manage_key) return json(req, res, 403, { error: 'Not authorized' });
+      const ok = act === 'delete' ? D.setMatchStatus(db, id, 'archived', { archivedBy: isAdmin ? 'admin' : 'player' })
+        : D.setMatchStatus(db, id, act === 'close' ? 'closed' : 'open');
+      return json(req, res, ok ? 200 : 404, { ok });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/matches\/(\d+)\/comment$/))) {
+      if (limited(clientIp(req) + ':mcomment')) return json(req, res, 429, { error: 'Too many comments. Try again later.' });
+      const b = await readJson(req);
+      const name = clean(b?.name).slice(0, 40), body = clean(b?.body).slice(0, 500), contact = clean(b?.contact).slice(0, 120) || null;
+      if (!name || !body) return json(req, res, 400, { error: 'Name and comment are required' });
+      const post = D.getMatchPostRaw(db, Number(x[1]));
+      if (!post) return json(req, res, 404, { error: 'This post is gone.' });
+      D.addMatchComment(db, Number(x[1]), { name, body, contact });
+      return json(req, res, 201, { ok: true, comments: D.listMatchComments(db, Number(x[1])) });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/matches\/(\d+)\/comments\/(\d+)\/delete$/))) {
+      const key = req.headers['x-manage-key'] || '', isAdmin = tokenOk(req, cfg.adminToken);
+      const row = D.getMatchPostRaw(db, Number(x[1]));
+      if (!row) return json(req, res, 404, { error: 'This post is gone.' });
+      if (!isAdmin && key !== row.manage_key) return json(req, res, 403, { error: 'Not authorized' });
+      D.deleteMatchComment(db, Number(x[2]));
+      return json(req, res, 200, { comments: D.listMatchComments(db, Number(x[1])) });
+    }
+    if (p.startsWith('/api/admin/matches')) {
+      admin(req);
+      if (m === 'GET' && p === '/api/admin/matches') return json(req, res, 200, { posts: D.listMatchPostsAdmin(db) });
+      if ((x = p.match(/^\/api\/admin\/matches\/(\d+)\/(archive|repost|purge)$/)) && m === 'POST') {
+        const id = Number(x[1]), act = x[2];
+        const ok = act === 'archive' ? D.setMatchStatus(db, id, 'archived', { archivedBy: 'admin' }) : act === 'repost' ? D.repostMatch(db, id) : (D.purgeMatchPost(db, id) || true);
+        return json(req, res, ok ? 200 : 404, { ok: !!ok });
+      }
+      return json(req, res, 404, { error: 'Not found' });
+    }
+
+    // ================= STAKING BOARD =================
+    if (m === 'GET' && p === '/api/stakes') {
+      return json(req, res, 200, D.listStakesPublic(db), { 'Cache-Control': 'public, max-age=30' });
+    }
+    if (m === 'POST' && p === '/api/stakes') {
+      if (limited(clientIp(req) + ':stake')) return json(req, res, 429, { error: 'Too many submissions. Try again later.' });
+      const b = await readJson(req);
+      const player = clean(b?.player).slice(0, 60), stakeholder = clean(b?.stakeholder).slice(0, 80);
+      const date = parseDate(b?.date), bet = parseMoney(b?.bet), offered = parseMoney(b?.offered);
+      const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+      if (!player) return json(req, res, 400, { error: 'Your name is required' });
+      if (!date || date < yesterday) return json(req, res, 400, { error: 'Enter a date that is today or later' });
+      if (!bet || bet <= 0) return json(req, res, 400, { error: 'Enter what the bet is a side' });
+      if (!offered || offered < 1 || offered > 100) return json(req, res, 400, { error: 'Enter a percent for sale between 1 and 100' });
+      if (!stakeholder) return json(req, res, 400, { error: 'Enter who is holding the stake money' });
+      const v = {
+        player, opponent: clean(b?.opponent).slice(0, 60) || null, game: GAMES.includes(b?.game) ? b.game : '9-Ball',
+        race: clean(b?.race).slice(0, 40) || null, date, time: parseTime(b?.time), bet, offered,
+        markup: Math.min(2, Math.max(1, parseMoney(b?.markup) || 1)), venue: clean(b?.venue).slice(0, 120) || null,
+        city: clean(b?.city).slice(0, 80) || null, state: normalizeState(b?.state) || null, stakeholder,
+        contact: clean(b?.contact).slice(0, 120) || null, notes: clean(b?.notes).slice(0, 500) || null,
+        moneyMatchId: b?.moneyMatchId ? parseInteger(b.moneyMatchId) : null
+      };
+      const { id, manageKey } = D.createStake(db, v);
+      return json(req, res, 201, { id, manageKey });
+    }
+    if (m === 'GET' && (x = p.match(/^\/api\/stakes\/(\d+)$/))) {
+      const key = req.headers['x-manage-key'] || '', isAdmin = tokenOk(req, cfg.adminToken);
+      const s = D.getStake(db, Number(x[1]), { key, isAdmin });
+      return s ? json(req, res, 200, s) : json(req, res, 404, { error: 'Match not found.' });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/stakes\/(\d+)\/pieces$/))) {
+      const s = D.getStakeRaw(db, Number(x[1]));
+      if (!s) return json(req, res, 404, { error: 'Match not found.' });
+      if (s.status !== 'open') return json(req, res, 400, { error: 'This match is not open for backers' });
+      const b = await readJson(req);
+      const backer = clean(b?.backer).slice(0, 60), percent = parseMoney(b?.percent);
+      if (!backer) return json(req, res, 400, { error: 'Your name is required' });
+      const sold = D.getStakePieces(db, s.id).reduce((t, p) => t + p.percent, 0);
+      const remaining = s.offered - sold;
+      if (!percent || percent < 1 || percent > remaining) return json(req, res, 400, { error: `Enter a percent between 1 and ${remaining}` });
+      D.addStakePiece(db, s.id, { backer, contact: clean(b?.contact).slice(0, 120) || null, percent });
+      return json(req, res, 201, { ok: true });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/stakes\/(\d+)\/result$/))) {
+      const key = req.headers['x-manage-key'] || '', isAdmin = tokenOk(req, cfg.adminToken);
+      const s = D.getStakeRaw(db, Number(x[1]));
+      if (!s) return json(req, res, 404, { error: 'Match not found.' });
+      if (!isAdmin && key !== s.manage_key) return json(req, res, 403, { error: 'Not authorized' });
+      const b = await readJson(req);
+      const ok = D.setStakeResult(db, Number(x[1]), { result: b?.result, score: clean(b?.score).slice(0, 20) || null });
+      return json(req, res, ok ? 200 : 400, { ok });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/stakes\/(\d+)\/allpaid$/))) {
+      const key = req.headers['x-manage-key'] || '', isAdmin = tokenOk(req, cfg.adminToken);
+      const s = D.getStakeRaw(db, Number(x[1]));
+      if (!s) return json(req, res, 404, { error: 'Match not found.' });
+      if (!isAdmin && key !== s.manage_key) return json(req, res, 403, { error: 'Not authorized' });
+      D.setAllPiecesPaid(db, s.id, s.status === 'settled' && s.result === 'won');
+      return json(req, res, 200, { ok: true });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/stakes\/(\d+)\/pieces\/(\d+)\/(paid|unpaid|paidin|unpaidin|remove)$/))) {
+      const key = req.headers['x-manage-key'] || '', isAdmin = tokenOk(req, cfg.adminToken);
+      const s = D.getStakeRaw(db, Number(x[1]));
+      if (!s) return json(req, res, 404, { error: 'Match not found.' });
+      if (!isAdmin && key !== s.manage_key) return json(req, res, 403, { error: 'Not authorized' });
+      const act = x[3], pieceId = Number(x[2]);
+      if (act === 'remove') D.removeStakePiece(db, pieceId);
+      else D.setStakePiecePaid(db, pieceId, act.includes('in') ? 'paidin' : 'paid', act.startsWith('paid'));
+      return json(req, res, 200, { ok: true });
+    }
+    if (p.startsWith('/api/admin/stakes')) {
+      admin(req);
+      if (m === 'GET' && p === '/api/admin/stakes/pending') return json(req, res, 200, { stakes: D.listStakesAdminPending(db) });
+      if (m === 'GET' && p === '/api/admin/stakes/all') return json(req, res, 200, D.listStakesAdminAll(db));
+      if ((x = p.match(/^\/api\/admin\/stakes\/(\d+)\/(approve|reject|archive|repost|purge)$/)) && m === 'POST') {
+        const id = Number(x[1]), act = x[2];
+        const ok = act === 'approve' ? D.setStakeStatus(db, id, 'open') : act === 'reject' ? D.setStakeStatus(db, id, 'rejected')
+          : act === 'archive' ? D.setStakeStatus(db, id, 'archived') : act === 'repost' ? D.repostStake(db, id) : (D.purgeStake(db, id) || true);
+        return json(req, res, ok ? 200 : 404, { ok: !!ok });
+      }
+      return json(req, res, 404, { error: 'Not found' });
+    }
+
+    // ================= CALCUTTA AUCTIONS =================
+    if (m === 'GET' && p === '/api/auctions') {
+      return json(req, res, 200, { auctions: D.listAuctionsPublic(db) }, { 'Cache-Control': 'public, max-age=15' });
+    }
+    if (m === 'POST' && p === '/api/auctions') {
+      if (limited(clientIp(req) + ':auction')) return json(req, res, 429, { error: 'Too many auctions. Try again later.' });
+      const b = await readJson(req);
+      const title = clean(b?.title).slice(0, 100);
+      const mode = b?.mode === 'silent' ? 'silent' : 'live';
+      const items = String(b?.items || '').slice(0, 5000); // keep newlines -- one player per line
+      if (!title) return json(req, res, 400, { error: 'Auction name is required' });
+      if (!items.split('\n').map(s => s.trim()).filter(Boolean).length) return json(req, res, 400, { error: 'Add at least one player' });
+      if (mode === 'silent' && !parseInteger(b?.endsMs)) return json(req, res, 400, { error: 'Pick when bidding ends' });
+      const v = {
+        title, mode, minBid: Math.max(1, parseMoney(b?.minBid) || 20), increment: Math.max(1, parseMoney(b?.increment) || 5),
+        houseCut: Math.min(50, Math.max(0, parseMoney(b?.houseCut) || 0)), bidSeconds: Math.min(300, Math.max(10, parseInteger(b?.bidSeconds) || 30)),
+        resetSeconds: Math.min(120, Math.max(5, parseInteger(b?.resetSeconds) || 15)), startsMs: parseInteger(b?.startsMs) || null,
+        endsMs: parseInteger(b?.endsMs) || null, payouts: clean(b?.payouts) || '50,25,15,10', items, listed: !!b?.listed
+      };
+      const { code, hostKey } = D.createAuction(db, v);
+      return json(req, res, 201, { code, hostKey });
+    }
+    if (m === 'GET' && (x = p.match(/^\/api\/auctions\/([A-Z0-9]+)$/))) {
+      const code = x[1];
+      const a = D.getAuctionRaw(db, code);
+      if (!a) return json(req, res, 404, { error: 'Auction not found. Check the code.' });
+      const rev = url.searchParams.get('rev');
+      const token = req.headers['x-bidder'] || '', hostKey = req.headers['x-host-key'] || '';
+      const fresh = D.tickAuction(db, code);
+      if (rev != null && String(fresh.rev) === rev) return json(req, res, 200, { unchanged: true, serverNow: Date.now(), rev: fresh.rev });
+      return json(req, res, 200, D.auctionState(db, code, { token, hostKey }));
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/auctions\/([A-Z0-9]+)\/join$/))) {
+      const code = x[1];
+      if (!D.getAuctionRaw(db, code)) return json(req, res, 404, { error: 'Auction not found' });
+      const b = await readJson(req);
+      const name = clean(b?.name).slice(0, 30);
+      if (!name) return json(req, res, 400, { error: 'Enter a name' });
+      const token = D.joinAuction(db, code, name);
+      return json(req, res, 201, { token, bidder: { name } });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/auctions\/([A-Z0-9]+)\/bid$/))) {
+      const code = x[1];
+      if (!D.getAuctionRaw(db, code)) return json(req, res, 404, { error: 'Auction not found' });
+      D.tickAuction(db, code);
+      const b = await readJson(req);
+      const token = req.headers['x-bidder'] || '';
+      const r = D.placeBid(db, code, token, Number(b?.itemId), Number(b?.amount));
+      return r.error ? json(req, res, 400, { error: r.error }) : json(req, res, 200, { ok: true });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/auctions\/([A-Z0-9]+)\/chat$/))) {
+      const code = x[1];
+      const a = D.getAuctionRaw(db, code);
+      if (!a) return json(req, res, 404, { error: 'Auction not found' });
+      const token = req.headers['x-bidder'] || '', hostKey = req.headers['x-host-key'] || '';
+      const isHost = !!hostKey && hostKey === a.host_key;
+      const bidderName = D.getBidderName(db, code, token);
+      if (!isHost && !bidderName) return json(req, res, 403, { error: 'Join the auction first' });
+      const b = await readJson(req);
+      const text = clean(b?.text).slice(0, 300);
+      if (!text) return json(req, res, 400, { error: 'Type a message' });
+      D.addAuctionChat(db, code, { name: isHost ? 'Host' : bidderName, text, host: isHost });
+      return json(req, res, 201, { ok: true });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/auctions\/([A-Z0-9]+)\/host$/))) {
+      const code = x[1];
+      const a = D.getAuctionRaw(db, code);
+      if (!a) return json(req, res, 404, { error: 'Auction not found' });
+      const hostKey = req.headers['x-host-key'] || '';
+      if (!hostKey || hostKey !== a.host_key) return json(req, res, 403, { error: 'Not authorized' });
+      D.tickAuction(db, code);
+      const b = await readJson(req);
+      const r = D.hostAction(db, code, b?.action, b || {});
+      return r.error ? json(req, res, 400, { error: r.error }) : json(req, res, 200, { ok: true });
+    }
+    if (p.startsWith('/api/admin/auctions')) {
+      admin(req);
+      if (m === 'GET' && p === '/api/admin/auctions') return json(req, res, 200, { auctions: D.listAuctionsAdmin(db) });
+      if ((x = p.match(/^\/api\/admin\/auctions\/([A-Z0-9]+)\/(delete|restore|purge)$/)) && m === 'POST') {
+        const code = x[1], act = x[2];
+        const ok = act === 'delete' ? D.hostAction(db, code, 'delete').ok : act === 'restore' ? D.restoreAuction(db, code) : (D.purgeAuction(db, code) || true);
+        return json(req, res, ok ? 200 : 404, { ok: !!ok });
+      }
+      return json(req, res, 404, { error: 'Not found' });
+    }
+
     if (m === 'POST' && p === '/api/hooks/tournaments') {
       if (!tokenOk(req, cfg.webhookSecret)) return json(req, res, 401, { error: 'Invalid webhook secret' });
       const body = await readJson(req, 5_000_000);
