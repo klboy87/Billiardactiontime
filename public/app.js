@@ -1360,20 +1360,105 @@
     };
     const timer = setInterval(tick, 1000); tick();
   }
+  // One-time injected CSS for the home-page money-match slider chrome (arrows/dots/track).
+  // Injected from JS rather than added to styles.css so this works regardless of what's
+  // already in that file -- the per-slide content below reuses the existing mm-spot/mm-spot-img/
+  // mm-spot-body/mm-badge/mm-chips/mm-count classes untouched, so their look doesn't change.
+  function ensureMmSpotSliderCss() {
+    if (document.getElementById('mmSpotSliderCss')) return;
+    const style = document.createElement('style');
+    style.id = 'mmSpotSliderCss';
+    style.textContent = `
+      .mm-spot-wrap{position:relative}
+      .mm-spot-track{display:flex;overflow:hidden;transition:transform .45s ease}
+      .mm-spot-track.notransition{transition:none}
+      .mm-spot-track>.mm-spot{flex:0 0 100%;min-width:0}
+      .mm-spot-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:rgba(0,0,0,.45);
+        color:#fff;border:none;width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;
+        display:flex;align-items:center;justify-content:center}
+      .mm-spot-nav:hover{background:rgba(0,0,0,.65)}
+      .mm-spot-nav.prev{left:8px}
+      .mm-spot-nav.next{right:8px}
+      .mm-spot-dots{display:flex;justify-content:center;gap:6px;margin-top:8px}
+      .mm-dot{width:8px;height:8px;border-radius:50%;border:none;background:#d0d5dd;padding:0;cursor:pointer}
+      .mm-dot.on{background:#144b2e}
+    `;
+    document.head.appendChild(style);
+  }
+
   async function homeMoneySpot() {
     const box = document.getElementById('mmSpot');
     if (!box) return;
     let d; try { d = await loadMoney(); } catch { return; }
-    const m = d.spotlight; if (!m || !box.isConnected) return;
-    box.innerHTML = `<section class="mm-spot">
-      <a class="mm-spot-img" href="${esc(m.path)}">${mmPoster(m)}<span class="mm-badge">💰 ${m.featured ? 'MONEY MATCH OF THE WEEK' : 'NEXT MONEY MATCH'}</span></a>
-      <div class="mm-spot-body"><h2>${esc(m.player1)} <em>VS</em> ${esc(m.player2)}</h2>
-        <div class="mm-chips"><span>🎱 ${esc(mmGame(m))}</span>${m.race ? `<span>🏁 Race to ${m.race}</span>` : ''}${m.stakes ? `<span>💰 ${esc(m.stakes)}</span>` : ''}<span>📅 ${esc(mmShortDate(m.date))}${m.time ? ' · ' + esc(fmtTime(m.time)) : ''}</span><span>📍 ${esc(m.city)}, ${esc(m.state)}</span></div>
-        <div class="mm-count" id="mmSpotCount"></div>
-        <div class="actbar"><a class="btn btn-gold" href="${esc(m.path)}" style="flex:1">See the Match</a><a class="btn btn-out" href="${esc(m.path)}#vote" style="flex:1">Who Ya Got?</a></div>
-      </div></section>`;
-    if (/^match canceled/i.test(m.notes || '')) document.getElementById('mmSpotCount').textContent = 'MATCH CANCELED · NO GAME';
-    else startCountdown(document.getElementById('mmSpotCount'), m);
+    if (!box.isConnected) return;
+    const list = [];
+    if (d.spotlight) list.push(d.spotlight);
+    for (const m of d.upcoming || []) if (!list.some(x => x.id === m.id)) list.push(m);
+    if (!list.length) return;
+    ensureMmSpotSliderCss();
+
+    let idx = 0, rotateTimer = null, touchX = null;
+
+    function slideHtml(m) {
+      return `<section class="mm-spot">
+        <a class="mm-spot-img" href="${esc(m.path)}">${mmPoster(m)}<span class="mm-badge">💰 ${m.featured ? 'MONEY MATCH OF THE WEEK' : 'NEXT MONEY MATCH'}</span></a>
+        <div class="mm-spot-body"><h2>${esc(m.player1)} <em>VS</em> ${esc(m.player2)}</h2>
+          <div class="mm-chips"><span>🎱 ${esc(mmGame(m))}</span>${m.race ? `<span>🏁 Race to ${m.race}</span>` : ''}${m.stakes ? `<span>💰 ${esc(m.stakes)}</span>` : ''}<span>📅 ${esc(mmShortDate(m.date))}${m.time ? ' · ' + esc(fmtTime(m.time)) : ''}</span><span>📍 ${esc(m.city)}, ${esc(m.state)}</span></div>
+          <div class="mm-count" id="mmSpotCount"></div>
+          <div class="actbar"><a class="btn btn-gold" href="${esc(m.path)}" style="flex:1">See the Match</a><a class="btn btn-out" href="${esc(m.path)}#vote" style="flex:1">Who Ya Got?</a></div>
+        </div></section>`;
+    }
+
+    box.innerHTML = `<div class="mm-spot-wrap">
+      <div class="mm-spot-track" id="mmSpotTrack">${list.map(slideHtml).join('')}</div>
+      ${list.length > 1 ? `<button type="button" class="mm-spot-nav prev" id="mmSpotPrev" aria-label="Previous money match">‹</button>
+      <button type="button" class="mm-spot-nav next" id="mmSpotNext" aria-label="Next money match">›</button>
+      <div class="mm-spot-dots" id="mmSpotDots">${list.map((_, i) => `<button type="button" class="mm-dot${i === 0 ? ' on' : ''}" data-i="${i}" aria-label="Go to money match ${i + 1}"></button>`).join('')}</div>` : ''}
+    </div>`;
+
+    const track = document.getElementById('mmSpotTrack');
+
+    const startedCountdown = new Set(); // only start each slide's live countdown once; it self-stops when removed from the DOM
+    function go(i, { jump = false } = {}) {
+      idx = (i + list.length) % list.length;
+      if (jump) track.classList.add('notransition');
+      track.style.transform = `translateX(-${idx * 100}%)`;
+      if (jump) requestAnimationFrame(() => track.classList.remove('notransition'));
+      document.querySelectorAll('#mmSpotDots .mm-dot').forEach((d, di) => d.classList.toggle('on', di === idx));
+      if (startedCountdown.has(idx)) return;
+      startedCountdown.add(idx);
+      const m = list[idx], countEl = track.children[idx].querySelector('.mm-count');
+      if (/^match canceled/i.test(m.notes || '')) countEl.textContent = 'MATCH CANCELED · NO GAME';
+      else startCountdown(countEl, m);
+    }
+    function next() { go(idx + 1); }
+    function prev() { go(idx - 1); }
+    function restartTimer() {
+      if (rotateTimer) clearInterval(rotateTimer);
+      if (list.length < 2) return;
+      rotateTimer = setInterval(() => { if (!box.isConnected) { clearInterval(rotateTimer); return; } next(); }, 6000);
+    }
+
+    go(0, { jump: true });
+    restartTimer();
+
+    if (list.length > 1) {
+      document.getElementById('mmSpotNext').addEventListener('click', () => { next(); restartTimer(); });
+      document.getElementById('mmSpotPrev').addEventListener('click', () => { prev(); restartTimer(); });
+      document.getElementById('mmSpotDots').addEventListener('click', e => {
+        const b = e.target.closest('[data-i]'); if (!b) return;
+        go(Number(b.dataset.i)); restartTimer();
+      });
+      // swipe left/right on the track
+      track.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+      track.addEventListener('touchend', e => {
+        if (touchX == null) return;
+        const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+        if (Math.abs(dx) < 40) return;
+        dx < 0 ? next() : prev();
+        restartTimer();
+      });
+    }
   }
   // red banner under the header on every app page
   async function moneyTicker() {
