@@ -131,7 +131,7 @@ export function privacyPage(cfg) {
 <h2>Children</h2>
 <p>This site is intended for adults and is not directed to children under 13.</p>
 <h2>Contact</h2>
-<p>Questions about this policy or requests to remove your information: reply to any Billiard Action Time email, or message us through the site.</p>`;
+<p>Questions about this policy or requests to remove your information: email us at <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a>.</p>`;
   return layout(cfg, { title: 'Privacy Policy | Billiard Action Time', description: 'How Billiard Action Time collects and uses information, including advertising cookies.', path: '/privacy', body });
 }
 
@@ -168,7 +168,7 @@ function buildFooter(db) {
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
-  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/privacy">Privacy Policy</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/privacy">Privacy Policy</a> · Contact: <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.
