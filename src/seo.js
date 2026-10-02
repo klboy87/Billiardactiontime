@@ -131,7 +131,7 @@ export function privacyPage(cfg) {
 <h2>Children</h2>
 <p>This site is intended for adults and is not directed to children under 13.</p>
 <h2>Contact</h2>
-<p>Questions about this policy or requests to remove your information: <a href="mailto:klboy87@gmail.com">klboy87@gmail.com</a>.</p>`;
+<p>Questions about this policy or requests to remove your information: reply to any Billiard Action Time email, or message us through the site.</p>`;
   return layout(cfg, { title: 'Privacy Policy | Billiard Action Time', description: 'How Billiard Action Time collects and uses information, including advertising cookies.', path: '/privacy', body });
 }
 
