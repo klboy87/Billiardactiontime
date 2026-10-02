@@ -107,6 +107,34 @@ function parseFacets(db, parts) {
 }
 const matches = (t, f) => (!f.state || t.venue.state === f.state) && (!f.city || slugify(t.venue.city) === f.city) && (!f.game || t.game === f.game);
 
+// ---- Google AdSense (Auto ads). Nothing is added until ADSENSE_CLIENT is set. ----
+export const adsHead = cfg => cfg.adsenseClient
+  ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${cfg.adsenseClient}" crossorigin="anonymous"></script>`
+  : '';
+export const adsTxt = cfg => cfg.adsenseClient
+  ? `google.com, ${cfg.adsenseClient.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`
+  : null;
+
+export function privacyPage(cfg) {
+  const body = `<h1>Privacy Policy</h1>
+<p class="muted">Last updated: October 2026</p>
+<p>Billiard Action Time ("we", "us") runs billiardactiontime.com, a directory of pool tournaments, money matches and related events. This page explains what information we collect and how it is used.</p>
+<h2>Information you give us</h2>
+<p>When you post a tournament, money match, staking listing, comment or Calcutta, or sign up for alerts or our newsletter, we store what you enter (for example your name or nickname, email address and any contact details you choose to share). Anything you post publicly is visible to everyone who visits the site. We use your email only to send what you asked for, and you can unsubscribe at any time.</p>
+<h2>Visit counts</h2>
+<p>We count page visits to see which pages are useful. We do not store IP addresses for this; visitors are counted with a temporary, anonymous daily identifier.</p>
+<h2>Advertising and cookies</h2>
+<p>We show ads served by Google. Third-party vendors, including Google, use cookies to serve ads based on your prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to you based on your visit to this site and/or other sites on the Internet.</p>
+<p>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" rel="nofollow">Google Ads Settings</a>, or opt out of some third-party vendors' use of cookies for personalized advertising at <a href="https://www.aboutads.info/choices/" rel="nofollow">www.aboutads.info</a>. Learn more in <a href="https://policies.google.com/technologies/partner-sites" rel="nofollow">How Google uses information from sites that use its services</a>.</p>
+<h2>Money and wagers</h2>
+<p>Billiard Action Time only lists events and keeps records. We do not take bets, hold stakes, or process any payments between players or backers.</p>
+<h2>Children</h2>
+<p>This site is intended for adults and is not directed to children under 13.</p>
+<h2>Contact</h2>
+<p>Questions about this policy or requests to remove your information: <a href="mailto:klboy87@gmail.com">klboy87@gmail.com</a>.</p>`;
+  return layout(cfg, { title: 'Privacy Policy | Billiard Action Time', description: 'How Billiard Action Time collects and uses information, including advertising cookies.', path: '/privacy', body });
+}
+
 // ---- shared page chrome ----
 export function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage }) {
   const url = cfg.publicUrl + path;
@@ -118,7 +146,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
-<link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script></head>
+<link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${adsHead(cfg)}</head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/money-matches/">Money Matches</a><a href="/#/calendar">Calendar</a><a href="/#/stakes">Staking Board</a><a href="/#/auctions">Calcutta</a><a class="cta" href="/#/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
@@ -140,7 +168,7 @@ function buildFooter(db) {
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
-  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time</p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/privacy">Privacy Policy</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.

@@ -629,6 +629,11 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return [{ path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
+    if (m === 'GET' && p === '/ads.txt') {
+      const txt = SEO.adsTxt(cfg);
+      return txt ? send(req, res, 200, txt, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' }) : json(req, res, 404, { error: 'Not found' });
+    }
+    if (m === 'GET' && (p === '/privacy' || p === '/privacy/')) { SEO.ensureFooter(db); return send(req, res, 200, SEO.privacyPage(cfg), { 'Content-Type': 'text/html; charset=utf-8' }); }
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
     if (m === 'GET' || m === 'HEAD') {
@@ -640,7 +645,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         let body = fs.readFileSync(file);
         // Crawlable links to the state/city/game pages, so search engines can find them from the home page.
         if (rel === 'index.html') {
-          body = Buffer.from(body.toString('utf8').replace('<!--SPONSOR-->', sponsorBannerHtml()));
+          body = Buffer.from(body.toString('utf8').replace('<!--SPONSOR-->', sponsorBannerHtml()).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg)));
           try { body = Buffer.from(body.toString('utf8').replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db))); } catch (e) { log('seo links failed: ' + e.message); }
         }
         return send(req, res, 200, body, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });

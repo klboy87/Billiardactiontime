@@ -39,6 +39,8 @@ export function getConfig(env = process.env) {
     scanModel: env.SCAN_MODEL || 'claude-sonnet-5',
     geocoder: (env.GEOCODER || 'census').toLowerCase(),
     geocodePerRun: Number(env.GEOCODE_PER_RUN || 300),
-    placesFile: env.PLACES_FILE || ''
+    placesFile: env.PLACES_FILE || '',
+    // Google AdSense publisher id ("ca-pub-1234567890123456"). Ads stay off until this is set.
+    adsenseClient: /^ca-pub-\d{10,20}$/.test((env.ADSENSE_CLIENT || '').trim()) ? env.ADSENSE_CLIENT.trim() : ''
   };
 }
