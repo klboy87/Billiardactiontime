@@ -9,7 +9,7 @@ import { GAMES, TABLE_SIZES, normalizeState, parseDate, parseTime, parseMoney, p
 import { safeUrl } from './mapping.js';
 import { ingest, runSync } from './sync.js';
 import { geocodePending } from './geocode.js';
-import { readFlyer } from './scan.js';
+import { readFlyer, readMoneyMatchFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
 import { renderSiteCard, renderTournamentCard } from './ogcard.js';
 
@@ -136,6 +136,73 @@ function statePage(code, name, tournaments, base) {
 ${rows ? `<table class="t"><thead><tr><th>Tournament</th><th>Date</th><th>Venue</th><th>Game</th></tr></thead><tbody>${rows}</tbody></table>`
   : `<p class="muted">No tournaments posted in ${esc(name)} yet. <a href="/#/post">Be the first to post one</a>.</p>`}
 <p style="margin-top:16px"><a class="btn btn-blue" href="/#/search?state=${esc(code)}">Open full search &amp; filters</a></p></div></main></body></html>`;
+}
+
+function moneyMatchPage(m, comments, base) {
+  const where = [m.room, m.address, m.city, m.state].filter(Boolean).join(', ');
+  const desc = `${m.player1} vs ${m.player2}${m.stakes ? ` — ${m.stakes} on the line` : ''}. ${m.game}${m.race ? `, race to ${m.race}` : ''} on ${m.date}${m.city ? ` in ${m.city}, ${m.state}` : ''}.`;
+  const total = m.votes1 + m.votes2;
+  const pct = n => (total ? Math.round(n / total * 100) : 0);
+  const resultLine = m.winner
+    ? `<p class="dtitle" style="font-size:20px">🏆 ${esc(m.winner === 1 ? m.player1 : m.player2)} beat ${esc(m.winner === 1 ? m.player2 : m.player1)} ${m.score1}–${m.score2}</p>` : '';
+  const commentRows = comments.map(c => `<div class="card" style="margin-bottom:10px"><b>${esc(c.name)}</b> <small class="muted">${esc((c.createdAt || '').slice(0, 16).replace('T', ' '))}</small><p style="margin:6px 0 0">${esc(c.body)}</p></div>`).join('')
+    || '<p class="muted">No comments yet. Start the conversation.</p>';
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(m.player1)} vs ${esc(m.player2)} — Money Match | Billiard Action Time</title><meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${esc(base)}${esc(m.path)}"><meta property="og:title" content="${esc(m.player1)} vs ${esc(m.player2)}"><meta property="og:description" content="${esc(desc)}">
+${m.flyerUrl ? `<meta property="og:image" content="${esc(m.flyerUrl)}">` : ''}
+<link rel="stylesheet" href="/styles.css"></head>
+<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a></div></header>
+<main class="wrap page"><div class="card">
+<h1 class="dtitle">💰 ${esc(m.player1)} <em>vs</em> ${esc(m.player2)}</h1>
+${resultLine}
+<table class="t"><tbody>
+<tr><th>Date</th><td>${esc(m.date)}${m.time ? ' at ' + esc(m.time) : ''}</td></tr>
+<tr><th>Game</th><td>${esc(m.game)}${m.race ? ' · Race to ' + esc(m.race) : ''}</td></tr>
+${m.stakes ? `<tr><th>On the Line</th><td>${esc(m.stakes)}</td></tr>` : ''}
+${where ? `<tr><th>Where</th><td>${esc(where)}</td></tr>` : ''}
+${m.streamUrl ? `<tr><th>Livestream</th><td><a href="${esc(m.streamUrl)}" target="_blank" rel="noopener">${esc(m.streamUrl)}</a></td></tr>` : ''}
+</tbody></table>
+${m.notes ? `<p>${esc(m.notes)}</p>` : ''}
+<p class="stake-note">Billiard Action Time lists this match for fans. It never takes, holds or pays out money.</p>
+
+<h2 id="vote" class="dtitle" style="font-size:20px;margin-top:20px">Who Ya Got?</h2>
+<div class="actbar" id="mmVoteBar">
+  <button type="button" class="btn btn-blue" data-vote="1">${esc(m.player1)} (${m.votes1} · ${pct(m.votes1)}%)</button>
+  <button type="button" class="btn btn-out" data-vote="2">${esc(m.player2)} (${m.votes2} · ${pct(m.votes2)}%)</button>
+</div>
+<p class="muted" id="mmVoteMsg" style="font-size:13px"></p>
+
+<h2 class="dtitle" style="font-size:20px;margin-top:20px">Comments (${comments.length})</h2>
+<div id="mmComments">${commentRows}</div>
+<form id="mmCommentForm" style="margin-top:12px">
+  <div class="fg"><label>Your name *</label><input name="name" required maxlength="40"></div>
+  <div class="fg"><label>Comment *</label><textarea name="body" required maxlength="500" rows="3"></textarea></div>
+  <div id="mmCommentMsg"></div>
+  <button class="btn btn-green" type="submit">Post Comment</button>
+</form>
+</div></main>
+<script>
+(function(){
+  var id = ${JSON.stringify(m.id)};
+  document.getElementById('mmVoteBar').addEventListener('click', function(e){
+    var b = e.target.closest('[data-vote]'); if (!b) return;
+    fetch('/api/money-matches/' + id + '/vote', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ pick: Number(b.dataset.vote) }) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){ document.getElementById('mmVoteMsg').textContent = 'Thanks for voting!'; })
+      .catch(function(){ document.getElementById('mmVoteMsg').textContent = 'Could not record your vote.'; });
+  });
+  document.getElementById('mmCommentForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var f = e.target, data = { name: f.name.value, body: f.body.value };
+    fetch('/api/money-matches/' + id + '/comments', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) })
+      .then(function(r){ if (!r.ok) throw new Error(); return r.json(); })
+      .then(function(){ location.reload(); })
+      .catch(function(){ document.getElementById('mmCommentMsg').textContent = 'Could not post your comment.'; });
+  });
+})();
+</script>
+</body></html>`;
 }
 
 function statesIndexPage(counts, base) {
@@ -267,6 +334,83 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return json(req, res, 201, { id, status: 'pending' });
     }
 
+    // ---- money matches (fan challenge matches; records only, never handles money) ----
+    if (m === 'GET' && p === '/api/money-matches') {
+      return json(req, res, 200, D.listMoneyMatchesPublic(db), { 'Cache-Control': 'public, max-age=60' });
+    }
+    if (m === 'POST' && p === '/api/money-matches/scan') {
+      if (!cfg.anthropicKey) return json(req, res, 501, { error: 'Flyer reading is not set up on this site' });
+      if (limited(clientIp(req) + ':mmscan')) return json(req, res, 429, { error: 'Too many flyers. Try again in an hour.' });
+      const b = await readJson(req);
+      if (!b || typeof b.image !== 'string' || b.image.length > 2_000_000) return json(req, res, 400, { error: 'Send a flyer image under 2 MB' });
+      try { return json(req, res, 200, { fields: await readMoneyMatchFlyer(b.image, cfg, { fetchFn }) }); }
+      catch (e) { return json(req, res, 502, { error: e.message }); }
+    }
+    if (m === 'GET' && (x = p.match(/^\/api\/money-matches\/(\d+)\/flyer$/))) {
+      const data = D.getMoneyMatchFlyer(db, Number(x[1]));
+      const mm = data && data.match(/^data:(image\/[a-z]+);base64,(.+)$/);
+      if (!mm) return json(req, res, 404, { error: 'No flyer' });
+      return send(req, res, 200, Buffer.from(mm[2], 'base64'), { 'Content-Type': mm[1], 'Cache-Control': 'public, max-age=3600' });
+    }
+    if (m === 'GET' && (x = p.match(/^\/api\/money-matches\/(\d+)$/))) {
+      const isAdmin = tokenOk(req, cfg.adminToken);
+      const match = D.getMoneyMatch(db, x[1], { includeHidden: isAdmin });
+      return match ? json(req, res, 200, { match }) : json(req, res, 404, { error: 'Match not found' });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/money-matches\/(\d+)\/vote$/))) {
+      const b = await readJson(req);
+      const counts = D.voteMoneyMatch(db, Number(x[1]), Number(b?.pick));
+      return counts ? json(req, res, 200, counts) : json(req, res, 400, { error: 'pick must be 1 or 2' });
+    }
+    if (m === 'POST' && (x = p.match(/^\/api\/money-matches\/(\d+)\/comments$/))) {
+      if (limited(clientIp(req) + ':mmcomment')) return json(req, res, 429, { error: 'Too many comments. Try again later.' });
+      const b = await readJson(req);
+      const name = clean(b?.name).slice(0, 40), body = clean(b?.body).slice(0, 500), contact = clean(b?.contact).slice(0, 120) || null;
+      if (!name || !body) return json(req, res, 400, { error: 'Name and comment are required' });
+      const match = D.getMoneyMatch(db, Number(x[1]));
+      if (!match) return json(req, res, 404, { error: 'Match not found' });
+      D.addMoneyMatchComment(db, Number(x[1]), { name, body, contact });
+      return json(req, res, 201, { ok: true, comments: D.listMoneyMatchComments(db, Number(x[1])) });
+    }
+    if (m === 'POST' && p === '/api/money-matches') {
+      if (limited(clientIp(req) + ':mm')) return json(req, res, 429, { error: 'Too many submissions. Try again in an hour.' });
+      const v = D.validateMoneyMatch(await readJson(req));
+      if (v.error) return json(req, res, 400, { error: v.error });
+      const published = tokenOk(req, cfg.adminToken);
+      const { id, slug } = D.createMoneyMatch(db, v.value, v.flyer, { published });
+      return json(req, res, 201, { id, slug, status: published ? 'published' : 'pending', path: `/money-match/${slug}` });
+    }
+
+    if (p.startsWith('/api/admin/money-matches')) {
+      admin(req);
+      if (m === 'GET' && p === '/api/admin/money-matches') return json(req, res, 200, { matches: D.listMoneyMatchesAdmin(db) });
+      if ((x = p.match(/^\/api\/admin\/money-matches\/(\d+)$/)) && m === 'PUT') {
+        const b = await readJson(req), patch = {};
+        for (const k of ['player1', 'player2', 'game', 'race', 'stakes', 'date', 'time', 'room', 'address', 'city', 'state', 'streamUrl', 'notes']) if (k in b) patch[k] = clean(b[k]).slice(0, 600) || null;
+        if (patch.date) { const d = parseDate(patch.date); if (!d) return json(req, res, 400, { error: 'Invalid date' }); patch.date = d; }
+        if (patch.state) patch.state = normalizeState(patch.state);
+        let flyer = null;
+        if (b.flyer && /^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(b.flyer) && b.flyer.length <= 2_000_000) flyer = b.flyer;
+        const ok = D.updateMoneyMatch(db, Number(x[1]), patch, flyer);
+        if (!ok) return json(req, res, 404, { error: 'Match not found' });
+        return json(req, res, 200, { match: D.getMoneyMatch(db, Number(x[1]), { includeHidden: true }) });
+      }
+      if ((x = p.match(/^\/api\/admin\/money-matches\/(\d+)\/(publish|archive|repost|feature|unfeature|purge)$/)) && m === 'POST') {
+        const id = Number(x[1]), act = x[2];
+        if (act === 'purge') { D.purgeMoneyMatch(db, id); return json(req, res, 200, { ok: true }); }
+        if (act === 'feature' || act === 'unfeature') { const ok = D.setMoneyMatchFeatured(db, id, act === 'feature'); return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Match not found' }); }
+        const status = (act === 'repost' || act === 'publish') ? 'published' : act;
+        const ok = D.setMoneyMatchStatus(db, id, status);
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Match not found' });
+      }
+      if ((x = p.match(/^\/api\/admin\/money-matches\/(\d+)\/result$/)) && m === 'POST') {
+        const b = await readJson(req);
+        const ok = D.setMoneyMatchResult(db, Number(x[1]), b || {});
+        return json(req, res, ok ? 200 : 400, ok ? { ok: true } : { error: 'Enter both scores' });
+      }
+      return json(req, res, 404, { error: 'Not found' });
+    }
+
     if (m === 'POST' && p === '/api/hooks/tournaments') {
       if (!tokenOk(req, cfg.webhookSecret)) return json(req, res, 401, { error: 'Invalid webhook secret' });
       const body = await readJson(req, 5_000_000);
@@ -324,6 +468,13 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (!all.length) return send(req, res, 404, '<h1>Venue not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
       return send(req, res, 200, venuePage(all[0].venue, all, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
     }
+    if (m === 'GET' && (x = p.match(/^\/money-match\/([a-z0-9-]+)$/))) {
+      trackVisit(req);
+      const match = D.getMoneyMatch(db, x[1]);
+      if (!match) return send(req, res, 404, '<h1>Money match not found</h1>', { 'Content-Type': 'text/html; charset=utf-8' });
+      const comments = D.listMoneyMatchComments(db, match.id);
+      return send(req, res, 200, moneyMatchPage(match, comments, cfg.publicUrl), { 'Content-Type': 'text/html; charset=utf-8' });
+    }
     if (m === 'GET' && (x = p.match(/^\/state\/([a-zA-Z]{2})\/?$/))) {
       trackVisit(req);
       const code = normalizeState(x[1]);
@@ -374,4 +525,3 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   server.flushPageviews = flushPageviews;
   return server;
 }
-
