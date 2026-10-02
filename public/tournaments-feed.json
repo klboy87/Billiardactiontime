@@ -2642,6 +2642,8 @@
       "name": "CR'S $4000 Added 8 Ball Tournament",
       "date": "2026-10-02",
       "venue": "CR's Sportsbar & Two Stooges",
+      "city": "Coon Rapids",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 65
     },
@@ -2650,6 +2652,8 @@
       "name": "Two Stooges 499 and Under 8 Ball Tournament",
       "date": "2026-10-10",
       "venue": "Two Stooges Sport Bar & Grill",
+      "city": "Fridley",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 30
     },
@@ -2658,6 +2662,8 @@
       "name": "CR'S Sportsbar $1000 added Scotch Doubles 8 Ball Tournament",
       "date": "2026-10-17",
       "venue": "CR's Sportsbar",
+      "city": "Coon Rapids",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 160
     },
@@ -2666,6 +2672,8 @@
       "name": "Two Stooges Open 9 Ball on 9ft Tables",
       "date": "2026-10-24",
       "venue": "Two Stooges Sport Bar & Grill",
+      "city": "Fridley",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "game": "9-Ball",
       "entry": 40
@@ -2675,6 +2683,8 @@
       "name": "Two Stooges 540 and under Fargo rated 8 ball Tournament",
       "date": "2026-10-24",
       "venue": "Two Stooges Sport Bar & Grill",
+      "city": "Fridley",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 40
     },
@@ -2683,6 +2693,8 @@
       "name": "$25,000 Added Sky Dancer Casino Pool Tournament",
       "date": "2026-11-04",
       "venue": "Sky Dancer Casino",
+      "city": "Belcourt",
+      "state": "ND",
       "notes": "Source: mpapool.com",
       "entry": 60
     },
@@ -2691,6 +2703,8 @@
       "name": "Two Stooges 499 and under Fargo rated Bar Box Shootout",
       "date": "2026-11-07",
       "venue": "Two Stooges Sport Bar & Grill",
+      "city": "Fridley",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 40
     },
@@ -2699,6 +2713,8 @@
       "name": "CR'S $1000 Added 3 Division 8 Ball Tournament",
       "date": "2026-11-14",
       "venue": "CR's Sports Bar",
+      "city": "Coon Rapids",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 40
     },
@@ -2727,6 +2743,8 @@
       "name": "$10,000 Added Prairie Knights Casino Pool Tournament",
       "date": "2026-12-09",
       "venue": "Prairie Knights Casino",
+      "city": "Fort Yates",
+      "state": "ND",
       "notes": "Source: mpapool.com",
       "entry": 20
     },
@@ -2735,6 +2753,8 @@
       "name": "CR'S Sportsbar Mixed Scotch Doubles Tournament",
       "date": "2026-12-12",
       "venue": "CR's Sportsbar",
+      "city": "Coon Rapids",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 120
     },
@@ -2743,6 +2763,8 @@
       "name": "CR'S HIGH ROLLER 8 BALL Tournament",
       "date": "2027-01-02",
       "venue": "CR's Sports Bar",
+      "city": "Coon Rapids",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 500
     },
@@ -2781,6 +2803,8 @@
       "name": "CR'S 3 Person Team 8 Ball Tournament",
       "date": "2027-01-23",
       "venue": "CR's Sports Bar",
+      "city": "Coon Rapids",
+      "state": "MN",
       "notes": "Source: mpapool.com",
       "entry": 240
     },
@@ -2832,6 +2856,8 @@
       "name": "Open 9-Ball Tournament",
       "date": "2026-10-05",
       "venue": "Mr. Cue's II Billiards",
+      "city": "Atlanta",
+      "state": "GA",
       "notes": "Source: mrcues2.com. Recurring weekly Monday 8pm",
       "game": "9-Ball"
     },
@@ -2840,6 +2866,8 @@
       "name": "9-Ball C & D Tournament",
       "date": "2026-10-02",
       "venue": "Mr. Cue's II Billiards",
+      "city": "Atlanta",
+      "state": "GA",
       "notes": "Source: mrcues2.com. Recurring weekly Friday 8pm; longest-running tournament in the Southeast",
       "game": "9-Ball"
     },
@@ -2848,6 +2876,8 @@
       "name": "8Ball Tournament",
       "date": "2026-10-04",
       "venue": "Mr. Cue's II Billiards",
+      "city": "Atlanta",
+      "state": "GA",
       "notes": "Source: mrcues2.com. Recurring weekly Sunday 7pm",
       "game": "8-Ball"
     },
