@@ -3401,6 +3401,16 @@
       "zip": "43201",
       "game": "8-Ball",
       "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "mrcues2-com-9-ball-c-d-tournament-2026-10-16",
+      "name": "9-Ball C & D Tournament",
+      "date": "2026-10-16",
+      "venue": "Mr. Cue's II Billiards",
+      "city": "Atlanta",
+      "state": "GA",
+      "game": "9-Ball",
+      "notes": "Source: mrcues2.com. Recurring weekly Friday 8pm"
     }
   ]
 }
