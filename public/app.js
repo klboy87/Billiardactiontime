@@ -1369,8 +1369,8 @@
     const style = document.createElement('style');
     style.id = 'mmSpotSliderCss';
     style.textContent = `
-      .mm-spot-wrap{position:relative}
-      .mm-spot-track{display:flex;overflow:hidden;transition:transform .45s ease}
+      .mm-spot-wrap{position:relative;overflow:hidden}
+      .mm-spot-track{display:flex;transition:transform .45s ease}
       .mm-spot-track.notransition{transition:none}
       .mm-spot-track>.mm-spot{flex:0 0 100%;min-width:0}
       .mm-spot-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:rgba(0,0,0,.45);
