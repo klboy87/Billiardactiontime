@@ -2594,6 +2594,7 @@
   moneyTicker();
   window.addEventListener('hashchange', render);
   document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('nav').classList.toggle('open'));
+  document.getElementById('nav').addEventListener('click', e => { if (e.target.closest('a')) e.currentTarget.classList.remove('open'); });
   render();
 
   if ('serviceWorker' in navigator) {
