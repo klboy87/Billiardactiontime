@@ -30,6 +30,7 @@ import * as M from './matches.js';
 import * as MM from './moneymatches.js';
 import * as MP from './moneypages.js';
 import { sponsorBannerHtml } from './sponsor.js';
+import { appPageFor, fillShell } from './apppages.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -135,7 +136,9 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const day = D.todayIso();
       const visitor = visitorId(req, day);
       pendingViews.set(day + '|' + visitor, [day, visitor]);
-      if (page) recordPage(req, day, visitor, page, { ref: req.headers.referer });
+      let utm = '';
+      try { utm = new URL(req.url, 'http://x').searchParams.get('utm_source') || ''; } catch {}
+      if (page) recordPage(req, day, visitor, page, { ref: req.headers.referer, utm });
     } catch {}
   }
   // Which page, and where the visitor came from. Batched and flushed with the counts above.
@@ -163,6 +166,16 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     const r = await runSync(db, cfg, { fetchFn, log });
     if (r.status === 'ok') await geocodePending(db, cfg, { fetchFn, log });
     return r;
+  }
+
+  // The app shell (index.html) for the home page (page = null) or one app section, see apppages.js.
+  function shellHtml(page) {
+    let body = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html'), 'utf8')
+      .replace('<!--SPONSOR-->', sponsorBannerHtml()).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg));
+    try { SEO.ensureFooter(db); body = body.replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db)); } catch (e) { log('seo links failed: ' + e.message); }
+    let homeIntro = '';
+    if (!page) try { homeIntro = SEO.homeIntroHtml(db); } catch (e) { log('home intro failed: ' + e.message); }
+    return fillShell(body, cfg, page, { homeIntro });
   }
 
   async function route(req, res) {
@@ -542,6 +555,17 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     const html = (status, body, extra = {}) => send(req, res, status, body, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300', ...extra });
     const moved = to => { res.writeHead(301, { Location: to, 'Cache-Control': 'public, max-age=86400' }); res.end(); };
     const notFoundPage = () => { SEO.ensureFooter(db); return html(404, SEO.listingPage(db, cfg, []).replace('<h1>Pool Tournaments by State</h1>', '<h1>Page not found</h1><p>That page moved or never existed. Browse tournaments by state below.</p>')); };
+    // Links built from a missing value ("…/null", "…/undefined") were being crawled: send them to the page above.
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^(.*?)\/(?:null|undefined)\/?$/))) return moved(x[1] === '/tournament' ? '/tournaments/' : x[1] || '/');
+    if ((m === 'GET' || m === 'HEAD') && (p === '/tournament' || p === '/tournament/')) return moved('/tournaments/');
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/this-weekend(?:\/([a-z-]{2,40}))?(\/)?$/))) {
+      if (!x[2]) return moved(`/this-weekend/${x[1] ? x[1] + '/' : ''}`);
+      SEO.ensureFooter(db);
+      const out = SEO.weekendPage(db, cfg, x[1]);
+      if (!out) return notFoundPage();
+      trackVisit(req, 'weekend-page');
+      return html(200, out, { 'Cache-Control': 'public, max-age=600' });
+    }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tournament\/([a-z0-9-]{3,220})\/?$/))) {
       SEO.ensureFooter(db);
       const t = SEO.findTournamentBySlug(db, x[1]);
@@ -636,6 +660,11 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && (p === '/privacy' || p === '/privacy/')) { SEO.ensureFooter(db); return send(req, res, 200, SEO.privacyPage(cfg), { 'Content-Type': 'text/html; charset=utf-8' }); }
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
+    const appPage = (m === 'GET' || m === 'HEAD') ? appPageFor(p) : null;
+    if (appPage) {
+      if (m === 'GET') trackVisit(req);
+      return send(req, res, 200, shellHtml(appPage), { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-cache' });
+    }
     if (m === 'GET' || m === 'HEAD') {
       const rel = p === '/' ? 'index.html' : decodeURIComponent(p).replace(/^\/+/, '');
       const file = path.resolve(PUBLIC_DIR, rel);
@@ -644,10 +673,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         if (rel === 'index.html' && m === 'GET') trackVisit(req);
         let body = fs.readFileSync(file);
         // Crawlable links to the state/city/game pages, so search engines can find them from the home page.
-        if (rel === 'index.html') {
-          body = Buffer.from(body.toString('utf8').replace('<!--SPONSOR-->', sponsorBannerHtml()).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg)));
-          try { body = Buffer.from(body.toString('utf8').replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db))); } catch (e) { log('seo links failed: ' + e.message); }
-        }
+        if (rel === 'index.html') body = Buffer.from(shellHtml(null));
         return send(req, res, 200, body, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
       }
     }

@@ -23,7 +23,8 @@ export const PAGES = {
   'states-page': 'All States Page', 'venue-page': 'Venue Page (from search/links)',
   'match-page': 'Match Finder Post (shared link)',
   money: 'Money Matches (app)', 'money-post': 'Post a Money Match', 'money-hub': 'Money Matches Page',
-  'money-page': 'Money Match Page', 'money-player': 'Money Match Player Page'
+  'money-page': 'Money Match Page', 'money-player': 'Money Match Player Page',
+  'weekend-page': 'This Weekend Page', 'listing-page': 'Tournament Listing Page (from search/links)'
 };
 const ROUTE_TO_PAGE = { '': 'home', t: 'tournament' };
 export function pageFromHash(route) {

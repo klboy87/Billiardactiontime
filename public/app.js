@@ -207,6 +207,7 @@
           </form>
           <p class="eg">Example: 9-Ball Battle Creek</p>
           <div class="totalstat" id="totalStat"><span class="ic">🎱</span> <span id="totalStatText">Loading tournament count…</span></div>
+          <p style="margin-top:14px"><a class="btn btn-gold" href="/this-weekend/">🔥 This Weekend's Tournaments →</a></p>
         </div>
       </section>
       <div id="mmSpot"></div>
@@ -1465,7 +1466,7 @@
     const el = document.getElementById('mmTicker');
     if (!el) return;
     let d; try { d = await loadMoney(); } catch { return; }
-    const m = d.spotlight; if (!m) return;
+    const m = d.spotlight; if (!m || !m.path) return;
     const bits = [`${mmShortDate(m.date).split(',')[0].toUpperCase()}: ${m.player1.split(' ').pop().toUpperCase()} vs ${m.player2.split(' ').pop().toUpperCase()}`, mmGame(m).toUpperCase(), m.race ? `RACE TO ${m.race}` : '', m.stakes ? `${m.stakes.toUpperCase()} ON THE LINE` : '', `${m.city.toUpperCase()}, ${m.state}`].filter(Boolean);
     el.href = m.path;
     const canceled = /^match canceled/i.test(m.notes || '');
@@ -2531,8 +2532,15 @@
   function notFound() { app.innerHTML = `<div class="pagehead"><h1>Page not found</h1></div><a class="btn btn-out" href="#/">Go home</a>`; }
 
   // -------------------------------------------------------------- router
+  // Sections also live at real addresses (/calendar, /matches, …) so search engines can list them.
+  // A "#/…" link still wins when present; otherwise the address itself picks the page.
+  const APP_PATHS = new Set(['search', 'calendar', 'games', 'venues', 'near', 'results', 'matches', 'stakes', 'auctions', 'post', 'scan', 'alerts', 'newsletter', 'scout', 'account', 'claim', 'report']);
+  function pathRoute() {
+    const seg = location.pathname.split('/')[1] || '';
+    return APP_PATHS.has(seg) ? location.pathname.replace(/\/+$/, '') + location.search : '/';
+  }
   function parseHash() {
-    const raw = location.hash.slice(1) || '/';
+    const raw = location.hash.slice(1) || pathRoute();
     const [pathPart, queryPart] = raw.split('?');
     const params = new URLSearchParams(queryPart || '');
     const segs = pathPart.split('/').filter(Boolean);
@@ -2593,6 +2601,20 @@
   memberSince();
   moneyTicker();
   window.addEventListener('hashchange', render);
+  window.addEventListener('popstate', render);
+  // Same-page navigation for links to the app's own sections: no full reload, just draw the new page.
+  document.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href]');
+    if (!a || a.target || a.hasAttribute('download')) return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || url.hash) return;
+    const seg = url.pathname.split('/')[1] || '';
+    if (url.pathname !== '/' && !(APP_PATHS.has(seg) && url.pathname.split('/').filter(Boolean).length === 1)) return;
+    e.preventDefault();
+    history.pushState(null, '', url.pathname + url.search);
+    render();
+  });
   document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('nav').classList.toggle('open'));
   document.getElementById('nav').addEventListener('click', e => { if (e.target.closest('a')) e.currentTarget.classList.remove('open'); });
   render();

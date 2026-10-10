@@ -136,6 +136,12 @@ export function privacyPage(cfg) {
 }
 
 // ---- shared page chrome ----
+// Shown at the bottom of every server-rendered page: the easiest way to turn a one-time visitor into a regular.
+const ALERT_CTA = `<section class="card seo-cta" style="margin:28px 0 8px;padding:18px 20px">
+  <h2 class="seo-h2" style="margin-top:0">Never miss a tournament near you</h2>
+  <p class="muted" style="margin:6px 0 12px">Get an email when new pool tournaments are posted in your area. Free, and you can unsubscribe any time.</p>
+  <div class="actbar"><a class="btn btn-green" href="/alerts">Get Tournament Alerts</a><a class="btn btn-out" href="/this-weekend/">See This Weekend's Tournaments</a></div>
+</section>`;
 export function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage }) {
   const url = cfg.publicUrl + path;
   const ld = jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('');
@@ -148,9 +154,9 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
 <link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${adsHead(cfg)}</head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
-<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/money-matches/">Money Matches</a><a href="/#/calendar">Calendar</a><a href="/#/stakes">Staking Board</a><a href="/#/auctions">Calcutta</a><a class="cta" href="/#/post">Post a Tournament</a></nav></div></header>
+<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
-<main class="wrap page seo">${body}</main>
+<main class="wrap page seo">${body}${ALERT_CTA}</main>
 ${footer(cfg)}</body></html>`;
 }
 let footCache = null;
@@ -303,7 +309,7 @@ export function listingPage(db, cfg, parts) {
   const entries = upcoming.map(t => t.entry).filter(n => n != null);
   const intro = upcoming.length
     ? `There ${upcoming.length === 1 ? 'is' : 'are'} <b>${plural(upcoming.length, `upcoming ${g ? g + ' ' : ''}pool tournament`)}</b>${place ? ` in ${esc(place)}` : ' across the US'} at ${plural(venues.size, 'pool room')}. The next one is <a href="${tournamentPath(db, next)}">${esc(next.name)}</a> at ${esc(next.venue.name)}${f.city ? '' : ` in ${esc(next.venue.city)}`} on ${esc(longDate(next.date))}.${entries.length ? (Math.min(...entries) === Math.max(...entries) ? ` Entry is ${money(entries[0])}.` : ` Entry fees run from ${money(Math.min(...entries))} to ${money(Math.max(...entries))}.`) : ''} Listings update every day.`
-    : `No upcoming ${g ? g + ' ' : ''}tournaments are listed${place ? ' in ' + esc(place) : ''} right now. New events are added every day. Check back, browse nearby below, or <a href="/#/post">post one for free</a>.`;
+    : `No upcoming ${g ? g + ' ' : ''}tournaments are listed${place ? ' in ' + esc(place) : ''} right now. New events are added every day. Check back, browse nearby below, or <a href="/post">post one for free</a>.`;
   const description = upcoming.length
     ? `${plural(upcoming.length, `upcoming ${g ? g + ' ' : ''}pool tournament`)}${place ? ' in ' + place : ' in the US'}: dates, pool halls, entry fees and added money. Next: ${next.name} on ${shortDate(next.date)}. Updated daily.`
     : `Find ${g ? g + ' ' : ''}pool tournaments${place ? ' in ' + place : ''}: dates, pool halls and entry fees, updated daily.`;
@@ -331,10 +337,10 @@ export function listingPage(db, cfg, parts) {
     itemListElement: upcoming.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   const body = `${bc.html}
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
-    <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="/#/search?${new URLSearchParams({ ...(f.state ? { state: f.state } : {}), ...(f.cityName ? { city: f.cityName } : {}), ...(f.game ? { game: f.game } : {}) })}">Search &amp; Filter</a>
-    <a class="btn btn-out" href="/#/alerts">Get Alerts</a><a class="btn btn-out" href="/#/post">Post a Tournament</a></div></div>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="/search?${new URLSearchParams({ ...(f.state ? { state: f.state } : {}), ...(f.cityName ? { city: f.cityName } : {}), ...(f.game ? { game: f.game } : {}) })}">Search &amp; Filter</a>
+    <a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/post">Post a Tournament</a>${f.state && !f.city && !f.game ? `<a class="btn btn-gold" href="${weekendPath(f.state)}">This Weekend in ${esc(stateName)}</a>` : !f.state && !f.city ? `<a class="btn btn-gold" href="/this-weekend/">This Weekend</a>` : ''}</div></div>
   ${upcoming.length ? eventRows(db, upcoming.slice(0, 300), { showCity: !f.city }) : ''}
-  ${upcoming.length > 300 ? `<p class="muted">Showing the next 300. <a href="/#/search">Search for more</a>.</p>` : ''}
+  ${upcoming.length > 300 ? `<p class="muted">Showing the next 300. <a href="/search">Search for more</a>.</p>` : ''}
   ${venues.size ? `<section class="sec seo-sec"><h2>Pool rooms${place ? ' in ' + esc(f.cityName || stateName) : ''} running ${g ? esc(g) + ' ' : ''}tournaments</h2><ul class="seo-list seo-cols">${[...venues.values()].sort((a, b) => b.n - a.n).slice(0, 60)
     .map(({ v, n }) => `<li><a href="${venuePath(db, v)}">${esc(v.name)}</a> <span class="muted">· ${esc(v.city)}, ${esc(v.state)} · ${plural(n, 'event')}</span></li>`).join('')}</ul></section>` : ''}
   ${cityLinks ? `<section class="sec seo-sec"><h2>${g ? esc(g) + ' tournaments' : 'Tournaments'} by city in ${esc(stateName)}</h2><div class="chips">${cityLinks}</div></section>` : ''}
@@ -406,6 +412,9 @@ export function sitemapXml(db, cfg, extra = []) {
   for (const f of facets) { const o = JSON.parse(f); add(facetPath(o), today, o.city ? '0.6' : o.state ? '0.8' : '0.8'); }
   for (const t of ix.all) if (t.date >= cutoff) add(tournamentPath(db, t), (t.updatedAt || today).slice(0, 10), t.date >= today ? '0.7' : '0.3');
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
+  const wk = weekendRange(today);
+  add('/this-weekend/', today, '0.9');
+  for (const st of new Set(up.filter(t => t.date >= wk.from && t.date <= wk.to).map(t => t.venue.state))) if (STATE_NAMES[st]) add(weekendPath(st), today, '0.7');
   for (const e of extra) add(e.path, e.lastmod || today, e.pri || '0.6');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...urls].map(([p, u]) =>
     `<url><loc>${esc(cfg.publicUrl + p)}</loc><lastmod>${u.lastmod}</lastmod><priority>${u.pri}</priority></url>`).join('\n')}\n</urlset>`;
@@ -442,7 +451,7 @@ export function matchPage(cfg, p, comments) {
   const title = `${p.name} is looking for ${game} action in ${p.city}, ${p.state}`;
   const description = `${matchStakes(p)} · ${when}${p.room ? ' at ' + p.room : ''}. Want it? Tap I'm In on Billiard Action Time.`;
   const app = `/#/matches/${p.id}`;
-  const body = `<div class="crumbs"><a href="/#/matches">Match Finder</a> / ${esc(p.name)}</div>
+  const body = `<div class="crumbs"><a href="/matches">Match Finder</a> / ${esc(p.name)}</div>
   <h1>Looking for a Match</h1>
   ${open ? '' : `<p class="seo-ended">${p.status === 'closed' ? 'This player found a match. The post is closed.' : 'This post has ended.'}</p>`}
   <article class="card matchcard"><div class="stake-top"><b class="match-name">${esc(p.name)}</b>${p.fargo ? `<span class="chip b">Fargo ${p.fargo}</span>` : ''}</div>
@@ -451,10 +460,82 @@ export function matchPage(cfg, p, comments) {
     <li><span aria-hidden="true">📅</span> ${esc(when)}</li></ul>
     ${p.note ? `<p class="match-note">“${linkContacts(p.note)}”</p>` : ''}
     ${p.contact ? `<p>Reach them: <b>${linkContacts(p.contact)}</b></p>` : ''}
-    <div class="actbar"><a class="btn btn-green" href="${app}">${open ? "I'm In" : 'See Details'}</a><a class="btn btn-gold" href="/#/matches">Find More Action</a></div></article>
+    <div class="actbar"><a class="btn btn-green" href="${app}">${open ? "I'm In" : 'See Details'}</a><a class="btn btn-gold" href="/matches">Find More Action</a></div></article>
   <h2 class="seo-h2">Comments (${comments.length})</h2>
   ${comments.length ? `<div class="mcomments">${comments.map(c => `<div class="mcomment"><b>${esc(c.name)}</b><p>${linkContacts(c.body)}</p>${c.contact ? `<p class="mcontact">📞 ${linkContacts(c.contact)}</p>` : ''}</div>`).join('')}</div>` : '<p class="muted">No comments yet.</p>'}
   <p><a class="btn btn-out" href="/#/matches/${p.id}?c=1">Add a Comment</a></p>
   <p class="stake-note">Match Finder only connects players. Billiard Action Time never takes, holds or pays out money. You must be 18+ and follow the laws where you play.</p>`;
   return layout(cfg, { title, description, path: `/match/${p.id}`, body, noindex: true });
+}
+
+
+// ---- "This Weekend" pages: /this-weekend/ and /this-weekend/<state>/ ----
+// One link that always shows the coming Friday–Sunday. Made to be posted in Facebook groups every week:
+// the address never changes, the list does, and the preview card says what's on.
+export function weekendRange(today = todayIso()) {
+  const [y, m, d] = today.split('-').map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d)), dow = t.getUTCDay();          // 0 Sun … 6 Sat
+  const iso = dt => dt.toISOString().slice(0, 10), add = n => new Date(t.getTime() + n * 86_400_000);
+  if (dow === 5 || dow === 6 || dow === 0) return { from: today, to: iso(add(dow === 0 ? 0 : 7 - dow)) };   // Fri–Sun: through Sunday
+  return { from: iso(add(5 - dow)), to: iso(add(7 - dow)) };                                                 // Mon–Thu: the coming Fri–Sun
+}
+export const weekendPath = state => state ? `/this-weekend/${stateSlug(state)}/` : '/this-weekend/';
+const rangeLabel = ({ from, to }) => from === to ? shortDate(from) : `${shortDate(from)} – ${shortDate(to)}`;
+
+export function weekendPage(db, cfg, stateSlugPart) {
+  const state = stateSlugPart ? STATE_BY_SLUG[String(stateSlugPart).toLowerCase()] : null;
+  if (stateSlugPart && !state) return null;
+  const ix = index(db), today = todayIso(), wk = weekendRange(today);
+  const inState = t => !state || t.venue.state === state;
+  const list = ix.all.filter(t => t.date >= wk.from && t.date <= wk.to && inState(t)).sort((a, b) => a.date.localeCompare(b.date) || String(a.time || '').localeCompare(String(b.time || '')));
+  const soon = list.length ? [] : ix.all.filter(t => t.date >= today && inState(t)).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 40);
+  const stateName = state ? STATE_NAMES[state] : '';
+  const where = stateName ? ` in ${stateName}` : '';
+  const h1 = `Pool Tournaments This Weekend${where}`;
+  const path = weekendPath(state);
+  const big = list.filter(t => t.added || (t.entry != null && t.entry >= 50)).sort((a, b) => (b.added || 0) - (a.added || 0) || (b.entry || 0) - (a.entry || 0)).slice(0, 3);
+  const games = [...new Set(list.map(t => gameWord(t.game)).filter(Boolean))];
+  const intro = list.length
+    ? `<b>${plural(list.length, 'pool tournament')}</b>${where || ' across the US'} this weekend (${esc(rangeLabel(wk))})${games.length ? `: ${esc(games.slice(0, 4).join(', '))}` : ''}.${big.length ? ` Biggest: ${big.map(t => `<a href="${tournamentPath(db, t)}">${esc(t.name)}</a> (${esc(t.venue.city)}${t.added ? ', ' + money(t.added) + ' added' : t.entry != null ? ', ' + money(t.entry) + ' entry' : ''})`).join('; ')}.` : ''} This page updates every day, so the same link always shows the coming weekend.`
+    : `Nothing is listed${where} for this weekend (${esc(rangeLabel(wk))}) yet. Here is what's coming up next. Running an event? <a href="/post">Post it free</a>.`;
+  const title = `${h1} (${rangeLabel(wk)})${list.length ? ` – ${plural(list.length, 'Event')}` : ''} | Billiard Action Time`;
+  const description = list.length
+    ? `${plural(list.length, 'pool tournament')}${where || ' in the US'} this weekend, ${rangeLabel(wk)}. Times, pool halls, entry fees and added money. Updated daily.`
+    : `Pool tournaments${where} this weekend and coming up next: dates, pool halls and entry fees. Updated daily.`;
+  const url = cfg.publicUrl + path, u = encodeURIComponent(url + '?utm_source=share');
+  const shareText = list.length ? `${plural(list.length, 'pool tournament')}${where} this weekend (${rangeLabel(wk)})` : `Pool tournaments${where}`;
+  const tx = encodeURIComponent(shareText);
+  const states = !state ? (() => { const m = new Map(); for (const t of list) m.set(t.venue.state, (m.get(t.venue.state) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); })() : [];
+  const bc = crumbs(cfg, [{ name: 'Tournaments', path: '/tournaments/' }, ...(state ? [{ name: 'This Weekend', path: '/this-weekend/' }, { name: stateName, path }] : [{ name: 'This Weekend', path }])]);
+  const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: list.length,
+    itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
+  const body = `${bc.html}
+  <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
+    <div class="actbar" style="margin-top:12px">${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
+  ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>This weekend by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${weekendPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
+  ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : soon.length ? `<h2 class="seo-h2">Coming up next${where}</h2>${eventRows(db, soon, { showCity: true })}` : ''}
+  <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
+    <h2 class="seo-h2" style="margin-top:0">Share this weekend's list</h2>
+    <p class="muted">Post this link in your pool group. It always shows the coming weekend, so you can share the same link every week.</p>
+    <div class="actbar"><button type="button" class="btn btn-green" data-share="native" hidden>Share…</button>
+      <a class="btn btn-blue" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${u}">Facebook</a>
+      <a class="btn btn-out" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=${u}&amp;text=${tx}">X</a>
+      <a class="btn btn-out" href="sms:?&amp;body=${tx}%20${u}">Text</a>
+      <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
+  </section>`;
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !soon.length });
+}
+
+// Plain-HTML heading and intro for the home page. The app replaces it once it loads; search engines
+// and link previews read it as-is.
+export function homeIntroHtml(db) {
+  const ix = index(db), today = todayIso(), wk = weekendRange(today);
+  const up = ix.all.filter(t => t.date >= today);
+  const weekend = up.filter(t => t.date >= wk.from && t.date <= wk.to).length;
+  const states = new Set(up.map(t => t.venue.state)).size;
+  const f = buildFooter(db).links;
+  return `<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
+  <p>Billiard Action Time lists <b>${plural(up.length, 'upcoming pool tournament')}</b> in ${plural(states, 'state')}: weekly 8-Ball and 9-Ball nights, added-money opens, One Pocket and Scotch Doubles events, with dates, pool halls and entry fees. Listings update every day.</p>
+  <div class="actbar"><a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a></div>
+  <p class="muted" style="margin-top:12px">Popular: ${f.states.slice(0, 8).map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join(' · ')}</p></section>`;
 }
