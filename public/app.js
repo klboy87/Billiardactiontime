@@ -841,6 +841,55 @@
     });
   };
 
+  // Admin: the weekly email (built by the server from the listings) plus the subscriber list.
+  async function newsletterAdmin() {
+    const msg = t => { const el = document.getElementById('nlMsg'); if (el) el.textContent = t; };
+    let nl = null, subs = null;
+    const loadSubs = async () => (subs = subs || (await api('/api/admin/subscribers')).subscribers);
+    try {
+      nl = await api('/api/admin/newsletter');
+      document.getElementById('nlSubj').textContent = nl.subject;
+      document.getElementById('nlPreview').innerHTML = nl.html;
+    } catch (e) { document.getElementById('nlPreview').textContent = 'Could not build the email: ' + e.message; }
+    const copyText = async (text, done) => {
+      try { await navigator.clipboard.writeText(text); msg(done); }
+      catch { window.prompt('Copy this:', text); }
+    };
+    document.getElementById('nlEmails').addEventListener('click', async () => {
+      try { const list = await loadSubs(); if (!list.length) return msg('No subscribers yet.'); await copyText(list.map(s => s.email).join(', '), `✓ Copied ${list.length} emails. Paste them into BCC.`); }
+      catch (e) { msg('⚠ ' + e.message); }
+    });
+    document.getElementById('nlCsv').addEventListener('click', async () => {
+      try {
+        const list = await loadSubs();
+        const csv = 'email,signed_up\n' + list.map(s => `${s.email},${s.createdAt}`).join('\n') + '\n';
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = `subscribers-${localIso(new Date())}.csv`; document.body.appendChild(a); a.click(); a.remove();
+        msg(`✓ Downloaded ${list.length} subscribers.`);
+      } catch (e) { msg('⚠ ' + e.message); }
+    });
+    document.getElementById('nlSubject').addEventListener('click', () => nl && copyText(nl.subject, '✓ Subject copied.'));
+    document.getElementById('nlCopy').addEventListener('click', async () => {
+      if (!nl) return;
+      try {   // rich copy keeps the formatting and links when pasted into Gmail
+        await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([nl.html], { type: 'text/html' }), 'text/plain': new Blob([nl.text], { type: 'text/plain' }) })]);
+        msg('✓ Email copied. Paste it into the message body.');
+      } catch {
+        const box = document.getElementById('nlPreview'), r = document.createRange();
+        r.selectNodeContents(box); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        msg(document.execCommand('copy') ? '✓ Email copied. Paste it into the message body.' : 'Select the email below and copy it (Ctrl/Cmd+C).');
+        sel.removeAllRanges();
+      }
+    });
+    document.getElementById('nlRemove').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = new FormData(e.target).get('email');
+      try { await api('/api/admin/subscribers/remove', { method: 'POST', body: { email } }); subs = null; e.target.reset(); const c = document.getElementById('nlCount'); c.textContent = Math.max(0, Number(c.textContent) - 1); msg('✓ Removed ' + email); }
+      catch (err) { msg('⚠ ' + err.message); }
+    });
+  }
+
   routes['/admin'] = async () => {
     if (!adminToken()) {
       app.innerHTML = `
@@ -913,6 +962,20 @@
         <div class="stat"><strong>${summary.subscribers}</strong><span>Subscribers</span></div>
       </div>
       <div class="actbar"><button class="btn btn-blue" id="syncBtn">Sync Now</button><span id="syncMsg" class="muted"></span></div>
+      <h2>Weekly Email</h2>
+      <div class="card" id="nlBox" style="padding:16px">
+        <p class="muted" style="margin-top:0">Written automatically from this week's listings. To send it: 1) <b>Copy Emails</b> and paste them into the <b>BCC</b> line of a new Gmail message (BCC keeps everyone's address private). 2) <b>Copy Subject</b> into the subject line. 3) <b>Copy Email</b> and paste it into the message body. 4) Send it to yourself first to check, then to the list.</p>
+        <div class="actbar" style="flex-wrap:wrap">
+          <button class="btn btn-blue btn-sm" id="nlEmails">Copy Emails (<span id="nlCount">${summary.subscribers}</span>)</button>
+          <button class="btn btn-out btn-sm" id="nlCsv">Download Subscribers (CSV)</button>
+          <button class="btn btn-out btn-sm" id="nlSubject">Copy Subject</button>
+          <button class="btn btn-green btn-sm" id="nlCopy">Copy Email</button>
+        </div>
+        <div id="nlMsg" class="muted" style="margin:8px 0;min-height:1.2em"></div>
+        <p style="margin:6px 0"><b>Subject:</b> <span id="nlSubj" class="muted">Loading…</span></p>
+        <div id="nlPreview" style="border:1px solid #ddd;border-radius:8px;background:#fff;color:#222;padding:10px;max-height:520px;overflow:auto">Loading…</div>
+        <form id="nlRemove" class="actbar" style="margin-top:12px;flex-wrap:wrap"><input name="email" type="email" required placeholder="Email to unsubscribe" style="max-width:280px"><button class="btn btn-out btn-sm" type="submit">Remove From List</button></form>
+      </div>
       <h2>Needs Review (${pending.length})</h2>
       <div id="pendingList" class="review">
         ${pending.length ? pending.map(t => `
@@ -984,6 +1047,7 @@
       <tbody>${(summary.recentRuns || []).map(r => `<tr><td>${esc((r.started_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(r.status)}</td><td>${r.fetched ?? 0}</td><td>${r.inserted ?? 0}</td><td>${r.updated ?? 0}</td><td>${r.removed ?? 0}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No sync runs yet.</td></tr>'}</tbody></table>`;
 
     document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('bat_admin_token'); render(); });
+    newsletterAdmin();
     document.getElementById('syncBtn').addEventListener('click', async () => {
       const m = document.getElementById('syncMsg'); m.textContent = 'Syncing…';
       try { const r = await api('/api/admin/sync', { method: 'POST' }); m.textContent = `Done: ${r.status}${r.message ? ' — ' + r.message : ''}`; }

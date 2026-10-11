@@ -53,6 +53,8 @@ function index(db) {
   return cache;
 }
 export function invalidate() { cache = null; }
+// Every published tournament, one entry per real event (duplicate listings collapsed).
+export const listedTournaments = db => index(db).all;
 const venuePath = (db, v) => `/venue/${index(db).primaryVenue.get(v.id) ?? v.id}`;
 const sameRoom = (db, a, b) => { const p = index(db).primaryVenue; return (p.get(a) ?? a) === (p.get(b) ?? b); };
 

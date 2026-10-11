@@ -31,6 +31,7 @@ import * as MM from './moneymatches.js';
 import * as MP from './moneypages.js';
 import { sponsorBannerHtml } from './sponsor.js';
 import { appPageFor, fillShell } from './apppages.js';
+import { buildNewsletter } from './newsletter.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -515,6 +516,14 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         traffic.pages = traffic.pages.map(r => ({ ...r, label: PAGES[r.page] || r.page }));
         return json(req, res, 200, { ...D.pageviewCounts(db), traffic });
       }
+      if (m === 'GET' && p === '/api/admin/subscribers') return json(req, res, 200, { subscribers: D.listSubscribers(db) }, { 'Cache-Control': 'no-store' });
+      if (m === 'POST' && p === '/api/admin/subscribers/remove') {
+        const b = (await readJson(req)) || {};
+        const ok = D.removeSubscriber(db, b.email);
+        if (ok) log('subscriber removed by admin');
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'That email is not on the list' });
+      }
+      if (m === 'GET' && p === '/api/admin/newsletter') { SEO.ensureFooter(db); return json(req, res, 200, buildNewsletter(db, cfg), { 'Cache-Control': 'no-store' }); }
       if (m === 'GET' && p === '/api/admin/pending') return json(req, res, 200, { tournaments: D.listPending(db) });
       if (m === 'POST' && p === '/api/admin/sync') return json(req, res, 200, await syncNow());
       if ((x = p.match(/^\/api\/admin\/(claims|reports)\/(\d+)\/done$/)) && m === 'POST') return json(req, res, 200, { ok: D.resolveItem(db, x[1], Number(x[2])) });

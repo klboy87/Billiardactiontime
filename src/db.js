@@ -351,6 +351,12 @@ export function addClaim(db, tournamentId, email, name) {
 export function addReport(db, tournamentId, message) {
   db.prepare('INSERT INTO reports (tournament_id, message) VALUES (?,?)').run(tournamentId, message);
 }
+export function listSubscribers(db) {
+  return db.prepare('SELECT email, created_at AS createdAt FROM subscribers ORDER BY id').all();
+}
+export function removeSubscriber(db, email) {
+  return db.prepare('DELETE FROM subscribers WHERE email = ?').run(String(email || '').trim().toLowerCase()).changes > 0;
+}
 export function addSubscriber(db, email) {
   db.prepare('INSERT OR IGNORE INTO subscribers (email) VALUES (?)').run(email);
 }
