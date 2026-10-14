@@ -391,6 +391,14 @@ export function guidesIndexPage(cfg) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Guides</span></nav>
   <div class="pagehead"><h1>Pool Tournament Guides</h1><p>Plain-English guides for players and tournament directors: game rules, brackets, payouts, handicaps, practice and more. ${GUIDES.length} guides, all free.</p></div>
   <p class="glossary-az">${GUIDE_CATS.map(c => `<a href="#${c.key}" style="min-width:auto;padding:4px 12px">${c.name}</a>`).join('')}<a href="/trick-shots/" style="min-width:auto;padding:4px 12px">✨ Trick shots</a><a href="/play/aim-trainer" style="min-width:auto;padding:4px 12px">🎯 Aim trainer</a><a href="/tools/" style="min-width:auto;padding:4px 12px">Free tools</a></p>
+  <section class="card" style="padding:16px 18px;margin:0 0 22px"><h2 style="margin:0 0 6px;font-size:24px">New to pool? Start here</h2>
+  <ol style="margin:0;padding-left:22px;line-height:1.9">
+    <li><a href="/guides/pool-basics-for-beginners">Pool for beginners: stance, bridge, grip and stroke</a></li>
+    <li><a href="/guides/how-to-aim-in-pool">How to aim: ghost ball and contact points</a>, then try the <a href="/play/aim-trainer">aim trainer</a></li>
+    <li><a href="/guides/8-ball-rules">8-Ball rules</a> and <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs. tournament rules</a></li>
+    <li><a href="/guides/pool-practice-drills">7 practice drills</a> and <a href="/guides/english-in-pool">English explained</a></li>
+    <li><a href="/guides/first-pool-tournament">Your first tournament</a>, then <a href="/this-weekend/">find one this weekend</a></li>
+  </ol></section>
   <div class="guide-cats">${sections}</div>`;
   return layout(cfg, { title: 'Pool Tournament Guides: Rules, Brackets, Payouts & More | Billiard Action Time', description: 'Free guides for pool players and tournament directors: 8-Ball, 9-Ball and 10-Ball rules, double-elimination brackets, payout charts, Fargo handicaps, practice drills and a pool glossary.', path: '/guides/', body,
     jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool Tournament Guides', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/guides/${g.slug}`, name: g.title })) }] });
