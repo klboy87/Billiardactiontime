@@ -110,3 +110,48 @@
   });
   form.querySelector('[data-clear]').addEventListener('click', function () { form.reset(); setSlots(null); setTitle(''); msg.textContent = ''; });
 })();
+
+/* Round robin schedule (/tools/round-robin-generator): circle method, table numbers, standings sheet. */
+(function () {
+  var form = document.getElementById('rrForm'), out = document.getElementById('rrOut');
+  if (!form || !out) return;
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var order = null, lastKey = '';
+  var build = function () {
+    var names = form.elements.names.value.split(/\r?\n/).map(function (s) { return s.trim().slice(0, 40); }).filter(Boolean);
+    var tables = Math.max(1, Math.min(40, parseInt(form.elements.tables.value, 10) || 1));
+    var ev = form.elements.event.value.trim();
+    if (names.length < 3) { out.innerHTML = '<p>Enter at least 3 players or teams.</p>'; return; }
+    if (names.length > 40) { out.innerHTML = '<p>Up to 40 players. For bigger fields, use a <a href="/tools/brackets/">bracket</a>.</p>'; return; }
+    var key = names.join('\n') + form.elements.shuffle.checked;
+    if (key !== lastKey) {                     // keep the same shuffle while only tables or the name change
+      lastKey = key; order = names.slice();
+      if (form.elements.shuffle.checked) for (var i = order.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t; }
+    }
+    var list = order.slice(); if (list.length % 2) list.push(null);
+    var n = list.length, rounds = [];
+    for (var r = 0; r < n - 1; r++) {
+      var games = [], bye = null;
+      for (var k = 0; k < n / 2; k++) {
+        var a = list[k], b = list[n - 1 - k];
+        if (a === null || b === null) { bye = a === null ? b : a; continue; }
+        games.push(r % 2 && k === 0 ? [b, a] : [a, b]);   // swap the fixed player's side so breaks/home alternate
+      }
+      rounds.push({ games: games, bye: bye });
+      list.splice(1, 0, list.pop());                       // rotate everyone but the first
+    }
+    var total = rounds.reduce(function (s, x) { return s + x.games.length; }, 0);
+    var html = '<h2 style="margin:0 0 4px">' + esc(ev || 'Round Robin Schedule') + '</h2><p class="muted" style="margin:0 0 12px">' + order.length + ' players · ' + rounds.length + ' rounds · ' + total + ' matches · ' + tables + ' table' + (tables > 1 ? 's' : '') + '</p>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">';
+    rounds.forEach(function (rd, i) {
+      html += '<div class="rr-round" style="border:1px solid var(--line);border-radius:8px;padding:10px 12px"><b>Round ' + (i + 1) + '</b><table class="t" style="margin-top:4px"><tbody>' +
+        rd.games.map(function (g, gi) { return '<tr><td style="width:1%;white-space:nowrap;color:var(--muted)">' + (gi < tables ? 'Table ' + (gi + 1) : 'Next free') + '</td><td>' + esc(g[0]) + ' <span class="muted">vs</span> ' + esc(g[1]) + '</td><td style="width:22%;border-bottom:1px solid var(--line)"></td></tr>'; }).join('') +
+        '</tbody></table>' + (rd.bye ? '<p class="muted" style="margin:6px 0 0">Bye: ' + esc(rd.bye) + '</p>' : '') + '</div>';
+    });
+    html += '</div><h2 style="margin:22px 0 8px">Standings</h2><div style="overflow-x:auto"><table class="t"><thead><tr><th>Player</th><th>Wins</th><th>Losses</th><th>Games won</th><th>Place</th></tr></thead><tbody>' +
+      order.map(function (p) { return '<tr><td>' + esc(p) + '</td><td></td><td></td><td></td><td></td></tr>'; }).join('') + '</tbody></table></div>';
+    out.innerHTML = html;
+  };
+  form.addEventListener('input', build); form.addEventListener('change', build); form.addEventListener('submit', function (e) { e.preventDefault(); build(); });
+  build();
+})();
