@@ -10,7 +10,7 @@ export const TOOLS = [
   { slug: 'round-robin-generator', title: 'Round Robin Schedule Generator for Pool Leagues & Tournaments',
     desc: 'Type in your players or teams and get a printable round robin schedule where everyone plays everyone once, with table numbers and a standings sheet.' },
   { slug: 'pool-rules-quiz', title: 'Pool Rules Quiz: How Well Do You Know 8-Ball, 9-Ball and More?',
-    desc: 'Twelve quick questions on 8-Ball, 9-Ball, 10-Ball, straight pool, one pocket and tournament brackets. See your score and share it with your league.' }
+    desc: 'Twelve quick questions drawn from a bank of 25 on 8-Ball, 9-Ball, 10-Ball, straight pool, one pocket and more. New questions every time. See your score and share it.' }
 ];
 
 // [question, options, correct index, explanation]. Answers follow the World Standardized Rules used by most
@@ -27,7 +27,20 @@ const QUIZ = [
   ['In straight pool (14.1), when are the balls re-racked?', ['When all 15 are made', 'When one object ball is left on the table', 'After every five balls', 'Only after a foul'], 1, 'When one ball is left, the other 14 are re-racked and the player keeps shooting, usually breaking the new rack with the last ball.'],
   ['How many balls do you need to win a game of One Pocket?', ['5', '7', '8', '10'], 2, 'The first player to get eight balls in their pocket wins.'],
   ['In a 16-player double-elimination bracket, how many matches are played (not counting an "if needed" match)?', ['15', '24', '30', '32'], 2, 'A double-elimination bracket with N players takes 2N − 2 matches, plus one more if the final goes to a second set.'],
-  ['In FargoRate, what does a 100-point rating gap mean?', ['The stronger player always wins', 'The stronger player wins about 2 games for every 1', 'The players are even', 'The stronger player wins 10 games for every 1'], 1, 'A 100-point gap means about a 2-to-1 game ratio, so the stronger player wins about two out of three games.']
+  ['In FargoRate, what does a 100-point rating gap mean?', ['The stronger player always wins', 'The stronger player wins about 2 games for every 1', 'The players are even', 'The stronger player wins 10 games for every 1'], 1, 'A 100-point gap means about a 2-to-1 game ratio, so the stronger player wins about two out of three games.'],
+  ['In 8-Ball, what does it mean when the table is "open"?', ['Anyone can shoot', 'Groups (solids or stripes) are not decided yet', 'The 8 can be shot at', 'The break was illegal'], 1, 'Right after the break the table is open: you may hit a solid or a stripe first, and your group is set by the first ball you legally pocket on a called shot.'],
+  ['When racking 8-Ball, where does the 8-ball go?', ['At the front', 'In the middle of the third row', 'In a back corner', 'Anywhere'], 1, 'The 8 goes in the center of the third row, with a solid and a stripe in the two back corners.'],
+  ['When racking 9-Ball, where does the 9-ball go?', ['At the front', 'In the middle of the diamond', 'At the back', 'Anywhere'], 1, 'The 1 goes in front on the foot spot and the 9 goes in the middle of the diamond.'],
+  ['What is a "scratch"?', ['Missing every ball', 'The cue ball going in a pocket or off the table', 'Hitting the wrong ball first', 'Touching a ball with your hand'], 1, 'A scratch is when the cue ball is pocketed or leaves the table. It is a foul.'],
+  ['Making the cue ball jump by scooping under it with the tip is…', ['A legal jump shot', 'A foul', 'Only legal in 9-Ball', 'Legal with a jump cue'], 1, 'A legal jump comes from hitting down on the cue ball. Scooping under it is a foul in nearly every rule set.'],
+  ['The cue tip touches the cue ball twice on one stroke. That is…', ['Legal if the shot goes in', 'A foul (double hit)', 'Legal on the break', 'A re-rack'], 1, 'A double hit is a foul. It is most common when the cue ball is very close to the object ball.'],
+  ['In 9-Ball Banks, how many balls do you need to win a game?', ['3', '5', '8', '9'], 1, 'In 9-Ball Banks you need five banked balls, more than half of the nine.'],
+  ['In a lag for the break, who wins?', ['The ball that hits the foot rail hardest', 'The ball that stops closest to the head rail', 'The ball that stops in the middle', 'Whoever shoots first'], 1, 'Both players shoot to the foot rail and back; closest to the head rail wins and chooses who breaks.'],
+  ['"Ball in hand" under standard rules means…', ['Shoot from behind the head string', 'Place the cue ball anywhere on the table', 'Your opponent places it for you', 'Shoot from where it stopped'], 1, 'With ball in hand you may place the cue ball anywhere on the table. Some leagues limit it to behind the head string after a scratch on the break.'],
+  ['In scotch doubles, how do partners shoot?', ['Each partner plays a full rack', 'They take turns, alternating shots', 'Only the stronger partner breaks and shoots', 'Both shoot at once'], 1, 'Partners alternate shots, so you have to play position for your partner, not for yourself.'],
+  ['In three-player cutthroat, how many balls are in each player\'s group?', ['3', '5', '7', '15'], 1, 'Three groups of five: 1–5, 6–10 and 11–15. You try to sink your opponents\' balls.'],
+  ['What is the "head string"?', ['The line two diamonds from the head rail; the cue ball starts behind it for the break', 'The string on the rack', 'The center line of the table', 'The line between the side pockets'], 0, 'The head string runs two diamonds from the head rail. On the break, the cue ball is placed behind it.'],
+  ['In 10-Ball under standard rules, do you have to call your shots?', ['No, slop counts', 'Yes, call ball and pocket', 'Only the 10-ball', 'Only after a foul'], 1, '10-Ball is a call-shot game. A ball made in the wrong pocket does not count, which removes most of the luck.']
 ];
 export const QUIZ_LEN = QUIZ.length;
 
@@ -68,8 +81,8 @@ export function toolPage(cfg, slug) {
       <p style="margin:0 0 8px;font-weight:700">${i + 1}. ${q}</p>
       <div class="quiz-opts" style="display:grid;gap:6px">${opts.map((o, j) => `<button type="button" data-i="${j}" style="text-align:left;padding:10px 12px;font-size:16px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--text);cursor:pointer">${String.fromCharCode(65 + j)}. ${o}</button>`).join('')}</div>
       <details class="quiz-ans" style="margin-top:8px"><summary class="muted">Show answer</summary><p style="margin:6px 0 0"><b>${String.fromCharCode(65 + ok)}. ${opts[ok]}.</b> ${why}</p></details></li>`).join('');
-    tool = `<ol id="quiz" style="list-style:none;padding:0;margin:0">${qs}</ol>
-    <div id="quizScore" class="card" style="padding:16px 18px;margin-top:4px" aria-live="polite"><p class="muted" style="margin:0">Answer all ${QUIZ.length} questions to see your score.</p></div>`;
+    tool = `<p class="muted no-js-hide" style="margin:0 0 10px">Each quiz picks 12 of our ${QUIZ.length} questions at random.</p><ol id="quiz" data-pick="12" style="list-style:none;padding:0;margin:0">${qs}</ol>
+    <div id="quizScore" class="card" style="padding:16px 18px;margin-top:4px" aria-live="polite"><p class="muted" style="margin:0">Answer all 12 questions to see your score.</p></div>`;
     about = `<h2>About the rules in this quiz</h2>
     <p>Answers follow the standardized rules most pool tournaments use. Leagues and bars often have their own house rules, especially for scratches, the 8-ball on the break and calling shots, so always ask before your match.</p>
     <p>Brush up with our guides: <a href="/guides/8-ball-rules">8-Ball rules</a>, <a href="/guides/9-ball-rules">9-Ball rules</a>, <a href="/guides/10-ball-rules">10-Ball rules</a>, <a href="/guides/straight-pool-rules">straight pool</a>, <a href="/guides/one-pocket">One Pocket</a> and the <a href="/guides/pool-terms-glossary">pool glossary</a>.</p>`;

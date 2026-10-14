@@ -160,6 +160,13 @@
 (function () {
   var quiz = document.getElementById('quiz'), out = document.getElementById('quizScore');
   if (!quiz || !out) return;
+  // Show a random set of questions from the bank (all of them are in the page for readers without JavaScript).
+  var pick = Number(quiz.getAttribute('data-pick')) || 0, all = Array.prototype.slice.call(quiz.querySelectorAll('.quiz-q'));
+  if (pick && all.length > pick) {
+    for (var s = all.length - 1; s > 0; s--) { var r = Math.floor(Math.random() * (s + 1)), t = all[s]; all[s] = all[r]; all[r] = t; }
+    all.slice(pick).forEach(function (q) { q.remove(); });
+    quiz.querySelectorAll('.quiz-q').forEach(function (q, n) { var t = q.querySelector('p'); if (t) t.textContent = t.textContent.replace(/^\d+\./, (n + 1) + '.'); });
+  }
   var qs = quiz.querySelectorAll('.quiz-q'), answered = 0, right = 0;
   qs.forEach(function (q) {
     var ok = Number(q.getAttribute('data-ok')), done = false;
@@ -186,7 +193,7 @@
     out.innerHTML = '<p style="font-size:1.4em;margin:0 0 4px"><b>You scored ' + right + ' out of ' + n + '</b></p><p style="margin:0 0 12px">' + verdict + '</p>' +
       '<p style="margin:0;display:flex;flex-wrap:wrap;gap:8px"><a class="btn" style="padding:8px 14px;border-radius:6px;background:#1877f2;color:#fff;text-decoration:none;font-weight:700" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '">Share on Facebook</a>' +
       '<button type="button" data-copy style="padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:15px">Copy my score</button>' +
-      '<a href="/guides/" style="padding:8px 4px">Read the rules guides →</a></p>';
+      '<a href="/guides/" style="padding:8px 4px">Read the rules guides →</a> <a href="' + location.pathname + '" style="padding:8px 4px">🔄 New questions</a></p>';
     var c = out.querySelector('[data-copy]');
     c.addEventListener('click', function () {
       var t = text + ' ' + url;
