@@ -118,6 +118,49 @@ ${groups}
 
 export const MORE_GUIDES = [
   {
+    slug: 'major-pool-events-calendar', title: 'Major Pool Events 2026–2027: The Big Tournaments Every Player Should Know',
+    desc: 'The biggest pool events of the 2026–27 season: Mosconi Cup, Derby City Classic, league national championships in Las Vegas, Super Billiards Expo, US Open and more, with dates and who can play.',
+    body: `
+<p>Most of the pool calendar is weekly tournaments at your local room. But a handful of big events each year bring the whole pool world together, and many of them are open to amateurs. Here is the season ahead, in date order.</p>
+<p class="tip"><b>Dates last checked October 2026.</b> Organizers sometimes move events, so confirm on the official site before you book travel. Looking for big events closer to home? See <a href="/big-tournaments/">the biggest upcoming tournaments</a> on our listings.</p>
+<div class="t-wrap"><table class="t"><thead><tr><th>Dates</th><th>Event</th><th>Where</th><th>Who plays</th></tr></thead><tbody>
+<tr><td>Nov 27–30, 2026</td><td>Mosconi Cup</td><td>Orlando, FL</td><td>Team USA vs. Team Europe (pros, by invitation)</td></tr>
+<tr><td>Jan 22–31, 2027</td><td>Derby City Classic</td><td>Elizabeth, IN</td><td>Open entry: banks, one pocket, 9-ball</td></tr>
+<tr><td>Feb 23 – Mar 6, 2027</td><td>USA Pool League (formerly BCA Pool League) National Championships</td><td>Las Vegas, NV</td><td>League players, plus open events</td></tr>
+<tr><td>Apr 15–18, 2027</td><td>Super Billiards Expo</td><td>Oaks, PA (near Philadelphia)</td><td>Amateur and pro events, trade show</td></tr>
+<tr><td>Apr 25 – May 1, 2027</td><td>APA Poolplayer Championships</td><td>Las Vegas, NV</td><td>APA league members (qualifiers)</td></tr>
+<tr><td>Late spring 2027 (TBA)</td><td>VNEA World Pool Championships</td><td>Las Vegas, NV</td><td>VNEA league players, on bar-box tables</td></tr>
+<tr><td>Summer 2027 (TBA)</td><td>APA World Pool Championships</td><td>Las Vegas, NV</td><td>APA teams that qualify locally</td></tr>
+<tr><td>Late summer 2027 (TBA)</td><td>US Open Pool Championship</td><td>TBA (2026: Frisco, TX)</td><td>Pros and top amateurs</td></tr>
+</tbody></table></div>
+<h2>Mosconi Cup</h2>
+<p>Pool's version of golf's Ryder Cup: a team of American pros against a team of European pros over four days, in a loud, party-like arena. The 2026 Mosconi Cup is set for <b>November 27–30 at the Caribe Royale in Orlando</b>. You can't enter, but it is the most fun event of the year to watch in person or on TV.</p>
+<h2>Derby City Classic</h2>
+<p>Held every January near Louisville, Kentucky, the Derby City Classic is a ten-day festival of <a href="/guides/bank-pool-rules">bank pool</a>, <a href="/guides/one-pocket">one pocket</a> and <a href="/guides/9-ball-rules">9-ball</a>. Anyone can enter, so amateurs regularly play the biggest names in the game. Just as famous is the action: money games run around the clock. The 2027 event is <b>January 22–31 at Caesars Southern Indiana</b> in Elizabeth, Indiana.</p>
+<h2>League national championships in Las Vegas</h2>
+<p>Every big league ends its season in Las Vegas, with hundreds of tables in one ballroom. To play, you usually qualify through your local league during the season.</p>
+<ul>
+<li><b>USA Pool League National Championships</b> (the former BCA Pool League nationals): <b>February 23 – March 6, 2027</b> at the Westgate Las Vegas. Along with league divisions, there are open events.</li>
+<li><b>APA Poolplayer Championships</b>: the APA's individual championships, listed for <b>April 25 – May 1, 2027</b> at the Westgate (dates subject to change).</li>
+<li><b>VNEA World Pool Championships</b>: VNEA's week-long event, played on bar-box tables. It is usually in late May; 2027 dates are not yet published.</li>
+<li><b>APA World Pool Championships</b>: the APA team championships, usually in August; 2027 dates are listed as to be announced.</li>
+</ul>
+<p>Not in a league yet? League night is the easiest way into tournament pool. Read <a href="/guides/find-pool-tournaments-near-you">how to find tournaments near you</a>.</p>
+<h2>Super Billiards Expo</h2>
+<p>A huge show near Philadelphia with a trade floor full of cues, cases and tables, plus amateur and pro tournaments running at the same time. It is one of the friendliest big events for amateurs. The 2027 Expo is <b>April 15–18 at the Greater Philadelphia Expo Center</b> in Oaks, Pennsylvania.</p>
+<h2>US Open Pool Championship</h2>
+<p>The oldest name in American 9-ball. The 2026 US Open was held August 25–30 in Frisco, Texas, with a $500,000 prize fund. The 2027 dates and venue have not been announced yet.</p>
+<h2>Regional tours and opens</h2>
+<p>Between the big ones, regional tours run stops nearly every weekend, often with added money and a second-chance event for amateurs. Events like the Turning Stone Classic in Verona, New York, which has run twice a year, draw players from across the Northeast. Our <a href="/big-tournaments/">big tournaments page</a> and <a href="/calendar">calendar</a> track added-money events near you, updated every day.</p>
+<h2>Going to a big event?</h2>
+<ul>
+<li><b>Book rooms early.</b> Event hotels sell out, especially in Las Vegas.</li>
+<li><b>Read the rules ahead of time.</b> Big events often use a break box, a shot clock or different 8-ball rules than your league.</li>
+<li><b>Bring a backup.</b> A spare tip or shaft, chalk and a glove if you use one.</li>
+<li><b>Budget for more than entry fees.</b> Practice table time, food and the Calcutta (read our <a href="/guides/calcutta-auction-explained">Calcutta guide</a>) all add up.</li>
+</ul>`
+  },
+  {
     slug: 'pool-terms-glossary', title: `Pool Terms Glossary: ${TERMS.length} Billiards Words Explained`,
     desc: 'A plain-English glossary of pool and billiards terms: from action, bar box and break and run to throw, true double and wing ball.',
     body: glossaryBody()

@@ -360,7 +360,7 @@ export const GUIDE_CATS = [
 const CAT_OF = {
   '8-ball-rules': 'rules', '9-ball-rules': 'rules', '10-ball-rules': 'rules', 'scotch-doubles': 'rules', 'one-pocket': 'rules', 'straight-pool-rules': 'rules', 'bank-pool-rules': 'rules',
   'first-pool-tournament': 'players', 'fargo-ratings-handicaps': 'players', 'pool-tournament-etiquette': 'players', 'pool-table-sizes': 'players', 'find-pool-tournaments-near-you': 'players',
-  'pool-terms-glossary': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
+  'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
   'how-to-run-a-pool-tournament': 'directors', 'double-elimination-brackets': 'directors', 'pool-tournament-payouts': 'directors', 'calcutta-auction-explained': 'directors', 'chip-tournaments': 'directors'
 };
 export const guideCat = slug => CAT_OF[slug] || 'players';
