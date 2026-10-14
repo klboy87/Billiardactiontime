@@ -359,9 +359,9 @@ export const GUIDE_CATS = [
   { key: 'directors', name: 'For tournament directors' }
 ];
 const CAT_OF = {
-  '8-ball-rules': 'rules', '9-ball-rules': 'rules', '10-ball-rules': 'rules', 'scotch-doubles': 'rules', 'one-pocket': 'rules', 'straight-pool-rules': 'rules', 'bank-pool-rules': 'rules',
+  '8-ball-rules': 'rules', '9-ball-rules': 'rules', '10-ball-rules': 'rules', 'scotch-doubles': 'rules', 'one-pocket': 'rules', 'straight-pool-rules': 'rules', 'bank-pool-rules': 'rules', 'how-to-rack-pool-balls': 'rules', 'cutthroat-pool-rules': 'rules', 'bar-rules-vs-tournament-rules': 'rules',
   'first-pool-tournament': 'players', 'fargo-ratings-handicaps': 'players', 'pool-tournament-etiquette': 'players', 'pool-table-sizes': 'players', 'find-pool-tournaments-near-you': 'players',
-  'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'fargo-rating-chart': 'players', 'how-to-aim-in-pool': 'players', 'english-in-pool': 'players', 'safety-play-in-pool': 'players', '8-ball-patterns': 'players', 'pool-tournament-nerves': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
+  'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'fargo-rating-chart': 'players', 'how-to-aim-in-pool': 'players', 'pool-basics-for-beginners': 'players', 'english-in-pool': 'players', 'safety-play-in-pool': 'players', '8-ball-patterns': 'players', 'pool-tournament-nerves': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
   'how-to-run-a-pool-tournament': 'directors', 'double-elimination-brackets': 'directors', 'pool-tournament-payouts': 'directors', 'calcutta-auction-explained': 'directors', 'chip-tournaments': 'directors'
 };
 export const guideCat = slug => CAT_OF[slug] || 'players';

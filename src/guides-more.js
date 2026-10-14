@@ -6,7 +6,7 @@
 // 'g' = ghost ball). Paths: [[x1,y1],[x2,y2],...] drawn as dashed arrows.
 const U = 50, R = 22;                                          // pixels per diamond, rail width
 const px = v => R + v * U;
-const BALL = { 0: '#fff', 1: '#f2c400', 2: '#1f4fd1', 3: '#d63a40', 4: '#6b2fb3', 5: '#f07800', 6: '#13804a', 7: '#7a2a1a', 8: '#111', 9: '#f2c400', 10: '#1f4fd1' };
+const BALL = { 0: '#fff', 1: '#f2c400', 2: '#1f4fd1', 3: '#d63a40', 4: '#6b2fb3', 5: '#f07800', 6: '#13804a', 7: '#7a2a1a', 8: '#111', 9: '#f2c400', 10: '#1f4fd1', 11: '#d63a40', 12: '#6b2fb3', 13: '#f07800', 14: '#13804a', 15: '#7a2a1a' };
 export function table({ balls = [], paths = [], labels = [] } = {}, caption = '') {
   const W = 8 * U + 2 * R, H = 4 * U + 2 * R;
   const pockets = [[0, 0], [4, 0], [8, 0], [0, 4], [4, 4], [8, 4]].map(([x, y]) => `<circle cx="${px(x)}" cy="${px(y)}" r="11" fill="#111"/>`).join('');
@@ -44,6 +44,10 @@ const pct = x => x >= 0.995 ? '>99%' : Math.round(x * 100) + '%';
 const fairRace = (d, base) => { let best = base, gap = 2; for (let r = base; r <= base + 40; r++) { const g = Math.abs(matchP(gameP(d), r, base) - 0.5); if (g < gap) { gap = g; best = r; } } return best; };
 const fargoRows = () => [0, 25, 50, 75, 100, 125, 150, 200, 250, 300].map(d => `<tr><td><b>${d}</b></td><td>${pct(gameP(d))}</td><td>${pct(matchP(gameP(d), 5, 5))}</td><td>${pct(matchP(gameP(d), 7, 7))}</td><td>${pct(matchP(gameP(d), 9, 9))}</td></tr>`).join('');
 const raceRows = () => [25, 50, 75, 100, 125, 150, 200].map(d => `<tr><td><b>${d}</b></td><td>${fairRace(d, 3)} to 3</td><td>${fairRace(d, 4)} to 4</td><td>${fairRace(d, 5)} to 5</td></tr>`).join('');
+
+
+// Rack layouts for the racking guide: rows of ball numbers, apex on the foot spot, rows going toward the foot rail.
+const rack = (rows) => { const out = []; rows.forEach((row, r) => row.forEach((n, i) => out.push({ x: +(6 + r * 0.26).toFixed(3), y: +(2 + (i - (row.length - 1) / 2) * 0.3).toFixed(3), n }))); return out; };
 
 // ---------- glossary ----------
 const TERMS = [
@@ -133,6 +137,141 @@ ${groups}
 };
 
 export const MORE_GUIDES = [
+  {
+    slug: 'how-to-rack-pool-balls', title: 'How to Rack Pool Balls: 8-Ball, 9-Ball and 10-Ball (With Diagrams)',
+    desc: 'How to rack for 8-Ball, 9-Ball and 10-Ball: where each ball goes, how to get a tight rack, and the racking rules used in most tournaments.',
+    body: `
+<p>A good rack is tight, in the right place and set up correctly for the game. A loose rack spreads badly no matter how hard the breaker hits it. Here is how to rack each of the common games.</p>
+<h2>Where the rack goes</h2>
+<p>The front ball (the "apex" or "head ball") sits on the <b>foot spot</b>: the spot two diamonds from the foot rail, in the middle of the table. The rest of the rack points toward the foot rail, square to the table.</p>
+<h2>8-Ball</h2>
+${table({ balls: rack([[1], [9, 2], [3, 8, 10], [11, 4, 12, 5], [6, 13, 7, 14, 15]]) }, '8-Ball: the 8 in the middle of the third row, a solid and a stripe in the two back corners.')}
+<ul>
+<li>Use the triangle with all 15 balls.</li>
+<li>The <b>8-ball goes in the center</b> of the third row.</li>
+<li>The two <b>back corners</b> hold one solid and one stripe.</li>
+<li>Mix the rest; many rules ask that solids and stripes alternate around the outside as much as possible.</li>
+</ul>
+<h2>9-Ball</h2>
+${table({ balls: rack([[1], [2, 3], [4, 9, 5], [6, 7], [8]]) }, '9-Ball: a diamond with the 1 in front and the 9 in the middle.')}
+<ul>
+<li>Use 9 balls in a <b>diamond shape</b> (use the triangle and leave it empty at the back, or use a diamond rack).</li>
+<li>The <b>1-ball goes in front</b> on the foot spot, and the <b>9-ball goes in the middle</b>.</li>
+<li>The other balls can go anywhere.</li>
+</ul>
+<h2>10-Ball</h2>
+${table({ balls: rack([[1], [2, 3], [4, 10, 5], [6, 7, 8, 9]]) }, '10-Ball: the 1 in front and the 10 in the middle of the third row.')}
+<ul>
+<li>Use the triangle with 10 balls (the first four rows).</li>
+<li>The <b>1-ball goes in front</b> on the foot spot, and the <b>10-ball goes in the middle</b> of the third row.</li>
+<li>The other balls can go anywhere.</li>
+</ul>
+<h2>How to get a tight rack</h2>
+<ol>
+<li>Put the balls in the triangle and slide it so the front ball sits on the foot spot.</li>
+<li>Push the balls forward toward the front of the triangle with your fingers, so the front balls press together.</li>
+<li>Hold the balls in place and lift the triangle straight up slowly, without bumping them.</li>
+<li>Look from the side and the front: every ball should touch its neighbors. If you see gaps, rack again.</li>
+</ol>
+<p>On worn tables, balls sit in little dents around the spot and won't freeze together. Rolling the rack slightly back and forth or tapping the balls in place can help. Many tournaments now use a thin <b>template rack</b> (a plastic sheet with holes) that holds the balls frozen and stays under them for the break.</p>
+<h2>Who racks?</h2>
+<p>It depends on the event: in some, the loser of the last game racks; in others, players rack their own or the opponent always racks. Some events use "rack your own" with a template. If you rack for your opponent, rack well. It is part of <a href="/guides/pool-tournament-etiquette">tournament etiquette</a>, and a fair rack is something every opponent can ask to see.</p>
+<p>Now break it: read <a href="/guides/how-to-break-in-pool">how to break in 8-Ball, 9-Ball and 10-Ball</a>.</p>`
+  },
+  {
+    slug: 'pool-basics-for-beginners', title: 'Pool for Beginners: Stance, Bridge, Grip and Stroke',
+    desc: 'Start playing pool the right way: how to stand, how to make a bridge, how to hold the cue, and how to make a smooth, straight stroke. Plus a simple first practice plan.',
+    body: `
+<p>Most of what makes a good pool player is a simple, repeatable set of basics. Getting them right early saves months of bad habits. Here is the whole foundation, in plain English.</p>
+<h2>Stance</h2>
+<ul>
+<li>Stand behind the shot and step into it along the line, so your body is lined up before you bend down.</li>
+<li>For a right-handed player, the right foot is roughly on the line of the shot and the left foot is forward and to the left. Feet about shoulder-width apart.</li>
+<li>Bend at the waist and bring your chin down close to the cue, over the line. How low is up to you; lower makes aiming easier, but stay comfortable.</li>
+<li>Stay balanced: you should be able to hold your stance without leaning on the table.</li>
+</ul>
+<h2>Bridge</h2>
+<p>The bridge is your front hand. It has to hold the cue steady and let it slide straight.</p>
+<ul>
+<li><b>Open bridge:</b> lay your hand flat on the cloth, raise the knuckles slightly and rest the cue in the V between your thumb and the base of your first finger. Easy and stable; good for beginners.</li>
+<li><b>Closed bridge:</b> curl your first finger over the cue to make a loop. More control on firm shots.</li>
+<li>Keep the bridge about 6 to 9 inches from the cue ball on normal shots.</li>
+<li>Rail bridge: when the cue ball is near the cushion, rest the cue on the rail and guide it with your fingers.</li>
+</ul>
+<h2>Grip</h2>
+<p>Hold the cue loosely with your back hand, near the balance point or a little behind it, with your thumb and first two fingers doing most of the work. A tight grip makes the cue steer off line. At the moment of contact, your forearm should hang about straight down from the elbow.</p>
+<h2>Stroke</h2>
+<ul>
+<li>Only your forearm should move, swinging from the elbow like a pendulum. Keep your shoulder and head still.</li>
+<li>Take a few smooth practice strokes, pause briefly at the back, then stroke through.</li>
+<li><b>Follow through</b> past where the cue ball was, and <b>stay down</b> until the ball is well on its way. Jumping up is the most common reason beginners miss.</li>
+</ul>
+<h2>Where to look</h2>
+<p>During your practice strokes, your eyes go back and forth between the cue ball and the spot you are aiming at on the object ball. On the final stroke, most players look at the object ball. Learn how to pick the aim point in <a href="/guides/how-to-aim-in-pool">how to aim in pool</a>.</p>
+<h2>Your first practice plan</h2>
+<ol>
+<li><b>Straight-in shots</b> (10 minutes): an object ball a diamond from a corner pocket and the cue ball straight behind it. Make ten in a row.</li>
+<li><b>Stop shots</b> (10 minutes): same shot, but make the cue ball stop dead. See the <a href="/guides/pool-practice-drills">stop-shot ladder</a>.</li>
+<li><b>Easy cuts</b> (10 minutes): move the cue ball off to the side for gentle cut shots.</li>
+<li><b>Play a rack</b>: 8-Ball against a friend or the "ghost."</li>
+</ol>
+<p>Practice your eye between sessions with the <a href="/play/aim-trainer">aim trainer game</a>, learn the <a href="/guides/pool-terms-glossary">pool terms</a>, and when you are ready, read <a href="/guides/first-pool-tournament">what to expect at your first tournament</a>.</p>`
+  },
+  {
+    slug: 'cutthroat-pool-rules', title: 'Cutthroat Pool Rules: The Best Game for Three Players',
+    desc: 'How to play cutthroat pool with three players: choosing groups, the goal of sinking your opponents\' balls, fouls, and how to win.',
+    body: `
+<p>Cutthroat is the classic pool game for three players (it also works for five). Instead of making your own balls, you try to <b>sink everyone else's</b>. The last player with a ball left on the table wins. It is fast, a little ruthless, and great for a group.</p>
+<h2>The groups</h2>
+<ul>
+<li>Use all 15 balls, racked in the triangle with the 1-ball at the front.</li>
+<li>Three groups: <b>1 to 5</b>, <b>6 to 10</b> and <b>11 to 15</b>.</li>
+<li>With five players, use five groups of three: 1–3, 4–6, 7–9, 10–12 and 13–15.</li>
+</ul>
+<h2>How groups are chosen</h2>
+<p>Many players use this simple rule: the first player to legally pocket a ball after the break picks their group, or gets that ball's group, and the others follow in turn. Other games assign groups by shooting order before the break. Agree on it before you start.</p>
+<h2>How to play</h2>
+<ul>
+<li>Players shoot in a fixed order. You keep shooting as long as you legally pocket an opponent's ball.</li>
+<li>If you pocket one of your <b>own</b> balls, it stays down and your turn ends (in most house rules).</li>
+<li>When all of a player's balls are pocketed, that player is out.</li>
+<li>The last player with any ball left on the table wins.</li>
+</ul>
+<h2>Fouls</h2>
+<p>A common rule: when you scratch or foul, <b>each opponent gets one of their pocketed balls back</b> on the table (spotted on the foot spot). That rewards the players who are behind. Some groups also give the next player ball in hand. Again, agree before the break.</p>
+<h2>Strategy</h2>
+<ul>
+<li><b>Pick on the leader.</b> Sink the balls of the player with the most left, so the others don't gang up on you.</li>
+<li><b>Hide your own balls.</b> Leave them near rails and away from pockets, and use safeties to protect them.</li>
+<li><b>Count before you shoot.</b> Making the last ball of a player who is almost out can turn the game into a duel you might not want.</li>
+</ul>
+<p>Cutthroat is a fun way to practice runouts and safeties. When you are ready for something more serious, learn <a href="/guides/9-ball-rules">9-Ball</a> or <a href="/guides/one-pocket">One Pocket</a>.</p>`
+  },
+  {
+    slug: 'bar-rules-vs-tournament-rules', title: 'Bar Rules vs. Tournament Rules: What Changes in 8-Ball',
+    desc: 'The most common differences between bar (house) 8-Ball rules and tournament rules: scratches, calling shots, the 8 on the break, slop and more.',
+    body: `
+<p>If you learned 8-Ball in a bar or at home, some tournament rules will surprise you. Neither one is "wrong": bar rules are local custom, and tournament rules are written down so everyone plays the same game. Here are the differences that come up most.</p>
+<div class="t-wrap"><table class="t"><thead><tr><th>Situation</th><th>Common bar rules</th><th>Most tournament rules</th></tr></thead><tbody>
+<tr><td>Cue ball scratch</td><td>Behind the head string ("in the kitchen")</td><td>Ball in hand anywhere on the table</td></tr>
+<tr><td>Calling shots</td><td>Often only the 8 is called</td><td>Call ball and pocket on every non-obvious shot</td></tr>
+<tr><td>Balls made by luck ("slop")</td><td>Often count</td><td>Only count if the called ball went in the called pocket</td></tr>
+<tr><td>8-ball on the break</td><td>Often a win</td><td>Depends on the event: a win, a re-rack or spotted; check</td></tr>
+<tr><td>Scratch on the 8</td><td>Loss</td><td>Loss</td></tr>
+<tr><td>Calling the 8-ball pocket</td><td>Sometimes "mark the pocket" with chalk or a coaster</td><td>Call it out loud or mark it, as the event says</td></tr>
+<tr><td>Hitting the wrong group first</td><td>Sometimes just loss of turn</td><td>Foul, ball in hand</td></tr>
+<tr><td>No rail after contact</td><td>Often not called</td><td>Foul, ball in hand</td></tr>
+</tbody></table></div>
+<h2>Why tournaments use ball in hand anywhere</h2>
+<p>Ball in hand anywhere makes every foul costly, which rewards careful play and safeties. It also removes arguments about what was and wasn't a foul in the kitchen.</p>
+<h2>Before your first tournament</h2>
+<ul>
+<li>Ask which rule set the event uses. Many weekly events post their rules on the wall or on the flyer.</li>
+<li>Ask about the 8 on the break, and whether you must call the 8 pocket out loud.</li>
+<li>If something is unclear during a match, stop and ask the director before the shot, not after.</li>
+</ul>
+<p>Read the full <a href="/guides/8-ball-rules">8-Ball rules guide</a>, test yourself with the <a href="/tools/pool-rules-quiz">rules quiz</a>, and see <a href="/guides/first-pool-tournament">what to expect at your first tournament</a>.</p>`
+  },
   {
     slug: 'how-to-aim-in-pool', title: 'How to Aim in Pool: Ghost Ball, Contact Points and Cut Angles',
     desc: 'Learn to aim pool shots: the ghost ball method, fractional aiming (full, 3/4, 1/2, 1/4 ball), why thin cuts are hard, and how to fix missing thick or thin.',
