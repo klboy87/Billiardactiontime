@@ -7,14 +7,21 @@
 const U = 50, R = 22;                                          // pixels per diamond, rail width
 const px = v => R + v * U;
 const BALL = { 0: '#fff', 1: '#f2c400', 2: '#1f4fd1', 3: '#d63a40', 4: '#6b2fb3', 5: '#f07800', 6: '#13804a', 7: '#7a2a1a', 8: '#111', 9: '#f2c400', 10: '#1f4fd1' };
-function table({ balls = [], paths = [], labels = [] } = {}, caption = '') {
+export function table({ balls = [], paths = [], labels = [] } = {}, caption = '') {
   const W = 8 * U + 2 * R, H = 4 * U + 2 * R;
   const pockets = [[0, 0], [4, 0], [8, 0], [0, 4], [4, 4], [8, 4]].map(([x, y]) => `<circle cx="${px(x)}" cy="${px(y)}" r="11" fill="#111"/>`).join('');
   const diamonds = [];
   for (let i = 1; i < 8; i++) if (i !== 4) { diamonds.push([px(i), R / 2], [px(i), H - R / 2]); }
   for (let j = 1; j < 4; j++) diamonds.push([R / 2, px(j)], [W - R / 2, px(j)]);
   const dia = diamonds.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.2" fill="#f4e7c4"/>`).join('');
-  const lines = paths.map(pts => `<polyline points="${pts.map(([x, y]) => `${px(x)},${px(y)}`).join(' ')}" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)" opacity=".9"/>`).join('');
+  // A path is [[x,y],...] (white, cue ball) or {pts, color, curve} (curve: smooth quadratic through the middle point).
+  const lines = paths.map(p => {
+    const pts = Array.isArray(p) ? p : p.pts, color = (!Array.isArray(p) && p.color) || '#fff', mk = color === '#fff' ? 'arr' : 'arrY';
+    const d = !Array.isArray(p) && p.curve && pts.length === 3
+      ? `M${px(pts[0][0])} ${px(pts[0][1])} Q${px(pts[1][0])} ${px(pts[1][1])} ${px(pts[2][0])} ${px(pts[2][1])}`
+      : 'M' + pts.map(([x, y]) => `${px(x)} ${px(y)}`).join(' L');
+    return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#${mk})" opacity=".95"/>`;
+  }).join('');
   const b = balls.map(({ x, y, n }) => {
     if (n === 'g') return `<circle cx="${px(x)}" cy="${px(y)}" r="7.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 2"/>`;
     const stripe = typeof n === 'number' && n >= 9 && n <= 15;
@@ -23,7 +30,7 @@ function table({ balls = [], paths = [], labels = [] } = {}, caption = '') {
   }).join('');
   const lab = labels.map(([x, y, t]) => `<text x="${px(x)}" y="${px(y)}" font-size="11" font-family="Arial" font-weight="bold" fill="#fff" text-anchor="middle">${t}</text>`).join('');
   return `<figure class="diagram"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${caption.replace(/"/g, '')}" xmlns="http://www.w3.org/2000/svg">
-<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#fff"/></marker></defs>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#fff"/></marker><marker id="arrY" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ffd54a"/></marker></defs>
 <rect x="0" y="0" width="${W}" height="${H}" rx="14" fill="#5a3518"/><rect x="${R}" y="${R}" width="${8 * U}" height="${4 * U}" fill="#1f7a4a"/>
 <line x1="${px(2)}" y1="${R}" x2="${px(2)}" y2="${H - R}" stroke="#fff" stroke-opacity=".25"/><circle cx="${px(6)}" cy="${px(2)}" r="2" fill="#fff" fill-opacity=".6"/>
 ${pockets}${dia}${lines}${b}${lab}</svg>${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`;
@@ -126,6 +133,177 @@ ${groups}
 };
 
 export const MORE_GUIDES = [
+  {
+    slug: 'how-to-aim-in-pool', title: 'How to Aim in Pool: Ghost Ball, Contact Points and Cut Angles',
+    desc: 'Learn to aim pool shots: the ghost ball method, fractional aiming (full, 3/4, 1/2, 1/4 ball), why thin cuts are hard, and how to fix missing thick or thin.',
+    body: `
+<p>Aiming is the first thing every player struggles with, and there is no magic trick. But there is a simple picture that makes every cut shot make sense, and a few reference angles that make it faster. Learn these, then train your eye with our <a href="/play/aim-trainer">aim trainer game</a>.</p>
+<h2>The ghost ball</h2>
+<p>Draw an imaginary line from the center of the pocket through the center of the object ball and out the other side. The spot on that line, one ball-width behind the object ball, is where the <b>center of the cue ball</b> needs to be at the moment of contact. Players call the imaginary ball sitting there the ghost ball.</p>
+${table({ balls: [{ x: 6.2, y: 1.3, n: 1 }, { x: 5.96, y: 1.48, n: 'g' }, { x: 3.2, y: 2.6, n: 0 }], paths: [[[3.2, 2.6], [5.85, 1.52]], { pts: [[6.2, 1.3], [7.86, 0.12]], color: '#ffd54a' }] }, 'Aim the cue ball at the ghost ball (dashed circle), not at the object ball.')}
+<p>So you aim the cue ball at the ghost ball, not at the object ball. On a straight-in shot the ghost ball is right behind the object ball, and you aim at its center. The more the shot is cut, the farther your aim moves away from the object ball.</p>
+<h2>Contact point</h2>
+<p>Another way to see the same thing: the <b>contact point</b> is the spot on the object ball farthest from the pocket. The cue ball has to touch exactly there. Some players find it easier to look at the contact point; others see the ghost ball. Both give the same aim. Use whichever one your eye trusts.</p>
+<h2>Fractional aiming: four reference shots</h2>
+<p>Many players learn a few fixed "overlaps" between the cue ball and object ball, and the cut angle each one makes:</p>
+<div class="t-wrap"><table class="t"><thead><tr><th>Aim (cue ball center at…)</th><th>Hit</th><th>Cut angle</th></tr></thead><tbody>
+<tr><td>Center of the object ball</td><td>Full ball</td><td>0° (straight in)</td></tr>
+<tr><td>Halfway between center and edge</td><td>3/4 ball</td><td>about 15°</td></tr>
+<tr><td>The edge of the object ball</td><td>1/2 ball</td><td>30°</td></tr>
+<tr><td>Halfway outside the edge</td><td>1/4 ball</td><td>about 49°</td></tr>
+<tr><td>Just grazing the edge</td><td>Very thin</td><td>close to 90°</td></tr>
+</tbody></table></div>
+<p>The half-ball hit is the most useful one to memorize: aim the center of the cue ball at the edge of the object ball and the object ball leaves at 30 degrees. Shots between the references are "a bit fuller than half ball" and so on.</p>
+<h2>Why thin cuts are so hard</h2>
+<p>On a straight-in shot, a small aiming error barely changes where the object ball goes. On a thin cut, the same error is multiplied several times. That is why good players avoid leaving themselves thin cuts, and why the <a href="/play/aim-trainer">aim trainer</a> gets harder as the angle grows.</p>
+<h2>Fixing "thick" and "thin" misses</h2>
+<ul>
+<li><b>Missing thick</b> means you hit the object ball too full, so it didn't cut enough. Aim farther outside the object ball.</li>
+<li><b>Missing thin</b> means you over-cut it, so it went past the pocket on the other side. Aim a touch fuller.</li>
+<li><b>Slow cut shots go a little thicker</b> than the geometry says because of friction between the balls, called throw. On slow, thin cuts, aim a hair thinner. See the <a href="/trick-shots/throw-shot">throw shot</a>.</li>
+<li><b>Side spin moves the cue ball off line.</b> Learn to aim with a center hit first. See <a href="/guides/english-in-pool">English explained</a>.</li>
+</ul>
+<h2>A simple routine that helps</h2>
+<ol>
+<li>Stand behind the shot and find the line from the pocket through the object ball.</li>
+<li>Pick the ghost ball (or contact point) while you are standing, not once you are down.</li>
+<li>Walk into the shot along the aiming line and get down on it.</li>
+<li>Take a couple of smooth practice strokes, pause, and stroke through.</li>
+</ol>
+<p>Practice it: <a href="/play/aim-trainer">play the aim trainer</a>, then take the <a href="/guides/pool-practice-drills">practice drills</a> to the table.</p>`
+  },
+  {
+    slug: 'english-in-pool', title: 'English in Pool Explained: Follow, Draw, Stun and Side Spin',
+    desc: 'How cue ball spin works: follow, draw and stun, side spin off the rails, and why English makes the cue ball squirt and swerve. Plus when not to use it.',
+    body: `
+<p>"English" is side spin, but most players use the word for any spin on the cue ball. Spin is how good players control where the cue ball goes after the shot. It also causes a lot of misses, so it helps to know what it really does.</p>
+<h2>The cue ball's face</h2>
+<p>Picture the cue ball as a clock face. Hitting above center (12 o'clock) puts on <b>follow</b>. Below center (6 o'clock) puts on <b>draw</b>. Left and right (9 and 3 o'clock) put on <b>side spin</b>. Most shots only need about one tip of offset from center; more than that risks a miscue.</p>
+<h2>Follow, draw and stun</h2>
+<ul>
+<li><b>Follow (topspin):</b> after hitting the object ball, the cue ball keeps rolling forward. On a straight-in shot, it follows the object ball toward the pocket.</li>
+<li><b>Draw (backspin):</b> the cue ball comes back toward you after contact. The farther the cue ball has to travel to the object ball, the more draw you need, because the cloth wears the backspin off.</li>
+<li><b>Stun (stop):</b> a center or slightly-low hit that makes the cue ball slide, with no spin, at contact. On a straight-in shot it stops dead. On a cut, it leaves at 90 degrees to the object ball's path (see the <a href="/trick-shots/ninety-degree-carom">90-degree carom</a>).</li>
+</ul>
+<p>On cut shots, follow bends the cue ball forward of the 90-degree line, and draw bends it back. That is the main tool for position play.</p>
+<h2>Side spin off the rails</h2>
+<p>Side spin mostly matters when the cue ball hits a cushion. <b>Running English</b> (spin in the direction the ball is going along the rail) makes the cue ball come off the rail longer and faster. <b>Reverse English</b> (the other side) makes it come off shorter and slower, or even straight back. Players use side spin to open up angles off the rail that a center hit can't reach.</p>
+<h2>The catch: squirt and swerve</h2>
+<p>Side spin changes the cue ball's path even before it hits anything:</p>
+<ul>
+<li><b>Squirt (deflection):</b> hit the right side and the cue ball pushes slightly to the left of where you aimed. Low-deflection shafts reduce this.</li>
+<li><b>Swerve:</b> because the cue is never perfectly level, side spin makes the cue ball curve back the other way as it travels. It grows with distance and slower speed.</li>
+<li><b>Throw:</b> side spin can also push the object ball a little off line at contact.</li>
+</ul>
+<p>Squirt and swerve partly cancel at some speeds and distances, which is why players learn to "feel" English rather than calculate it.</p>
+<h2>When not to use English</h2>
+<p>If you can get position with a center-ball hit and the right speed, do that. Side spin adds risk to every shot. The best players use the least spin they can.</p>
+<h2>Practice</h2>
+<ul>
+<li>Stop shots from straight-in, at growing distance (the <a href="/guides/pool-practice-drills">stop-shot ladder</a>).</li>
+<li>Draw and follow on the same shot to see how far each one sends the cue ball.</li>
+<li>One-rail kicks with left, center and right spin to see how much the angle changes.</li>
+</ul>
+<p>Then try the <a href="/trick-shots/power-draw">power draw</a> and, if your room allows it, the <a href="/trick-shots/masse-curve">massé</a>.</p>`
+  },
+  {
+    slug: 'safety-play-in-pool', title: 'Safety Play in Pool: How to Win Without Making a Ball',
+    desc: 'Pool safety basics: when to play safe, the main types of safeties, two-way shots, the rules every safety must follow, and simple safeties anyone can learn.',
+    body: `
+<p>A safety is a shot where your goal is not to make a ball, but to leave your opponent with no good shot. Strong players often win more games with safeties than with runouts. You don't need to be a great shot-maker to play good safeties; you need to know a few patterns.</p>
+<h2>The rules every safety must follow</h2>
+<p>A safety is still a normal shot. In most games you must hit the correct ball first, and then a ball must go in a pocket or <b>some ball must hit a rail</b> after contact. If you just roll the cue ball up behind a ball and nothing hits a rail, it is a foul. In 8-Ball and 10-Ball you may also need to call "safety" before the shot; ask how your event plays it.</p>
+<h2>When to play safe</h2>
+<ul>
+<li>The shot you have is hard <b>and</b> a miss would leave your opponent an easy out.</li>
+<li>You can't get from the ball you are shooting to the next one.</li>
+<li>Your opponent is a much stronger shot-maker than you.</li>
+<li>In 8-Ball, your opponent has trouble balls and you have a chance to lock them up.</li>
+</ul>
+<h2>The main kinds of safety</h2>
+<ul>
+<li><b>Hide the cue ball.</b> Put the cue ball behind another ball so your opponent can't see the ball they need to hit (a "snooker").</li>
+<li><b>Distance.</b> Leave the cue ball and the object ball at opposite ends of the table, ideally with one of them on a rail. Long shots are hard to make, and harder to make with position.</li>
+<li><b>Freeze to a rail.</b> A cue ball frozen on the rail is hard to cue and hard to control.</li>
+<li><b>Two-way shot.</b> Try the shot, but with a speed that leaves your opponent safe if you miss. This is the best option when it is available.</li>
+</ul>
+<h2>Three safeties anyone can learn</h2>
+<ol>
+<li><b>Thin cut to the far rail.</b> Barely clip the object ball so it goes to a rail, and send the cue ball the length of the table.</li>
+<li><b>Stop behind a ball.</b> When a blocker is near the object ball, hit the object ball softly to a rail and stop the cue ball behind the blocker.</li>
+<li><b>Roll up in 8-Ball.</b> Push the cue ball gently behind one of your balls so it blocks your opponent's shot, while a ball still reaches a rail.</li>
+</ol>
+<h2>Kicking out of safeties</h2>
+<p>Once you start playing safeties, your opponent will too. Learn one-rail kicks using the diamonds: they are the best answer to a good safety. The <a href="/guides/pool-practice-drills">kick drill</a> is a great place to start.</p>
+<p>Next: learn to plan your runs with <a href="/guides/8-ball-patterns">8-Ball pattern play</a>, or try a <a href="/guides/one-pocket">game of One Pocket</a>, where almost every shot is part offense, part safety.</p>`
+  },
+  {
+    slug: '8-ball-patterns', title: '8-Ball Strategy: How to Plan a Runout',
+    desc: 'How to run out in 8-Ball: read the table first, pick the right group, find your key ball, break up clusters early and keep insurance balls near pockets.',
+    body: `
+<p>Most 8-Ball games are lost by players who could make the balls but didn't plan. The good news: a little planning before your first shot wins more games than any amount of extra shot-making.</p>
+<h2>Step 1: Read the whole table before you shoot</h2>
+<p>When the table is open, look at both groups before you choose. Ask for each group: are any balls stuck in clusters or on rails with no pocket? Are any balls blocked from every pocket? Choose the group with the fewest problems, not the one with the easiest first shot.</p>
+<h2>Step 2: Work backward from the 8</h2>
+<p>Look at where the 8-ball is and which pocket it can go in. Then pick the <b>key ball</b>: the last ball of your group, the one that will give you an easy angle on the 8. Then pick the ball before that. Planning the last two or three balls first keeps you from finishing in a bad spot.</p>
+<h2>Step 3: Fix problems early</h2>
+<ul>
+<li><b>Break out clusters while you still have other balls to shoot.</b> If you wait, you may have to break them up with your last ball and nothing to shoot after.</li>
+<li><b>Use a ball near the cluster as a "break-out" ball.</b> Shoot it and let the cue ball carry into the cluster at a soft speed.</li>
+<li><b>Move problem balls off the rail</b> with a carom or a soft hit if you can't pocket them yet.</li>
+</ul>
+<h2>Step 4: Keep insurance balls</h2>
+<p>A ball sitting near a pocket is an <b>insurance ball</b>: you can make it from almost anywhere. Don't shoot it early just because it's easy. Save it for when you get out of line.</p>
+<h2>Step 5: Use the simplest position</h2>
+<p>Choose shots that need the least cue ball movement. Stay on the same side of the table when you can. Plan to land on the correct side of each next ball, so you are never forced to go across it.</p>
+<h2>When there is no runout</h2>
+<p>If you can't see a way out, don't just shoot and hope. Make the balls you can while you improve your layout, then play a <a href="/guides/safety-play-in-pool">safety</a>. In 8-Ball, leaving your opponent's balls blocked by yours is often worth more than pocketing one more ball.</p>
+<h2>A quick checklist</h2>
+<ol>
+<li>Which group has fewer problems?</li>
+<li>Where does the 8 go, and what is my key ball?</li>
+<li>Which clusters do I need to break, and with what?</li>
+<li>Which ball is my insurance?</li>
+<li>If I can't run out, where is my safety?</li>
+</ol>
+<p>Brush up on the <a href="/guides/8-ball-rules">8-Ball rules</a>, test yourself with the <a href="/tools/pool-rules-quiz">rules quiz</a>, and practice runouts with the <a href="/guides/pool-practice-drills">play-the-ghost drill</a>.</p>`
+  },
+  {
+    slug: 'pool-tournament-nerves', title: 'Beating Tournament Nerves: The Mental Game of Pool',
+    desc: 'Why you play worse in tournaments than in practice, and what to do about it: a pre-shot routine, breathing, staying in the present, and handling a bad rack.',
+    body: `
+<p>Almost every player shoots worse in a tournament than on a practice table. Your arm tightens, you rush, and easy shots look hard. That's normal, and it gets better with a few simple habits.</p>
+<h2>Why nerves hurt your game</h2>
+<p>Under pressure, your body speeds up: faster breathing, tighter muscles, quicker decisions. In pool that turns into a shorter, jerky stroke and getting up off the shot too soon. The fix is not to "not be nervous." It is to have a routine that works even when you are.</p>
+<h2>Build a pre-shot routine</h2>
+<ol>
+<li>Stand behind the shot. Decide the shot, the spin and the speed while standing.</li>
+<li>Commit. If you're unsure, stand up and start again. Never shoot with a doubt.</li>
+<li>Step in along the line and get down.</li>
+<li>Take the same number of practice strokes every time.</li>
+<li>Pause at the back, then stroke through and stay down.</li>
+</ol>
+<p>Practice the routine on every shot at home, so in a match it runs on its own.</p>
+<h2>Breathe out before you shoot</h2>
+<p>A slow breath out as you settle into your stance relaxes your grip and shoulder. Many players breathe out during the last practice stroke. It's simple and it works.</p>
+<h2>Play the shot in front of you</h2>
+<p>Don't think about the score, the payout or who's watching. Think about the next shot: the line, the speed, where the cue ball goes. If your mind jumps ahead, go back to your routine.</p>
+<h2>After a bad rack</h2>
+<ul>
+<li>Sit down, take a drink, and let it go. The next rack doesn't know you just missed.</li>
+<li>Look at what went wrong once (wrong plan, bad stroke, bad luck), then move on.</li>
+<li>Don't change your whole game mid-match. Trust the stroke you practiced.</li>
+</ul>
+<h2>Dealing with distractions</h2>
+<p>Noise, slow players and the occasional shark are part of tournament pool. If something bothers you, stand up and restart your routine. If an opponent is breaking the rules or sharking on purpose, calmly ask the director. See our guide to <a href="/guides/pool-tournament-etiquette">tournament etiquette</a>.</p>
+<h2>Between matches</h2>
+<ul>
+<li>Stay warm: hit a few balls if there's a practice table, or at least stretch your arm and shoulder.</li>
+<li>Eat something light and drink water. Long days add up.</li>
+<li>Watch your next opponent if you can, but don't over-think it.</li>
+</ul>
+<p>The best cure for nerves is experience. <a href="/this-weekend/">Find a tournament this weekend</a> and play as many as you can. Your first ones are covered in <a href="/guides/first-pool-tournament">what to expect at your first tournament</a>.</p>`
+  },
   {
     slug: 'fargo-rating-chart', title: 'Fargo Rating Chart: Win Odds by Rating Difference',
     desc: 'How often does a higher-rated player win? A chart of game and match win chances by Fargo rating difference, plus fair handicap races and what ratings mean.',

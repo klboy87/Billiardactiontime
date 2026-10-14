@@ -239,10 +239,12 @@
       <section class="sec">
         <div class="sec-head"><h2>Learn the Game &amp; Run Better Events</h2><a href="/guides/">All guides →</a></div>
         <div class="guide-next" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+          <a href="/play/aim-trainer"><small>🎯 Game</small><b>Aim trainer: can you cut it in? Beat your best score</b></a>
+          <a href="/trick-shots/"><small>✨ Trick shots</small><b>10 trick shots with diagrams to try at the table</b></a>
           <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>How well do you know the rules? Take the 12-question quiz</b></a>
           <a href="/guides/pool-practice-drills"><small>For players</small><b>7 practice drills that actually make you better</b></a>
           <a href="/guides/fargo-rating-chart"><small>For players</small><b>Fargo rating chart: win odds by rating gap</b></a>
-          <a href="/guides/major-pool-events-calendar"><small>For players</small><b>Major pool events of the 2026–27 season</b></a>
+          <a href="/guides/how-to-aim-in-pool"><small>For players</small><b>How to aim: ghost ball, contact points and cut angles</b></a>
           <a href="/tools/brackets/"><small>Free tool</small><b>Printable double-elimination brackets with your players' names</b></a>
           <a href="/tools/payout-calculator"><small>Free tool</small><b>Tournament payout calculator</b></a>
         </div>

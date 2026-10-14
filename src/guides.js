@@ -361,7 +361,7 @@ export const GUIDE_CATS = [
 const CAT_OF = {
   '8-ball-rules': 'rules', '9-ball-rules': 'rules', '10-ball-rules': 'rules', 'scotch-doubles': 'rules', 'one-pocket': 'rules', 'straight-pool-rules': 'rules', 'bank-pool-rules': 'rules',
   'first-pool-tournament': 'players', 'fargo-ratings-handicaps': 'players', 'pool-tournament-etiquette': 'players', 'pool-table-sizes': 'players', 'find-pool-tournaments-near-you': 'players',
-  'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'fargo-rating-chart': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
+  'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'fargo-rating-chart': 'players', 'how-to-aim-in-pool': 'players', 'english-in-pool': 'players', 'safety-play-in-pool': 'players', '8-ball-patterns': 'players', 'pool-tournament-nerves': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
   'how-to-run-a-pool-tournament': 'directors', 'double-elimination-brackets': 'directors', 'pool-tournament-payouts': 'directors', 'calcutta-auction-explained': 'directors', 'chip-tournaments': 'directors'
 };
 export const guideCat = slug => CAT_OF[slug] || 'players';
@@ -390,7 +390,7 @@ export function guidesIndexPage(cfg) {
   }).join('');
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Guides</span></nav>
   <div class="pagehead"><h1>Pool Tournament Guides</h1><p>Plain-English guides for players and tournament directors: game rules, brackets, payouts, handicaps, practice and more. ${GUIDES.length} guides, all free.</p></div>
-  <p class="glossary-az">${GUIDE_CATS.map(c => `<a href="#${c.key}" style="min-width:auto;padding:4px 12px">${c.name}</a>`).join('')}<a href="/tools/" style="min-width:auto;padding:4px 12px">Free tools</a></p>
+  <p class="glossary-az">${GUIDE_CATS.map(c => `<a href="#${c.key}" style="min-width:auto;padding:4px 12px">${c.name}</a>`).join('')}<a href="/trick-shots/" style="min-width:auto;padding:4px 12px">✨ Trick shots</a><a href="/play/aim-trainer" style="min-width:auto;padding:4px 12px">🎯 Aim trainer</a><a href="/tools/" style="min-width:auto;padding:4px 12px">Free tools</a></p>
   <div class="guide-cats">${sections}</div>`;
   return layout(cfg, { title: 'Pool Tournament Guides: Rules, Brackets, Payouts & More | Billiard Action Time', description: 'Free guides for pool players and tournament directors: 8-Ball, 9-Ball and 10-Ball rules, double-elimination brackets, payout charts, Fargo handicaps, practice drills and a pool glossary.', path: '/guides/', body,
     jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool Tournament Guides', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/guides/${g.slug}`, name: g.title })) }] });

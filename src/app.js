@@ -35,6 +35,8 @@ import { buildNewsletter } from './newsletter.js';
 import * as GU from './guides.js';
 import * as TL from './tools.js';
 import * as BR from './brackets.js';
+import * as TS from './trickshots.js';
+import * as PL from './play.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -662,7 +664,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
+      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
         { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
@@ -680,6 +682,16 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/big-tournaments' || p === '/big-tournaments/')) { if (p === '/big-tournaments') return moved('/big-tournaments/'); SEO.ensureFooter(db); trackVisit(req, 'big-page'); return html(200, SEO.bigTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/tools' || p === '/tools/')) { if (p === '/tools') return moved('/tools/'); SEO.ensureFooter(db); trackVisit(req, 'tools'); return html(200, TL.toolsIndexPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/trick-shots' || p === '/trick-shots/')) { if (p === '/trick-shots') return moved('/trick-shots/'); SEO.ensureFooter(db); trackVisit(req, 'trick-shots'); return html(200, TS.trickShotsIndexPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/trick-shots\/([a-z0-9-]{2,80})\/?$/))) {
+      SEO.ensureFooter(db);
+      const out = TS.trickShotPage(cfg, x[1]);
+      if (!out) return notFoundPage();
+      trackVisit(req, 'trick-shot');
+      return html(200, out);
+    }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/play' || p === '/play/')) { if (p === '/play') return moved('/play/'); SEO.ensureFooter(db); trackVisit(req, 'play'); return html(200, PL.playIndexPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/play/aim-trainer' || p === '/play/aim-trainer/')) { SEO.ensureFooter(db); trackVisit(req, 'aim-trainer'); return html(200, PL.aimTrainerPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/tools/brackets' || p === '/tools/brackets/')) { if (p === '/tools/brackets') return moved('/tools/brackets/'); SEO.ensureFooter(db); trackVisit(req, 'brackets'); return html(200, BR.bracketsIndexPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tools\/brackets\/(\d{1,3})\/?$/))) {
       SEO.ensureFooter(db);
