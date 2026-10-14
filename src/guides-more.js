@@ -26,7 +26,7 @@ export function table({ balls = [], paths = [], labels = [] } = {}, caption = ''
     if (n === 'g') return `<circle cx="${px(x)}" cy="${px(y)}" r="7.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 2"/>`;
     const stripe = typeof n === 'number' && n >= 9 && n <= 15;
     const fill = BALL[n] ?? '#ddd';
-    return `<g><circle cx="${px(x)}" cy="${px(y)}" r="7.5" fill="${stripe ? '#fff' : fill}" stroke="#222" stroke-width=".8"/>${stripe ? `<rect x="${px(x) - 7.5}" y="${px(y) - 3.5}" width="15" height="7" fill="${fill}"/>` : ''}${n ? `<text x="${px(x)}" y="${px(y) + 3}" font-size="8" text-anchor="middle" font-family="Arial" font-weight="bold" fill="${n === 8 || n === 2 || n === 4 || n === 6 || n === 7 ? '#fff' : '#111'}">${n}</text>` : ''}</g>`;
+    return `<g><circle cx="${px(x)}" cy="${px(y)}" r="7.5" fill="${stripe ? '#fff' : fill}" stroke="#222" stroke-width=".8"/>${stripe ? `<rect x="${px(x) - 7.5}" y="${px(y) - 3.5}" width="15" height="7" fill="${fill}"/>` : ''}${n ? `<text x="${px(x)}" y="${px(y) + 3}" font-size="8" text-anchor="middle" font-family="Arial" font-weight="bold" fill="${[2, 4, 6, 7, 8, 10, 12, 14, 15].includes(n) ? '#fff' : '#111'}">${n}</text>` : ''}</g>`;
   }).join('');
   const lab = labels.map(([x, y, t]) => `<text x="${px(x)}" y="${px(y)}" font-size="11" font-family="Arial" font-weight="bold" fill="#fff" text-anchor="middle">${t}</text>`).join('');
   return `<figure class="diagram"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${caption.replace(/"/g, '')}" xmlns="http://www.w3.org/2000/svg">
