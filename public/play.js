@@ -278,3 +278,65 @@
   root.querySelector('[data-loading]').remove();
   newRound();
 })();
+
+/* Lag challenge (/play/lag-challenge): stop the power meter, roll the ball to the foot rail and back, and
+   finish as close to the head rail as you can. Constant rolling friction: distance grows with speed squared. */
+(function () {
+  var root = document.getElementById('lagGame');
+  if (!root) return;
+  var U = 50, R = 22, BALL = 0.23, NS = 'http://www.w3.org/2000/svg', LO = BALL / 2, HI = 8 - BALL / 2, START = 1.6, IN_PER_DIAMOND = 12.5, DMAX = 26;
+  var px = function (v) { return R + v * U; };
+  var el = function (tag, a, p) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+  var W = 8 * U + 2 * R, H = 4 * U + 2 * R;
+  var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Pool table', style: 'width:100%;height:auto;display:block;user-select:none' });
+  root.querySelector('[data-table]').appendChild(svg);
+  el('rect', { x: 0, y: 0, width: W, height: H, rx: 14, fill: '#5a3518' }, svg); el('rect', { x: R, y: R, width: 8 * U, height: 4 * U, fill: '#1f7a4a' }, svg);
+  for (var i = 1; i < 8; i++) if (i !== 4) { el('circle', { cx: px(i), cy: R / 2, r: 2.2, fill: '#f4e7c4' }, svg); el('circle', { cx: px(i), cy: H - R / 2, r: 2.2, fill: '#f4e7c4' }, svg); }
+  for (var j = 1; j < 4; j++) { el('circle', { cx: R / 2, cy: px(j), r: 2.2, fill: '#f4e7c4' }, svg); el('circle', { cx: W - R / 2, cy: px(j), r: 2.2, fill: '#f4e7c4' }, svg); }
+  [[0, 0], [4, 0], [8, 0], [0, 4], [4, 4], [8, 4]].forEach(function (p) { el('circle', { cx: px(p[0]), cy: px(p[1]), r: 12, fill: '#111' }, svg); });
+  el('line', { x1: px(2), y1: R, x2: px(2), y2: H - R, stroke: '#fff', 'stroke-opacity': 0.25 }, svg);
+  for (var z = 1; z <= 3; z++) el('line', { x1: px(z * 0.4), y1: px(1.4), x2: px(z * 0.4), y2: px(2.6), stroke: '#fff', 'stroke-opacity': 0.12, 'stroke-dasharray': '2 3' }, svg);
+  var marks = el('g', {}, svg);
+  var halo = el('circle', { r: 13, fill: '#fff', opacity: 0.22, cy: px(2) }, svg), ball = el('circle', { r: BALL / 2 * U, fill: '#fff', stroke: '#222', 'stroke-width': 0.8, cy: px(2) }, svg);
+  var place = function (x) { ball.setAttribute('cx', px(x)); halo.setAttribute('cx', px(x)); };
+  var ui = { status: root.querySelector('[data-status]'), msg: root.querySelector('[data-msg]'), go: root.querySelector('[data-go]'), meter: root.querySelector('[data-meter]'), fill: root.querySelector('[data-fill]') };
+  var S, phase = 'idle', t0 = 0, power = 0, raf;
+  // Where a ball ends up after rolling `d` diamonds from START toward the foot rail, bouncing off both end rails.
+  function endAt(d) { var x = START, dir = 1, left = d; for (var k = 0; k < 20 && left > 0; k++) { var room = dir > 0 ? HI - x : x - LO; if (left <= room) { x += dir * left; left = 0; } else { x += dir * room; left -= room; dir = -dir; } } return x; }
+  function status() { var best = store.get('bat-lag-best'); ui.status.textContent = 'Lag ' + Math.min(S.n + 1, 5) + ' of 5 · Total ' + S.total.toFixed(1) + '"' + (best ? ' · Best ' + Number(best).toFixed(1) + '"' : ''); }
+  function newRound() { S = { n: 0, total: 0, results: [] }; while (marks.firstChild) marks.removeChild(marks.firstChild); reset(); }
+  function reset() { place(START); phase = 'idle'; ui.go.textContent = 'Start power meter'; ui.fill.style.width = '0%'; ui.msg.innerHTML = 'Roll the ball to the far rail and back. <b>Closest to the head rail (left) wins.</b> It must touch the foot rail.'; status(); }
+  function meterLoop(ts) { if (phase !== 'meter') return; var k = ((ts - t0) / 1400) % 2; power = k < 1 ? k : 2 - k; ui.fill.style.width = (power * 100).toFixed(1) + '%'; raf = requestAnimationFrame(meterLoop); }
+  function roll() {
+    phase = 'rolling'; ui.go.disabled = true;
+    var d = DMAX * power * power, T = 900 + 2600 * power, start = null;
+    var anim = function (ts) {
+      if (!start) start = ts; var k = Math.min(1, (ts - start) / T), s = d * (1 - Math.pow(1 - k, 2)); place(endAt(s));
+      if (k < 1) raf = requestAnimationFrame(anim); else finish(d);
+    };
+    raf = requestAnimationFrame(anim);
+  }
+  function finish(d) {
+    var x = endAt(d), reached = d >= HI - START, inches = Math.max(0, (x - LO) * IN_PER_DIAMOND), penalty = reached ? 0 : 50;
+    var score = inches + penalty; S.n++; S.total += score; S.results.push(score);
+    el('circle', { cx: px(x), cy: px(2) + (S.n - 3) * 9, r: 3, fill: reached ? '#ffd54a' : '#e2462f' }, marks);
+    var verdict = !reached ? 'Short! It never reached the foot rail. That adds a 50" penalty.' : inches < 2 ? 'Perfect lag, frozen to the rail!' : inches < 6 ? 'Great lag.' : inches < 15 ? 'Not bad.' : inches < 40 ? 'Too far out.' : 'Way off. Find your speed.';
+    ui.msg.innerHTML = (reached && inches < 6 ? '✅ ' : '') + verdict + (reached ? ' <b>' + inches.toFixed(1) + '"</b> from the head rail.' : '');
+    if (S.n >= 5) {
+      var best = Number(store.get('bat-lag-best') || 0), isBest = !best || S.total < best; if (isBest) store.set('bat-lag-best', S.total.toFixed(1));
+      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.total.toFixed(1) + '" total over 5 lags</b> (lower is better). ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best.toFixed(1) + '".') + '</div>';
+      phase = 'done'; ui.go.textContent = 'Play again';
+    } else { phase = 'shown'; ui.go.textContent = 'Next lag →'; }
+    ui.go.disabled = false; status();
+  }
+  ui.go.addEventListener('click', function () {
+    if (phase === 'idle') { phase = 'meter'; t0 = performance.now(); ui.go.textContent = 'Stop! (shoot)'; raf = requestAnimationFrame(meterLoop); }
+    else if (phase === 'meter') { cancelAnimationFrame(raf); roll(); }
+    else if (phase === 'shown') reset();
+    else if (phase === 'done') newRound();
+  });
+  document.addEventListener('keydown', function (e) { if ((e.key === ' ' || e.key === 'Enter') && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') { e.preventDefault(); if (!ui.go.disabled) ui.go.click(); } });
+  root.querySelector('[data-loading]').remove();
+  newRound();
+})();

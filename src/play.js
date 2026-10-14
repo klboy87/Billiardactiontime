@@ -6,6 +6,7 @@ const btn = (extra = '') => `style="padding:10px 14px;font-size:16px;border-radi
 const GAMES = [
   { href: '/play/aim-trainer', icon: '🎯', title: 'Aim Trainer', desc: 'Pocket the ball in the highlighted pocket. Ten shots a round, three levels, and it tells you if you were thick or thin.' },
   { href: '/play/bank-trainer', icon: '↗️', title: 'Bank Shot Trainer', desc: 'Pick the spot on the rail and bank the ball into the highlighted pocket. Learn the mirror method by feel.' },
+  { href: '/play/lag-challenge', icon: '📏', title: 'Lag Challenge', desc: 'Stop the power meter and lag the ball to the head rail. Five lags, scored in inches. Pure speed control.' },
   { href: '/tools/pool-rules-quiz', icon: '❓', title: 'Pool Rules Quiz', desc: 'Twelve questions on 8-Ball, 9-Ball, 10-Ball and more. Share your score with your league.' },
   { href: '/trick-shots/', icon: '✨', title: 'Trick Shots', desc: 'Fourteen trick shots with diagrams to try at the table, from easy combos to the jump and the massé.' },
   { href: '/guides/pool-practice-drills', icon: '📋', title: 'Practice Drills', desc: 'Seven drills with scores to beat. Play the ghost and see how often you really run out.' }
@@ -90,4 +91,30 @@ export function bankTrainerPage(cfg) {
   </div></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Bank Shot Trainer', url: `${cfg.publicUrl}/play/bank-trainer`, description: 'A free browser game for practicing one-rail bank shots with the mirror method.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
   return layout(cfg, { title: 'Bank Shot Trainer: Free Pool Banking Game | Billiard Action Time', description: 'Practice one-rail bank shots in your browser. Pick the spot on the rail, bank the ball into the pocket, and learn the mirror method. Free, works on your phone.', path: '/play/bank-trainer', body, jsonld: [ld], scripts: ['/play.js'] });
+}
+
+export function lagChallengePage(cfg) {
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/play/">Play</a> <span>/</span> <span>Lag Challenge</span></nav>
+  <div class="pagehead"><h1>Lag Challenge</h1><p>Start the power meter, stop it at the right moment, and roll the ball to the far rail and back. Finish as close to the head rail as you can. Five lags, scored in inches. Lower is better.</p></div>
+  <section id="lagGame" class="card" style="padding:14px">
+    <b data-status style="font-size:15px;display:block;margin-bottom:8px">Loading…</b>
+    <div data-table style="max-width:min(100%, calc((100vh - 260px) * 1.83), 820px);margin:0 auto"></div>
+    <p data-loading class="muted">Turn on JavaScript to play.</p>
+    <div data-meter style="max-width:420px;margin:12px auto 6px;height:18px;border-radius:9px;background:linear-gradient(90deg,#d8f3e0,#ffe9a8 55%,#fbdada);border:1px solid var(--line);overflow:hidden"><div data-fill style="height:100%;width:0;background:#144b2e;opacity:.85"></div></div>
+    <p style="text-align:center;margin:8px 0"><button type="button" data-go ${btn('background:#144b2e;color:#fff;border-color:#144b2e;font-weight:700;padding:12px 28px')}>Start power meter</button></p>
+    <p data-msg aria-live="polite" style="margin:8px 2px 0;min-height:3em"></p>
+  </section>
+  <p class="muted" style="font-size:14px">Tip: the ball must touch the far (foot) rail. Space bar works too. Measured on a 9-foot table, where one diamond is 12.5 inches.</p>
+  <article class="card guide" style="margin-top:16px"><h2 style="margin-top:0">Why the lag matters</h2>
+  <p>Most tournament matches start with a lag: both players shoot a ball to the foot rail and back at the same time, and whoever stops closest to the head rail chooses who breaks. Touching a side rail or never reaching the foot rail loses the lag.</p>
+  <p>More than that, the lag is the purest test of <b>speed control</b>. A ball rolling on cloth slows at a steady rate, so the distance it travels grows with the square of its starting speed: a little more power goes a lot farther. Players who can lag well can control the cue ball for position.</p>
+  <p>Take it to the table with the <a href="/trick-shots/perfect-lag">perfect lag</a> drill and the <a href="/guides/pool-practice-drills">practice drills</a>.</p></article>
+  <section class="sec seo-sec"><h2>More to play</h2><div class="guide-next">
+    <a href="/play/aim-trainer"><small>Game</small><b>Aim trainer and daily challenge</b></a>
+    <a href="/play/bank-trainer"><small>Game</small><b>Bank shot trainer</b></a>
+    <a href="/trick-shots/"><small>Trick shots</small><b>14 trick shots with diagrams</b></a>
+    <a href="/guides/english-in-pool"><small>Guide</small><b>English explained: follow, draw and side spin</b></a>
+  </div></section>`;
+  const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Lag Challenge', url: `${cfg.publicUrl}/play/lag-challenge`, description: 'A free browser game for practicing pool speed control by lagging to the head rail.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
+  return layout(cfg, { title: 'Pool Lag Challenge: Speed Control Game | Billiard Action Time', description: 'Can you lag to the rail? A free pool speed-control game: stop the power meter, roll to the far rail and back, and finish closest to the head rail.', path: '/play/lag-challenge', body, jsonld: [ld], scripts: ['/play.js'] });
 }
