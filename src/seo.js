@@ -305,6 +305,26 @@ function shareBox(cfg, db, t, g) {
 }
 
 // ---- landing pages: /tournaments/, /tournaments/<state>[/<city>][/<game>], /tournaments/<game> ----
+
+// "At a glance" numbers for a listing page, worked out from its own upcoming events.
+const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+function glanceHtml(list, where, rooms, showGame) {
+  if (list.length < 5) return '';
+  const top = (arr) => { const m = new Map(); for (const k of arr) if (k) m.set(k, (m.get(k) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); };
+  const nights = top(list.map(t => DOW[new Date(t.date + 'T00:00:00Z').getUTCDay()]));
+  const games = top(list.map(t => t.game && String(t.game).replace(/^(\d+)[\s-]*Ball$/i, '$1-Ball').replace(/^8-Ball Scotch Doubles$|^9-Ball Scotch Doubles$/i, 'Scotch Doubles')));
+  const fees = list.map(t => t.entry).filter(n => n != null && n > 0).sort((a, b) => a - b);
+  const median = fees.length >= 3 ? fees[Math.floor(fees.length / 2)] : null;
+  const added = list.filter(t => t.added > 0).length;
+  const tiles = [
+    ['Busiest night', nights[0] ? `${nights[0][0]}s` : '', nights[0] ? `${nights[0][1]} of ${list.length} events` : ''],
+    showGame && games[0] ? ['Most played', games[0][0], `${Math.round(games[0][1] * 100 / list.length)}% of events`] : null,
+    median != null ? ['Typical entry', '$' + median, `from $${fees[0]} to $${fees[fees.length - 1]}`] : null,
+    ['Pool rooms', String(rooms), added ? `${added} added-money event${added > 1 ? 's' : ''}` : 'with upcoming events']
+  ].filter(Boolean);
+  return `<section class="glance" aria-label="At a glance"><h2 class="glance-h">${esc(where)} at a glance</h2><div class="glance-grid">${tiles.map(([k, v, sub]) => `<div><small>${k}</small><b>${esc(v)}</b><span>${esc(sub)}</span></div>`).join('')}</div></section>`;
+}
+
 export function listingPage(db, cfg, parts) {
   const f = parts.length ? parseFacets(db, parts) : { state: null, city: null, game: null };
   if (!f) return null;
@@ -354,6 +374,7 @@ export function listingPage(db, cfg, parts) {
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="/search?${new URLSearchParams({ ...(f.state ? { state: f.state } : {}), ...(f.cityName ? { city: f.cityName } : {}), ...(f.game ? { game: f.game } : {}) })}">Search &amp; Filter</a>
     <a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/post">Post a Tournament</a>${f.state && !f.city && !f.game ? `<a class="btn btn-gold" href="${weekendPath(f.state)}">This Weekend in ${esc(stateName)}</a>` : !f.state && !f.city ? `<a class="btn btn-gold" href="/this-weekend/">This Weekend</a>` : ''}</div></div>
+  ${glanceHtml(upcoming, place ? (f.cityName || stateName) : 'Nationwide', venues.size, !g)}
   ${upcoming.length ? eventRows(db, upcoming.slice(0, 300), { showCity: !f.city }) : ''}
   ${upcoming.length > 300 ? `<p class="muted">Showing the next 300. <a href="/search">Search for more</a>.</p>` : ''}
   ${venues.size ? `<section class="sec seo-sec"><h2>Pool rooms${place ? ' in ' + esc(f.cityName || stateName) : ''} running ${g ? esc(g) + ' ' : ''}tournaments</h2><ul class="seo-list seo-cols">${[...venues.values()].sort((a, b) => b.n - a.n).slice(0, 60)
