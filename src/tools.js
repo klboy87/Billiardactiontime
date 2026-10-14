@@ -8,8 +8,28 @@ export const TOOLS = [
   { slug: 'fargo-race-calculator', title: 'Fargo Race Calculator for Handicapped Matches',
     desc: 'Enter two FargoRate ratings and see fair handicapped races, with each player\'s chance to win the match.' },
   { slug: 'round-robin-generator', title: 'Round Robin Schedule Generator for Pool Leagues & Tournaments',
-    desc: 'Type in your players or teams and get a printable round robin schedule where everyone plays everyone once, with table numbers and a standings sheet.' }
+    desc: 'Type in your players or teams and get a printable round robin schedule where everyone plays everyone once, with table numbers and a standings sheet.' },
+  { slug: 'pool-rules-quiz', title: 'Pool Rules Quiz: How Well Do You Know 8-Ball, 9-Ball and More?',
+    desc: 'Twelve quick questions on 8-Ball, 9-Ball, 10-Ball, straight pool, one pocket and tournament brackets. See your score and share it with your league.' }
 ];
+
+// [question, options, correct index, explanation]. Answers follow the World Standardized Rules used by most
+// tournaments; where leagues commonly differ, the explanation says so.
+const QUIZ = [
+  ['In 9-Ball, which ball must the cue ball hit first?', ['The 9-ball', 'Any ball', 'The lowest-numbered ball on the table', 'The ball closest to a pocket'], 2, 'You must always hit the lowest-numbered ball first. After that, any ball can go in, including the 9.'],
+  ['In 9-Ball, you hit the 1-ball into the 9-ball and the 9 goes in. What happens?', ['You win the game', 'The 9 is spotted and you keep shooting', 'It is a foul', 'The game is replayed'], 0, 'A legal shot that pockets the 9 wins, even on a combination. That is what makes 9-Ball so fast.'],
+  ['After the cue ball hits a ball and nothing goes in, what has to happen for the shot to be legal?', ['Nothing, any hit is legal', 'Some ball has to touch a rail', 'The cue ball has to touch two rails', 'The object ball has to cross the center line'], 1, 'If no ball is pocketed, the cue ball or any object ball must hit a cushion after contact. Otherwise it is a foul.'],
+  ['You scratch in a tournament run on standard rules. Where does your opponent place the cue ball?', ['Behind the head string', 'Anywhere on the table', 'On the head spot', 'Where it went in'], 1, 'Most tournaments play ball in hand anywhere after any foul. Some leagues and bar rules use behind the head string after a scratch, so ask.'],
+  ['When can a player "push out" in 9-Ball?', ['Any time once per game', 'On the shot right after the break', 'Only after a foul', 'Only on the 9-ball'], 1, 'The push out is only allowed on the first shot after the break. The opponent then chooses who shoots next.'],
+  ['In 9-Ball, what happens after three fouls in a row by the same player?', ['Nothing special', 'The opponent gets two shots', 'That player loses the game', 'The balls are re-racked'], 2, 'Three successive fouls lose the game, but only if the player was warned after the second one.'],
+  ['In 10-Ball under standard rules, the 10 goes in on the break. What happens?', ['The breaker wins', 'The 10 is spotted and play continues', 'It is a foul', 'The rack is replayed'], 1, 'Unlike 9-Ball, the 10 on the break does not win in standard 10-Ball rules. It is spotted.'],
+  ['In 8-Ball, you pocket the 8-ball before clearing your group. What happens?', ['You lose the game', 'The 8 is spotted', 'You get to keep shooting', 'It is ball in hand for your opponent'], 0, 'Pocketing the 8 early, or scratching on the 8, loses the game.'],
+  ['In straight pool (14.1), when are the balls re-racked?', ['When all 15 are made', 'When one object ball is left on the table', 'After every five balls', 'Only after a foul'], 1, 'When one ball is left, the other 14 are re-racked and the player keeps shooting, usually breaking the new rack with the last ball.'],
+  ['How many balls do you need to win a game of One Pocket?', ['5', '7', '8', '10'], 2, 'The first player to get eight balls in their pocket wins.'],
+  ['In a 16-player double-elimination bracket, how many matches are played (not counting an "if needed" match)?', ['15', '24', '30', '32'], 2, 'A double-elimination bracket with N players takes 2N − 2 matches, plus one more if the final goes to a second set.'],
+  ['In FargoRate, what does a 100-point rating gap mean?', ['The stronger player always wins', 'The stronger player wins about 2 games for every 1', 'The players are even', 'The stronger player wins 10 games for every 1'], 1, 'A 100-point gap means about a 2-to-1 game ratio, so the stronger player wins about two out of three games.']
+];
+export const QUIZ_LEN = QUIZ.length;
 
 const crumbs = (name) => `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/tools/">Tools</a> <span>/</span> <span>${name}</span></nav>`;
 const appLd = (cfg, t) => ({ '@context': 'https://schema.org', '@type': 'WebApplication', name: t.title, description: t.desc, url: `${cfg.publicUrl}/tools/${t.slug}`,
@@ -43,6 +63,16 @@ export function toolPage(cfg, slug) {
     about = `<h2>How the calculator works</h2>
     <p>The prize pool is every player's entry fee minus the greens fee the room keeps, plus any added money, minus the house or director cut if you set one. "Automatic" pays about one place for every eight players (at least two places), using splits that most local tournaments use. Amounts are rounded to whole dollars and any leftover dollars go to first place.</p>
     <p>In a <a href="/guides/double-elimination-brackets">double-elimination bracket</a>, players knocked out in the same round tie, so places like 5th–6th or 7th–8th usually pay the same amount. Always announce the payout before the first match. More detail in our <a href="/guides/pool-tournament-payouts">payout guide</a>.</p>`;
+  } else if (slug === 'pool-rules-quiz') {
+    const qs = QUIZ.map(([q, opts, ok, why], i) => `<li class="card quiz-q" data-ok="${ok}" style="padding:14px 18px;margin:0 0 12px">
+      <p style="margin:0 0 8px;font-weight:700">${i + 1}. ${q}</p>
+      <div class="quiz-opts" style="display:grid;gap:6px">${opts.map((o, j) => `<button type="button" data-i="${j}" style="text-align:left;padding:10px 12px;font-size:16px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--text);cursor:pointer">${String.fromCharCode(65 + j)}. ${o}</button>`).join('')}</div>
+      <details class="quiz-ans" style="margin-top:8px"><summary class="muted">Show answer</summary><p style="margin:6px 0 0"><b>${String.fromCharCode(65 + ok)}. ${opts[ok]}.</b> ${why}</p></details></li>`).join('');
+    tool = `<ol id="quiz" style="list-style:none;padding:0;margin:0">${qs}</ol>
+    <div id="quizScore" class="card" style="padding:16px 18px;margin-top:4px" aria-live="polite"><p class="muted" style="margin:0">Answer all ${QUIZ.length} questions to see your score.</p></div>`;
+    about = `<h2>About the rules in this quiz</h2>
+    <p>Answers follow the standardized rules most pool tournaments use. Leagues and bars often have their own house rules, especially for scratches, the 8-ball on the break and calling shots, so always ask before your match.</p>
+    <p>Brush up with our guides: <a href="/guides/8-ball-rules">8-Ball rules</a>, <a href="/guides/9-ball-rules">9-Ball rules</a>, <a href="/guides/10-ball-rules">10-Ball rules</a>, <a href="/guides/straight-pool-rules">straight pool</a>, <a href="/guides/one-pocket">One Pocket</a> and the <a href="/guides/pool-terms-glossary">pool glossary</a>.</p>`;
   } else if (slug === 'round-robin-generator') {
     tool = `<form id="rrForm" class="card no-print" style="padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
       <label>Players or teams (one per line)<textarea name="names" rows="8" style="display:block;width:100%;padding:8px;font-size:16px;margin-top:4px">Player A\nPlayer B\nPlayer C\nPlayer D\nPlayer E\nPlayer F</textarea></label>

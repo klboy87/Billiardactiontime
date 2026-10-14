@@ -155,3 +155,43 @@
   form.addEventListener('input', build); form.addEventListener('change', build); form.addEventListener('submit', function (e) { e.preventDefault(); build(); });
   build();
 })();
+
+/* Pool rules quiz (/tools/pool-rules-quiz). */
+(function () {
+  var quiz = document.getElementById('quiz'), out = document.getElementById('quizScore');
+  if (!quiz || !out) return;
+  var qs = quiz.querySelectorAll('.quiz-q'), answered = 0, right = 0;
+  qs.forEach(function (q) {
+    var ok = Number(q.getAttribute('data-ok')), done = false;
+    q.querySelectorAll('[data-i]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (done) return; done = true; answered++;
+        var i = Number(b.getAttribute('data-i'));
+        if (i === ok) right++;
+        q.querySelectorAll('[data-i]').forEach(function (x) {
+          var xi = Number(x.getAttribute('data-i'));
+          x.disabled = true; x.style.cursor = 'default';
+          if (xi === ok) { x.style.background = '#d8f3e0'; x.style.borderColor = '#148a38'; x.style.color = '#0f1b2d'; x.textContent = '✓ ' + x.textContent; }
+          else if (xi === i) { x.style.background = '#fbdada'; x.style.borderColor = '#d63a40'; x.style.color = '#0f1b2d'; x.textContent = '✗ ' + x.textContent; }
+        });
+        var d = q.querySelector('details'); if (d) d.open = true;
+        if (answered === qs.length) show();
+        else out.innerHTML = '<p class="muted" style="margin:0">' + right + ' right so far, ' + (qs.length - answered) + ' to go.</p>';
+      });
+    });
+  });
+  var show = function () {
+    var n = qs.length, verdict = right === n ? 'Perfect. You could run the tournament.' : right >= n - 2 ? 'Rules expert. Nobody is sneaking a foul past you.' : right >= n / 2 ? 'Solid. A quick read of the rules guides will finish the job.' : 'Time to hit the rule books before your next tournament.';
+    var url = location.origin + location.pathname, text = 'I got ' + right + '/' + n + ' on the Billiard Action Time pool rules quiz. Can you beat it?';
+    out.innerHTML = '<p style="font-size:1.4em;margin:0 0 4px"><b>You scored ' + right + ' out of ' + n + '</b></p><p style="margin:0 0 12px">' + verdict + '</p>' +
+      '<p style="margin:0;display:flex;flex-wrap:wrap;gap:8px"><a class="btn" style="padding:8px 14px;border-radius:6px;background:#1877f2;color:#fff;text-decoration:none;font-weight:700" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '">Share on Facebook</a>' +
+      '<button type="button" data-copy style="padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:15px">Copy my score</button>' +
+      '<a href="/guides/" style="padding:8px 4px">Read the rules guides →</a></p>';
+    var c = out.querySelector('[data-copy]');
+    c.addEventListener('click', function () {
+      var t = text + ' ' + url;
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { c.textContent = 'Copied!'; }, function () { c.textContent = t; });
+      else c.textContent = t;
+    });
+  };
+})();
