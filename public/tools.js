@@ -69,3 +69,44 @@
     raceForm.addEventListener('input', rcalc); raceForm.addEventListener('submit', function (e) { e.preventDefault(); rcalc(); }); rcalc();
   }
 })();
+
+/* Printable bracket name fill (/tools/brackets/N). Everything stays in the browser. */
+(function () {
+  var form = document.getElementById('bracketFill');
+  if (!form) return;
+  var n = Number(form.getAttribute('data-size')), msg = form.querySelector('[data-msg]');
+  var slots = document.querySelectorAll('[data-slot]'), titles = document.querySelectorAll('[data-title]');
+  var setSlots = function (names) {
+    slots.forEach(function (el) {
+      var i = Number(el.getAttribute('data-slot')) - 1, v = names ? names[i] : null;
+      el.textContent = v || ('Player ' + (i + 1));
+      el.setAttribute('fill', v ? (v === 'Bye' ? '#999' : '#111') : '#777');
+      el.setAttribute('font-size', v ? '11' : '10');
+    });
+  };
+  var setTitle = function (ev) {
+    titles.forEach(function (el) { var base = el.getAttribute('data-title'); el.textContent = ev ? ev + ' · ' + base.replace(/ \(losers drop to the losers side\)/, '') : base; });
+  };
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var names = form.elements.names.value.split(/\r?\n/).map(function (s) { return s.trim().slice(0, 24); }).filter(Boolean);
+    var ev = form.elements.event.value.trim();
+    setTitle(ev);
+    if (!names.length) { setSlots(null); msg.textContent = ev ? 'Event name added. No players entered.' : ''; return; }
+    if (names.length > n) { msg.innerHTML = names.length + ' players is too many for this bracket. Use the <a href="/tools/brackets/' + (names.length <= 16 ? 16 : names.length <= 32 ? 32 : 64) + '">' + (names.length <= 16 ? 16 : names.length <= 32 ? 32 : 64) + '-player bracket</a>.'; return; }
+    if (names.length <= n / 2 && n > 8) { msg.innerHTML = 'Tip: ' + names.length + ' players fit the <a href="/tools/brackets/' + n / 2 + '">' + n / 2 + '-player bracket</a>, which needs fewer byes. Filled this one anyway.'; }
+    else msg.textContent = '';
+    if (form.elements.shuffle.checked) for (var i = names.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = names[i]; names[i] = names[j]; names[j] = t; }
+    // Spread the byes: each bye goes in the bottom slot of a different first-round match, in bit-reversed
+    // (standard seeding) order so they land in different quarters of the draw before they double up.
+    var matches = n / 2, byes = n - names.length, byeAt = {}, out = [], k = 0;
+    if (byes > matches) { msg.innerHTML = n === 8 ? 'A double-elimination bracket needs at least 4 players.' : 'Too few players for this bracket. Use the <a href="/tools/brackets/' + n / 2 + '">' + n / 2 + '-player bracket</a>.'; return; }
+    var bits = Math.log2(matches), order = [];
+    for (var q = 0; q < matches; q++) { var r = 0; for (var z = 0; z < bits; z++) if (q & (1 << z)) r |= 1 << (bits - 1 - z); order.push(r); }
+    for (var b = 0; b < byes; b++) byeAt[order[b]] = true;
+    for (var m = 0; m < matches; m++) { out.push(names[k++]); out.push(byeAt[m] ? 'Bye' : names[k++]); }
+    setSlots(out);
+    if (!msg.textContent) msg.textContent = 'Filled ' + names.length + ' players' + (byes ? ' with ' + byes + ' bye' + (byes > 1 ? 's' : '') : '') + '. Press Print when ready.';
+  });
+  form.querySelector('[data-clear]').addEventListener('click', function () { form.reset(); setSlots(null); setTitle(''); msg.textContent = ''; });
+})();

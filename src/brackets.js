@@ -9,16 +9,16 @@ export const BRACKET_SIZES = [8, 16, 32, 64];
 const W = 150, H = 44, GAPX = 34, GAPY = 14, PAD = 16, HEAD = 26;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-function box(x, y, label, top, bottom) {
+function box(x, y, label, top, bottom, slots) {
   return `<g><rect x="${x}" y="${y}" width="${W}" height="${H}" rx="4" fill="#fff" stroke="#333" stroke-width="1.2"/>
 <line x1="${x}" y1="${y + H / 2}" x2="${x + W}" y2="${y + H / 2}" stroke="#999" stroke-width="0.8"/>
 <text x="${x + W - 5}" y="${y + 14}" font-size="10" font-weight="bold" text-anchor="end" fill="#1d5fd1" font-family="Arial">${esc(label)}</text>
-${top ? `<text x="${x + 5}" y="${y + 15}" font-size="10" fill="#777" font-family="Arial">${esc(top)}</text>` : ''}
-${bottom ? `<text x="${x + 5}" y="${y + H / 2 + 15}" font-size="10" fill="#777" font-family="Arial">${esc(bottom)}</text>` : ''}</g>`;
+${top ? `<text x="${x + 5}" y="${y + 15}" font-size="10" fill="#777" font-family="Arial"${slots ? ` data-slot="${slots[0]}"` : ''}>${esc(top)}</text>` : ''}
+${bottom ? `<text x="${x + 5}" y="${y + H / 2 + 15}" font-size="10" fill="#777" font-family="Arial"${slots ? ` data-slot="${slots[1]}"` : ''}>${esc(bottom)}</text>` : ''}</g>`;
 }
 const elbow = (x1, y1, x2, y2) => { const mx = x1 + (x2 - x1) / 2; return `<path d="M${x1} ${y1} H${mx} V${y2} H${x2}" fill="none" stroke="#333" stroke-width="1.2"/>`; };
 const svg = (w, h, title, inner) => `<svg class="bracket-svg" viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(title)}" xmlns="http://www.w3.org/2000/svg" style="background:#fff;max-width:100%;height:auto">
-<text x="${PAD}" y="18" font-size="14" font-weight="bold" font-family="Arial" fill="#111">${esc(title)}</text>${inner}</svg>`;
+<text x="${PAD}" y="18" font-size="14" font-weight="bold" font-family="Arial" fill="#111" data-title="${esc(title)}">${esc(title)}</text>${inner}</svg>`;
 
 export function bracketSvgs(n) {
   const R = Math.log2(n);
@@ -37,7 +37,7 @@ export function bracketSvgs(n) {
   const wHeight = HEAD + PAD * 2 + (n / 2) * (H + GAPY);
   win.forEach((col, r) => col.forEach((mt, i) => {
     const x = PAD + 40 + r * (W + GAPX);
-    out += box(x, mt.y, String(mt.num), r === 0 ? `Player ${2 * i + 1}` : '', r === 0 ? `Player ${2 * i + 2}` : '');
+    out += box(x, mt.y, String(mt.num), r === 0 ? `Player ${2 * i + 1}` : '', r === 0 ? `Player ${2 * i + 2}` : '', r === 0 ? [2 * i + 1, 2 * i + 2] : null);
     if (r < R - 1) { const nx = PAD + 40 + (r + 1) * (W + GAPX), nxt = win[r + 1][Math.floor(i / 2)]; out += elbow(x + W, mt.y + H / 2, nx, nxt.y + (i % 2 ? H * 0.75 : H * 0.25)); }
   }));
   const wfx = PAD + 40 + (R - 1) * (W + GAPX), wf = win[R - 1][0];
@@ -113,10 +113,20 @@ export function bracketPage(cfg, n) {
   <div class="pagehead no-print"><h1>${n}-Player Double Elimination Bracket (Printable)</h1><p>A blank ${n}-player double-elimination bracket for pool tournaments: ${b.matches - 1} numbered matches, the Final and an "if needed" match. Prints on two landscape pages, one for each side.</p></div>
   <p class="no-print"><button type="button" data-print ${btn}>🖨️ Print this bracket</button> <span class="muted" style="margin-left:8px">Tip: choose "Save as PDF" in the print window to keep a copy.</span></p>
   <p class="no-print muted">Other sizes: ${others}</p>
+  <form id="bracketFill" class="card no-print" data-size="${n}" style="padding:14px 18px;margin:12px 0">
+    <b>Fill in your players (optional)</b>
+    <p class="muted" style="margin:4px 0 10px">Type one name per line, or paste your sign-up list. Leave it blank to print an empty bracket. Nothing you type is sent anywhere.</p>
+    <label style="display:block">Event name and date<input name="event" maxlength="80" placeholder="Tuesday 8-Ball · Oct 21" style="display:block;width:100%;max-width:420px;padding:8px;font-size:16px;margin-top:4px"></label>
+    <label style="display:block;margin-top:10px">Players<textarea name="names" rows="6" placeholder="One name per line" style="display:block;width:100%;max-width:420px;padding:8px;font-size:16px;margin-top:4px"></textarea></label>
+    <label style="display:block;margin-top:8px"><input type="checkbox" name="shuffle" checked> Random draw (shuffle the names)</label>
+    <p style="margin:10px 0 0"><button type="submit" ${btn}>Fill bracket</button> <button type="button" data-clear style="padding:10px 14px;font-size:15px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer">Clear</button></p>
+    <p data-msg class="muted" style="margin:8px 0 0" aria-live="polite"></p>
+  </form>
   <div class="bracket-sheet">${b.winners}</div>
   <div class="bracket-sheet">${b.losers}</div>
   <article class="card no-print" style="padding:18px 20px;margin-top:16px;line-height:1.65">
   <h2>Running a ${n}-player double elimination</h2>
+  <p>Type your players into the form above to fill the bracket automatically, with a random draw if you like, or print it blank and write the names in. With fewer than ${n} players, the form spreads the byes out so no two byes meet.</p>
   <p>Write the players into the ${n} Player lines on the winners side. When someone loses a winners-side match, find the losers-side match that says "Loser of" that match number and write them in. The losers side is ordered so players who already met usually don't meet again right away. Lose twice and you are out.</p>
   <p>The winners-side champion and the losers-side champion meet in the Final. The losers-side player must win twice, so if they win the Final, play the "If needed" match. ${n < 16 ? 'Fewer than ' + n + ' players? Fill the empty lines with "Bye".' : `Fewer than ${n} players? Use byes, or use the ${n / 2}-player bracket if you have ${n / 2} or fewer.`}</p>
   <p>A ${n}-player field plays ${2 * n - 2} matches (${2 * n - 1} if the "if needed" match is played). At about 30 minutes per match and ${Math.max(2, Math.round(n / 4))} tables, plan on roughly ${Math.ceil((2 * n - 2) * 30 / Math.max(2, Math.round(n / 4)) / 60)}–${Math.ceil((2 * n - 2) * 30 / Math.max(2, Math.round(n / 4)) / 60) + 2} hours.</p>
