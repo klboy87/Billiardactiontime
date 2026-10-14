@@ -24,6 +24,13 @@ const drawObj = [6.5, 1], drawCue = [5, 2];
 const wingBall = [3.4, 2.2], wingGhost = ghost(wingBall, [0, 4]);
 const bankBall = [6, 2.6], bankRail = [6 + 2 * 2.6 / 6.6, 0], bankGhost = ghost(bankBall, bankRail);   // mirror pocket at (8, -4)
 
+
+// Kiss shot: A strikes B and leaves along the tangent line (90 degrees to the line of centers) into the corner.
+const kissAc = [6.2, 1.5], kissU = unit(kissAc, [8, 0]), kissN = [-kissU[1], kissU[0]].map(v => -v);
+const kissB = step(kissAc, kissN, D), kissV = unit([0, 0], [kissU[0] + kissN[0], kissU[1] + kissN[1]]);
+const kissA0 = step(kissAc, kissV, -1.3), kissCue = step(kissA0, kissV, -0.7);
+// Kick: mirror the hanger across the top rail to find the rail spot.
+const hanger = [7.75, 3.8], kickCue = [2, 1.2], kickX = +(2 + (hanger[0] - 2) * (1.2 / (1.2 + hanger[1]))).toFixed(3);
 export const SHOTS = [
   {
     slug: 'dead-combination', title: 'The Dead Combination: Two Balls, One Pocket', level: 1, teaches: 'Combination shots and how frozen balls react',
@@ -134,6 +141,49 @@ export const SHOTS = [
     why: 'A ball comes off a cushion at about the same angle it went in, so its path looks like a straight line to the pocket on the mirror table. The diamonds on the rail help you measure the spot.',
     mistakes: ['Hitting too hard. Firm banks come off the rail at a shorter angle; soft banks run longer.', 'Using side spin. It changes the angle off the rail. Learn the straight version first.'],
     game: 'Banks win games when there is no direct shot, and they are the whole game in <a href="/guides/bank-pool-rules">bank pool</a>.'
+  },
+  {
+    slug: 'kick-to-a-hanger', title: 'The Escape Kick: One Rail Into a Hanger', level: 1, teaches: 'Kicking with the mirror method',
+    desc: 'You\'re snookered, but your ball is hanging in the pocket. Kick off one rail using the mirror method and knock it in.',
+    diagram: table({ balls: [{ x: hanger[0], y: hanger[1], n: 3 }, { x: 5, y: 2.5, n: 8 }, { x: kickCue[0], y: kickCue[1], n: 0 }],
+      paths: [[kickCue, [kickX, 0.02], [hanger[0] - 0.14, hanger[1] - 0.12]], { pts: [hanger, [7.9, 3.9]], color: Y }] }, 'The 8 blocks the direct path. Kick off the top rail at the mirror spot and the cue ball runs into the hanging 3.'),
+    setup: ['Put an object ball in the jaws of a corner pocket (a "hanger") and a blocking ball between it and the cue ball.', 'Put the cue ball on the far side of the table, so a one-rail kick off the long rail is the way to reach the hanger.'],
+    how: ['Picture the table mirrored on the other side of the rail you will kick off. Aim the cue ball at the hanger\'s position on that mirror table.', 'Hit center ball at medium-soft speed. You only need to touch the hanger, so a big target makes this one easy.'],
+    why: 'The cue ball leaves a cushion at about the same angle it arrived, so aiming at the mirrored ball sends it to the real one. It is the same idea as the <a href="/play/bank-trainer">bank trainer</a>, with the cue ball instead of the object ball.',
+    mistakes: ['Hitting hard. A firm kick comes off the rail at a shorter angle; medium-soft keeps the angle true.', 'Using side spin. Spin changes the angle off the rail. Learn it with a center hit first.'],
+    game: 'Being snookered is not the end. A good kick to a hanger, or just a legal hit that leaves your opponent safe, wins a lot of games.'
+  },
+  {
+    slug: 'kiss-shot', title: 'The Kiss Shot: Carom One Object Ball Off Another', level: 2, teaches: 'The 90-degree rule for object balls',
+    desc: 'The pocket is blocked, but there\'s a ball nearby. Send your ball into it at the right angle and it kisses off into the pocket.',
+    diagram: table({ balls: [{ x: kissA0[0], y: kissA0[1], n: 1 }, { x: kissB[0], y: kissB[1], n: 5 }, { x: kissCue[0], y: kissCue[1], n: 0 }],
+      paths: [[kissCue, step(kissA0, kissV, -0.3)], { pts: [kissA0, kissAc, [7.86, 0.12]], color: Y }, { pts: [kissB, step(kissB, kissN, 1.6)], color: Y }] }, 'The 1 glances off the 5 and leaves at 90 degrees to the line between them, straight into the corner.'),
+    setup: ['Place a "kiss" ball about a diamond and a half out from a corner pocket.', 'Place your object ball and the cue ball so the object ball will strike the kiss ball at roughly a half-ball angle.'],
+    how: ['Find the line from the pocket that just touches the kiss ball. Your object ball needs to be on that line when it contacts the kiss ball.', 'Hit the object ball firmly and straight, with a center hit on the cue ball. The object ball slides into the kiss ball and caroms along the tangent line into the pocket.'],
+    why: 'Just like the cue ball, an object ball that is sliding when it hits another ball leaves at 90 degrees to the line between their centers. Object balls slide for a while after being hit, so the 90-degree rule works well over short distances.',
+    mistakes: ['Too far between the object ball and the kiss ball. The object ball starts rolling and curves forward of the 90-degree line.', 'Not checking the line of centers. Sight it like the <a href="/trick-shots/dead-combination">dead combination</a>.'],
+    game: 'Kiss shots get you out of trouble when the pocket is blocked, and they explain a lot of "how did that go in?" moments.'
+  },
+  {
+    slug: 'perfect-lag', title: 'The Perfect Lag: Stop It on the Head Rail', level: 1, teaches: 'Speed control, the most important skill in pool',
+    desc: 'Shoot the ball to the far rail and back so it stops as close to the head rail as possible. It decides who breaks, and it is the best speed drill there is.',
+    diagram: table({ balls: [{ x: 1.4, y: 1.35, n: 0 }, { x: 1.4, y: 2.65, n: 0 }, { x: 0.2, y: 1.38, n: 'g' }], paths: [[[1.4, 1.35], [7.86, 1.35], [0.32, 1.38]], [[1.4, 2.65], [7.86, 2.65], [0.9, 2.62]]], labels: [[0.45, 1.05, 'best']] }, 'Both players shoot at the same time. Closest to the head rail without touching a side rail wins.'),
+    setup: ['Two players each put a ball behind the head string, one on each side of the table.', 'Both shoot at the same time, straight up to the foot rail and back.'],
+    how: ['Use a smooth, level stroke with a center hit. No spin.', 'Pick a spot on the foot rail straight ahead, and think about the speed for the whole trip, not just the hit. The ball should come back and die just short of the head rail.'],
+    why: 'A center-ball roll loses speed at a steady rate, so the right speed is all feel. That feel carries over to every position shot you play.',
+    mistakes: ['Hitting a side rail. In a lag, touching a side rail usually loses.', 'Decelerating. A short, jerky stroke makes speed hard to repeat; use a smooth follow-through even at slow speed.'],
+    game: 'Most tournament matches start with a lag for the break. Win it and you shoot first. Practice ten lags before every session.'
+  },
+  {
+    slug: 'hanger-speed-run', title: 'The Speed Run: Five Hangers Against the Clock', level: 1, teaches: 'Quick setup, rhythm and steady stroking under pressure',
+    desc: 'Put a ball in the jaws of five pockets and run them all as fast as you can. Time it with your phone and try to beat your record.',
+    diagram: table({ balls: [{ x: 0.15, y: 0.15, n: 1 }, { x: 4, y: 0.12, n: 2 }, { x: 7.85, y: 0.15, n: 3 }, { x: 0.15, y: 3.85, n: 4 }, { x: 7.85, y: 3.85, n: 5 }, { x: 4, y: 2.2, n: 0 }],
+      paths: [[[4, 2.2], [4, 0.45]]] }, 'Hangers in five pockets, cue ball in the middle. Go!'),
+    setup: ['Put a ball in the jaws of five pockets and the cue ball near the middle of the table.', 'Start the timer on your phone.'],
+    how: ['Shoot each hanger in any order. Use soft speed so the cue ball stays near the middle.', 'Don\'t rush the stroke itself. Speed comes from deciding quickly and walking straight to the next shot.'],
+    why: 'Hangers can\'t be missed if you hit them, so the challenge is rhythm and cue ball control: every shot leaves you in place for the next one.',
+    mistakes: ['Hitting too hard and scratching. A scratch adds 10 seconds.', 'Walking around the table more than you need to. Plan the order before you start.'],
+    game: 'It is a fun warm-up, and it trains the quick, decisive routine that helps under <a href="/guides/pool-tournament-nerves">tournament pressure</a>.'
   }
 ];
 
@@ -150,7 +200,7 @@ export function trickShotsIndexPage(cfg) {
   <li><b>Set up carefully.</b> Most trick shots fail because the balls are not quite where they should be. Use the diagram and take your time.</li>
   <li><b>Learn the "why."</b> Each page explains the physics, so the skill carries over to real games.</li></ul>
   <p>Want to build the basics first? Try the <a href="/guides/pool-practice-drills">7 practice drills</a>, test your eye with the <a href="/play/aim-trainer">aim trainer</a>, or see how well you know the rules with the <a href="/tools/pool-rules-quiz">rules quiz</a>.</p></article>`;
-  return layout(cfg, { title: 'Pool Trick Shots: 10 Shots You Can Learn (With Diagrams) | Billiard Action Time', description: `${SHOTS.length} pool trick shots and skill shots with table diagrams and step-by-step setup: dead combinations, throw shots, the 90-degree carom, power draw, jump and massé shots.`,
+  return layout(cfg, { title: `Pool Trick Shots: ${SHOTS.length} Shots You Can Learn (With Diagrams) | Billiard Action Time`, description: `${SHOTS.length} pool trick shots and skill shots with table diagrams and step-by-step setup: dead combinations, throw shots, the 90-degree carom, power draw, jump and massé shots.`,
     path: '/trick-shots/', body, jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool trick shots', itemListElement: SHOTS.map((s, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/trick-shots/${s.slug}`, name: s.title })) }] });
 }
 

@@ -7,7 +7,7 @@ const GAMES = [
   { href: '/play/aim-trainer', icon: '🎯', title: 'Aim Trainer', desc: 'Pocket the ball in the highlighted pocket. Ten shots a round, three levels, and it tells you if you were thick or thin.' },
   { href: '/play/bank-trainer', icon: '↗️', title: 'Bank Shot Trainer', desc: 'Pick the spot on the rail and bank the ball into the highlighted pocket. Learn the mirror method by feel.' },
   { href: '/tools/pool-rules-quiz', icon: '❓', title: 'Pool Rules Quiz', desc: 'Twelve questions on 8-Ball, 9-Ball, 10-Ball and more. Share your score with your league.' },
-  { href: '/trick-shots/', icon: '✨', title: 'Trick Shots', desc: 'Ten trick shots with diagrams to try at the table, from easy combos to the jump and the massé.' },
+  { href: '/trick-shots/', icon: '✨', title: 'Trick Shots', desc: 'Fourteen trick shots with diagrams to try at the table, from easy combos to the jump and the massé.' },
   { href: '/guides/pool-practice-drills', icon: '📋', title: 'Practice Drills', desc: 'Seven drills with scores to beat. Play the ghost and see how often you really run out.' }
 ];
 
@@ -85,7 +85,7 @@ export function bankTrainerPage(cfg) {
   <section class="sec seo-sec"><h2>More to play</h2><div class="guide-next">
     <a href="/play/aim-trainer"><small>Game</small><b>Aim trainer and daily challenge</b></a>
     <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>Pool rules quiz: 12 questions</b></a>
-    <a href="/trick-shots/"><small>Trick shots</small><b>10 trick shots with diagrams</b></a>
+    <a href="/trick-shots/"><small>Trick shots</small><b>14 trick shots with diagrams</b></a>
     <a href="/guides/safety-play-in-pool"><small>Guide</small><b>Safety play: win without making a ball</b></a>
   </div></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Bank Shot Trainer', url: `${cfg.publicUrl}/play/bank-trainer`, description: 'A free browser game for practicing one-rail bank shots with the mirror method.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
