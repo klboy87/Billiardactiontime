@@ -677,6 +677,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       trackVisit(req, 'guide');
       return html(200, out);
     }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/big-tournaments' || p === '/big-tournaments/')) { if (p === '/big-tournaments') return moved('/big-tournaments/'); SEO.ensureFooter(db); trackVisit(req, 'big-page'); return html(200, SEO.bigTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/tools' || p === '/tools/')) { if (p === '/tools') return moved('/tools/'); SEO.ensureFooter(db); trackVisit(req, 'tools'); return html(200, TL.toolsIndexPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tools\/([a-z0-9-]{2,80})\/?$/))) {
       SEO.ensureFooter(db);

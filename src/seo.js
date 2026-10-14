@@ -156,7 +156,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
 <link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
-<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/guides/">Guides</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
+<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
 <main class="wrap page seo">${body}${ALERT_CTA}</main>
 ${footer(cfg)}</body></html>`;
@@ -428,6 +428,7 @@ export function sitemapXml(db, cfg, extra = []) {
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
   const wk = weekendRange(today);
   add('/this-weekend/', today, '0.9');
+  add('/big-tournaments/', today, '0.9');
   for (const st of new Set(up.filter(t => t.date >= wk.from && t.date <= wk.to).map(t => t.venue.state))) if (STATE_NAMES[st]) add(weekendPath(st), today, '0.7');
   for (const e of extra) add(e.path, e.lastmod || today, e.pri || '0.6');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...urls].map(([p, u]) =>
@@ -550,6 +551,35 @@ export function homeIntroHtml(db) {
   const f = buildFooter(db).links;
   return `<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
   <p>Billiard Action Time lists <b>${plural(up.length, 'upcoming pool tournament')}</b> in ${plural(states, 'state')}: weekly 8-Ball and 9-Ball nights, added-money opens, One Pocket and Scotch Doubles events, with dates, pool halls and entry fees. Listings update every day.</p>
-  <div class="actbar"><a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/guides/">Guides</a></div>
+  <div class="actbar"><a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-gold" href="/big-tournaments/">Big Events</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/guides/">Guides</a></div>
   <p class="muted" style="margin-top:12px">Popular: ${f.states.slice(0, 8).map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join(' · ')}</p></section>`;
+}
+
+
+// ---- /big-tournaments/: added-money and bigger-entry events for the next two months ----
+const BIG_NAME = /annual|classic|championship|memorial|\bcup\b|shootout|state open|\bopen\b.*(9|10|8)-?ball|\bstop \d|tour\b|invitational/i;
+export const isBigEvent = t => !!t.added || (t.entry != null && t.entry >= 50) || BIG_NAME.test(t.name);
+export function bigTournamentsPage(db, cfg) {
+  const ix = index(db), today = todayIso();
+  const [y, m, d] = today.split('-').map(Number);
+  const until = new Date(Date.UTC(y, m - 1, d) + 62 * 86_400_000).toISOString().slice(0, 10);
+  const list = ix.all.filter(t => t.date >= today && t.date <= until && isBigEvent(t)).sort((a, b) => a.date.localeCompare(b.date));
+  const states = (() => { const mm = new Map(); for (const t of list) mm.set(t.venue.state, (mm.get(t.venue.state) || 0) + 1); return [...mm].sort((a, b) => b[1] - a[1]); })();
+  const top = [...list].sort((a, b) => (b.added || 0) - (a.added || 0) || (b.entry || 0) - (a.entry || 0)).slice(0, 3);
+  const h1 = 'Biggest Upcoming Pool Tournaments';
+  const intro = list.length
+    ? `<b>${plural(list.length, 'bigger tournament')}</b> in the next two months: added-money events, opens, championships, tour stops and events with entry fees of $50 or more.${top.length ? ` Headliners: ${top.map(t => `<a href="${tournamentPath(db, t)}">${esc(t.name)}</a> (${esc(t.venue.city)}, ${esc(t.venue.state)})`).join('; ')}.` : ''} Updated every day.`
+    : 'No bigger tournaments are listed for the next two months yet. Check back soon.';
+  const bc = crumbs(cfg, [{ name: 'Tournaments', path: '/tournaments/' }, { name: 'Biggest Upcoming', path: '/big-tournaments/' }]);
+  const body = `${bc.html}
+  <div class="pagehead"><h1>${h1}</h1><p>${intro}</p>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-gold" href="/this-weekend/">This Weekend</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/alerts">Get Alerts</a></div></div>
+  ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>By state</h2><div class="chips">${states.map(([st, n]) => `<a class="chip" href="${facetPath({ state: st })}">${esc(STATE_NAMES[st] || st)} (${n})</a>`).join('')}</div></section>` : ''}
+  ${list.length ? eventRows(db, list) : ''}
+  <section class="card" style="margin-top:16px;padding:14px 18px"><h2 class="seo-h2" style="margin-top:0">Running a big event?</h2>
+    <p class="muted" style="margin:6px 0">List it free and it shows up here, on its state page and in our weekly email. <a href="/post">Post a tournament →</a> Planning payouts? Try the <a href="/tools/payout-calculator">payout calculator</a>.</p></section>`;
+  const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: list.length,
+    itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
+  return layout(cfg, { title: `${h1} (Next 60 Days) | Billiard Action Time`, description: `${plural(list.length, 'bigger pool tournament')} coming up across the US: added-money events, opens, championships and tour stops, with dates, rooms and entry fees. Updated daily.`,
+    path: '/big-tournaments/', body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length });
 }
