@@ -144,7 +144,7 @@ const ALERT_CTA = `<section class="card seo-cta" style="margin:28px 0 8px;paddin
   <p class="muted" style="margin:6px 0 12px">Get an email when new pool tournaments are posted in your area. Free, and you can unsubscribe any time.</p>
   <div class="actbar"><a class="btn btn-green" href="/alerts">Get Tournament Alerts</a><a class="btn btn-out" href="/this-weekend/">See This Weekend's Tournaments</a></div>
 </section>`;
-export function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage }) {
+export function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage, scripts = [] }) {
   const url = cfg.publicUrl + path;
   const ld = jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('');
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -154,9 +154,9 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
-<link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${adsHead(cfg)}</head>
+<link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
-<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/guides/">Guides</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
+<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/guides/">Guides</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
 <main class="wrap page seo">${body}${ALERT_CTA}</main>
 ${footer(cfg)}</body></html>`;
@@ -176,7 +176,7 @@ function buildFooter(db) {
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
-  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/tools/">Tools</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.
