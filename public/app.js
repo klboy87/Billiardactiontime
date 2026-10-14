@@ -149,17 +149,13 @@
 
   function tournamentCard(t) {
     const v = t.venue || {};
-    return `<a class="tcard" href="#/t/${t.id}">
+    return `<a class="tcard tcard-simple" href="#/t/${t.id}">
       ${saveButtonHtml(t)}
       <div class="badges">${gameChip(t.game || 'Other')}${t.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
       <h3>${esc(t.name)}</h3>
       <div class="muted">${esc(fmtDate(t.date))}${t.time ? ' · ' + esc(fmtTime(t.time)) : ''}</div>
       <div class="muted">${esc(v.name || '')}${v.city ? ' — ' + esc(v.city) + ', ' + esc(v.state || '') : ''}</div>
-      <div class="facts">
-        ${t.entry != null ? `<span>Entry ${esc(money(t.entry))}</span>` : ''}
-        ${t.added ? `<span>Added ${esc(money(t.added))}</span>` : ''}
-        ${t.format ? `<span>${esc(t.format)}</span>` : ''}
-      </div>
+      ${t.entry != null || t.added || t.format ? `<div class="facts">${t.entry != null ? `<span>Entry ${esc(money(t.entry))}</span>` : ''}${t.added ? `<span>Added ${esc(money(t.added))}</span>` : ''}${t.format ? `<span>${esc(t.format)}</span>` : ''}</div>` : ''}
     </a>`;
   }
 
@@ -2479,7 +2475,7 @@
           : `<div class="loadwrap"><p class="muted">No saved tournaments yet. Tap the ☆ on any tournament to save it.</p></div>`;
       } else if (tab === 'posts') {
         body.innerHTML = submissions.length ? `<div class="results">${submissions.map(s => `
-          <a class="tcard" href="#/t/${s.id}">
+          <a class="tcard tcard-simple" href="#/t/${s.id}">
             <h3>${esc(s.name)}</h3>
             <div class="muted">${esc(fmtDate(s.date))}</div>
             <div class="muted">${esc(s.venue?.name || '')}${s.venue?.city ? ' — ' + esc(s.venue.city) + ', ' + esc(s.venue.state || '') : ''}</div>
@@ -2490,7 +2486,7 @@
         const uniq = new Map();
         for (const c of claims) if (!uniq.has(c.tournamentId)) uniq.set(c.tournamentId, c);
         body.innerHTML = uniq.size ? `<div class="results">${[...uniq.values()].map(c => `
-          <a class="tcard" href="#/t/${c.tournamentId}"><h3>Claimed Tournament #${esc(c.tournamentId)}</h3>
+          <a class="tcard tcard-simple" href="#/t/${c.tournamentId}"><h3>Claimed Tournament #${esc(c.tournamentId)}</h3>
           <div class="muted">Claimed ${esc(fmtDate((c.at || '').slice(0, 10)))}</div></a>`).join('')}</div>`
           : `<div class="loadwrap"><p class="muted">No claimed venues yet. Run a tournament? <a href="#/claim">Claim your listing</a>.</p></div>`;
       } else {
