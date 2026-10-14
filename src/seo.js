@@ -605,3 +605,14 @@ export function bigTournamentsPage(db, cfg) {
   return layout(cfg, { title: `${h1} (Next 60 Days) | Billiard Action Time`, description: `${plural(list.length, 'bigger pool tournament')} coming up across the US: added-money events, opens, championships and tour stops, with dates, rooms and entry fees. Updated daily.`,
     path: '/big-tournaments/', body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length });
 }
+
+// "Play it near you" box for guide pages: the next few upcoming tournaments of one game, nationwide.
+export function upcomingGameHtml(db, game, n = 6) {
+  const slug = gameSlug(game), today = todayIso();
+  if (!slug) return '';
+  const end = new Date(Date.parse(today + 'T00:00:00Z') + 45 * 864e5).toISOString().slice(0, 10);
+  const pool = index(db).all.filter(t => t.date >= today && t.date <= end && gameSlug(t.game) === slug && !isThinListing(t));
+  const list = [...pool.filter(isBigEvent), ...pool.filter(t => !isBigEvent(t))].slice(0, n).sort((a, b) => a.date.localeCompare(b.date));
+  if (!list.length) return '';
+  return `<section class="sec seo-sec"><h2>Upcoming ${esc(game)} tournaments</h2><ul class="seo-list">${list.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} · ${esc(t.venue.city)}, ${esc(t.venue.state)}</span></li>`).join('')}</ul><a href="${facetPath({ game })}">All ${esc(game)} tournaments →</a> · <a href="/near">Near me →</a></section>`;
+}

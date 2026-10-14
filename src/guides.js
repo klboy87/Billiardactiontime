@@ -396,7 +396,7 @@ export function guidesIndexPage(cfg) {
     jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool Tournament Guides', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/guides/${g.slug}`, name: g.title })) }] });
 }
 
-export function guidePage(cfg, slug) {
+export function guidePage(cfg, slug, extraHtml = '') {
   const g = GUIDES.find(x => x.slug === slug);
   if (!g) return null;
   const cat = guideCat(g.slug);
@@ -409,6 +409,7 @@ export function guidePage(cfg, slug) {
   <article class="card guide"><h1>${esc(g.title)}</h1>
   <p class="guide-meta"><a class="guide-tag" href="/guides/#${cat}" style="text-decoration:none">${catName(cat)}</a><span>${readMinutes(g.body)} min read</span><span>By Billiard Action Time</span></p>
   ${tocHtml}${content}${cat === 'rules' ? '<p class="tip" style="margin-top:18px"><b>Test yourself:</b> take the 12-question <a href="/tools/pool-rules-quiz">pool rules quiz</a> and share your score with your league.</p>' : ''}</article>
+  ${extraHtml}
   <section class="sec seo-sec"><h2>Keep reading</h2><div class="guide-next">${next.map(x => `<a href="/guides/${x.slug}"><small>${catName(guideCat(x.slug))}</small><b>${esc(x.title)}</b></a>`).join('')}</div><p style="margin-top:12px"><a href="/guides/">All ${GUIDES.length} guides →</a> · <a href="/tools/">Free tools →</a></p></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, url: `${cfg.publicUrl}/guides/${g.slug}`, articleSection: catName(cat),
     publisher: { '@type': 'Organization', name: 'Billiard Action Time', logo: { '@type': 'ImageObject', url: cfg.publicUrl + '/icons/icon-512.png' } }, author: { '@type': 'Organization', name: 'Billiard Action Time' } };
