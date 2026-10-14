@@ -1,6 +1,7 @@
 // Original articles for players and tournament directors (/guides/...), plus the About and Contact pages.
 // Plain server-rendered HTML so search engines and ad reviewers read the full text.
 import { layout } from './seo.js';
+import { MORE_GUIDES } from './guides-more.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const EMAIL = 'billiardactiontime@gmail.com';
@@ -8,7 +9,7 @@ const EMAIL = 'billiardactiontime@gmail.com';
 // Which guide to suggest on a tournament page, by game.
 // (the game -> guide map lives in seo.js so seo.js does not need to import this file)
 
-export const GUIDES = [
+const BASE_GUIDES = [
   {
     slug: 'first-pool-tournament', title: 'Your First Pool Tournament: What to Expect and What to Bring',
     desc: 'Never played in a pool tournament? How sign-up works, what the bracket means, how races and handicaps work, and what to bring on the night.',
@@ -348,26 +349,71 @@ export const GUIDES = [
   }
 ];
 
+export const GUIDES = [...BASE_GUIDES, ...MORE_GUIDES];
+
+// Section each guide is filed under on /guides/ and shown as a tag on the page.
+export const GUIDE_CATS = [
+  { key: 'rules', name: 'Game rules' },
+  { key: 'players', name: 'For players' },
+  { key: 'directors', name: 'For tournament directors' }
+];
+const CAT_OF = {
+  '8-ball-rules': 'rules', '9-ball-rules': 'rules', '10-ball-rules': 'rules', 'scotch-doubles': 'rules', 'one-pocket': 'rules', 'straight-pool-rules': 'rules', 'bank-pool-rules': 'rules',
+  'first-pool-tournament': 'players', 'fargo-ratings-handicaps': 'players', 'pool-tournament-etiquette': 'players', 'pool-table-sizes': 'players', 'find-pool-tournaments-near-you': 'players',
+  'pool-terms-glossary': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
+  'how-to-run-a-pool-tournament': 'directors', 'double-elimination-brackets': 'directors', 'pool-tournament-payouts': 'directors', 'calcutta-auction-explained': 'directors', 'chip-tournaments': 'directors'
+};
+export const guideCat = slug => CAT_OF[slug] || 'players';
+const catName = key => (GUIDE_CATS.find(c => c.key === key) || GUIDE_CATS[1]).name;
+const slugify = s => String(s).toLowerCase().replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const readMinutes = html => Math.max(2, Math.round(String(html).replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length / 220));
+
+// Gives every <h2> an id, wraps tables so they scroll on phones, and builds a table of contents.
+function prepareBody(html) {
+  const toc = [], used = new Set();
+  let body = html.replace(/<h2>([\s\S]*?)<\/h2>/g, (m, inner) => {
+    let id = slugify(inner) || 'section'; while (used.has(id)) id += '-2'; used.add(id);
+    toc.push({ id, text: inner.replace(/<[^>]+>/g, '') });
+    return `<h2 id="${id}">${inner}</h2>`;
+  });
+  body = body.replace(/<table class="t">[\s\S]*?<\/table>/g, t => `<div class="t-wrap">${t}</div>`);
+  return { body, toc };
+}
+
 const guideCard = g => `<li><a href="/guides/${g.slug}"><b>${esc(g.title)}</b></a><br><span class="muted">${esc(g.desc)}</span></li>`;
 
 export function guidesIndexPage(cfg) {
+  const sections = GUIDE_CATS.map(c => {
+    const list = GUIDES.filter(g => guideCat(g.slug) === c.key);
+    return list.length ? `<section><h2 id="${c.key}">${c.name}</h2><ul class="seo-list" style="list-style:none;padding:0;display:grid;gap:14px">${list.map(guideCard).join('')}</ul></section>` : '';
+  }).join('');
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Guides</span></nav>
-  <div class="pagehead"><h1>Pool Tournament Guides</h1><p>Plain-English guides for players and tournament directors: game rules, brackets, payouts, handicaps and Calcutta auctions.</p></div>
-  <ul class="seo-list" style="list-style:none;padding:0;display:grid;gap:14px">${GUIDES.map(guideCard).join('')}</ul>`;
-  return layout(cfg, { title: 'Pool Tournament Guides: Rules, Brackets, Payouts & More | Billiard Action Time', description: 'Free guides for pool players and tournament directors: 8-Ball, 9-Ball and 10-Ball rules, double-elimination brackets, payout charts, Fargo handicaps and Calcutta auctions.', path: '/guides/', body,
+  <div class="pagehead"><h1>Pool Tournament Guides</h1><p>Plain-English guides for players and tournament directors: game rules, brackets, payouts, handicaps, practice and more. ${GUIDES.length} guides, all free.</p></div>
+  <p class="glossary-az">${GUIDE_CATS.map(c => `<a href="#${c.key}" style="min-width:auto;padding:4px 12px">${c.name}</a>`).join('')}<a href="/tools/" style="min-width:auto;padding:4px 12px">Free tools</a></p>
+  <div class="guide-cats">${sections}</div>`;
+  return layout(cfg, { title: 'Pool Tournament Guides: Rules, Brackets, Payouts & More | Billiard Action Time', description: 'Free guides for pool players and tournament directors: 8-Ball, 9-Ball and 10-Ball rules, double-elimination brackets, payout charts, Fargo handicaps, practice drills and a pool glossary.', path: '/guides/', body,
     jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool Tournament Guides', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/guides/${g.slug}`, name: g.title })) }] });
 }
 
 export function guidePage(cfg, slug) {
   const g = GUIDES.find(x => x.slug === slug);
   if (!g) return null;
-  const more = GUIDES.filter(x => x.slug !== slug).slice(0, 5);
+  const cat = guideCat(g.slug);
+  const { body: content, toc } = prepareBody(g.body);
+  const same = GUIDES.filter(x => x.slug !== slug && guideCat(x.slug) === cat);
+  const other = GUIDES.filter(x => x.slug !== slug && guideCat(x.slug) !== cat);
+  const next = [...same.slice(0, 3), ...other.slice(0, Math.max(1, 4 - same.slice(0, 3).length))].slice(0, 4);
+  const tocHtml = toc.length >= 3 ? `<nav class="guide-toc" aria-label="On this page"><b>On this page</b><ol>${toc.map(t => `<li><a href="#${t.id}">${esc(t.text)}</a></li>`).join('')}</ol></nav>` : '';
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/guides/">Guides</a> <span>/</span> <span>${esc(g.title)}</span></nav>
-  <article class="card guide" style="padding:20px 22px;line-height:1.65"><h1>${esc(g.title)}</h1>${g.body}</article>
-  <section class="sec seo-sec"><h2>More guides</h2><ul class="seo-list">${more.map(x => `<li><a href="/guides/${x.slug}">${esc(x.title)}</a></li>`).join('')}</ul><a href="/guides/">All guides →</a></section>`;
-  const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, url: `${cfg.publicUrl}/guides/${g.slug}`,
+  <article class="card guide"><h1>${esc(g.title)}</h1>
+  <p class="guide-meta"><a class="guide-tag" href="/guides/#${cat}" style="text-decoration:none">${catName(cat)}</a><span>${readMinutes(g.body)} min read</span><span>By Billiard Action Time</span></p>
+  ${tocHtml}${content}</article>
+  <section class="sec seo-sec"><h2>Keep reading</h2><div class="guide-next">${next.map(x => `<a href="/guides/${x.slug}"><small>${catName(guideCat(x.slug))}</small><b>${esc(x.title)}</b></a>`).join('')}</div><p style="margin-top:12px"><a href="/guides/">All ${GUIDES.length} guides →</a> · <a href="/tools/">Free tools →</a></p></section>`;
+  const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, url: `${cfg.publicUrl}/guides/${g.slug}`, articleSection: catName(cat),
     publisher: { '@type': 'Organization', name: 'Billiard Action Time', logo: { '@type': 'ImageObject', url: cfg.publicUrl + '/icons/icon-512.png' } }, author: { '@type': 'Organization', name: 'Billiard Action Time' } };
-  return layout(cfg, { title: `${g.title} | Billiard Action Time`, description: g.desc, path: `/guides/${g.slug}`, body, jsonld: [ld] });
+  const bc = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: cfg.publicUrl + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: cfg.publicUrl + '/guides/' }, { '@type': 'ListItem', position: 3, name: g.title, item: `${cfg.publicUrl}/guides/${g.slug}` }] };
+  return layout(cfg, { title: `${g.title} | Billiard Action Time`, description: g.desc, path: `/guides/${g.slug}`, body, jsonld: [ld, bc] });
 }
 
 export function aboutPage(cfg) {
