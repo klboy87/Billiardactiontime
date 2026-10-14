@@ -190,9 +190,10 @@ export const SHOTS = [
 const crumbs = (last) => `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> ${last ? `<a href="/trick-shots/">Trick shots</a> <span>/</span> <span>${esc(last)}</span>` : '<span>Trick shots</span>'}</nav>`;
 
 export function trickShotsIndexPage(cfg) {
-  const card = (s, i) => `<a class="ts-card" href="/trick-shots/${s.slug}">${s.diagram.replace(/<figcaption>[\s\S]*?<\/figcaption>/, '')}<span class="ts-meta">#${i + 1} · <span class="ts-stars" title="Difficulty">${STARS(s.level)}</span></span><b>${esc(s.title)}</b><span class="muted">${esc(s.desc)}</span></a>`;
+  const card = (s, i) => `<a class="ts-card" data-shot="${s.slug}" href="/trick-shots/${s.slug}">${s.diagram.replace(/<figcaption>[\s\S]*?<\/figcaption>/, '')}<span class="ts-meta">#${i + 1} · <span class="ts-stars" title="Difficulty">${STARS(s.level)}</span></span><b>${esc(s.title)}</b><span class="muted">${esc(s.desc)}</span></a>`;
   const body = `${crumbs('')}
   <div class="pagehead"><h1>Pool Trick Shots You Can Learn</h1><p>${SHOTS.length} trick shots and skill shots with diagrams and step-by-step setup, from easy table tricks to the jump and the massé. Every one teaches something you can use in a real game.</p></div>
+  <p data-learn-total="${SHOTS.length}" class="muted" hidden></p>
   <p class="glossary-az"><a href="#easy" style="min-width:auto;padding:4px 12px">★ Easy</a><a href="#medium" style="min-width:auto;padding:4px 12px">★★ Medium</a><a href="#hard" style="min-width:auto;padding:4px 12px">★★★ Hard</a><a href="/play/aim-trainer" style="min-width:auto;padding:4px 12px">🎯 Aim trainer game</a></p>
   ${[[1, 'easy', 'Easy'], [2, 'medium', 'Medium'], [3, 'hard', 'Hard']].map(([lv, id, name]) => `<h2 id="${id}" style="margin:22px 0 10px">${STARS(lv)} ${name}</h2><div class="ts-grid">${SHOTS.map((s, i) => [s, i]).filter(([s]) => s.level === lv).map(([s, i]) => card(s, i)).join('')}</div>`).join('')}
   <article class="card guide" style="margin-top:22px"><h2 style="margin-top:0">Before you try them</h2>
@@ -201,7 +202,7 @@ export function trickShotsIndexPage(cfg) {
   <li><b>Learn the "why."</b> Each page explains the physics, so the skill carries over to real games.</li></ul>
   <p>Want to build the basics first? Try the <a href="/guides/pool-practice-drills">7 practice drills</a>, test your eye with the <a href="/play/aim-trainer">aim trainer</a>, or see how well you know the rules with the <a href="/tools/pool-rules-quiz">rules quiz</a>.</p></article>`;
   return layout(cfg, { title: `Pool Trick Shots: ${SHOTS.length} Shots You Can Learn (With Diagrams) | Billiard Action Time`, description: `${SHOTS.length} pool trick shots and skill shots with table diagrams and step-by-step setup: dead combinations, throw shots, the 90-degree carom, power draw, jump and massé shots.`,
-    path: '/trick-shots/', body, jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool trick shots', itemListElement: SHOTS.map((s, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/trick-shots/${s.slug}`, name: s.title })) }] });
+    path: '/trick-shots/', body, scripts: ['/play.js'], jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool trick shots', itemListElement: SHOTS.map((s, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/trick-shots/${s.slug}`, name: s.title })) }] });
 }
 
 export function trickShotPage(cfg, slug) {
@@ -220,6 +221,7 @@ export function trickShotPage(cfg, slug) {
   <h2>Why it works</h2><p>${s.why}</p>
   <h2>Common mistakes</h2><ul>${s.mistakes.map(x => `<li>${x}</li>`).join('')}</ul>
   <h2>In a real game</h2><p>${s.game}</p>
+  <p style="margin-top:18px"><button type="button" data-learn="${s.slug}" hidden style="padding:10px 16px;font-size:16px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--text);cursor:pointer">✓ I learned this shot</button> <span data-learn-count class="muted"></span></p>
   </article>
   <section class="sec seo-sec"><h2>Next shot</h2><div class="guide-next">
     <a href="/trick-shots/${prev.slug}"><small>← Previous · ${STARS(prev.level)}</small><b>${esc(prev.title)}</b></a>
@@ -229,5 +231,5 @@ export function trickShotPage(cfg, slug) {
   </div><p style="margin-top:12px"><a href="/trick-shots/">All ${SHOTS.length} trick shots →</a> · <a href="/this-weekend/">Find a tournament this weekend →</a></p></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'HowTo', name: s.title, description: s.desc, url: `${cfg.publicUrl}/trick-shots/${s.slug}`,
     step: [...s.setup, ...s.how].map((t, k) => ({ '@type': 'HowToStep', position: k + 1, text: t.replace(/<[^>]+>/g, '') })) };
-  return layout(cfg, { title: `${s.title} | Pool Trick Shots | Billiard Action Time`, description: s.desc, path: `/trick-shots/${s.slug}`, body, jsonld: [ld] });
+  return layout(cfg, { title: `${s.title} | Pool Trick Shots | Billiard Action Time`, description: s.desc, path: `/trick-shots/${s.slug}`, body, jsonld: [ld], scripts: ['/play.js'] });
 }

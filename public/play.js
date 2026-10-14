@@ -365,3 +365,29 @@
     });
   });
 })();
+
+/* Trick shot progress: "I learned this shot" on each shot page, check marks and a count on the index. */
+(function () {
+  var KEY = 'bat-learned-shots', TOTAL = 14;
+  var load = function () { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } };
+  var save = function (a) { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) { } };
+  var btn = document.querySelector('[data-learn]'), total = document.querySelector('[data-learn-total]');
+  if (total) TOTAL = Number(total.getAttribute('data-learn-total')) || TOTAL;
+  if (btn) {
+    var slug = btn.getAttribute('data-learn'), count = document.querySelector('[data-learn-count]');
+    var paint = function () {
+      var list = load(), on = list.indexOf(slug) >= 0;
+      btn.textContent = on ? '✅ Learned! (tap to undo)' : '✓ I learned this shot';
+      btn.style.background = on ? '#d8f3e0' : ''; btn.style.color = on ? '#0f1b2d' : ''; btn.style.borderColor = on ? '#148a38' : '';
+      count.textContent = list.length ? 'You’ve learned ' + list.length + ' trick shot' + (list.length > 1 ? 's' : '') + '.' : '';
+    };
+    btn.hidden = false; paint();
+    btn.addEventListener('click', function () { var list = load(), i = list.indexOf(slug); if (i >= 0) list.splice(i, 1); else list.push(slug); save(list); paint(); });
+  }
+  var cards = document.querySelectorAll('[data-shot]');
+  if (cards.length) {
+    var list = load();
+    cards.forEach(function (c) { if (list.indexOf(c.getAttribute('data-shot')) >= 0) { var b = c.querySelector('b'); if (b) b.textContent = '✅ ' + b.textContent; } });
+    if (total && list.length) { total.hidden = false; total.innerHTML = '<b>You’ve learned ' + list.length + ' of ' + TOTAL + ' trick shots.</b> ' + (list.length >= TOTAL ? 'All of them. Trick shot master! 🏆' : 'Keep going!'); }
+  }
+})();
