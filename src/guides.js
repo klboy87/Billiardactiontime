@@ -70,6 +70,7 @@ export const GUIDES = [
 <p>Most pool tournaments use a double-elimination bracket: you are out only after your second loss. It is the fairest common format for a one-day event, because one bad roll does not send anyone home.</p>
 <h2>The two sides</h2>
 <p>Everyone starts on the <b>winners side</b>. Lose a match and you drop to the <b>losers side</b> (also called the "one-loss side"). Lose again on the losers side and you are out. The last player on each side meets in the final.</p>
+<p>Need one to print? Grab a free <a href="/tools/brackets/">printable double-elimination bracket</a> for 8, 16, 32 or 64 players.</p>
 <h2>Byes</h2>
 <p>Brackets work in powers of two: 8, 16, 32, 64, 128. If 21 players sign up, the director uses a 32-player bracket and gives 11 first-round "byes" — those players advance without playing. Byes should be spread through the bracket, not bunched at the top.</p>
 <h2>How many matches?</h2>

@@ -18,9 +18,10 @@ export function toolsIndexPage(cfg) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Tools</span></nav>
   <div class="pagehead"><h1>Free Pool Tournament Tools</h1><p>Calculators for tournament directors and players. Free, no sign-up, and they work on your phone at the table.</p></div>
   <ul style="list-style:none;padding:0;display:grid;gap:14px">${TOOLS.map(t => `<li class="card" style="padding:14px 18px"><a href="/tools/${t.slug}"><b>${t.title}</b></a><br><span class="muted">${t.desc}</span></li>`).join('')}
+  <li class="card" style="padding:14px 18px"><a href="/tools/brackets/"><b>Printable Double Elimination Brackets</b></a><br><span class="muted">Blank 8, 16, 32 and 64-player brackets with numbered matches and losers-side drop spots. Print or save as PDF.</span></li>
   <li class="card" style="padding:14px 18px"><a href="/auctions"><b>Online Calcutta Auction</b></a><br><span class="muted">Run a Calcutta from everyone's phones: live bidding, buy-backs and automatic payouts.</span></li></ul>
   <p>Looking for how-tos? See our <a href="/guides/">guides</a> on brackets, payouts, handicaps and game rules.</p>`;
-  return layout(cfg, { title: 'Free Pool Tournament Tools: Payout & Fargo Race Calculators | Billiard Action Time', description: 'Free calculators for pool tournament directors and players: payout calculator, Fargo handicap race calculator and an online Calcutta auction.', path: '/tools/', body });
+  return layout(cfg, { title: 'Free Pool Tournament Tools: Brackets, Payout & Fargo Race Calculators | Billiard Action Time', description: 'Free tools for pool tournament directors and players: printable double elimination brackets, payout calculator, Fargo handicap race calculator and an online Calcutta auction.', path: '/tools/', body });
 }
 
 export function toolPage(cfg, slug) {

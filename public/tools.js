@@ -1,5 +1,6 @@
 /* Calculators on /tools/ pages. Kept in its own file because the site's security policy blocks inline scripts. */
 (function () {
+  document.querySelectorAll('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
   var money = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
   var num = function (form, name) { var v = parseFloat(form.elements[name].value); return isFinite(v) && v > 0 ? v : 0; };
 
