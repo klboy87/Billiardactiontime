@@ -156,7 +156,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
 <link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${adsHead(cfg)}</head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
-<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
+<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/guides/">Guides</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
 <main class="wrap page seo">${body}${ALERT_CTA}</main>
 ${footer(cfg)}</body></html>`;
@@ -176,7 +176,7 @@ function buildFooter(db) {
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
-  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/privacy">Privacy Policy</a> · Contact: <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.
@@ -223,6 +223,16 @@ function eventRows(db, list, { showCity = true } = {}) {
   return html + (month ? '</tbody></table></div>' : '');
 }
 
+// Guides that match a tournament's game (articles live in guides.js).
+const GUIDE_FOR_GAME = { '8-Ball': ['8-ball-rules', '8-Ball rules'], '9-Ball': ['9-ball-rules', '9-Ball rules'], '10-Ball': ['10-ball-rules', '10-Ball rules'],
+  'Scotch Doubles': ['scotch-doubles', 'how Scotch Doubles works'], 'One Pocket': ['one-pocket', 'One Pocket basics'] };
+// A listing with nothing but a name, room and date: kept on the site and in every list, but left out of
+// search results so the index is made of pages with real detail.
+export function isThinListing(t) {
+  const notes = String(t.notes || '').replace(/source:\s*[\w.-]+/gi, '').replace(/recurring[^.]*/gi, '').replace(/[\s.]+/g, ' ').trim();
+  return t.entry == null && !t.added && !t.time && !t.race && !t.format && !t.registrationUrl && !t.hasFlyer && !notes && !t.venue?.address;
+}
+
 // ---- tournament page ----
 export function tournamentPage(db, cfg, t) {
   const v = t.venue, today = todayIso(), ix = index(db);
@@ -259,6 +269,8 @@ export function tournamentPage(db, cfg, t) {
     ${t.notes && !/^source:/i.test(t.notes) ? `<p style="margin-top:12px">${esc(t.notes.replace(/\s*Source:.*$/i, ''))}</p>` : ''}
     <p class="muted" style="font-size:13px;margin-top:14px">Details can change. Confirm with the room before you go. Run this event? <a href="/#/claim/${t.id}">Claim it</a> · <a href="/#/report/${t.id}">Report a problem</a></p>
   </article>
+  <section class="card" style="margin-top:16px;padding:14px 18px"><h2 class="seo-h2" style="margin-top:0">New to tournaments?</h2>
+    <p class="muted" style="margin:6px 0">${GUIDE_FOR_GAME[t.game] ? `Brush up on <a href="/guides/${GUIDE_FOR_GAME[t.game][0]}">${GUIDE_FOR_GAME[t.game][1]}</a>, then read ` : 'Read '}<a href="/guides/first-pool-tournament">what to expect at your first tournament</a> and <a href="/guides/double-elimination-brackets">how double-elimination brackets work</a>.</p></section>
   ${shareBox(cfg, db, t, g)}
   ${sameVenue.length ? `<section class="sec seo-sec"><h2>More at ${esc(v.name)}</h2><ul class="seo-list">${mini(sameVenue)}</ul><a href="${venuePath(db, v)}">All tournaments at ${esc(v.name)} →</a></section>` : ''}
   ${sameCity.length ? `<section class="sec seo-sec"><h2>More pool tournaments in ${esc(v.city)}</h2><ul class="seo-list">${mini(sameCity)}</ul><a href="${facetPath({ state: v.state, city: v.city })}">All ${esc(v.city)} tournaments →</a></section>` : ''}
@@ -268,7 +280,7 @@ export function tournamentPage(db, cfg, t) {
     <a class="chip" href="${facetPath({ state: v.state, city: v.city })}">${esc(v.city)} tournaments</a>
     ${g && gameSlug(t.game) ? `<a class="chip" href="${facetPath({ state: v.state, city: v.city, game: t.game })}">${esc(g)} in ${esc(v.city)}</a><a class="chip" href="${facetPath({ game: t.game })}">${esc(g)} tournaments nationwide</a>` : ''}
   </div></section>`;
-  return layout(cfg, { title, description, path, body, jsonld: [eventLd(cfg, db, t), bc.ld], ogImage: `${cfg.publicUrl}/t/${t.id}/og.png` });
+  return layout(cfg, { title, description, path, body, jsonld: [eventLd(cfg, db, t), bc.ld], ogImage: `${cfg.publicUrl}/t/${t.id}/og.png`, noindex: isThinListing(t) });
 }
 
 function shareBox(cfg, db, t, g) {
@@ -412,7 +424,7 @@ export function sitemapXml(db, cfg, extra = []) {
     if (g) { facets.add(JSON.stringify({ game: g })); facets.add(JSON.stringify({ state: s, game: g })); if (c) facets.add(JSON.stringify({ state: s, city: c, game: g })); }
   }
   for (const f of facets) { const o = JSON.parse(f); add(facetPath(o), today, o.city ? '0.6' : o.state ? '0.8' : '0.8'); }
-  for (const t of ix.all) if (t.date >= cutoff) add(tournamentPath(db, t), (t.updatedAt || today).slice(0, 10), t.date >= today ? '0.7' : '0.3');
+  for (const t of ix.all) if (t.date >= cutoff && !isThinListing(t)) add(tournamentPath(db, t), (t.updatedAt || today).slice(0, 10), t.date >= today ? '0.7' : '0.3');
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
   const wk = weekendRange(today);
   add('/this-weekend/', today, '0.9');
@@ -538,6 +550,6 @@ export function homeIntroHtml(db) {
   const f = buildFooter(db).links;
   return `<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
   <p>Billiard Action Time lists <b>${plural(up.length, 'upcoming pool tournament')}</b> in ${plural(states, 'state')}: weekly 8-Ball and 9-Ball nights, added-money opens, One Pocket and Scotch Doubles events, with dates, pool halls and entry fees. Listings update every day.</p>
-  <div class="actbar"><a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a></div>
+  <div class="actbar"><a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/guides/">Guides</a></div>
   <p class="muted" style="margin-top:12px">Popular: ${f.states.slice(0, 8).map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join(' · ')}</p></section>`;
 }

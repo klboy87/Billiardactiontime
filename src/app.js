@@ -32,6 +32,7 @@ import * as MP from './moneypages.js';
 import { sponsorBannerHtml } from './sponsor.js';
 import { appPageFor, fillShell } from './apppages.js';
 import { buildNewsletter } from './newsletter.js';
+import * as GU from './guides.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -659,13 +660,24 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
+      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
+        { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
     if (m === 'GET' && p === '/ads.txt' && !fs.existsSync(path.join(PUBLIC_DIR, 'ads.txt'))) {  // public/ads.txt wins when present
       const txt = SEO.adsTxt(cfg);
       return txt ? send(req, res, 200, txt, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' }) : json(req, res, 404, { error: 'Not found' });
     }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/guides' || p === '/guides/')) { if (p === '/guides') return moved('/guides/'); SEO.ensureFooter(db); trackVisit(req, 'guides'); return html(200, GU.guidesIndexPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/guides\/([a-z0-9-]{2,80})\/?$/))) {
+      SEO.ensureFooter(db);
+      const out = GU.guidePage(cfg, x[1]);
+      if (!out) return notFoundPage();
+      trackVisit(req, 'guide');
+      return html(200, out);
+    }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/about' || p === '/about/')) { SEO.ensureFooter(db); trackVisit(req, 'about'); return html(200, GU.aboutPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/contact' || p === '/contact/')) { SEO.ensureFooter(db); trackVisit(req, 'contact'); return html(200, GU.contactPage(cfg)); }
     if (m === 'GET' && (p === '/privacy' || p === '/privacy/')) { SEO.ensureFooter(db); return send(req, res, 200, SEO.privacyPage(cfg), { 'Content-Type': 'text/html; charset=utf-8' }); }
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
