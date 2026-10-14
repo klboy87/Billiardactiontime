@@ -138,6 +138,66 @@ ${groups}
 
 export const MORE_GUIDES = [
   {
+    slug: 'pool-tips', title: '15 Pool Tips That Improve Your Game Fast',
+    desc: 'Fifteen practical pool tips for beginners and league players: stroke, aim, speed, position, safeties, the mental game and how to practice.',
+    body: `
+<p>You don't need to change everything to play better. These fifteen tips fix the most common problems we see at weekly tournaments. Pick two or three and work on them this week.</p>
+<h2>Stroke</h2>
+<ol>
+<li><b>Stay down.</b> Keep your head still until the object ball is on its way. Jumping up is the number one reason for missed easy shots.</li>
+<li><b>Loosen your grip.</b> A tight grip steers the cue. Hold it like a bird: firm enough not to let go, loose enough not to hurt it.</li>
+<li><b>Follow through.</b> Let the cue travel a few inches past where the cue ball was. A short, jabbing stroke is hard to repeat.</li>
+<li><b>Pause at the back.</b> A short pause before the final stroke stops you from rushing. See <a href="/guides/pool-basics-for-beginners">pool basics</a>.</li>
+</ol>
+<h2>Aim and speed</h2>
+<ol start="5">
+<li><b>Aim at the ghost ball, not the object ball.</b> Find where the cue ball has to be at contact. Train it with the <a href="/play/aim-trainer">aim trainer</a> and read <a href="/guides/how-to-aim-in-pool">how to aim</a>.</li>
+<li><b>Use the least spin you can.</b> Center ball and the right speed get you most places. Spin adds errors. See <a href="/guides/english-in-pool">English explained</a>.</li>
+<li><b>Most misses are speed misses.</b> Hitting too hard makes balls rattle and sends the cue ball far from where you want it. Practice your lag with the <a href="/play/lag-challenge">lag challenge</a>.</li>
+</ol>
+<h2>Thinking</h2>
+<ol start="8">
+<li><b>Plan before you shoot.</b> Look at the next two balls, not just the one in front of you. In 8-Ball, read the whole table first. See <a href="/guides/8-ball-patterns">8-Ball strategy</a>.</li>
+<li><b>Stay on the right side of the ball.</b> Leave yourself a small angle on the next shot, not a straight-in; angles let you move the cue ball.</li>
+<li><b>Break up clusters early</b>, while you still have other balls to shoot.</li>
+<li><b>Play safe when the shot is bad.</b> A good safety beats a hopeful miss. Learn three easy ones in <a href="/guides/safety-play-in-pool">safety play</a>.</li>
+<li><b>Know the rules.</b> Fouls you don't know about cost games. Take the <a href="/tools/pool-rules-quiz">rules quiz</a>.</li>
+</ol>
+<h2>Practice and the mental game</h2>
+<ol start="13">
+<li><b>Practice with a purpose.</b> Twenty minutes of a drill with a score beats an hour of hitting balls. Try the <a href="/guides/pool-practice-drills">7 drills</a> and track them in the <a href="/play/practice-log">practice log</a>.</li>
+<li><b>Use the same pre-shot routine every time</b>, so it holds up under pressure. See <a href="/guides/pool-tournament-nerves">beating tournament nerves</a>.</li>
+<li><b>Play better players, and play tournaments.</b> You learn more losing to someone better than beating someone worse. <a href="/this-weekend/">Find a tournament this weekend</a>.</li>
+</ol>`
+  },
+  {
+    slug: 'bar-pool-etiquette', title: 'Playing Pool at a Bar: Quarters, the Chalkboard and Winner Stays',
+    desc: 'How to get a game on a bar pool table: putting quarters up, writing your name on the board, winner stays, and the unwritten rules regulars expect.',
+    body: `
+<p>Walk into a bar with one pool table on a busy night and you'll find a whole system for who plays next. It's simple once you know it, and following it is the quickest way to make friends at the table.</p>
+<h2>How to get next game</h2>
+<ul>
+<li><b>Quarters on the rail:</b> in many bars you line up your quarters (or the coins the table takes) on the rail. The order of the coins is the order of play.</li>
+<li><b>The chalkboard:</b> other bars use a board on the wall. Write your name under the last one.</li>
+<li>If you're not sure, ask the people playing: "Who's got next?" They'll tell you how it works here.</li>
+</ul>
+<h2>Winner stays</h2>
+<p>Most bar tables play <b>winner stays</b>: the winner keeps the table and plays the next person in line, who usually pays for the game. Some bars cap it (for example, three wins in a row and you have to step off) so everyone gets to play.</p>
+<h2>House rules</h2>
+<p>Bar 8-Ball rules vary from place to place: what happens after a scratch, whether you call every shot, whether slop counts, and what happens if the 8 goes in on the break. <b>Agree before the break.</b> Saying "what are we playing?" is normal and nobody minds. See <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs. tournament rules</a>.</p>
+<h2>The unwritten rules</h2>
+<ul>
+<li>Don't put drinks on the rail or the table. Ever.</li>
+<li>Keep an eye on the cue rack: put house cues back where you got them, and don't take someone's personal cue.</li>
+<li>Stay out of the shooter's way and line of sight.</li>
+<li>Don't coach strangers unless they ask.</li>
+<li>If you're playing for something (a drink, a few dollars), settle it up right away. See <a href="/guides/money-game-spots">money game etiquette</a>.</li>
+<li>When you're done, give the table up. A bar table is shared.</li>
+</ul>
+<h2>From bar table to tournament</h2>
+<p>If you're winning at the bar, you're ready for the bar's weekly tournament. Most bars with a table run one, and they are a great way to play more and meet the local players. <a href="/tournaments/">Find pool tournaments near you</a> and read <a href="/guides/first-pool-tournament">what to expect at your first tournament</a>.</p>`
+  },
+  {
     slug: 'tournament-formats', title: 'Pool Tournament Formats Explained: Double Elimination, Round Robin, Chip and More',
     desc: 'Compare pool tournament formats: single and double elimination, modified single, round robin, chip tournaments and Swiss, with how long each takes and when to use it.',
     body: `
