@@ -36,13 +36,20 @@
   // ---- game state ----
   var ui = { status: root.querySelector('[data-status]'), msg: root.querySelector('[data-msg]'), shoot: root.querySelector('[data-shoot]'), next: root.querySelector('[data-next]'), level: root.querySelector('[data-level]') };
   var level = ui.level.value || 'normal', S = null, shot = null, aim = null, busy = false;
+  // Daily challenge: the same 5 shots for everyone on a given (local) date, from a seeded random generator.
+  var today = (function () { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); })();
+  var dayNo = Math.floor((Date.parse(today + 'T00:00:00Z') - Date.parse('2026-10-14T00:00:00Z')) / 864e5) + 1;
+  var seeded = function (str) { var h = 1779033703 ^ str.length; for (var i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+    return function () { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; };
+  var rnd = Math.random, daily = function () { return level === 'daily'; }, roundLen = function () { return daily() ? 5 : 10; };
+  var rules = function () { return LEVELS[daily() ? 'normal' : level]; };
   var bestKey = function () { return 'bat-aim-best-' + level; };
-  var newRound = function () { S = { n: 0, score: 0, streak: 0, made: 0 }; newShot(); };
-  var rand = function (a, b) { return a + Math.random() * (b - a); };
+  var newRound = function () { S = { n: 0, score: 0, streak: 0, made: 0, marks: '' }; rnd = daily() ? seeded('bat-daily-' + today) : Math.random; newShot(); };
+  var rand = function (a, b) { return a + rnd() * (b - a); };
   function newShot() {
-    var L = LEVELS[level];
+    var L = rules();
     for (var tries = 0; tries < 500; tries++) {
-      var o = [rand(0.9, 7.1), rand(0.7, 3.3)], k = Math.floor(Math.random() * 6), pk = POCKETS[k];
+      var o = [rand(0.9, 7.1), rand(0.7, 3.3)], k = Math.floor(rnd() * 6), pk = POCKETS[k];
       var u = norm(sub([pk[0], pk[1]], o)), g = sub(o, mul(u, BALL));
       if (pk[2] === 's' && Math.abs(u[1]) < 0.55) continue;           // side pockets need a steep angle in
       var c = [rand(0.4, 7.6), rand(0.4, 3.6)];
@@ -52,7 +59,7 @@
       shot = { o: o, c: c, k: k, u: u, g: g, cut: cut }; break;
     }
     aim = norm(sub(shot.g, shot.c));
-    aim = rot(aim, (Math.random() < 0.5 ? -1 : 1) * rand(6, 14) * Math.PI / 180);   // start off the right line
+    aim = rot(aim, (rnd() < 0.5 ? -1 : 1) * rand(6, 14) * Math.PI / 180);   // start off the right line
     place(objEl, shot.o); place(cueEl, shot.c); objEl.setAttribute('opacity', 1); objHalo.setAttribute('opacity', 0.22); objEl.setAttribute('r', BALL / 2 * U);
     pocketEls.forEach(function (p, idx) { p.setAttribute('stroke', idx === shot.k ? '#ffd54a' : 'none'); });
     answerEl.setAttribute('opacity', 0); trailEl.setAttribute('opacity', 0);
@@ -75,11 +82,12 @@
   function drawAim() {
     var hit = contact(shot.c, aim, shot.o), end = hit || add(shot.c, mul(aim, railHit(shot.c, aim)));
     aimLine.setAttribute('x1', px(shot.c[0])); aimLine.setAttribute('y1', px(shot.c[1])); aimLine.setAttribute('x2', px(end[0])); aimLine.setAttribute('y2', px(end[1]));
-    if (LEVELS[level].ghost && hit) { place(ghostEl, hit); ghostEl.setAttribute('opacity', 0.9); } else ghostEl.setAttribute('opacity', 0);
+    if (rules().ghost && hit) { place(ghostEl, hit); ghostEl.setAttribute('opacity', 0.9); } else ghostEl.setAttribute('opacity', 0);
   }
   function status() {
     var best = Number(store.get(bestKey()) || 0);
-    ui.status.textContent = 'Shot ' + Math.min(S.n + 1, 10) + ' of 10 · Score ' + S.score + ' · Streak ' + S.streak + ' · Best ' + best;
+    var dl = daily() ? store.get('bat-daily-' + today) : null;
+    ui.status.textContent = (daily() ? 'Daily #' + dayNo + ' · ' : '') + 'Shot ' + Math.min(S.n + 1, roundLen()) + ' of ' + roundLen() + ' · Score ' + S.score + ' · Streak ' + S.streak + (daily() ? (dl ? ' · Today: ' + dl.split('|')[0] + '/5' : '') : ' · Best ' + best);
   }
   function animate(from, to, e, ms, done) {
     var t0 = null;
@@ -88,7 +96,7 @@
   }
   function shoot() {
     if (busy) return; busy = true; ui.shoot.hidden = true; aimLine.setAttribute('opacity', 0); ghostEl.setAttribute('opacity', 0);
-    var hit = contact(shot.c, aim, shot.o), L = LEVELS[level], pk = POCKETS[shot.k];
+    var hit = contact(shot.c, aim, shot.o), L = rules(), pk = POCKETS[shot.k];
     var need = norm(sub(shot.g, shot.c)), errDeg = deg(Math.atan2(aim[0] * need[1] - aim[1] * need[0], dot(aim, need)));
     if (!hit) {
       var stop = add(shot.c, mul(aim, railHit(shot.c, aim)));
@@ -112,10 +120,21 @@
   function finish(made, text) {
     S.n++;
     if (made) { S.streak++; S.made++; S.score += 10 + (S.streak - 1) * 2; } else S.streak = 0;
+    S.marks += made ? '✅' : '❌';
     place(answerEl, shot.g); answerEl.setAttribute('opacity', made ? 0 : 1);
     if (!made) { trailEl.setAttribute('x1', px(shot.c[0])); trailEl.setAttribute('y1', px(shot.c[1])); trailEl.setAttribute('x2', px(shot.g[0])); trailEl.setAttribute('y2', px(shot.g[1])); trailEl.setAttribute('opacity', 0.9); }
     ui.msg.innerHTML = (made ? '✅ ' : '❌ ') + text + ' <span class="muted">(Cut angle on this shot: ' + Math.round(shot.cut) + '°.)</span>';
-    if (S.n >= 10) {
+    if (daily() && S.n >= roundLen()) {
+      var prior = store.get('bat-daily-' + today), first = !prior;
+      if (first) store.set('bat-daily-' + today, S.made + '|' + S.marks);
+      var shown = first ? S.made + '|' + S.marks : prior;
+      var share = 'Billiard Action Time Daily Aim #' + dayNo + ' 🎯 ' + shown.split('|')[0] + '/5\n' + shown.split('|')[1] + '\n' + location.origin + '/play/aim-trainer';
+      ui.msg.innerHTML += '<div class="aim-final"><b>Daily challenge #' + dayNo + ': ' + S.made + ' of 5.</b> ' + S.marks + (first ? '' : ' <span class="muted">(Your first try today counts: ' + prior.split('|')[0] + '/5.)</span>') +
+        '<p style="margin:8px 0 0">New shots tomorrow. <button type="button" data-share-daily style="padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:15px">Copy result to share</button> <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.origin + '/play/aim-trainer') + '">Share on Facebook</a></p></div>';
+      var sb = ui.msg.querySelector('[data-share-daily]');
+      sb.addEventListener('click', function () { if (navigator.clipboard) navigator.clipboard.writeText(share).then(function () { sb.textContent = 'Copied!'; }, function () { sb.textContent = 'Copy failed'; }); });
+      ui.next.textContent = 'Play a regular round'; ui.next.onclick = function () { ui.level.value = 'normal'; level = 'normal'; newRound(); };
+    } else if (S.n >= 10) {
       var best = Number(store.get(bestKey()) || 0), isBest = S.score > best;
       if (isBest) store.set(bestKey(), String(S.score));
       ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 made, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') +
@@ -139,6 +158,7 @@
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { if (busy) return; e.preventDefault(); aim = rot(aim, (e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 1 : 0.2) * Math.PI / 180); drawAim(); }
     else if (e.key === ' ' || e.key === 'Enter') { if (e.target.tagName === 'SELECT' || e.target.tagName === 'BUTTON') return; e.preventDefault(); if (!ui.next.hidden) ui.next.click(); else shoot(); }
   });
+  if (!store.get('bat-daily-' + today)) { ui.level.value = 'daily'; level = 'daily'; }   // open on today's challenge until it's played
   root.querySelector('[data-loading]').remove();
   newRound();
 })();

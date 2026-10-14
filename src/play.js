@@ -20,11 +20,11 @@ export function playIndexPage(cfg) {
 
 export function aimTrainerPage(cfg) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/play/">Play</a> <span>/</span> <span>Aim Trainer</span></nav>
-  <div class="pagehead"><h1>Pool Aim Trainer</h1><p>Can you cut it in? Tap the table to aim the cue ball, fine-tune, and shoot. Ten shots a round. It tells you exactly how thick or thin you were.</p></div>
+  <div class="pagehead"><h1>Pool Aim Trainer</h1><p>Can you cut it in? Tap the table to aim the cue ball, fine-tune, and shoot. Ten shots a round, or try the <b>daily challenge</b>: the same 5 shots for everyone, new every day. It tells you exactly how thick or thin you were.</p></div>
   <section id="aimGame" class="card" style="padding:14px">
     <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-bottom:8px">
       <b data-status style="font-size:15px">Loading…</b>
-      <label style="font-size:15px">Level <select data-level style="font-size:15px;padding:4px 6px"><option value="easy">Easy (shows contact point)</option><option value="normal" selected>Normal</option><option value="pro">Pro (tight pockets)</option></select></label>
+      <label style="font-size:15px">Level <select data-level style="font-size:15px;padding:4px 6px"><option value="daily">⭐ Daily challenge (5 shots)</option><option value="easy">Easy (shows contact point)</option><option value="normal" selected>Normal</option><option value="pro">Pro (tight pockets)</option></select></label>
     </div>
     <div data-table style="max-width:min(100%, calc((100vh - 230px) * 1.83), 820px);margin:0 auto"></div>
     <p data-loading class="muted">Turn on JavaScript to play.</p>
