@@ -138,6 +138,70 @@ ${groups}
 
 export const MORE_GUIDES = [
   {
+    slug: 'pool-cue-care', title: 'Pool Cue Care: Tips, Chalk, Shafts and Cases',
+    desc: 'Keep your cue playing like new: shaping and scuffing the tip, chalking the right way, cleaning the shaft, avoiding warps, and when to replace a tip.',
+    body: `
+<p>A cue that is cared for plays the same every time. Most cue problems come from a worn tip, a dirty shaft or a cue left somewhere hot or damp. A few minutes of care now and then fixes nearly all of them.</p>
+<h2>The tip</h2>
+<ul>
+<li><b>Shape:</b> a tip should be rounded, about the curve of a nickel or a dime. A flat tip miscues more on off-center hits. Use a tip shaper and work it lightly from the edges toward the middle.</li>
+<li><b>Scuff:</b> a tip that has gone shiny and hard won't hold chalk. Roughen the surface lightly with a tip tool. Don't overdo it; scuffing wears the tip down.</li>
+<li><b>Mushrooming:</b> when the tip spreads wider than the ferrule, trim the edges with a sharp blade or a tip trimmer, or have a cue repair shop do it.</li>
+<li><b>Replace it</b> when it gets thin (a few millimeters), cracks, separates from the ferrule, or won't hold a shape. Many pool rooms and cue shops replace tips for a small fee.</li>
+</ul>
+<h2>Chalk</h2>
+<ul>
+<li>Chalk before nearly every shot, and always before shots with spin or draw.</li>
+<li><b>Brush the chalk on</b> with light strokes, turning the cube. Don't screw the tip into the chalk; that leaves a bare spot in the middle.</li>
+<li>Check the tip: it should be evenly covered with a thin layer, with no bare patches.</li>
+<li>Don't put chalk face-down on the rail where it will smear the cloth.</li>
+</ul>
+<h2>The shaft</h2>
+<ul>
+<li>Wipe the shaft with a clean, dry cloth after you play to remove chalk and hand oils.</li>
+<li>For a deeper clean, a slightly damp cloth (not wet), then dry it right away. Wood swells with water.</li>
+<li>A shaft burnisher or a piece of leather can smooth the wood. Avoid sandpaper unless you know what you are doing; it removes wood and changes the taper.</li>
+<li>If your hand sticks to the shaft, wipe it clean or use a glove rather than powder, which ends up everywhere.</li>
+</ul>
+<h2>Storage and travel</h2>
+<ul>
+<li><b>Use a case.</b> Even a simple soft case protects against dings.</li>
+<li><b>Never leave a cue in a hot car</b> or a damp basement. Heat and humidity are the main causes of warping.</li>
+<li>Store it upright in a rack or flat in a case, not leaning in a corner.</li>
+<li>Screw the joint together by hand, snug but not forced. Keep the joint and pin clean.</li>
+</ul>
+<h2>Is my cue warped?</h2>
+<p>Roll the assembled cue on a flat table, or look down it like a rifle while you turn it. A small wobble in the shaft is common and often doesn't matter; a big one does. A cue repair shop can tell you whether it can be straightened.</p>
+<p>Shopping for a new one? Read <a href="/guides/how-to-choose-a-pool-cue">how to choose a pool cue</a>.</p>`
+  },
+  {
+    slug: 'money-game-spots', title: 'Spots in Pool Money Games: The Breaks, the 8, Games on the Wire',
+    desc: 'How handicaps work in pool money games: giving the breaks, the 8-ball or the 7, games on the wire, races and sets, and how to make a fair game.',
+    body: `
+<p>When two players of different skill play for money, the stronger player usually gives a <b>spot</b>, a handicap that makes the game closer to even. Knowing the common spots helps you agree to a fair game, and keeps you from accepting a bad one.</p>
+<h2>Common spots</h2>
+<ul>
+<li><b>The breaks:</b> the weaker player breaks every rack instead of alternating or winner breaking. In 9-Ball and 10-Ball, that is a big spot.</li>
+<li><b>The 8-ball (in 9-Ball):</b> the weaker player also wins the game by legally making the 8. "The 7 and 8" or "the 7-8-9" give even more ways to win.</li>
+<li><b>Games on the wire:</b> the weaker player starts with games already counted. "Race to 7, two on the wire" means they only need 5 more.</li>
+<li><b>A shorter race:</b> "7 to 5" means the stronger player needs 7 games and the weaker player needs 5.</li>
+<li><b>In One Pocket:</b> a ball count spot, such as 8 to 6, where the weaker player needs fewer balls to win.</li>
+<li><b>In 8-Ball:</b> sometimes the weaker player gets ball in hand after the break, or the "last two" (the stronger player must run the last two balls and the 8 in one turn).</li>
+</ul>
+<h2>Races and sets</h2>
+<p>Money games are usually played as a race (first to a number of games) or by sets, such as "race to 5 for $50, best of three sets." Agree on the format, the spot, who breaks the first rack and the rules before anyone puts money up. Short races favor the underdog; long races favor the stronger player.</p>
+<h2>Finding a fair spot</h2>
+<p>Ratings make it easier. With two FargoRate ratings you can work out a fair race in seconds with our <a href="/tools/fargo-race-calculator">Fargo race calculator</a>, or see the whole <a href="/guides/fargo-rating-chart">Fargo rating chart</a>. Without ratings, ask around: in most rooms, everyone knows everyone's "speed."</p>
+<h2>Etiquette for money games</h2>
+<ul>
+<li>Agree on everything before the first break, and say it out loud.</li>
+<li>Many players put the money up with a trusted third person, or on the light over the table, so there's no question after the match.</li>
+<li>Pay right away when you lose. Your reputation is worth more than any one game.</li>
+<li>Play within your budget. A game you can't afford to lose is a game you'll play badly.</li>
+</ul>
+<p>Looking for a game? See the <a href="/money-matches/">money matches</a> board and the <a href="/matches">match finder</a>, and learn the lingo in the <a href="/guides/pool-terms-glossary">pool glossary</a>.</p>`
+  },
+  {
     slug: 'how-to-rack-pool-balls', title: 'How to Rack Pool Balls: 8-Ball, 9-Ball and 10-Ball (With Diagrams)',
     desc: 'How to rack for 8-Ball, 9-Ball and 10-Ball: where each ball goes, how to get a tight rack, and the racking rules used in most tournaments.',
     body: `
