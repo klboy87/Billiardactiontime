@@ -68,7 +68,7 @@ export function toolPage(cfg, slug) {
     <div id="raceOut" class="card" style="padding:16px 18px;margin-top:14px" aria-live="polite"><p class="muted">Turn on JavaScript to use the calculator.</p></div>`;
     about = `<h2>How the calculator works</h2>
     <p>FargoRate ratings are built so that a <b>100-point difference means the higher-rated player wins about two games for every one</b> the lower-rated player wins. From the two ratings, the calculator works out each player's chance of winning a single game, then the chance of winning a whole race. It suggests the race for the stronger player that brings the match closest to an even 50/50.</p>
-    <p>Real matches depend on the game, the table and the day, so treat the numbers as a starting point. Many rooms use a printed chart; this gives you the same idea for any two ratings. Learn more in our <a href="/guides/fargo-ratings-handicaps">Fargo and handicaps guide</a>.</p>
+    <p>Real matches depend on the game, the table and the day, so treat the numbers as a starting point. Many rooms use a printed chart; this gives you the same idea for any two ratings. Learn more in our <a href="/guides/fargo-ratings-handicaps">Fargo and handicaps guide</a>, or see the full <a href="/guides/fargo-rating-chart">Fargo rating chart</a> of win odds by rating gap.</p>
     <p class="muted">FargoRate is a trademark of its owners. This calculator is an independent tool and is not affiliated with FargoRate.</p>`;
   }
   const body = `${crumbs(t.title)}

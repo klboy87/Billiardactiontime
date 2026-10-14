@@ -29,6 +29,15 @@ function table({ balls = [], paths = [], labels = [] } = {}, caption = '') {
 ${pockets}${dia}${lines}${b}${lab}</svg>${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`;
 }
 
+
+// ---------- Fargo chart (same math as the race calculator in public/tools.js) ----------
+const gameP = d => 1 / (1 + Math.pow(2, -d / 100));
+const matchP = (p, a, b) => { let total = 0, c = 1; for (let k = 0; k < b; k++) { if (k > 0) c = c * (a - 1 + k) / k; total += c * p ** a * (1 - p) ** k; } return total; };
+const pct = x => x >= 0.995 ? '>99%' : Math.round(x * 100) + '%';
+const fairRace = (d, base) => { let best = base, gap = 2; for (let r = base; r <= base + 40; r++) { const g = Math.abs(matchP(gameP(d), r, base) - 0.5); if (g < gap) { gap = g; best = r; } } return best; };
+const fargoRows = () => [0, 25, 50, 75, 100, 125, 150, 200, 250, 300].map(d => `<tr><td><b>${d}</b></td><td>${pct(gameP(d))}</td><td>${pct(matchP(gameP(d), 5, 5))}</td><td>${pct(matchP(gameP(d), 7, 7))}</td><td>${pct(matchP(gameP(d), 9, 9))}</td></tr>`).join('');
+const raceRows = () => [25, 50, 75, 100, 125, 150, 200].map(d => `<tr><td><b>${d}</b></td><td>${fairRace(d, 3)} to 3</td><td>${fairRace(d, 4)} to 4</td><td>${fairRace(d, 5)} to 5</td></tr>`).join('');
+
 // ---------- glossary ----------
 const TERMS = [
   ['Action', 'Betting on pool, or the money being played for. "Looking for action" means looking for a money game.'],
@@ -117,6 +126,37 @@ ${groups}
 };
 
 export const MORE_GUIDES = [
+  {
+    slug: 'fargo-rating-chart', title: 'Fargo Rating Chart: Win Odds by Rating Difference',
+    desc: 'How often does a higher-rated player win? A chart of game and match win chances by Fargo rating difference, plus fair handicap races and what ratings mean.',
+    body: `
+<p>FargoRate is built on one simple rule: <b>a 100-point rating gap means the stronger player wins about two games for every one</b> the weaker player wins. From that rule you can work out how often the better player wins a game, a race to 5 or a race to 9. Here are the numbers.</p>
+<h2>Win chances by rating difference</h2>
+<p>"Gap" is the higher rating minus the lower rating. Percentages are the stronger player's chance to win, in even races with no handicap.</p>
+<div class="t-wrap"><table class="t"><thead><tr><th>Gap</th><th>One game</th><th>Race to 5</th><th>Race to 7</th><th>Race to 9</th></tr></thead><tbody>${fargoRows()}</tbody></table></div>
+<p>Notice how fast the odds grow in longer races. A 100-point favorite wins two out of three single games, but most of the time over a race to 9. That is why short races are kinder to underdogs, and why handicapped events give the weaker player fewer games to win.</p>
+<h2>Fair handicap races</h2>
+<p>To make a match roughly even, the stronger player has to win more games. These are the races that come closest to 50/50 for each rating gap, given how many games the lower-rated player needs.</p>
+<div class="t-wrap"><table class="t"><thead><tr><th>Gap</th><th>Lower player to 3</th><th>Lower player to 4</th><th>Lower player to 5</th></tr></thead><tbody>${raceRows()}</tbody></table></div>
+<p>Read "6 to 3" as: the stronger player races to 6, the weaker player races to 3. For any two exact ratings, use the <a href="/tools/fargo-race-calculator">Fargo race calculator</a>.</p>
+<h2>What do Fargo ratings mean?</h2>
+<p>These are rough descriptions that many players use. A rating only measures results, so treat them as a guide, not a label.</p>
+<ul>
+<li><b>Below 400:</b> newer players still learning to make balls and avoid scratches.</li>
+<li><b>400 to 500:</b> typical league players who can run a few balls and play some safeties.</li>
+<li><b>500 to 600:</b> strong league players who can run out an open 8-ball rack.</li>
+<li><b>600 to 700:</b> top local players, regular winners at weekly tournaments.</li>
+<li><b>700 to 750:</b> regional stars who contend at bigger events.</li>
+<li><b>Above 750:</b> touring professionals; the very best in the world are around 800 and up.</li>
+</ul>
+<h2>Why the chart is only a starting point</h2>
+<ul>
+<li><b>Ratings move.</b> A rating is based on past games, and newer players' ratings carry less certainty.</li>
+<li><b>The game matters.</b> Some players are much stronger at 8-Ball than 9-Ball, or on a bar box than a 9-foot table.</li>
+<li><b>Breaks and formats matter.</b> Winner breaks favor the stronger player more than alternate breaks.</li>
+</ul>
+<p>More on how handicaps work in our <a href="/guides/fargo-ratings-handicaps">Fargo and handicaps guide</a>. FargoRate is a trademark of its owners; this chart is independent and not affiliated with FargoRate.</p>`
+  },
   {
     slug: 'major-pool-events-calendar', title: 'Major Pool Events 2026–2027: The Big Tournaments Every Player Should Know',
     desc: 'The biggest pool events of the 2026–27 season: Mosconi Cup, Derby City Classic, league national championships in Las Vegas, Super Billiards Expo, US Open and more, with dates and who can play.',

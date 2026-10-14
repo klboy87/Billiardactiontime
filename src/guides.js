@@ -146,7 +146,8 @@ const BASE_GUIDES = [
 <h2>Rating caps</h2>
 <p>Many events are listed as "550 and under" or "a 1000 combined Fargo" for doubles. That means only players at or below the number can enter (for doubles, the two partners' ratings added together). You will see these caps in many tournament names on this site.</p>
 <h2>Don't have a rating?</h2>
-<p>Your rating builds as your results are reported. Many rooms and leagues report weekly tournaments. Until you have a solid rating, directors usually assign you a starting number — be honest about your level.</p>`
+<p>Your rating builds as your results are reported. Many rooms and leagues report weekly tournaments. Until you have a solid rating, directors usually assign you a starting number — be honest about your level.</p>
+<p>See the numbers for every rating gap in our <a href="/guides/fargo-rating-chart">Fargo rating chart</a>.</p>`
   },
   {
     slug: '8-ball-rules', title: '8-Ball Rules: The Basics Every Tournament Player Should Know',
@@ -360,7 +361,7 @@ export const GUIDE_CATS = [
 const CAT_OF = {
   '8-ball-rules': 'rules', '9-ball-rules': 'rules', '10-ball-rules': 'rules', 'scotch-doubles': 'rules', 'one-pocket': 'rules', 'straight-pool-rules': 'rules', 'bank-pool-rules': 'rules',
   'first-pool-tournament': 'players', 'fargo-ratings-handicaps': 'players', 'pool-tournament-etiquette': 'players', 'pool-table-sizes': 'players', 'find-pool-tournaments-near-you': 'players',
-  'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
+  'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'fargo-rating-chart': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players',
   'how-to-run-a-pool-tournament': 'directors', 'double-elimination-brackets': 'directors', 'pool-tournament-payouts': 'directors', 'calcutta-auction-explained': 'directors', 'chip-tournaments': 'directors'
 };
 export const guideCat = slug => CAT_OF[slug] || 'players';
