@@ -236,6 +236,17 @@
         <div class="sec-head"><h2>Upcoming Tournaments</h2><a href="#/search">See all →</a></div>
         <div id="homeList" class="results">${loading()}</div>
       </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Learn the Game &amp; Run Better Events</h2><a href="/guides/">All guides →</a></div>
+        <div class="guide-next" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+          <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>How well do you know the rules? Take the 12-question quiz</b></a>
+          <a href="/guides/pool-practice-drills"><small>For players</small><b>7 practice drills that actually make you better</b></a>
+          <a href="/guides/fargo-rating-chart"><small>For players</small><b>Fargo rating chart: win odds by rating gap</b></a>
+          <a href="/guides/major-pool-events-calendar"><small>For players</small><b>Major pool events of the 2026–27 season</b></a>
+          <a href="/tools/brackets/"><small>Free tool</small><b>Printable double-elimination brackets with your players' names</b></a>
+          <a href="/tools/payout-calculator"><small>Free tool</small><b>Tournament payout calculator</b></a>
+        </div>
+      </section>
       <section class="sec featband on-dark">
         <h2>Why Players Use Billiard Action Time</h2>
         <div class="feat">
