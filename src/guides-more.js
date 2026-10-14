@@ -138,6 +138,85 @@ ${groups}
 
 export const MORE_GUIDES = [
   {
+    slug: 'tournament-formats', title: 'Pool Tournament Formats Explained: Double Elimination, Round Robin, Chip and More',
+    desc: 'Compare pool tournament formats: single and double elimination, modified single, round robin, chip tournaments and Swiss, with how long each takes and when to use it.',
+    body: `
+<p>The format decides how long your event runs, how many matches each player gets and how fair the result feels. Here are the formats you will see most, side by side.</p>
+<div class="t-wrap"><table class="t"><thead><tr><th>Format</th><th>Matches for N players</th><th>Fewest matches per player</th><th>Best for</th></tr></thead><tbody>
+<tr><td>Single elimination</td><td>N − 1</td><td>1</td><td>Big fields, short on time</td></tr>
+<tr><td>Double elimination</td><td>2N − 2 (or 2N − 1)</td><td>2</td><td>Most weekly and weekend events</td></tr>
+<tr><td>Modified single</td><td>About 1.5N</td><td>2</td><td>Large fields that want a second chance</td></tr>
+<tr><td>Round robin</td><td>N × (N − 1) ÷ 2</td><td>N − 1</td><td>Small fields, leagues, group stages</td></tr>
+<tr><td>Chip tournament</td><td>Varies</td><td>Depends on chips</td><td>Mixed-skill weekly events</td></tr>
+</tbody></table></div>
+<h2>Single elimination</h2>
+<p>Lose once and you're out. It is the fastest format and easy to run, but one bad rack sends a player home, which players who drove an hour don't love. Good for the final stage of a big event or when time is short.</p>
+<h2>Double elimination</h2>
+<p>The standard for local tournaments. Lose once and you drop to the losers side; lose twice and you're out. Everyone plays at least two matches. Read <a href="/guides/double-elimination-brackets">how double-elimination brackets work</a> and print a <a href="/tools/brackets/">free bracket with your players' names</a>.</p>
+<h2>Modified single elimination</h2>
+<p>A hybrid used at many large events: double elimination for the first couple of rounds, then single elimination once the field is smaller. Players get a second chance early without the event running all night.</p>
+<h2>Round robin</h2>
+<p>Everyone plays everyone. It is the fairest format and great for small fields, leagues and the group stage of bigger events, but the number of matches grows fast: 8 players means 28 matches. Make the schedule with our <a href="/tools/round-robin-generator">round robin generator</a>.</p>
+<h2>Chip tournaments</h2>
+<p>Players get chips based on skill, lose a chip per loss and play single games until few players are left. Lively and fair for mixed fields. See <a href="/guides/chip-tournaments">how chip tournaments work</a>.</p>
+<h2>Swiss</h2>
+<p>Used more in other games than in pool, but some events try it: players are paired each round against others with the same record, for a fixed number of rounds. Everyone plays every round, and the field sorts itself out without anyone being eliminated.</p>
+<h2>Picking a format</h2>
+<ul>
+<li><b>Under 8 players:</b> round robin, or a chip tournament.</li>
+<li><b>8 to 64 players, one day:</b> double elimination.</li>
+<li><b>Over 64, or tight on time:</b> modified single, or shorter races.</li>
+</ul>
+<p>Then set the payouts with the <a href="/tools/payout-calculator">payout calculator</a> and read <a href="/guides/how-to-run-a-pool-tournament">how to run a pool tournament</a>.</p>`
+  },
+  {
+    slug: 'start-a-weekly-pool-tournament', title: 'How to Start a Weekly Pool Tournament at Your Bar or Pool Room',
+    desc: 'A practical plan for bar owners and directors: picking the night, format, entry fee and greens fee, getting players to show up, and keeping them coming back.',
+    body: `
+<p>A weekly tournament can fill tables on a slow night, bring in regulars and build a local pool scene. The rooms that do it well keep it simple, start on time and treat players fairly. Here's a plan that works.</p>
+<h2>1. Pick the night and the time</h2>
+<ul>
+<li>Choose a night that is slow for your room but isn't the same night as a big event nearby. Check what's already running in your area on our <a href="/tournaments/">tournament listings</a>.</li>
+<li>Start early enough to finish before closing. A 7 pm start with sign-ups closing at 7:15 works for most bars.</li>
+<li>Keep the same night every week. Players plan around a routine.</li>
+</ul>
+<h2>2. Choose the game and format</h2>
+<ul>
+<li><b>8-Ball</b> draws the widest crowd in bars; <b>9-Ball</b> appeals to stronger players in pool rooms.</li>
+<li><b>Double elimination</b> is what most players expect. With 12–24 players and a few tables, short races (race to 2 or 3) keep the night on schedule. See <a href="/guides/tournament-formats">tournament formats</a>.</li>
+<li>Consider a <b>handicap</b> or a <a href="/guides/chip-tournaments">chip format</a> so newer players have a real chance. They'll come back.</li>
+</ul>
+<h2>3. Set the money</h2>
+<ul>
+<li>A common weekly setup is a $10 to $20 entry, with a few dollars per player kept as a <b>greens fee</b> for table time.</li>
+<li><b>Added money</b>, even a small amount, makes your event stand out. Many rooms add money from the bar.</li>
+<li>Pay out about one place for every eight players. The <a href="/tools/payout-calculator">payout calculator</a> does the math.</li>
+<li>Post the payout before the first match.</li>
+</ul>
+<h2>4. Run it smoothly</h2>
+<ul>
+<li>Print a <a href="/tools/brackets/">bracket</a> and fill it in with a random draw. Post it where everyone can see.</li>
+<li>Have one person in charge who knows the rules and makes the calls.</li>
+<li>Post the rules on the wall: which rule set, the race, 8 on the break, who racks. See <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs. tournament rules</a>.</li>
+<li>Keep matches moving: send players to tables as soon as they're open.</li>
+</ul>
+<h2>5. Get players to show up</h2>
+<ul>
+<li><a href="/post">Post your tournament on Billiard Action Time</a>, free. It gets its own page and share graphic, shows up on your city and state pages, and players can get alerts for it.</li>
+<li>Post a flyer in local pool Facebook groups every week, the day before.</li>
+<li>Put a flyer by the register and on the tables.</li>
+<li>Talk to the local league players. One league team can fill half a bracket.</li>
+</ul>
+<h2>6. Keep them coming back</h2>
+<ul>
+<li>Start on time, every time.</li>
+<li>Pay out right away and correctly.</li>
+<li>Run a drink or food special for players.</li>
+<li>Try a monthly bigger event: a scotch doubles night, a ladies' event, or extra added money.</li>
+</ul>
+<p>More detail in <a href="/guides/how-to-run-a-pool-tournament">how to run a pool tournament</a> and <a href="/guides/pool-tournament-payouts">pool tournament payouts</a>.</p>`
+  },
+  {
     slug: '9-ball-strategy', title: '9-Ball Strategy: Runouts, Push Outs and When to Play Safe',
     desc: 'How to win more 9-Ball games: plan three balls ahead, use the push out well, take combinations on the 9, and play safe when the run isn\'t there.',
     body: `
