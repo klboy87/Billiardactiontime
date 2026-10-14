@@ -738,6 +738,7 @@ ${table({ balls: [{ x: 7.4, y: 0.16, n: 9 }, { x: 2, y: 1, n: 0 }, { x: 4.6, y: 
 <li><b>10 minutes:</b> kick drill.</li>
 <li><b>15 minutes:</b> play the ghost.</li>
 </ul>
+<p class="tip"><b>Track your progress:</b> log your scores after every session in the free <a href="/play/practice-log">practice log</a> and watch your personal bests climb.</p>
 <p>Then test it where it counts: <a href="/this-weekend/">find a tournament this weekend</a>, or use the <a href="/tools/fargo-race-calculator">Fargo race calculator</a> to set a fair race with a practice partner.</p>`
   },
   {

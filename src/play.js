@@ -8,6 +8,7 @@ const GAMES = [
   { href: '/play/bank-trainer', icon: '↗️', title: 'Bank Shot Trainer', desc: 'Pick the spot on the rail and bank the ball into the highlighted pocket. Learn the mirror method by feel.' },
   { href: '/play/lag-challenge', icon: '📏', title: 'Lag Challenge', desc: 'Stop the power meter and lag the ball to the head rail. Five lags, scored in inches. Pure speed control.' },
   { href: '/play/which-game', icon: '🎱', title: 'Which Pool Game Is Yours?', desc: 'Five quick questions match you with 8-Ball, 9-Ball, 10-Ball, One Pocket, Banks, Straight Pool or Scotch Doubles.' },
+  { href: '/play/practice-log', icon: '📈', title: 'Practice Log', desc: 'Log your drill scores after each session and watch your personal bests climb. Saved on your device, no sign-up.' },
   { href: '/tools/pool-rules-quiz', icon: '❓', title: 'Pool Rules Quiz', desc: 'Twelve questions on 8-Ball, 9-Ball, 10-Ball and more. Share your score with your league.' },
   { href: '/trick-shots/', icon: '✨', title: 'Trick Shots', desc: 'Fourteen trick shots with diagrams to try at the table, from easy combos to the jump and the massé.' },
   { href: '/guides/pool-practice-drills', icon: '📋', title: 'Practice Drills', desc: 'Seven drills with scores to beat. Play the ghost and see how often you really run out.' }
@@ -154,4 +155,39 @@ export function whichGamePage(cfg) {
     <a href="/trick-shots/"><small>Trick shots</small><b>14 trick shots with diagrams</b></a>
   </div></section>`;
   return layout(cfg, { title: 'Which Pool Game Is Yours? 5-Question Quiz | Billiard Action Time', description: 'Take the quiz to find your pool game: 8-Ball, 9-Ball, 10-Ball, One Pocket, Banks, Straight Pool or Scotch Doubles. Then learn the rules and find tournaments.', path: '/play/which-game', body, scripts: ['/play.js'] });
+}
+
+// Drills for the practice log: [id, name, unit, higherIsBetter, guide link]
+const DRILLS = [
+  ['stop-ladder', 'Stop-shot ladder', 'diamonds back', true, '/guides/pool-practice-drills#1-the-stop-shot-ladder'],
+  ['line-up', 'Line-up drill', 'balls in a row', true, '/guides/pool-practice-drills#2-the-line-up-drill'],
+  ['circle', 'Circle drill', 'balls', true, '/guides/pool-practice-drills#3-the-circle-drill'],
+  ['ladder', 'Position ladder', 'balls run in order', true, '/guides/pool-practice-drills#4-position-ladder-three-balls'],
+  ['kick', 'Kick drill', 'hits out of 10', true, '/guides/pool-practice-drills#5-the-kick-drill'],
+  ['long-straight', 'Long straight-in shots', 'made out of 10', true, '/guides/pool-practice-drills#6-long-straight-in-shots'],
+  ['ghost', 'Play the ghost (race to 5)', 'racks won', true, '/guides/pool-practice-drills#7-play-the-ghost'],
+  ['speed-run', 'Hanger speed run', 'seconds', false, '/trick-shots/hanger-speed-run'],
+  ['break', 'Breaks: balls made in 10 breaks', 'balls', true, '/guides/how-to-break-in-pool']
+];
+
+export function practiceLogPage(cfg) {
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/play/">Play</a> <span>/</span> <span>Practice Log</span></nav>
+  <div class="pagehead"><h1>Pool Practice Log</h1><p>Log your drill scores after each session and watch your personal bests climb. Everything is saved on this device only. No sign-up.</p></div>
+  <section id="practiceLog" class="card" style="padding:16px 18px" data-drills='${JSON.stringify(DRILLS).replace(/'/g, '&#39;')}'>
+    <form data-form style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end">
+      <label>Drill<select name="drill" style="display:block;width:100%;padding:8px;font-size:16px;margin-top:4px">${DRILLS.map(d => `<option value="${d[0]}">${d[1]}</option>`).join('')}</select></label>
+      <label>Score <span data-unit class="muted"></span><input name="score" type="number" step="any" min="0" inputmode="decimal" required style="display:block;width:100%;padding:8px;font-size:16px;margin-top:4px"></label>
+      <label>Date<input name="date" type="date" style="display:block;width:100%;padding:8px;font-size:16px;margin-top:4px"></label>
+      <button type="submit" style="padding:10px 16px;font-size:16px;font-weight:700;border-radius:8px;border:0;background:#144b2e;color:#fff;cursor:pointer">Save score</button>
+    </form>
+    <p data-msg class="muted" aria-live="polite" style="margin:10px 0 0"></p>
+    <p data-loading class="muted">Turn on JavaScript to use the practice log.</p>
+    <div data-out style="margin-top:14px"></div>
+  </section>
+  <article class="card guide" style="margin-top:16px"><h2 style="margin-top:0">How to use it</h2>
+  <ul><li>Pick two or three drills from the <a href="/guides/pool-practice-drills">practice drills</a> and do them every session.</li>
+  <li>Log your score right after each drill. The log shows your best, your last five, and a trend line.</li>
+  <li>Your log stays in this browser. If you clear your browser data, it's gone, so use the <b>Download</b> button now and then to keep a copy.</li></ul>
+  <p>Between sessions, keep your eye sharp with the <a href="/play/aim-trainer">aim trainer</a> and the <a href="/play/lag-challenge">lag challenge</a>.</p></article>`;
+  return layout(cfg, { title: 'Pool Practice Log: Track Your Drill Scores | Billiard Action Time', description: 'A free pool practice log. Record your drill scores, see personal bests and track your progress over time. Saved on your device, no sign-up.', path: '/play/practice-log', body, scripts: ['/play.js'] });
 }

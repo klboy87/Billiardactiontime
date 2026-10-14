@@ -391,3 +391,57 @@
     if (total && list.length) { total.hidden = false; total.innerHTML = '<b>You’ve learned ' + list.length + ' of ' + TOTAL + ' trick shots.</b> ' + (list.length >= TOTAL ? 'All of them. Trick shot master! 🏆' : 'Keep going!'); }
   }
 })();
+
+/* Practice log (/play/practice-log): drill scores saved in this browser. */
+(function () {
+  var root = document.getElementById('practiceLog');
+  if (!root) return;
+  var KEY = 'bat-practice-log', drills = JSON.parse(root.getAttribute('data-drills')), byId = {};
+  drills.forEach(function (d) { byId[d[0]] = d; });
+  var form = root.querySelector('[data-form]'), out = root.querySelector('[data-out]'), msg = root.querySelector('[data-msg]'), unit = root.querySelector('[data-unit]');
+  var load = function () { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } };
+  var save = function (a) { try { localStorage.setItem(KEY, JSON.stringify(a)); return true; } catch (e) { return false; } };
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var today = function () { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); };
+  form.elements.date.value = today();
+  var setUnit = function () { unit.textContent = '(' + byId[form.elements.drill.value][2] + ')'; };
+  form.elements.drill.addEventListener('change', function () { setUnit(); render(); });
+  function spark(vals) {
+    if (vals.length < 2) return '';
+    var w = 160, h = 34, min = Math.min.apply(null, vals), max = Math.max.apply(null, vals), span = max - min || 1;
+    var pts = vals.map(function (v, i) { return (i * w / (vals.length - 1)).toFixed(1) + ',' + (h - 3 - (v - min) * (h - 6) / span).toFixed(1); }).join(' ');
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h + '" aria-hidden="true" style="vertical-align:middle"><polyline points="' + pts + '" fill="none" stroke="#1c6fe6" stroke-width="2"/></svg>';
+  }
+  function render() {
+    var log = load();
+    if (!log.length) { out.innerHTML = '<p class="muted" style="margin:0">No scores yet. Do a drill and log your first score.</p>'; return; }
+    var rows = drills.map(function (d) {
+      var mine = log.filter(function (e) { return e.d === d[0]; }).sort(function (a, b) { return a.t.localeCompare(b.t); });
+      if (!mine.length) return '';
+      var vals = mine.map(function (e) { return e.s; }), best = d[3] ? Math.max.apply(null, vals) : Math.min.apply(null, vals);
+      var last5 = mine.slice(-5).map(function (e) { return e.s; }).join(', ');
+      return '<tr><td><a href="' + d[4] + '">' + esc(d[1]) + '</a><br><small class="muted">' + mine.length + ' session' + (mine.length > 1 ? 's' : '') + '</small></td><td><b>' + best + '</b> <small class="muted">' + esc(d[2]) + '</small></td><td>' + last5 + '</td><td>' + spark(vals.slice(-12)) + '</td></tr>';
+    }).join('');
+    var sel = form.elements.drill.value, recent = log.filter(function (e) { return e.d === sel; }).sort(function (a, b) { return b.t.localeCompare(a.t); }).slice(0, 8);
+    out.innerHTML = '<div style="overflow-x:auto"><table class="t"><thead><tr><th>Drill</th><th>Best</th><th>Last 5</th><th>Trend</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      (recent.length ? '<h3 style="margin:16px 0 6px;font-size:20px">Recent: ' + esc(byId[sel][1]) + '</h3><ul style="margin:0;padding-left:18px">' + recent.map(function (e) { return '<li>' + e.t + ': <b>' + e.s + '</b> <button type="button" data-del="' + e.id + '" style="font-size:13px;border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline">delete</button></li>'; }).join('') + '</ul>' : '') +
+      '<p style="margin:14px 0 0"><button type="button" data-export style="padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:15px">Download my log (CSV)</button></p>';
+    out.querySelectorAll('[data-del]').forEach(function (b) { b.addEventListener('click', function () { save(load().filter(function (e) { return String(e.id) !== b.getAttribute('data-del'); })); render(); }); });
+    out.querySelector('[data-export]').addEventListener('click', function () {
+      var csv = 'date,drill,score,unit\n' + load().map(function (e) { var d = byId[e.d] || [e.d, e.d, '']; return [e.t, '"' + d[1] + '"', e.s, '"' + d[2] + '"'].join(','); }).join('\n');
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'pool-practice-log.csv'; document.body.appendChild(a); a.click(); a.remove();
+    });
+  }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var d = form.elements.drill.value, sc = parseFloat(form.elements.score.value), t = form.elements.date.value || today();
+    if (!isFinite(sc) || sc < 0) { msg.textContent = 'Enter a score.'; return; }
+    var log = load(), prev = log.filter(function (x) { return x.d === d; }).map(function (x) { return x.s; }), hi = byId[d][3];
+    var isBest = !prev.length || (hi ? sc > Math.max.apply(null, prev) : sc < Math.min.apply(null, prev));
+    log.push({ id: Date.now(), d: d, s: sc, t: t });
+    msg.innerHTML = save(log) ? (isBest && prev.length ? '🏆 New personal best on ' + esc(byId[d][1]) + '!' : 'Saved.') : 'Could not save: your browser is blocking storage on this site.';
+    form.elements.score.value = ''; render();
+  });
+  root.querySelector('[data-loading]').remove();
+  setUnit(); render();
+})();
