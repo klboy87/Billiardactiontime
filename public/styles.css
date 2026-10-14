@@ -594,3 +594,4 @@ table.t tr.noline td{border-bottom:0}
 .guide-next small{display:block;color:var(--muted);font-size:13px}
 @media (max-width:600px){.guide{padding:16px 16px 20px;font-size:17px}}
 @media print{.guide-toc,.guide-next,.seo-cta{display:none}}
+.ftr .ftr-links a{display:inline;padding:0}
