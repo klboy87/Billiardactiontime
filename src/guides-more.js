@@ -138,6 +138,40 @@ ${groups}
 
 export const MORE_GUIDES = [
   {
+    slug: '9-ball-strategy', title: '9-Ball Strategy: Runouts, Push Outs and When to Play Safe',
+    desc: 'How to win more 9-Ball games: plan three balls ahead, use the push out well, take combinations on the 9, and play safe when the run isn\'t there.',
+    body: `
+<p>9-Ball looks simple: hit the lowest ball, and whoever makes the 9 wins. But because you can't choose which ball to shoot, every game is about the path from one ball to the next. These habits win more racks than extra shot-making.</p>
+<h2>Plan three balls ahead</h2>
+<p>Before each shot, look at the ball you are shooting, the next ball and the one after. Pick where you want the cue ball to land so the next shot has an angle that sends you toward the third ball. Straight-in shots are easy to make but hard to move the cue ball from, so a small angle is usually better.</p>
+<h2>Know where the "problem" is</h2>
+<p>Most racks have one tough spot: a ball on a rail, two balls close together, or a long trip across the table. Find it before your first shot after the break. If there is a problem you can't solve, plan your <a href="/guides/safety-play-in-pool">safety</a> early, while you still have choices.</p>
+<h2>Using the push out</h2>
+<p>On the shot right after the break, the incoming player may push out: move the cue ball anywhere without having to hit the lowest ball. The opponent then chooses who shoots. Good push outs leave a shot that is <b>hard to judge</b>: too risky to take for sure, but too tempting to give away. If your opponent takes it and misses, you're in. If they give it back, you get a shot you planned for.</p>
+<h2>Look for the 9</h2>
+<ul>
+<li><b>Combinations on the 9:</b> any legal shot that makes the 9 wins. If the lowest ball and the 9 line up with a pocket, it may be your best shot. See the <a href="/trick-shots/dead-combination">dead combination</a>.</li>
+<li><b>Caroms and kisses:</b> sometimes the 9 can be knocked in off the lowest ball. Check before you play a hard shot on the lowest ball.</li>
+<li><b>Don't leave the 9 hanging</b> for your opponent on a safety. If it sits near a pocket, your safety needs to be very good.</li>
+</ul>
+<h2>The break</h2>
+<p>A controlled break that leaves the cue ball near the middle of the table, with a shot at the 1, is worth more than raw power. Many players break from near the side rail. Read <a href="/guides/how-to-break-in-pool">how to break</a> for the details, and check your event's break rules.</p>
+<h2>When to play safe</h2>
+<ul>
+<li>The shot is low-percentage and a miss leaves an easy run.</li>
+<li>You can make the ball but can't get to the next one.</li>
+<li>The lowest ball is blocked and a kick is unlikely to make it, but likely to leave your opponent safe.</li>
+</ul>
+<p>In 9-Ball, three fouls in a row lose the game (after a warning), so a good safety that leaves your opponent kicking can win the rack on its own.</p>
+<h2>Practice</h2>
+<ul>
+<li>Play the ghost: break and try to run out with ball in hand after the break. Keep score. See the <a href="/guides/pool-practice-drills">practice drills</a>.</li>
+<li>Throw three balls out and run them in order, then add a ball at a time.</li>
+<li>Train your aim with the <a href="/play/aim-trainer">aim trainer</a> and your speed with the <a href="/play/lag-challenge">lag challenge</a>.</li>
+</ul>
+<p>Brush up on the <a href="/guides/9-ball-rules">9-Ball rules</a> and set fair races with the <a href="/tools/fargo-race-calculator">Fargo race calculator</a>.</p>`
+  },
+  {
     slug: 'pool-cue-care', title: 'Pool Cue Care: Tips, Chalk, Shafts and Cases',
     desc: 'Keep your cue playing like new: shaping and scuffing the tip, chalking the right way, cleaning the shaft, avoiding warps, and when to replace a tip.',
     body: `

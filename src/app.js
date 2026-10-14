@@ -664,7 +664,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
+      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
         { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
@@ -675,7 +675,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (p === '/guides' || p === '/guides/')) { if (p === '/guides') return moved('/guides/'); SEO.ensureFooter(db); trackVisit(req, 'guides'); return html(200, GU.guidesIndexPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/guides\/([a-z0-9-]{2,80})\/?$/))) {
       SEO.ensureFooter(db);
-      const GAME_OF = { '8-ball-rules': '8-Ball', '9-ball-rules': '9-Ball', '10-ball-rules': '10-Ball', 'one-pocket': 'One Pocket', 'scotch-doubles': 'Scotch Doubles', 'bank-pool-rules': 'Banks', 'straight-pool-rules': 'Straight Pool', '8-ball-patterns': '8-Ball', 'bar-rules-vs-tournament-rules': '8-Ball' };
+      const GAME_OF = { '8-ball-rules': '8-Ball', '9-ball-rules': '9-Ball', '10-ball-rules': '10-Ball', 'one-pocket': 'One Pocket', 'scotch-doubles': 'Scotch Doubles', 'bank-pool-rules': 'Banks', 'straight-pool-rules': 'Straight Pool', '8-ball-patterns': '8-Ball', '9-ball-strategy': '9-Ball', 'bar-rules-vs-tournament-rules': '8-Ball' };
       const out = GU.guidePage(cfg, x[1], GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : '');
       if (!out) return notFoundPage();
       trackVisit(req, 'guide');
@@ -692,6 +692,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return html(200, out);
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/play' || p === '/play/')) { if (p === '/play') return moved('/play/'); SEO.ensureFooter(db); trackVisit(req, 'play'); return html(200, PL.playIndexPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/play/which-game' || p === '/play/which-game/')) { SEO.ensureFooter(db); trackVisit(req, 'which-game'); return html(200, PL.whichGamePage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/play/lag-challenge' || p === '/play/lag-challenge/')) { SEO.ensureFooter(db); trackVisit(req, 'lag-challenge'); return html(200, PL.lagChallengePage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/play/bank-trainer' || p === '/play/bank-trainer/')) { SEO.ensureFooter(db); trackVisit(req, 'bank-trainer'); return html(200, PL.bankTrainerPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/play/aim-trainer' || p === '/play/aim-trainer/')) { SEO.ensureFooter(db); trackVisit(req, 'aim-trainer'); return html(200, PL.aimTrainerPage(cfg)); }

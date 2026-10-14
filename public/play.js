@@ -340,3 +340,28 @@
   root.querySelector('[data-loading]').remove();
   newRound();
 })();
+
+/* Which-game quiz (/play/which-game). */
+(function () {
+  var root = document.getElementById('whichGame'), out = document.getElementById('whichOut');
+  if (!root || !out) return;
+  var games = JSON.parse(root.getAttribute('data-games')), picks = {};
+  var qs = root.querySelectorAll('.quiz-q');
+  qs.forEach(function (q, qi) {
+    q.querySelectorAll('[data-pts]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        picks[qi] = JSON.parse(b.getAttribute('data-pts'));
+        q.querySelectorAll('[data-pts]').forEach(function (x) { var on = x === b; x.style.background = on ? '#d8f3e0' : ''; x.style.borderColor = on ? '#148a38' : ''; x.style.color = on ? '#0f1b2d' : ''; });
+        if (Object.keys(picks).length < qs.length) { out.innerHTML = '<p class="muted" style="margin:0">' + (qs.length - Object.keys(picks).length) + ' to go.</p>'; return; }
+        var tally = {}; Object.keys(picks).forEach(function (k) { var p = picks[k]; for (var g in p) tally[g] = (tally[g] || 0) + p[g]; });
+        var ranked = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; }), top = ranked[0], g = games[top], second = ranked[1];
+        var url = location.origin + location.pathname;
+        out.innerHTML = '<p style="margin:0 0 4px" class="muted">Your game is</p><p style="font-size:1.6em;margin:0 0 6px"><b>' + top + '</b></p><p style="margin:0 0 10px">' + g.blurb + '</p>' +
+          (second ? '<p class="muted" style="margin:0 0 10px">Runner-up: <a href="' + games[second].guide + '">' + second + '</a></p>' : '') +
+          '<p style="margin:0;display:flex;flex-wrap:wrap;gap:8px"><a href="' + g.guide + '" style="padding:8px 14px;border-radius:6px;background:#144b2e;color:#fff;text-decoration:none;font-weight:700">Learn the rules</a>' +
+          '<a href="' + g.list + '" style="padding:8px 14px;border-radius:6px;background:#1c6fe6;color:#fff;text-decoration:none;font-weight:700">Find ' + top + ' tournaments</a>' +
+          '<a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '" style="padding:8px 4px">Share the quiz</a></p>';
+      });
+    });
+  });
+})();

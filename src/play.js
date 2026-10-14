@@ -7,6 +7,7 @@ const GAMES = [
   { href: '/play/aim-trainer', icon: '🎯', title: 'Aim Trainer', desc: 'Pocket the ball in the highlighted pocket. Ten shots a round, three levels, and it tells you if you were thick or thin.' },
   { href: '/play/bank-trainer', icon: '↗️', title: 'Bank Shot Trainer', desc: 'Pick the spot on the rail and bank the ball into the highlighted pocket. Learn the mirror method by feel.' },
   { href: '/play/lag-challenge', icon: '📏', title: 'Lag Challenge', desc: 'Stop the power meter and lag the ball to the head rail. Five lags, scored in inches. Pure speed control.' },
+  { href: '/play/which-game', icon: '🎱', title: 'Which Pool Game Is Yours?', desc: 'Five quick questions match you with 8-Ball, 9-Ball, 10-Ball, One Pocket, Banks, Straight Pool or Scotch Doubles.' },
   { href: '/tools/pool-rules-quiz', icon: '❓', title: 'Pool Rules Quiz', desc: 'Twelve questions on 8-Ball, 9-Ball, 10-Ball and more. Share your score with your league.' },
   { href: '/trick-shots/', icon: '✨', title: 'Trick Shots', desc: 'Fourteen trick shots with diagrams to try at the table, from easy combos to the jump and the massé.' },
   { href: '/guides/pool-practice-drills', icon: '📋', title: 'Practice Drills', desc: 'Seven drills with scores to beat. Play the ghost and see how often you really run out.' }
@@ -117,4 +118,40 @@ export function lagChallengePage(cfg) {
   </div></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Lag Challenge', url: `${cfg.publicUrl}/play/lag-challenge`, description: 'A free browser game for practicing pool speed control by lagging to the head rail.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
   return layout(cfg, { title: 'Pool Lag Challenge: Speed Control Game | Billiard Action Time', description: 'Can you lag to the rail? A free pool speed-control game: stop the power meter, roll to the far rail and back, and finish closest to the head rail.', path: '/play/lag-challenge', body, jsonld: [ld], scripts: ['/play.js'] });
+}
+
+// Which-game quiz: each answer adds points to games; the highest total wins. Results link to the rules guide
+// and the game's tournament listings.
+const WG_GAMES = {
+  '8-Ball': { guide: '/guides/8-ball-rules', list: '/tournaments/8-ball', blurb: 'The game everyone knows. Easy to start, deep to master: planning your group, breaking up clusters and locking up your opponent.' },
+  '9-Ball': { guide: '/guides/9-ball-rules', list: '/tournaments/9-ball', blurb: 'Fast, aggressive and full of action. Runouts, push outs and the chance to win on any shot.' },
+  '10-Ball': { guide: '/guides/10-ball-rules', list: '/tournaments/10-ball', blurb: 'The shot-maker\'s game: call your shots, no slop, and a big rack that rewards real control.' },
+  'One Pocket': { guide: '/guides/one-pocket', list: '/tournaments/one-pocket', blurb: 'Pool\'s chess game. Every shot is offense and defense at once, and patience beats power.' },
+  'Banks': { guide: '/guides/bank-pool-rules', list: '/tournaments/banks', blurb: 'Every ball off a rail. For players who love angles, feel and a good gamble.' },
+  'Straight Pool': { guide: '/guides/straight-pool-rules', list: '/tournaments/straight-pool', blurb: 'The classic: call every ball, rack after rack. The purest test of position play.' },
+  'Scotch Doubles': { guide: '/guides/scotch-doubles', list: '/tournaments/scotch-doubles', blurb: 'Pool with a partner, taking turns. Social, strategic and the most fun you can have losing a rack together.' }
+};
+const WG_Q = [
+  ['What do you enjoy most at the table?', [['Making hard shots', { '10-Ball': 2, '9-Ball': 1 }], ['Outthinking my opponent', { 'One Pocket': 2, '8-Ball': 1 }], ['Running rack after rack', { 'Straight Pool': 2, '9-Ball': 1 }], ['Playing with friends', { 'Scotch Doubles': 2, '8-Ball': 1 }]]],
+  ['How fast do you like a game?', [['Quick, a few minutes a rack', { '9-Ball': 2, '8-Ball': 1 }], ['Medium, with some thinking', { '10-Ball': 1, '8-Ball': 1, 'Banks': 1 }], ['Long and tactical', { 'One Pocket': 2, 'Straight Pool': 1 }], ['Doesn\'t matter if the company\'s good', { 'Scotch Doubles': 2 }]]],
+  ['Your favorite kind of shot?', [['A thin cut down the rail', { '10-Ball': 1, '9-Ball': 1 }], ['A cross-corner bank', { 'Banks': 3 }], ['A perfect safety', { 'One Pocket': 2, '8-Ball': 1 }], ['A soft position shot', { 'Straight Pool': 2, '10-Ball': 1 }]]],
+  ['How do you feel about luck?', [['A lucky roll is part of the fun', { '9-Ball': 2, '8-Ball': 1 }], ['I want to earn every ball', { '10-Ball': 2, 'Straight Pool': 1 }], ['I make my own luck with defense', { 'One Pocket': 2, 'Banks': 1 }], ['We win or lose as a team', { 'Scotch Doubles': 2 }]]],
+  ['Where do you usually play?', [['Bar tables and league night', { '8-Ball': 3, 'Scotch Doubles': 1 }], ['A pool room on big tables', { '9-Ball': 1, '10-Ball': 1, 'One Pocket': 1 }], ['Money games and action', { 'Banks': 2, 'One Pocket': 1, '9-Ball': 1 }], ['Anywhere I can get a practice table', { 'Straight Pool': 2 }]]]
+];
+
+export function whichGamePage(cfg) {
+  const qs = WG_Q.map(([q, opts], i) => `<li class="card quiz-q" style="padding:14px 18px;margin:0 0 12px"><p style="margin:0 0 8px;font-weight:700">${i + 1}. ${q}</p>
+    <div style="display:grid;gap:6px">${opts.map(([label, pts]) => `<button type="button" data-pts='${JSON.stringify(pts).replace(/'/g, '&#39;')}' style="text-align:left;padding:10px 12px;font-size:16px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--text);cursor:pointer">${label}</button>`).join('')}</div></li>`).join('');
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/play/">Play</a> <span>/</span> <span>Which Pool Game Is Yours?</span></nav>
+  <div class="pagehead"><h1>Which Pool Game Is Yours?</h1><p>Five quick questions. We'll match you with the pool game that fits how you like to play, and show you where to play it.</p></div>
+  <ol id="whichGame" data-games='${JSON.stringify(WG_GAMES).replace(/'/g, '&#39;')}' style="list-style:none;padding:0;margin:0">${qs}</ol>
+  <div id="whichOut" class="card" style="padding:16px 18px" aria-live="polite"><p class="muted" style="margin:0">Answer all five to see your game.</p></div>
+  <article class="card guide" style="margin-top:16px"><h2 style="margin-top:0">The games</h2><ul>${Object.entries(WG_GAMES).map(([g, x]) => `<li><b><a href="${x.guide}">${g}</a>:</b> ${x.blurb}</li>`).join('')}</ul></article>
+  <section class="sec seo-sec"><h2>More to play</h2><div class="guide-next">
+    <a href="/play/aim-trainer"><small>Game</small><b>Aim trainer and daily challenge</b></a>
+    <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>Pool rules quiz: 12 questions</b></a>
+    <a href="/play/lag-challenge"><small>Game</small><b>Lag challenge</b></a>
+    <a href="/trick-shots/"><small>Trick shots</small><b>14 trick shots with diagrams</b></a>
+  </div></section>`;
+  return layout(cfg, { title: 'Which Pool Game Is Yours? 5-Question Quiz | Billiard Action Time', description: 'Take the quiz to find your pool game: 8-Ball, 9-Ball, 10-Ball, One Pocket, Banks, Straight Pool or Scotch Doubles. Then learn the rules and find tournaments.', path: '/play/which-game', body, scripts: ['/play.js'] });
 }
