@@ -225,7 +225,7 @@ function eventRows(db, list, { showCity = true } = {}) {
 
 // Guides that match a tournament's game (articles live in guides.js).
 const GUIDE_FOR_GAME = { '8-Ball': ['8-ball-rules', '8-Ball rules'], '9-Ball': ['9-ball-rules', '9-Ball rules'], '10-Ball': ['10-ball-rules', '10-Ball rules'],
-  'Scotch Doubles': ['scotch-doubles', 'how Scotch Doubles works'], 'One Pocket': ['one-pocket', 'One Pocket basics'] };
+  'Scotch Doubles': ['scotch-doubles', 'how Scotch Doubles works'], 'One Pocket': ['one-pocket', 'One Pocket basics'], 'Straight Pool': ['straight-pool-rules', 'straight pool rules'] };
 // A listing with nothing but a name, room and date: kept on the site and in every list, but left out of
 // search results so the index is made of pages with real detail.
 export function isThinListing(t) {

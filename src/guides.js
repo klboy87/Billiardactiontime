@@ -243,6 +243,108 @@ export const GUIDES = [
 <h2>Why it is different</h2>
 <p>Because you only have one target, much of One Pocket is moving balls toward your side of the table and leaving your opponent nothing. Games can be long and tactical, which is why One Pocket events often use short races.</p>
 <p>Find <a href="/tournaments/one-pocket">One Pocket tournaments near you</a>.</p>`
+  },
+  {
+    slug: 'straight-pool-rules', title: 'Straight Pool (14.1 Continuous) Rules and Scoring',
+    desc: 'How straight pool works: calling every shot, scoring a point per ball, the 14-ball rerack, the opening break rule and the three-foul penalty.',
+    body: `
+<p>Straight pool, officially called <b>14.1 continuous</b>, was the main tournament game in America for most of the 1900s. It rewards position play and patience more than any other game, and many players say it is the best way to learn the game.</p>
+<h2>The goal</h2>
+<p>Every ball is worth one point. Players agree on a target before the match, such as 50, 100 or 150 points for a top-level match, or 25 to 75 points in a local event. The first player to reach the target wins.</p>
+<h2>Call every shot</h2>
+<p>You can shoot at any ball, in any order, but you must <b>call the ball and the pocket</b>. Obvious shots usually do not need to be said out loud, but a bank, combination or kick should be called. If the called ball goes in the called pocket, you score a point and keep shooting. Extra balls that fall on a legal shot also count.</p>
+<h2>The rerack</h2>
+<p>This is what makes the game "continuous." When only one object ball is left on the table, the other <b>14 balls are racked again</b> with the spot at the front of the rack left empty. The player keeps shooting, usually trying to make the last ball and break open the new rack with the cue ball in the same shot. Planning that "break ball" is the heart of straight pool strategy.</p>
+<h2>The opening break</h2>
+<p>The first break of the game is a safety-first shot. The breaker must either pocket a called ball, or drive the cue ball and at least <b>two object balls to a rail</b>. Failing that is a breaking foul and costs <b>two points</b>, and the opponent can make the breaker break again. That is why most opening breaks just clip a corner ball and send the cue ball back up the table.</p>
+<h2>Fouls and the three-foul rule</h2>
+<ul>
+<li>A normal foul (scratching, not hitting a ball, no rail after contact) costs <b>one point</b>. Scores can go negative.</li>
+<li>Three fouls in a row by the same player cost an extra <b>15 points</b>, and the balls are reracked. Players are warned after the second foul in a row.</li>
+</ul>
+<h2>Safeties</h2>
+<p>You can call "safety" and play a defensive shot. You do not score, but it is not a foul as long as you still hit a ball and get a rail. Long safety battles are normal, especially on the opening break.</p>
+<h2>Straight pool tournaments</h2>
+<p>Straight pool events are rarer than 8-Ball or 9-Ball because matches take longer. When they are run, the race is often shorter (for example, 50 or 75 points) or handicapped by points. Look for <a href="/tournaments/straight-pool">straight pool tournaments</a>, or brush up on the <a href="/guides/9-ball-rules">9-Ball</a> and <a href="/guides/8-ball-rules">8-Ball</a> rules most weekly events use.</p>`
+  },
+  {
+    slug: 'pool-tournament-etiquette', title: 'Pool Tournament Etiquette: The Unwritten Rules',
+    desc: 'How to behave at a pool tournament: before your match, at the table, calling fouls, sharking, conceding and dealing with disputes.',
+    body: `
+<p>Most pool tournaments are friendly, and most of the rules that keep them that way are never written on the flyer. Here is what regular players expect from each other.</p>
+<h2>Before your match</h2>
+<ul>
+<li><b>Be there when you are called.</b> If you have to step out, tell the director. Many events give a short grace period and then forfeit the match.</li>
+<li><b>Pay before the draw.</b> Have cash ready. Directors are often running the event and playing in it at the same time.</li>
+<li><b>Know the rules for the event.</b> Ask about the race, the break rules and who racks before the first match, not after a disputed shot.</li>
+</ul>
+<h2>At the table</h2>
+<ul>
+<li><b>Stay still and quiet while your opponent shoots.</b> Sit down out of their line of sight. Don't chalk loudly, stand behind the pocket they are shooting at, or talk to them.</li>
+<li><b>Rack carefully and fairly.</b> A tight rack is a courtesy. If your opponent asks to see the rack, let them.</li>
+<li><b>Don't coach during the match</b> unless the event allows coaching. Friends at the rail should stay quiet too.</li>
+<li><b>Put the phone away.</b> Step away from the table to take a call.</li>
+</ul>
+<h2>Fouls and close hits</h2>
+<p>Call your own fouls. If a shot might be close, such as a possible double hit or a hit you can't see, ask a neutral player or the director to watch it before it is shot. Arguing about it afterwards rarely ends well. In most bar events, if no one watched, the shooter gets the benefit of the doubt.</p>
+<h2>Sharking</h2>
+<p>"Sharking" is anything meant to distract or upset an opponent: noise, movement, slow play on purpose, or needling talk. Most events can penalize it, and it is the quickest way to get a bad reputation in a local scene.</p>
+<h2>Winning and losing</h2>
+<ul>
+<li>Shake hands at the end of a match, win or lose.</li>
+<li>Report the result to the director right away, as the winner, the loser or both, whatever the event uses.</li>
+<li>Don't unscrew your cue to concede a game unless you mean it. In most events, that counts as conceding.</li>
+</ul>
+<h2>Disputes</h2>
+<p>Stop play, call the director and explain calmly. The director's decision is final. If you think a ruling was wrong, bring it up politely after the match, not at the table.</p>
+<p>Heading to your first event? Read <a href="/guides/first-pool-tournament">what to expect at your first pool tournament</a>, then <a href="/this-weekend/">find a tournament this weekend</a>.</p>`
+  },
+  {
+    slug: 'pool-table-sizes', title: 'Pool Table Sizes: 7-Foot, 8-Foot and 9-Foot Tables Compared',
+    desc: 'Playing-surface sizes for 7, 8 and 9-foot pool tables, how much room you need for each, and which size tournaments are played on.',
+    body: `
+<p>Pool tables are named by their rough length, but the number that matters for play is the size of the <b>playing surface</b>, measured between the cushion noses. The playing surface is always twice as long as it is wide.</p>
+<h2>Common sizes</h2>
+<table class="t"><thead><tr><th>Table</th><th>Playing surface (about)</th><th>Room needed with a 58" cue (about)</th><th>Where you see it</th></tr></thead><tbody>
+<tr><td>7-foot ("bar box")</td><td>78" × 39"</td><td>16'2" × 12'11"</td><td>Bars, coin-op tables, many leagues and bar-box tournaments</td></tr>
+<tr><td>8-foot</td><td>88" × 44"</td><td>17' × 13'4"</td><td>Homes, some pool rooms</td></tr>
+<tr><td>Oversized 8-foot ("8-plus")</td><td>92" × 46"</td><td>17'4" × 13'6"</td><td>Homes, some pool rooms</td></tr>
+<tr><td>9-foot</td><td>100" × 50"</td><td>18' × 13'10"</td><td>Pool rooms, pro events, most big tournaments</td></tr>
+</tbody></table>
+<p class="muted">Room sizes add about 58 inches (a standard cue) on every side of the playing surface. With a shorter 52" or 48" cue you can get by in less space, but you will feel it on shots near the rail.</p>
+<h2>How the game changes</h2>
+<p>On a <b>7-foot bar table</b>, the balls are closer together and the break is powerful, so 8-Ball runs out more often and clusters are a bigger problem. Many bar-box tournaments play 8-Ball with a short race and a fast pace.</p>
+<p>On a <b>9-foot table</b>, shots are longer and position play is harder, but there is more room around the balls. Rotation games like <a href="/guides/9-ball-rules">9-Ball</a> and <a href="/guides/10-ball-rules">10-Ball</a> are mostly played on 9-footers, and so are <a href="/big-tournaments/">the bigger tournaments</a>.</p>
+<h2>Tournament tables</h2>
+<p>Flyers usually say "bar box" or "7-foot" when an event is on small tables, and "9-foot" or "big tables" otherwise. If a flyer doesn't say, ask the room. Players who practice on one size are often surprised by the other: cue ball speed on a big table and crowding on a small one are the usual adjustments.</p>
+<h2>Other things that affect play</h2>
+<ul>
+<li><b>Pocket size.</b> Tighter pockets make every shot harder. Pro tables often use pockets around 4.5 inches; many bar tables are more generous.</li>
+<li><b>Cloth.</b> New, fast cloth makes balls roll farther and spin more. Older or slower cloth needs a firmer stroke.</li>
+<li><b>Cue ball.</b> Some coin-op bar tables use a slightly larger or heavier cue ball so the table can return it. It reacts differently on draw shots.</li>
+</ul>
+<p>Find <a href="/tournaments/">pool tournaments near you</a> and check the listing or flyer for table size.</p>`
+  },
+  {
+    slug: 'find-pool-tournaments-near-you', title: 'How to Find Pool Tournaments Near You (Weekly, Monthly and Big Events)',
+    desc: 'Where pool tournaments are posted, how to find weekly bar and pool-room events near you, and how to hear about new ones first.',
+    body: `
+<p>Most towns with a pool room or a few bars with tables have at least one weekly tournament, but they can be hard to find. Many are only posted on a flyer by the counter or in a local Facebook group. Here is how to track them down.</p>
+<h2>1. Start with a directory</h2>
+<p>Billiard Action Time collects tournaments every day from pool rooms, tournament directors, public calendars and players. Browse <a href="/tournaments/">tournaments by state and city</a>, see <a href="/this-weekend/">what is on this weekend</a>, or use <a href="/near">near me</a> to sort by distance. Each listing shows the game, entry fee and added money when the room provides them.</p>
+<h2>2. Ask at the pool room</h2>
+<p>The person at the counter knows every event in the room and usually the ones nearby. Look for flyers at the counter, on the walls and near the restrooms. Many rooms run the same event on the same night each week, such as an 8-Ball tournament every Tuesday or a 9-Ball tournament every Sunday afternoon.</p>
+<h2>3. Join the local pool groups</h2>
+<p>Search Facebook for your city or region plus "pool" or "billiards." These groups are where directors post flyers, changes and cancellations. When you see a flyer for an event we don't have, you can <a href="/post">post it free</a> or <a href="/scan">scan the flyer</a> and it will show up for everyone.</p>
+<h2>4. Leagues lead to tournaments</h2>
+<p>League nights are a good way to meet the local players, and league players always know where the weekend tournaments are. Many leagues also run their own tournaments and qualifiers.</p>
+<h2>5. Plan around the big ones</h2>
+<p>Regional tours, state opens and added-money events draw players from hours away. See the <a href="/big-tournaments/">biggest upcoming tournaments</a> and the <a href="/calendar">tournament calendar</a> to plan ahead.</p>
+<h2>6. Get alerts</h2>
+<p>New events are posted every day. <a href="/alerts">Get an email alert</a> for your area so you hear about them first.</p>
+<h2>Before you go</h2>
+<p>Call or message the room to confirm the start time, sign-up cutoff and entry fee, especially for weekly events that may skip a holiday. Then read <a href="/guides/first-pool-tournament">what to expect at your first tournament</a> and <a href="/guides/pool-tournament-etiquette">the unwritten rules</a>.</p>`
+
   }
 ];
 
