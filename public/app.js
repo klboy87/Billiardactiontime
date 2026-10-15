@@ -563,6 +563,18 @@
     });
   };
 
+  function todayLocal() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  // "I'm going" (same API and anonymous browser id as the tournament pages)
+  function wireGoing(id) {
+    const btn = document.getElementById('goingBtn'); if (!btn) return;
+    let voter = ''; try { voter = localStorage.getItem('bat_voter') || ''; if (!voter) { voter = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, ''); localStorage.setItem('bat_voter', voter); } } catch {}
+    let mine = false;
+    const paint = n => { btn.textContent = (mine ? "✅ You're going" : "👍 I'm going") + (n ? ' · ' + n : ''); btn.classList.toggle('btn-green', mine); btn.classList.toggle('btn-out', !mine); };
+    const call = body => fetch(`/api/tournaments/${id}/going`, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', ...(voter ? { 'X-Voter': voter } : {}) }, body: body ? JSON.stringify(body) : undefined }).then(r => r.json());
+    call().then(j => { mine = !!j.mine; paint(j.count); }).catch(() => {});
+    btn.addEventListener('click', () => { if (!voter) return; btn.disabled = true; call({ going: !mine }).then(j => { if (j.error) { btn.textContent = j.error; return; } mine = !!j.mine; paint(j.count); }).catch(() => {}).finally(() => { btn.disabled = false; }); });
+  }
+
   routes['/t'] = async (params, id) => {
     app.innerHTML = loading('Loading tournament…');
     let t;
@@ -593,10 +605,12 @@
           ${t.website ? `<a class="btn btn-out" href="${esc(t.website)}" target="_blank" rel="noopener">Website</a>` : ''}
           ${t.pageUrl ? `<a class="btn btn-green" href="${esc(t.pageUrl)}#share">Share / Get Graphic</a>` : ''}
           <a class="btn btn-out" href="/t/${t.id}/event.ics" download>📅 Add to Calendar</a>
+          ${t.date >= todayLocal() ? `<button type="button" class="btn btn-out" id="goingBtn">👍 I'm going</button>` : ''}
           <a class="btn btn-out" href="#/claim/${t.id}">Claim This Tournament</a>
           <a class="btn btn-out" href="#/report/${t.id}">Report a Problem</a>
         </div>
       </div>`;
+    wireGoing(t.id);
   };
 
   routes['/venues'] = async () => {
