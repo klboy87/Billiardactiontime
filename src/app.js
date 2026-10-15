@@ -275,11 +275,18 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     }
     if (m === 'POST' && p === '/api/tournaments') {
       if (limited(clientIp(req))) return json(req, res, 429, { error: 'Too many submissions. Try again in an hour.' });
-      const v = validateSubmission(await readJson(req));
+      const body = await readJson(req);
+      const v = validateSubmission(body);
       if (v.error) return json(req, res, 400, { error: v.error });
-      const id = D.createLocalTournament(db, v.value, v.flyer);
+      // "Repeats weekly": one pending listing per week (up to 12 more), so each date gets its own page.
+      const repeat = Math.max(0, Math.min(11, Number.parseInt(body?.repeatWeeks, 10) || 0));
+      const ids = [];
+      for (let k = 0; k <= repeat; k++) {
+        const date = new Date(Date.parse(v.value.date + 'T00:00:00Z') + k * 7 * 864e5).toISOString().slice(0, 10);
+        ids.push(D.createLocalTournament(db, { ...v.value, date }, v.flyer));
+      }
       setImmediate(() => geocodePending(db, cfg, { fetchFn, log }).catch(() => {}));
-      return json(req, res, 201, { id, status: 'pending' });
+      return json(req, res, 201, { id: ids[0], ids, count: ids.length, status: 'pending' });
     }
 
     if (m === 'POST' && p === '/api/hooks/tournaments') {

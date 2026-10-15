@@ -640,6 +640,7 @@
         <div class="two">
           <div class="fg"><label>Date *</label><input name="date" type="date" required></div>
           <div class="fg"><label>Time</label><input name="time" type="time"></div>
+          <div class="fg"><label>Repeats</label><select name="repeat"><option value="0">One time only</option><option value="3">Every week for 4 weeks</option><option value="7">Every week for 8 weeks</option><option value="11">Every week for 12 weeks</option></select></div>
         </div>
         <div class="fg"><label>Game</label><select name="game">${GAMES.map(g => `<option>${esc(g)}</option>`).join('')}</select></div>
         <div class="two">
@@ -741,14 +742,15 @@
         registrationUrl: f.get('registrationUrl') || null,
         director: { name: f.get('directorName') || null, phone: f.get('directorPhone') || null, email: f.get('directorEmail') || null },
         venue: { name: f.get('venueName'), address: f.get('address') || null, city: f.get('city'), state: f.get('state'), zip: f.get('zip') || null },
-        flyer: flyerDataUrl || null
+        flyer: flyerDataUrl || null,
+        repeatWeeks: Number(f.get('repeat')) || 0
       };
       const msg = document.getElementById('postMsg');
       msg.innerHTML = loading('Submitting…');
       try {
         const res = await api('/api/tournaments', { method: 'POST', body });
         recordSubmission({ id: res.id, name: body.name, date: body.date, venue: body.venue, status: res.status, submittedAt: new Date().toISOString() });
-        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted! It will appear once an admin approves it. <a href="#/account">View it on your account</a>.</p></div>`;
+        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted${res.count > 1 ? ` ${res.count} weekly dates` : ''}! ${res.count > 1 ? 'They' : 'It'} will appear once an admin approves ${res.count > 1 ? 'them' : 'it'}. <a href="#/account">View it on your account</a>.</p></div>`;
         e.target.reset();
         showFlyerPreview(null);
       } catch (err) { msg.innerHTML = errorBox(err.message); }
@@ -996,16 +998,17 @@
         <form id="nlRemove" class="actbar" style="margin-top:12px;flex-wrap:wrap"><input name="email" type="email" required placeholder="Email to unsubscribe" style="max-width:280px"><button class="btn btn-out btn-sm" type="submit">Remove From List</button></form>
       </div>
       <h2>Needs Review (${pending.length})</h2>
+      ${pending.length > 1 ? `<p class="actbar"><button type="button" class="btn btn-blue btn-sm" id="approveAll">Approve all ${pending.length}</button></p>` : ''}
       <div id="pendingList" class="review">
-        ${pending.length ? pending.map(t => `
-          <div class="card" data-id="${t.id}">
+        ${pending.length ? pending.map(t => { const series = pending.filter(x => x.name === t.name && x.venue.name === t.venue.name).length; return `
+          <div class="card" data-id="${t.id}" data-series="${esc(t.name + '|' + t.venue.name)}">
             <h3>${esc(t.name)}</h3>
             <p class="muted">${esc(fmtDate(t.date))} · ${esc(t.venue.name)}, ${esc(t.venue.city)}, ${esc(t.venue.state)}</p>
             <div class="actbar">
-              <button class="btn btn-blue btn-sm act-approve">Approve</button>
+              <button class="btn btn-blue btn-sm act-approve">Approve</button>${series > 1 ? `<button class="btn btn-green btn-sm act-approve-series">Approve all ${series} weekly dates</button>` : ''}
               <button class="btn btn-out btn-sm act-reject">Reject</button>
             </div>
-          </div>`).join('') : '<p class="muted">Nothing waiting on review.</p>'}
+          </div>`; }).join('') : '<p class="muted">Nothing waiting on review.</p>'}
       </div>
       <h2>Staking Board: Needs Review (${pendingStakes.length})</h2>
       <div id="pendingStakes" class="review">
@@ -1072,8 +1075,15 @@
       try { const r = await api('/api/admin/sync', { method: 'POST' }); m.textContent = `Done: ${r.status}${r.message ? ' — ' + r.message : ''}`; }
       catch (e) { m.textContent = 'Error: ' + e.message; }
     });
+    const approveCards = async cards => { for (const c of cards) { await api(`/api/admin/tournaments/${c.dataset.id}/approve`, { method: 'POST' }).catch(() => {}); c.remove(); } };
+    document.getElementById('approveAll')?.addEventListener('click', async e => {
+      const cards = [...document.querySelectorAll('#pendingList [data-id]')];
+      if (!cards.length || !confirm(`Approve all ${cards.length} pending tournaments?`)) return;
+      e.target.disabled = true; await approveCards(cards); e.target.remove();
+    });
     document.getElementById('pendingList').addEventListener('click', async e => {
       const card = e.target.closest('[data-id]'); if (!card) return;
+      if (e.target.classList.contains('act-approve-series')) { await approveCards([...document.querySelectorAll('#pendingList [data-series]')].filter(c => c.dataset.series === card.dataset.series)); return; }
       const id = card.dataset.id;
       if (e.target.classList.contains('act-approve')) await api(`/api/admin/tournaments/${id}/approve`, { method: 'POST' }).catch(() => {});
       else if (e.target.classList.contains('act-reject')) await api(`/api/admin/tournaments/${id}/reject`, { method: 'POST' }).catch(() => {});
