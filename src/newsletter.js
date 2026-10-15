@@ -2,7 +2,7 @@
 // states, and big events coming up. The admin page shows it ready to copy into Gmail (or any email
 // program), so the owner can send it to the subscriber list with one paste.
 import * as SEO from './seo.js';
-import { todayIso } from './db.js';
+import { todayIso, goingTop } from './db.js';
 import { STATE_NAMES } from './normalize.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -27,7 +27,9 @@ export function buildNewsletter(db, cfg) {
   const later = all.filter(t => t.date > wk.to && t.date <= addDays(wk.to, 28) && isBig(t)).sort((a, b) => a.date.localeCompare(b.date) || weight(b) - weight(a));
   const calendar = []; const seenDay = new Map();
   for (const t of later) { const n = seenDay.get(t.date) || 0; if (n < 2 && calendar.length < 5) { calendar.push(t); seenDay.set(t.date, n + 1); } }
-  const shown = new Set([...big, ...calendar].map(t => t.id));
+  const byId = new Map(all.map(t => [t.id, t]));
+  const popular = goingTop(db, 10).filter(g => g.n >= 2 && byId.has(g.id)).slice(0, 4).map(g => ({ t: byId.get(g.id), n: g.n }));
+  const shown = new Set([...big, ...calendar, ...popular.map(p => p.t)].map(t => t.id));
   const fresh = SEO.recentlyAdded(db, 7).filter(t => !shown.has(t.id)).sort((a, b) => weight(b) - weight(a)).slice(0, 5).sort((a, b) => a.date.localeCompare(b.date));
   const range = wk.from === wk.to ? md(wk.from) : `${md(wk.from)}–${md(wk.to)}`;
   const top = big[0];
@@ -54,6 +56,7 @@ export function buildNewsletter(db, cfg) {
     P(`Looking for a game on a weeknight? ${A(link('/tonight/', 'tonight'), "See tonight's tournaments")}, any day of the week.`),
     states.length ? H('📍 Busiest states this weekend') + P(states.map(([s, n]) => A(link(SEO.weekendPath(s), 'state'), `${STATE_NAMES[s] || s} (${n})`)).join(' &nbsp;·&nbsp; ')) : '',
     calendar.length ? H('📅 Mark your calendar') + `<ul style="padding-left:20px;margin:0 0 8px">${calendar.map(item).join('')}</ul>` : '',
+    popular.length ? H('🔥 Players are going to these') + `<ul style="padding-left:20px;margin:0 0 8px">${popular.map(({ t, n }) => item(t).replace('</span></li>', ` · <b>${n} going</b></span></li>`)).join('')}</ul>` : '',
     fresh.length ? H('🆕 New this week') + `<ul style="padding-left:20px;margin:0 0 8px">${fresh.map(item).join('')}</ul>` + P(A(link('/new/', 'new'), 'See everything added this week →')) : '',
     H('🎯 Running a tournament?'),
     P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')}`),
