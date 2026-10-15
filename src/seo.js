@@ -226,7 +226,7 @@ function eventRows(db, list, { showCity = true } = {}) {
     const ml = monthLabel(t.date);
     if (ml !== month) { if (month) html += '</tbody></table></div>'; month = ml; html += `<h3 class="seo-month">${esc(ml)}</h3><div class="card seo-tbl"><table class="t"><tbody>`; }
     const v = t.venue;
-    html += `<tr><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${badge(t.date)}</td>
+    html += `<tr${v.lat != null && v.lng != null ? ` data-lat="${v.lat}" data-lng="${v.lng}"` : ''}><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${badge(t.date)}</td>
       <td><a href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b></a><br><small class="muted">${esc(v.name)}${showCity ? ` · ${esc(v.city)}, ${esc(v.state)}` : ''}${gameWord(t.game) ? ' · ' + esc(t.game) : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · ' + money(t.added) + ' added' : ''}</small></td></tr>`;
   }
   return html + (month ? '</tbody></table></div>' : '');
@@ -630,7 +630,7 @@ export function weekendPage(db, cfg, stateSlugPart) {
     itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   const body = `${bc.html}
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
-    <div class="actbar" style="margin-top:12px"><a class="btn btn-gold" href="${tonightPath(state)}">Tonight${esc(where)}</a>${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
+    <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="${tonightPath(state)}">Tonight${esc(where)}</a>${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>This weekend by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${weekendPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : soon.length ? `<h2 class="seo-h2">Coming up next${where}</h2>${eventRows(db, soon, { showCity: true })}` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
@@ -642,7 +642,7 @@ export function weekendPage(db, cfg, stateSlugPart) {
       <a class="btn btn-out" href="sms:?&amp;body=${tx}%20${u}">Text</a>
       <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
   </section>`;
-  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !soon.length });
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !soon.length, scripts: ['/near-sort.js'] });
 }
 
 // Plain-HTML heading and intro for the home page. The app replaces it once it loads; search engines
@@ -783,7 +783,7 @@ export function tonightPage(db, cfg, stateSlugPart) {
     itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   const body = `${bc.html}
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
-    <div class="actbar" style="margin-top:12px"><a class="btn btn-gold" href="/near">📍 Closest to Me</a><a class="btn btn-blue" href="${weekendPath(state)}">This Weekend${esc(where)}</a>${state ? `<a class="btn btn-out" href="/tonight/">Whole Country</a>` : `<a class="btn btn-out" href="/alerts">Get Alerts</a>`}</div></div>
+    <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="/near" data-near-fallback>📍 Closest to Me</a><a class="btn btn-blue" href="${weekendPath(state)}">This Weekend${esc(where)}</a>${state ? `<a class="btn btn-out" href="/tonight/">Whole Country</a>` : `<a class="btn btn-out" href="/alerts">Get Alerts</a>`}</div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${tonightPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : ''}
   ${next.length ? `<section class="sec seo-sec"><h2>Tomorrow${esc(where)} (${esc(shortDate(tomorrow))})</h2>${eventRows(db, next.slice(0, list.length ? 25 : 200), { showCity: true })}${list.length && next.length > 25 ? `<p class="muted">And ${next.length - 25} more tomorrow.</p>` : ''}</section>` : ''}
@@ -795,7 +795,7 @@ export function tonightPage(db, cfg, stateSlugPart) {
       <a class="btn btn-out" href="sms:?&amp;body=${tx}%20${u}">Text</a>
       <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
   </section>`;
-  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !next.length });
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !next.length, scripts: ['/near-sort.js'] });
 }
 
 // "Just added" (/new/): upcoming tournaments first listed in the last 7 days, newest first, grouped by day.
