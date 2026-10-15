@@ -11449,6 +11449,317 @@
       "city": "Mesa",
       "state": "AZ",
       "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "rr-halloween-8-ball-tournament-sidelines-sports-bar-grill-2026-10-31",
+      "name": "Halloween 8-Ball Tournament",
+      "date": "2026-10-31",
+      "venue": "Sidelines Sports Bar & Grill",
+      "address": "4451 Veronica S Shoemaker Blvd",
+      "city": "Fort Myers",
+      "state": "FL",
+      "zip": "33916",
+      "game": "8-Ball",
+      "entry": 20,
+      "notes": "Source: rackradar.com"
+    },
+    {
+      "id": "rr-jack-jill-8-ball-tournament-saints-again-2026-11-14",
+      "name": "Jack & Jill 8 Ball Tournament",
+      "date": "2026-11-14",
+      "venue": "Saints Again",
+      "address": "517 E Michigan Ave",
+      "city": "Battle Creek",
+      "state": "MI",
+      "zip": "49014",
+      "game": "8-Ball",
+      "entry": 50,
+      "notes": "Source: rackradar.com"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-tournaments-time-out-billiards-2026-10-22",
+      "name": "Thursday Night 8 Ball Tournaments",
+      "date": "2026-10-22",
+      "venue": "Time Out Billiards",
+      "city": "Dayton",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-full-moon-saloon-2026-10-22",
+      "name": "Thursday Night 8-Ball",
+      "date": "2026-10-22",
+      "venue": "Full Moon Saloon",
+      "city": "Hastings",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-9-ball-belding-vfw-2026-10-22",
+      "name": "Thursday Night 9 Ball",
+      "date": "2026-10-22",
+      "venue": "Belding VFW",
+      "city": "Belding",
+      "state": "MI",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-billiard-tournament-underdog-restaurant-and-sports-club-2026-10-22",
+      "name": "Billiard Tournament",
+      "date": "2026-10-22",
+      "venue": "Underdog Restaurant and Sports Club",
+      "city": "Dallas",
+      "state": "TX",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-weekly-8-ball-tournament-alehouse-bar-grill-2026-10-22",
+      "name": "Weekly 8 Ball Tournament",
+      "date": "2026-10-22",
+      "venue": "Alehouse Bar & Grill",
+      "city": "Bowling Green",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-pool-tournament-the-sandtrap-social-club-2026-10-22",
+      "name": "Pool Tournament",
+      "date": "2026-10-22",
+      "venue": "The Sandtrap Social Club",
+      "city": "Cheraw",
+      "state": "SC",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-10-ball-tournament-extreme-shots-2026-10-22",
+      "name": "10 Ball Tournament",
+      "date": "2026-10-22",
+      "venue": "Extreme Shots",
+      "city": "New Iberia",
+      "state": "LA",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-pool-tournament-u-time-billiards-2026-10-22",
+      "name": "Thursday Night Pool Tournament",
+      "date": "2026-10-22",
+      "venue": "U-Time Billiards",
+      "city": "Aurora",
+      "state": "CO",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-weekly-thursday-night-9-ball-cue-bar-2026-10-22",
+      "name": "Weekly Thursday Night 9-Ball",
+      "date": "2026-10-22",
+      "venue": "Cue Bar",
+      "city": "Bellmore",
+      "state": "NY",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-straight-8-brokenhorn-productions-2026-10-22",
+      "name": "Straight 8",
+      "date": "2026-10-22",
+      "venue": "Brokenhorn Productions",
+      "city": "Midland",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-weekly-nine-ball-tournament-jb-s-billiards-2026-10-22",
+      "name": "Weekly Nine Ball Tournament",
+      "date": "2026-10-22",
+      "venue": "JB's Billiards",
+      "city": "Nashville",
+      "state": "NC",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-stadium-saloon-2026-10-22",
+      "name": "Thursday Night 8 Ball",
+      "date": "2026-10-22",
+      "venue": "Stadium Saloon",
+      "city": "Las Vegas",
+      "state": "NV",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-8-ball-singles-bola-8-sports-bar-2026-10-22",
+      "name": "8-Ball Singles",
+      "date": "2026-10-22",
+      "venue": "Bola 8 Sports Bar",
+      "city": "Lafayette",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-9-ball-king-s-billiards-2026-10-22",
+      "name": "Thursday Night 9 Ball",
+      "date": "2026-10-22",
+      "venue": "King's Billiards",
+      "city": "Beebe",
+      "state": "AR",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-8-ball-tournament-texas-county-social-club-2026-10-22",
+      "name": "8-Ball Tournament",
+      "date": "2026-10-22",
+      "venue": "Texas County Social Club",
+      "city": "Carthage",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-tournament-mile-high-billiards-2026-10-22",
+      "name": "Thursday Night Tournament",
+      "date": "2026-10-22",
+      "venue": "Mile High Billiards",
+      "city": "Arvada",
+      "state": "CO",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-8-ball-pool-tournament-royalty-billiards-2026-10-22",
+      "name": "8-Ball Pool Tournament",
+      "date": "2026-10-22",
+      "venue": "Royalty Billiards",
+      "city": "Branson",
+      "state": "MO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-weekly-8-ball-tournament-bc-billiards-2026-10-22",
+      "name": "Thursday Night Weekly 8 Ball Tournament",
+      "date": "2026-10-22",
+      "venue": "BC Billiards",
+      "city": "Sebring",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-kb-o-connor-s-pub-2026-10-22",
+      "name": "Thursday Night 8 Ball",
+      "date": "2026-10-22",
+      "venue": "KB / O'Connor's Pub",
+      "city": "North Kingstown",
+      "state": "RI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-action-lounge-billiards-2026-10-22",
+      "name": "Thursday Night 8 Ball",
+      "date": "2026-10-22",
+      "venue": "Action Lounge & Billiards",
+      "city": "Leonardtown",
+      "state": "MD",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-9-ball-two-sisters-billiards-cafe-2026-10-22",
+      "name": "Thursday Night 9 Ball",
+      "date": "2026-10-22",
+      "venue": "Two Sisters Billiards & Cafe",
+      "city": "Slidell",
+      "state": "LA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-little-a-s-2026-10-22",
+      "name": "Thursday Night 8 Ball",
+      "date": "2026-10-22",
+      "venue": "Little A's",
+      "city": "Centralia",
+      "state": "IL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-joes-river-bar-2026-10-22",
+      "name": "Thursday Night 8 Ball",
+      "date": "2026-10-22",
+      "venue": "Joes River Bar",
+      "city": "Heyburn",
+      "state": "ID",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-texas-southbound-tavern-2026-10-22",
+      "name": "Thursday Night 8 Ball",
+      "date": "2026-10-22",
+      "venue": "Texas SouthBound Tavern",
+      "city": "Fort Worth",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-3-ball-peterman-s-shamrock-2026-10-22",
+      "name": "Thursday Night 3 Ball",
+      "date": "2026-10-22",
+      "venue": "Peterman's Shamrock",
+      "city": "Saint Joseph",
+      "state": "MO",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-handicapped-9-ball-danny-k-s-billiards-and-sports-bar-2026-10-22",
+      "name": "Thursday Night Handicapped 9 Ball",
+      "date": "2026-10-22",
+      "venue": "Danny K's Billiards and Sports Bar",
+      "city": "Orange",
+      "state": "CA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-8-ball-cedar-lounge-2026-10-22",
+      "name": "Thursday Night 8 Ball",
+      "date": "2026-10-22",
+      "venue": "Cedar Lounge",
+      "city": "Morrilton",
+      "state": "AR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-lagger-s-choice-axehouse-billiards-2026-10-22",
+      "name": "Thursday Night Lagger's Choice",
+      "date": "2026-10-22",
+      "venue": "Axehouse Billiards",
+      "city": "Birmingham",
+      "state": "AL",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "ft-thursday-night-9-ball-vip-billiards-and-bar-2026-10-22",
+      "name": "Thursday night 9 ball",
+      "date": "2026-10-22",
+      "venue": "VIP Billiards and Bar",
+      "city": "Hot Springs",
+      "state": "AR",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly thursday"
     }
   ]
 }
