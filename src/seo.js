@@ -45,7 +45,9 @@ function index(db) {
   for (const [dup, keep] of dupeOf) pathById.set(dup, pathById.get(keep));
   // The same pool room sometimes exists twice (slightly different address). Treat same name + city + state
   // as one room: one venue page, at the lowest id, listing all of its tournaments.
-  const roomKey = v => `${slugify(String(v.name || '').replace(/['’]/g, ''))}|${slugify(v.city)}|${v.state}`;
+  const ROOM_GENERIC = /\b(billiards?|bar|grill|and|the|sports?|pub|lounge|club|room|pool|hall|cafe|saloon|tavern|restaurant|n)\b|[^a-z0-9 ]/g;
+  const roomKey = v => { const c = String(v.name || '').toLowerCase().replace(/['’]/g, '').replace(ROOM_GENERIC, ' ').replace(/\s+/g, ' ').trim();
+    return `${c || slugify(String(v.name || '').replace(/['’]/g, ''))}|${slugify(v.city)}|${v.state}`; };
   const primaryVenue = new Map(), roomIds = new Map();
   for (const t of all) { const k = roomKey(t.venue); if (!roomIds.has(k)) roomIds.set(k, new Set()); roomIds.get(k).add(t.venue.id); }
   for (const ids of roomIds.values()) { const p = Math.min(...ids); for (const id of ids) primaryVenue.set(id, p); }
@@ -486,7 +488,7 @@ export function venuePage(db, cfg, venueId) {
   if (primary !== venueId) return { redirect: `/venue/${primary}` };
   const all = ix.all.filter(t => ix.primaryVenue.get(t.venue.id) === primary);
   if (!all.length) return null;
-  const v = all[0].venue;
+  const v = (all.find(t => t.venue.address) || all[0]).venue;   // prefer the spelling that has a street address
   const up = all.filter(t => t.date >= today), past = all.filter(t => t.date < today).reverse().slice(0, 10);
   const path = `/venue/${venueId}`;
   const where = [v.address, v.city, v.state, v.zip].filter(Boolean).join(', ');
