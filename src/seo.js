@@ -241,6 +241,14 @@ export function isThinListing(t) {
 }
 
 // ---- tournament page ----
+
+// Other dates of the same event: same room, same weekday and the same name once weekday words are removed.
+const nameKey = n => String(n || '').toLowerCase().replace(/\b(mon|tues|wednes|thurs|fri|satur|sun)day\b|\bnight\b|\bweekly\b|[^a-z0-9]/g, '');
+function seriesOf(db, t) {
+  const ix = index(db), room = ix.primaryVenue.get(t.venue.id) ?? t.venue.id, dow = new Date(t.date + 'T00:00:00Z').getUTCDay(), k = nameKey(t.name);
+  return ix.all.filter(x => x.id !== t.id && (ix.primaryVenue.get(x.venue.id) ?? x.venue.id) === room && nameKey(x.name) === k && new Date(x.date + 'T00:00:00Z').getUTCDay() === dow);
+}
+
 export function tournamentPage(db, cfg, t) {
   const v = t.venue, today = todayIso(), ix = index(db);
   const ended = t.date < today;
@@ -262,7 +270,12 @@ export function tournamentPage(db, cfg, t) {
   const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([v.name, where].join(', '))}`;
   const body = `${bc.html}
   <article class="card">
-    ${ended ? '<p class="seo-ended">This tournament has already been played. See upcoming tournaments below.</p>' : ''}
+    ${(() => {
+      const series = seriesOf(db, t), nextUp = series.filter(x => x.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
+      const weekly = series.length >= 1 ? `<span class="chip" style="margin:0 0 8px;display:inline-block">🔁 Runs every ${WEEKDAYS[(new Date(t.date + 'T00:00:00Z').getUTCDay() + 6) % 7]}</span>` : '';
+      if (ended) return nextUp ? `<div class="seo-ended" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center"><span>This date has passed, but it runs again.</span><a class="btn btn-green" href="${tournamentPath(db, nextUp)}">Next one: ${esc(shortDate(nextUp.date))} →</a></div>${weekly}` : '<p class="seo-ended">This tournament has already been played. See upcoming tournaments below.</p>';
+      return weekly;
+    })()}
     <h1 class="dtitle">${esc(t.name)}</h1>
     <p class="lead-muted">${esc(g || 'Pool')} tournament at <b>${esc(v.name)}</b> in ${esc(v.city)}, ${esc(STATE_NAMES[v.state] || v.state)} on <b>${esc(longDate(t.date))}</b>${t.time ? ' at ' + esc(fmtTime(t.time)) : ''}.</p>
     <table class="t"><tbody>${rows}</tbody></table>
