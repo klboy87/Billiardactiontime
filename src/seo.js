@@ -495,6 +495,10 @@ export function venuePage(db, cfg, venueId) {
     ${up.length ? (() => { const feed = `${cfg.publicUrl}/venue/${venueId}/calendar.ics`, webcal = feed.replace(/^https?:/, 'webcal:');
       return `<section class="card" style="padding:14px 18px;margin-top:14px"><h2 class="seo-h2" style="margin-top:0">📅 Never miss a tournament here</h2><p class="muted" style="margin:4px 0 10px">Subscribe once and every upcoming tournament at ${esc(v.name)} shows up in your calendar, updated automatically.</p>
       <div class="actbar"><a class="btn btn-blue" href="${esc(webcal)}">iPhone / Apple Calendar</a><a class="btn btn-out" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener nofollow">Google Calendar</a><a class="btn btn-out" href="/venue/${venueId}/calendar.ics" download>Download (.ics)</a></div></section>`; })() : ''}
+    ${up.length ? `<details class="card" style="padding:12px 16px;margin-top:14px"><summary style="cursor:pointer;font-weight:700">🖥️ Run this room? Show this schedule on your website</summary>
+      <p class="muted" style="margin:8px 0">Paste this code into your website. It shows your next tournaments and updates automatically. Free.</p>
+      <textarea readonly rows="3" style="width:100%;font:13px monospace;padding:8px;border:1px solid var(--line);border-radius:8px" aria-label="Embed code">&lt;iframe src="${esc(cfg.publicUrl)}/embed/venue/${venueId}" width="100%" height="420" style="border:0;max-width:520px" title="Tournaments at ${esc(esc(v.name))}" loading="lazy"&gt;&lt;/iframe&gt;</textarea>
+      <p class="muted" style="font-size:13px;margin:6px 0 0">Dark website? Use <code>/embed/venue/${venueId}?theme=dark</code>. <a href="/embed/venue/${venueId}" target="_blank" rel="noopener">Preview</a></p></details>` : ''}
     <p class="muted" style="margin:10px 0 0">More: <a href="${hallsPath(v.state)}">pool halls in ${esc(STATE_NAMES[v.state] || v.state)}</a> · <a href="${facetPath({ state: v.state, city: v.city })}">tournaments in ${esc(v.city)}</a> · <a href="${tonightPath(v.state)}">tonight in ${esc(STATE_NAMES[v.state] || v.state)}</a></p>
     ${up.length ? eventRows(db, up, { showCity: false }) : ''}
     ${past.length ? `<section class="sec seo-sec"><h2>Recent tournaments at ${esc(v.name)}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)}</span></li>`).join('')}</ul></section>` : ''}`;
@@ -897,4 +901,23 @@ export function shareStrip(cfg, path, title, text) {
   <a class="btn btn-blue btn-sm" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${u}">Facebook</a>
   <a class="btn btn-out btn-sm" href="sms:?&amp;body=${tx}%20${u}">Text</a>
   <button type="button" class="btn btn-out btn-sm" data-share="copy">Copy Link</button></div>`;
+}
+
+// Embeddable widget (/embed/venue/<id>): a room's next tournaments for its own website. No scripts; links open
+// on Billiard Action Time in a new tab.
+export function venueEmbed(cfg, db, venueId, dark = false) {
+  const ix = index(db), today = todayIso(), primary = ix.primaryVenue.get(venueId);
+  if (primary == null) return null;
+  const all = ix.all.filter(t => (ix.primaryVenue.get(t.venue.id) ?? t.venue.id) === primary);
+  if (!all.length) return null;
+  const v = all[0].venue, up = all.filter(t => t.date >= today).slice(0, 8);
+  const c = dark ? { bg: '#0e2033', fg: '#e8eef7', mute: '#9bacc2', line: '#1f3856', link: '#7cc0ff' } : { bg: '#ffffff', fg: '#0f1b2d', mute: '#56677e', line: '#d8e0ec', link: '#1559bd' };
+  const u = path => `${cfg.publicUrl}${path}${path.includes('?') ? '&' : '?'}utm_source=embed&utm_content=venue-${primary}`;
+  const rows = up.map(t => `<li><span class="d">${esc(shortDate(t.date))}${t.time ? '<br>' + esc(fmtTime(t.time)) : ''}</span><span><a href="${esc(u(tournamentPath(db, t)))}" target="_blank" rel="noopener">${esc(t.name)}</a><br><small>${[gameWord(t.game), t.entry != null ? money(t.entry) + ' entry' : '', t.added ? money(t.added) + ' added' : ''].filter(Boolean).map(esc).join(' · ')}</small></span></li>`).join('');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tournaments at ${esc(v.name)}</title>
+<style>html,body{height:100%}body{margin:0;font:15px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;background:${c.bg};color:${c.fg}}.w{padding:12px 14px;box-sizing:border-box;height:100%;display:flex;flex-direction:column}h1{font-size:17px;margin:0 0 8px}ul{flex:1;overflow:auto;min-height:0}
+ul{list-style:none;margin:0;padding:0}li{display:flex;gap:12px;padding:8px 0;border-top:1px solid ${c.line}}.d{flex:0 0 74px;font-weight:700;font-size:13px}a{color:${c.link};font-weight:600;text-decoration:none}a:hover{text-decoration:underline}
+small{color:${c.mute}}.f{margin-top:8px;padding-top:8px;border-top:1px solid ${c.line};font-size:12px;color:${c.mute}}.f a{font-weight:400}</style></head>
+<body><div class="w"><h1>Upcoming tournaments at ${esc(v.name)}</h1>${up.length ? `<ul>${rows}</ul>` : `<p>No upcoming tournaments listed right now.</p>`}
+<div class="f"><a href="${esc(u(venuePath(db, v)))}" target="_blank" rel="noopener">Full schedule</a> · <a href="${esc(u('/alerts'))}" target="_blank" rel="noopener">Get alerts</a> · Powered by <a href="${esc(u('/'))}" target="_blank" rel="noopener">Billiard Action Time</a></div></div></body></html>`;
 }

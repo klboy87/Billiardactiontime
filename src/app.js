@@ -69,6 +69,7 @@ async function readJson(req, limit = 3_000_000) {
 function send(req, res, status, body, headers = {}) {
   const buf = Buffer.isBuffer(body) ? body : Buffer.from(body);
   const h = { ...SECURITY, ...headers };
+  for (const k of Object.keys(h)) if (h[k] == null) delete h[k];   // a route can drop a default header (embeds drop X-Frame-Options)
   if (buf.length > 1024 && /gzip/.test(req.headers['accept-encoding'] || '') && /json|text|javascript|svg|xml/.test(h['Content-Type'] || '')) {
     res.writeHead(status, { ...h, 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' });
     return res.end(zlib.gzipSync(buf));
@@ -571,6 +572,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const out = SEO.stateIcs(cfg, db, x[1]);
       if (!out) return send(req, res, 404, 'Not found', { 'Content-Type': 'text/plain; charset=utf-8' });
       return send(req, res, 200, out, { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': 'public, max-age=3600', 'X-Robots-Tag': 'noindex' });
+    }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/embed\/venue\/(\d+)$/))) {
+      const out = SEO.venueEmbed(cfg, db, Number(x[1]), url.searchParams.get('theme') === 'dark');
+      const embedHeaders = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=1800', 'X-Frame-Options': null, 'X-Robots-Tag': 'noindex',
+        'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; frame-ancestors *; base-uri 'none'; form-action 'none'" };
+      return send(req, res, out ? 200 : 404, out || 'Not found', embedHeaders);
     }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/venue\/(\d+)\/calendar\.ics$/))) {
       const out = SEO.venueIcs(cfg, db, Number(x[1]));
