@@ -16,6 +16,7 @@
     navigator.geolocation.getCurrentPosition(function (pos) {
       var lat = pos.coords.latitude, lng = pos.coords.longitude;
       document.querySelectorAll('table.t tbody').forEach(function (tb) {
+        if (!tb.querySelector('tr[data-lat]')) return;              // e.g. the weekly schedule table: leave it alone
         var list = Array.prototype.slice.call(tb.querySelectorAll('tr'));
         list.forEach(function (tr) {
           var la = parseFloat(tr.getAttribute('data-lat')), lo = parseFloat(tr.getAttribute('data-lng'));
@@ -24,7 +25,9 @@
           var cell = tr.querySelector('.seo-date'), tag = cell && cell.querySelector('.mi-tag');
           if (cell && isFinite(d)) { if (!tag) { tag = document.createElement('small'); tag.className = 'mi-tag muted'; cell.appendChild(document.createElement('br')); cell.appendChild(tag); } tag.textContent = (d < 10 ? d.toFixed(1) : Math.round(d)) + ' mi'; }
         });
-        list.sort(function (a, b) { return parseFloat(a.getAttribute('data-mi')) - parseFloat(b.getAttribute('data-mi')); }).forEach(function (tr) { tb.appendChild(tr); });
+        list.map(function (tr, i) { return [parseFloat(tr.getAttribute('data-mi')), i, tr]; })
+          .sort(function (a, b) { return a[0] === b[0] ? a[1] - b[1] : a[0] < b[0] ? -1 : 1; })   // stable; rows without coordinates keep their order at the end
+          .forEach(function (x) { tb.appendChild(x[2]); });
       });
       btn.textContent = '📍 Sorted by distance'; 
     }, function () { btn.disabled = false; btn.textContent = '📍 Sort by Distance'; alert('Location is off. Allow location access, or browse by state.'); }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
