@@ -121,3 +121,31 @@ export function toolPage(cfg, slug) {
   <p style="margin-top:14px"><a href="/tools/">All tools</a> · <a href="/guides/">Guides</a> · <a href="/post">Post your tournament free</a></p>`;
   return layout(cfg, { title: `${t.title} | Billiard Action Time`, description: t.desc, path: `/tools/${t.slug}`, body, jsonld: [appLd(cfg, t)], scripts: ['/tools.js'] });
 }
+
+// Landing page for tournament directors and room owners (/directors/): everything free that helps fill a bracket.
+export function directorsPage(cfg) {
+  const F = [
+    ['➕', 'Post your tournament free', 'Takes two minutes. Weekly event? Choose "Repeats every week" and post up to 12 weeks at once.', '/post', 'Post a tournament'],
+    ['📷', 'Snap the flyer instead', 'Take a photo of your flyer and the flyer scanner fills in the details for you.', '/scan', 'Scan a flyer'],
+    ['📣', 'Ready-made share graphics', 'Every tournament gets its own page plus square, tall and wide graphics for Facebook, Instagram and TikTok.', '/tonight/', 'See examples'],
+    ['🖥️', 'A schedule widget for your website', 'One line of code shows your upcoming tournaments on your own site and updates itself. Find it on your room\'s page.', '/pool-halls/', 'Find your room'],
+    ['📅', 'Calendar feeds for your regulars', 'Players subscribe once and every tournament at your room lands in their phone calendar.', '/pool-halls/', 'Find your room'],
+    ['🏆', 'Printable brackets with names', 'Double-elimination brackets for 8 to 64 players, filled in with a random draw and spread-out byes.', '/tools/brackets/', 'Print a bracket'],
+    ['💵', 'Payout calculator', 'Prize pool, greens fee, added money and fair splits for any field size.', '/tools/payout-calculator', 'Work out payouts'],
+    ['🔄', 'Round robin schedules', 'Everyone plays everyone, with table numbers and a standings sheet to print.', '/tools/round-robin-generator', 'Make a schedule'],
+    ['🔨', 'Online Calcutta auctions', 'Run the Calcutta from everyone\'s phones with automatic payout math.', '/auctions', 'Start a Calcutta'],
+    ['✅', 'Claim your listing', 'Already listed? Claim it to keep the details right and get the verified badge.', '/claim', 'Claim a listing']
+  ];
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>For Tournament Directors</span></nav>
+  <div class="pagehead"><h1>Fill Your Bracket: Free Tools for Tournament Directors</h1><p>Billiard Action Time is where pool players look for tournaments: tonight, this weekend and near them. List your event free and use everything below to fill your bracket. No fees, no sign-up required to post.</p>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-green" href="/post">➕ Post a Tournament Free</a><a class="btn btn-out" href="/guides/start-a-weekly-pool-tournament">How to start a weekly tournament</a></div></div>
+  <div class="ts-grid">${F.map(([ic, t, d, href, cta]) => `<div class="ts-card" style="gap:6px"><span style="font-size:32px;line-height:1">${ic}</span><b>${t}</b><span class="muted">${d}</span><a href="${href}" style="margin-top:auto;font-weight:700">${cta} →</a></div>`).join('')}</div>
+  <article class="card guide" style="margin-top:18px"><h2 style="margin-top:0">Why list here</h2>
+  <ul><li><b>Players find you by night and by place.</b> Your event shows on its own page, on your city and state pages, on <a href="/tonight/">Tonight</a> and <a href="/this-weekend/">This Weekend</a>, and in the weekly email.</li>
+  <li><b>Weekly events are easy.</b> Post once for up to 12 weeks. Each date gets its own page, and past dates point players to the next one.</li>
+  <li><b>It's free.</b> No listing fees, no commission on entries.</li></ul>
+  <p>Questions or a listing that needs fixing? Email <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a>.</p>
+  <p>Learn more: <a href="/guides/how-to-run-a-pool-tournament">how to run a pool tournament</a>, <a href="/guides/tournament-formats">tournament formats</a>, <a href="/guides/pool-tournament-payouts">payouts</a> and <a href="/guides/calcutta-auction-explained">Calcutta auctions</a>.</p></article>`;
+  return layout(cfg, { title: 'Free Tools for Pool Tournament Directors: List, Promote & Run Events | Billiard Action Time', path: '/directors/', body,
+    description: 'List your pool tournament free and fill your bracket: weekly repeat posting, share graphics, a website schedule widget, calendar feeds, printable brackets, payout and round robin tools.' });
+}
