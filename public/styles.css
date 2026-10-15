@@ -628,3 +628,5 @@ table.t tr.noline td{border-bottom:0}
 .hall{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;line-height:1.5}
 .hall-nights{font-size:14px;font-weight:600;color:var(--green)}
 .seo-sec[id],h2[id]{scroll-margin-top:84px}
+.when-badge{display:inline-block;margin-top:4px;font:700 11px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:4px;background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+.when-today{background:#f3c34a;border-color:#e0a400;color:#3a2a00}

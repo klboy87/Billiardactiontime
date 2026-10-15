@@ -220,11 +220,13 @@ function eventLd(cfg, db, t) {
 
 function eventRows(db, list, { showCity = true } = {}) {
   let month = '', html = '';
+  const today = todayIso(), tomorrow = new Date(Date.parse(today + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10);
+  const badge = d => d === today ? '<br><span class="when-badge when-today">Tonight</span>' : d === tomorrow ? '<br><span class="when-badge">Tomorrow</span>' : '';
   for (const t of list) {
     const ml = monthLabel(t.date);
     if (ml !== month) { if (month) html += '</tbody></table></div>'; month = ml; html += `<h3 class="seo-month">${esc(ml)}</h3><div class="card seo-tbl"><table class="t"><tbody>`; }
     const v = t.venue;
-    html += `<tr><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}</td>
+    html += `<tr><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${badge(t.date)}</td>
       <td><a href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b></a><br><small class="muted">${esc(v.name)}${showCity ? ` · ${esc(v.city)}, ${esc(v.state)}` : ''}${gameWord(t.game) ? ' · ' + esc(t.game) : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · ' + money(t.added) + ' added' : ''}</small></td></tr>`;
   }
   return html + (month ? '</tbody></table></div>' : '');
@@ -486,6 +488,8 @@ export function venuePage(db, cfg, venueId) {
     <p>${up.length ? `${plural(up.length, 'upcoming pool tournament')} at ${esc(v.name)} in ${esc(v.city)}, ${esc(STATE_NAMES[v.state] || v.state)}.` : `No upcoming tournaments listed at ${esc(v.name)} right now.`}</p>
     <div class="actbar"><a class="btn btn-out" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name + ', ' + where)}">Directions</a><a class="btn btn-out" href="${facetPath({ state: v.state, city: v.city })}">More in ${esc(v.city)}</a></div></div>
     ${weeklyScheduleHtml(db, all, { showCity: false, title: `Weekly at ${v.name}` })}
+    ${(() => { const others = (hallsByState(db).get(v.state) || []).filter(r => r.id !== primary && slugify(r.v.city) === slugify(v.city)).slice(0, 8);
+      return others.length ? `<section class="sec seo-sec"><h2>Other pool halls in ${esc(v.city)}</h2><ul class="seo-list">${others.map(r => `<li><a href="${venuePath(db, r.v)}">${esc(r.v.name)}</a>${roomNights(r).length ? ` <span class="muted">· tournaments ${roomNights(r).join(', ')}</span>` : ''}</li>`).join('')}</ul></section>` : ''; })()}
     <p class="muted" style="margin:10px 0 0">More: <a href="${hallsPath(v.state)}">pool halls in ${esc(STATE_NAMES[v.state] || v.state)}</a> · <a href="${facetPath({ state: v.state, city: v.city })}">tournaments in ${esc(v.city)}</a> · <a href="${tonightPath(v.state)}">tonight in ${esc(STATE_NAMES[v.state] || v.state)}</a></p>
     ${up.length ? eventRows(db, up, { showCity: false }) : ''}
     ${past.length ? `<section class="sec seo-sec"><h2>Recent tournaments at ${esc(v.name)}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)}</span></li>`).join('')}</ul></section>` : ''}`;
