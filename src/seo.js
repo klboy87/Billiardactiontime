@@ -690,7 +690,7 @@ export function bigTournamentsPage(db, cfg) {
   const bc = crumbs(cfg, [{ name: 'Tournaments', path: '/tournaments/' }, { name: 'Biggest Upcoming', path: '/big-tournaments/' }]);
   const body = `${bc.html}
   <div class="pagehead"><h1>${h1}</h1><p>${intro}</p>
-    <div class="actbar" style="margin-top:12px"><a class="btn btn-gold" href="/this-weekend/">This Weekend</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/alerts">Get Alerts</a></div></div>
+    <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="/this-weekend/">This Weekend</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/alerts">Get Alerts</a></div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>By state</h2><div class="chips">${states.map(([st, n]) => `<a class="chip" href="${facetPath({ state: st })}">${esc(STATE_NAMES[st] || st)} (${n})</a>`).join('')}</div></section>` : ''}
   ${list.length ? eventRows(db, list) : ''}
   <section class="card" style="margin-top:16px;padding:14px 18px"><h2 class="seo-h2" style="margin-top:0">Running a big event?</h2>
@@ -698,7 +698,7 @@ export function bigTournamentsPage(db, cfg) {
   const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: list.length,
     itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   return layout(cfg, { title: `${h1} (Next 60 Days) | Billiard Action Time`, description: `${plural(list.length, 'bigger pool tournament')} coming up across the US: added-money events, opens, championships and tour stops, with dates, rooms and entry fees. Updated daily.`,
-    path: '/big-tournaments/', body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length });
+    path: '/big-tournaments/', body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length , scripts: ['/near-sort.js'] });
 }
 
 // "Play it near you" box for guide pages: the next few upcoming tournaments of one game, nationwide.
