@@ -24,7 +24,7 @@ export function playIndexPage(cfg) {
     return `<a class="ts-card" href="/trick-shots/${shot.slug}" style="margin-bottom:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:center"><div>${shot.diagram.replace(/<figcaption>[\s\S]*?<\/figcaption>/, '')}</div><div><span class="ts-meta">✨ Trick shot of the day</span><br><b style="font-size:20px">${shot.title}</b><br><span class="muted">${shot.desc}</span><br><span style="font-weight:700">Learn it →</span></div></a>`; })()}
   <div class="ts-grid">${GAMES.map(g => `<a class="ts-card" href="${g.href}"><span style="font-size:38px;line-height:1">${g.icon}</span><b>${g.title}</b><span class="muted">${g.desc}</span></a>`).join('')}</div>
   <p style="margin-top:16px"><a href="/guides/">Read the guides →</a> · <a href="/this-weekend/">Find a tournament this weekend →</a></p>`;
-  return layout(cfg, { title: 'Pool Games: Aim Trainer, Rules Quiz & Trick Shots | Billiard Action Time', description: 'Free pool games and challenges: an aim trainer that scores your cut shots, a pool rules quiz, trick shots and practice drills.', path: '/play/', body });
+  return layout(cfg, { title: 'Free Pool Games: Aim, Bank & Kick Trainers, Rules Quiz | Billiard Action Time', description: 'Free pool games that work on your phone: an aim trainer with a daily challenge, bank and kick shot trainers, a lag challenge, a rules quiz, trick shots and a practice log.', path: '/play/', body });
 }
 
 export function aimTrainerPage(cfg) {
