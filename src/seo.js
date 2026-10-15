@@ -888,3 +888,13 @@ export function poolHallsStatePage(db, cfg, slugPart) {
   return layout(cfg, { title: `Pool Halls in ${name} With Pool Tournaments (${rooms.length}) | Billiard Action Time`, path: hallsPath(st), body, jsonld: [bc.ld, ld],
     description: `${rooms.length} pool halls and bars in ${name} that run pool tournaments: addresses, weekly tournament nights and upcoming events in ${cities.slice(0, 4).map(([c]) => c).join(', ')} and more.` });
 }
+
+// Compact share strip for content pages (guides, trick shots); share.js wires the native-share and copy buttons.
+export function shareStrip(cfg, path, title, text) {
+  const url = cfg.publicUrl + path, u = encodeURIComponent(url + '?utm_source=share'), tx = encodeURIComponent(text || title);
+  return `<div class="share-box share-strip" data-share-url="${esc(url)}" data-share-title="${esc(title)}" data-share-text="${esc(text || title)}">
+  <span class="muted">Share this:</span><button type="button" class="btn btn-green btn-sm" data-share="native" hidden>Share…</button>
+  <a class="btn btn-blue btn-sm" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${u}">Facebook</a>
+  <a class="btn btn-out btn-sm" href="sms:?&amp;body=${tx}%20${u}">Text</a>
+  <button type="button" class="btn btn-out btn-sm" data-share="copy">Copy Link</button></div>`;
+}

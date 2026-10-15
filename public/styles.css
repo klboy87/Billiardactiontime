@@ -633,3 +633,5 @@ table.t tr.noline td{border-bottom:0}
 .cday{min-width:0;overflow:hidden}
 @media (max-width:520px){.cday{min-height:58px;padding:4px 3px}.cday small{font-size:10px;line-height:1.15;overflow-wrap:anywhere}.cday .n{font-size:11px;padding:1px 6px}}
 @media (max-width:520px){.cday .cw{display:none}.cday small{font-size:13px;font-weight:800}}
+.share-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:20px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);max-width:none}
+.guide>.share-strip{max-width:70ch}

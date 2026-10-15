@@ -1,7 +1,7 @@
 // Trick shots and skill shots (/trick-shots/...). Each shot has its own page with a table diagram, the
 // setup, how to shoot it and why it works. Diagram positions are in diamonds (x 0–8, y 0–4), and balls
 // that should be frozen together are placed with frozen() so they touch on the drawing.
-import { layout } from './seo.js';
+import { layout, shareStrip } from './seo.js';
 import { table } from './guides-more.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -221,6 +221,7 @@ export function trickShotPage(cfg, slug) {
   <h2>Why it works</h2><p>${s.why}</p>
   <h2>Common mistakes</h2><ul>${s.mistakes.map(x => `<li>${x}</li>`).join('')}</ul>
   <h2>In a real game</h2><p>${s.game}</p>
+  ${shareStrip(cfg, `/trick-shots/${s.slug}`, s.title, 'Pool trick shot: ' + s.title)}
   <p style="margin-top:18px"><button type="button" data-learn="${s.slug}" hidden style="padding:10px 16px;font-size:16px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--text);cursor:pointer">✓ I learned this shot</button> <span data-learn-count class="muted"></span></p>
   </article>
   <section class="sec seo-sec"><h2>Next shot</h2><div class="guide-next">
