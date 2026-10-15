@@ -208,11 +208,12 @@ function eventLd(cfg, db, t) {
   return {
     '@context': 'https://schema.org', '@type': 'SportsEvent', name: t.name, description: desc, sport: 'Pool (cue sports)',
     url: cfg.publicUrl + tournamentPath(db, t), startDate: t.time ? `${t.date}T${t.time}` : t.date,
+    endDate: t.time ? (() => { const [h, m] = t.time.split(':').map(Number); return h + 5 < 24 ? `${t.date}T${String(h + 5).padStart(2, '0')}:${String(m).padStart(2, '0')}` : `${t.date}T23:59`; })() : t.date,
     eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     image: [`${cfg.publicUrl}/t/${t.id}/og.png`],
     location: { '@type': 'Place', name: v.name, address: { '@type': 'PostalAddress', streetAddress: v.address || undefined, addressLocality: v.city, addressRegion: v.state, postalCode: v.zip || undefined, addressCountry: 'US' },
       ...(v.lat != null && v.lng != null ? { geo: { '@type': 'GeoCoordinates', latitude: v.lat, longitude: v.lng } } : {}) },
-    ...(t.director?.name ? { organizer: { '@type': 'Person', name: t.director.name } } : { organizer: { '@type': 'Organization', name: v.name } }),
+    ...(t.director?.name ? { organizer: { '@type': 'Person', name: t.director.name } } : { organizer: { '@type': 'Organization', name: v.name, url: cfg.publicUrl + venuePath(db, v) } }),
     ...(t.entry != null ? { offers: { '@type': 'Offer', price: t.entry, priceCurrency: 'USD', url: t.registrationUrl || cfg.publicUrl + tournamentPath(db, t), availability: 'https://schema.org/InStock', validFrom: t.updatedAt ? t.updatedAt.replace(' ', 'T') + 'Z' : undefined } } : {})
   };
 }
