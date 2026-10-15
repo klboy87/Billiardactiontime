@@ -358,6 +358,34 @@ function glanceHtml(list, where, rooms, showGame) {
   return `<section class="glance" aria-label="At a glance"><h2 class="glance-h">${esc(where)} at a glance</h2><div class="glance-grid">${tiles.map(([k, v, sub]) => `<div><small>${k}</small><b>${esc(v)}</b><span>${esc(sub)}</span></div>`).join('')}</div></section>`;
 }
 
+// Plain-English answers built from the listings, for state and city pages. Returns { html, ld } or null.
+function faqFor(db, upcoming, where, scope) {
+  if (upcoming.length < 5) return null;
+  const today = todayIso(), ix = index(db);
+  const tally = arr => { const m = new Map(); for (const k of arr) if (k) m.set(k, (m.get(k) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); };
+  const tonight = upcoming.filter(t => t.date === today);
+  const nights = tally(upcoming.map(t => DOW[new Date(t.date + 'T00:00:00Z').getUTCDay()]));
+  const fees = upcoming.map(t => t.entry).filter(n => n != null && n > 0).sort((a, b) => a - b);
+  const rooms = new Map();
+  for (const t of upcoming) { const k = ix.primaryVenue.get(t.venue.id) ?? t.venue.id; const r = rooms.get(k) || { v: t.venue, n: 0 }; r.n++; rooms.set(k, r); }
+  const topRooms = [...rooms.values()].sort((a, b) => b.n - a.n).slice(0, 3);
+  const big = upcoming.filter(t => t.added > 0).sort((a, b) => b.added - a.added)[0];
+  const qa = [];
+  qa.push([`Is there a pool tournament tonight in ${where}?`, tonight.length
+    ? `Yes. ${plural(tonight.length, 'tournament')} ${tonight.length === 1 ? 'is' : 'are'} listed for tonight, including <a href="${tournamentPath(db, tonight[0])}">${esc(tonight[0].name)}</a> at ${esc(tonight[0].venue.name)}. See the full list on the <a href="${scope.tonight}">tonight page</a>.`
+    : `Nothing is listed for tonight yet. The next one is <a href="${tournamentPath(db, upcoming[0])}">${esc(upcoming[0].name)}</a> on ${esc(longDate(upcoming[0].date))}.`]);
+  if (nights[0]) qa.push([`What night has the most pool tournaments in ${where}?`, `${nights[0][0]}s, with ${nights[0][1]} of the ${upcoming.length} upcoming events.${nights[1] ? ` ${nights[1][0]}s are next with ${nights[1][1]}.` : ''}`]);
+  if (fees.length >= 3) qa.push([`How much does it cost to enter a pool tournament in ${where}?`, `Most entry fees are around ${money(fees[Math.floor(fees.length / 2)])}. They range from ${money(fees[0])} to ${money(fees[fees.length - 1])}. Many weekly tournaments also charge a small table fee, so check each listing.`]);
+  if (topRooms.length) qa.push([`Which pool halls in ${where} run the most tournaments?`, topRooms.map(r => `<a href="${venuePath(db, r.v)}">${esc(r.v.name)}</a> (${plural(r.n, 'upcoming event')})`).join(', ') + '.']);
+  if (big) qa.push([`What is the biggest upcoming pool tournament in ${where}?`, `<a href="${tournamentPath(db, big)}">${esc(big.name)}</a> at ${esc(big.venue.name)} on ${esc(longDate(big.date))}, with ${money(big.added)} added.`]);
+  qa.push([`How do I get my tournament listed?`, `Post it free on the <a href="/post">post a tournament</a> page. Weekly events can be posted for several weeks at once.`]);
+  const strip = h => h.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  return {
+    html: `<section class="sec seo-sec faq"><h2>Questions about pool tournaments in ${esc(where)}</h2>${qa.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${a}</p></details>`).join('')}</section>`,
+    ld: { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: qa.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: strip(a) } })) }
+  };
+}
+
 export function listingPage(db, cfg, parts) {
   const f = parts.length ? parseFacets(db, parts) : { state: null, city: null, game: null };
   if (!f) return null;
@@ -401,6 +429,7 @@ export function listingPage(db, cfg, parts) {
   const up1 = f.game && (f.state || f.city) ? `<a class="chip" href="${facetPath({ state: f.state, city: f.cityName })}">All games${place ? ' in ' + esc(f.cityName || stateName) : ''}</a>` : '';
   const upState = f.city ? `<a class="chip" href="${facetPath({ state: f.state, game: f.game })}">${g ? esc(g) + ' in ' : 'All of '}${esc(stateName)}</a>` : '';
 
+  const faq = f.state && !g ? faqFor(db, upcoming, f.cityName || stateName, { tonight: tonightPath(f.state) }) : null;
   const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: upcoming.length,
     itemListElement: upcoming.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   const body = `${bc.html}
@@ -418,8 +447,9 @@ export function listingPage(db, cfg, parts) {
   ${cityLinks ? `<section class="sec seo-sec"><h2>${g ? esc(g) + ' tournaments' : 'Tournaments'} by city in ${esc(stateName)}</h2><div class="chips">${cityLinks}</div></section>` : ''}
   ${stateLinks ? `<section class="sec seo-sec"><h2>${g ? esc(g) + ' tournaments' : 'Tournaments'} by state</h2><div class="chips">${stateLinks}</div></section>` : ''}
   ${gameLinks || up1 || upState ? `<section class="sec seo-sec"><h2>Browse by game</h2><div class="chips">${up1}${upState}${gameLinks}</div></section>` : ''}
-  ${past.length ? `<section class="sec seo-sec"><h2>Recent ${g ? esc(g) + ' ' : ''}tournaments${place ? ' in ' + esc(f.cityName || stateName) : ''}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)} · ${esc(t.venue.name)}</span></li>`).join('')}</ul></section>` : ''}`;
-  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(upcoming.length ? [itemList] : [])], noindex: !upcoming.length, scripts: ['/near-sort.js'] });
+  ${past.length ? `<section class="sec seo-sec"><h2>Recent ${g ? esc(g) + ' ' : ''}tournaments${place ? ' in ' + esc(f.cityName || stateName) : ''}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)} · ${esc(t.venue.name)}</span></li>`).join('')}</ul></section>` : ''}
+  ${faq ? faq.html : ''}`;
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(upcoming.length ? [itemList] : []), ...(faq ? [faq.ld] : [])], noindex: !upcoming.length, scripts: ['/near-sort.js'] });
 }
 
 
