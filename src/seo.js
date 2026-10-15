@@ -861,8 +861,22 @@ function hallsByState(db) {
     if (!r.v.address && t.venue.address) r.v = t.venue;
     rooms.set(id, r);
   }
+  // Merge spellings of the same room in one city ("Bogies West" / "Bogies Billiards West"): compare names with
+  // generic words removed; keep the record that has an address, and combine their events.
+  const GENERIC = /\b(billiards?|bar|grill|and|the|sports?|pub|lounge|club|room|pool|hall|cafe|saloon|tavern|restaurant|n)\b|[^a-z0-9 ]/g;
+  const core = r => `${r.v.state}|${slugify(r.v.city)}|${String(r.v.name || '').toLowerCase().replace(/['’]/g, '').replace(GENERIC, ' ').replace(/\s+/g, ' ').trim()}`;
+  const merged = new Map();
+  for (const r of rooms.values()) {
+    const k = core(r), m = merged.get(k);
+    if (!k.endsWith('|') && m) {
+      const keep = m.v.address || !r.v.address ? m : r, other = keep === m ? r : m;
+      keep.events = keep.events.concat(other.events);
+      if (other.next && (!keep.next || other.next.date < keep.next.date)) keep.next = other.next;
+      merged.set(k, keep);
+    } else merged.set(k.endsWith('|') ? k + r.id : k, r);
+  }
   const byState = new Map();
-  for (const r of rooms.values()) { const st = r.v.state; if (!byState.has(st)) byState.set(st, []); byState.get(st).push(r); }
+  for (const r of merged.values()) { const st = r.v.state; if (!byState.has(st)) byState.set(st, []); byState.get(st).push(r); }
   return byState;
 }
 const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
