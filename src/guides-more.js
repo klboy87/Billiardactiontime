@@ -138,6 +138,38 @@ ${groups}
 
 export const MORE_GUIDES = [
   {
+    slug: 'pool-leagues-explained', title: 'Pool Leagues Explained: APA, USA Pool League (BCA) and VNEA',
+    desc: 'How pool leagues work: teams, weekly matches, handicaps and skill levels, sessions, and the road to the national championships in Las Vegas. Plus how to join one.',
+    body: `
+<p>A pool league is the easiest way to play regularly, meet the local players and get better fast. Most leagues play one night a week at a local bar or pool room, as a team, with a handicap system so newer players can win too.</p>
+<h2>How a league night works</h2>
+<ul>
+<li><b>Teams</b> of about five to eight players meet another team at one of their home rooms.</li>
+<li>Each night is a set of <b>individual matches</b> between players from the two teams, and the team with more wins takes the night.</li>
+<li>Results count toward <b>standings</b> over a session (often 12 to 16 weeks), followed by playoffs.</li>
+<li>Most leagues play <b>8-Ball</b>; many also have 9-Ball divisions.</li>
+</ul>
+<h2>The big leagues</h2>
+<div class="t-wrap"><table class="t"><thead><tr><th>League</th><th>Handicap</th><th>Known for</th></tr></thead><tbody>
+<tr><td>APA (American Poolplayers Association)</td><td>Skill levels; races change with each player's level</td><td>The largest amateur league, very beginner-friendly</td></tr>
+<tr><td>USA Pool League (formerly BCA Pool League)</td><td>Rating-based handicaps</td><td>Standard tournament rules, strong competitive divisions</td></tr>
+<tr><td>VNEA</td><td>Varies by local charter</td><td>Bar-box 8-Ball, big team events</td></tr>
+</tbody></table></div>
+<p>There are also many local and independent leagues, often Fargo-rated, run by a pool room or a group of directors.</p>
+<h2>How handicaps work</h2>
+<p>Each player has a skill rating that moves with their results. The handicap changes the race, so a newer player might need 2 games while a strong player needs 5. In APA, teams also have a cap on the total of their players' skill levels in a night, so a team can't stack its best players. In rating-based leagues, races come from the gap between ratings, much like our <a href="/tools/fargo-race-calculator">Fargo race calculator</a>.</p>
+<h2>The road to Las Vegas</h2>
+<p>Most big leagues end their year with national or world championships in Las Vegas. Teams and players qualify through their local playoffs and regional events. See the dates in our <a href="/guides/major-pool-events-calendar">major pool events calendar</a>.</p>
+<h2>How to join</h2>
+<ol>
+<li>Ask at your local pool room or bar: the person behind the counter knows which leagues play there. Find rooms near you in our <a href="/pool-halls/">pool hall directory</a>.</li>
+<li>Search for your city plus the league name. Each league has a local operator who places new players on teams.</li>
+<li>Join a team that needs a player, or start one with friends.</li>
+</ol>
+<h2>League rules vs. tournament rules</h2>
+<p>League rules can differ from the rules at open tournaments, especially on fouls and calling shots. Before your first open event, read <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs. tournament rules</a> and <a href="/guides/first-pool-tournament">what to expect at your first tournament</a>. Then <a href="/tonight/">find a tournament tonight</a>.</p>`
+  },
+  {
     slug: 'pool-tips', title: '15 Pool Tips That Improve Your Game Fast',
     desc: 'Fifteen practical pool tips for beginners and league players: stroke, aim, speed, position, safeties, the mental game and how to practice.',
     body: `
