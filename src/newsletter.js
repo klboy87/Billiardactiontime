@@ -27,6 +27,8 @@ export function buildNewsletter(db, cfg) {
   const later = all.filter(t => t.date > wk.to && t.date <= addDays(wk.to, 28) && isBig(t)).sort((a, b) => a.date.localeCompare(b.date) || weight(b) - weight(a));
   const calendar = []; const seenDay = new Map();
   for (const t of later) { const n = seenDay.get(t.date) || 0; if (n < 2 && calendar.length < 5) { calendar.push(t); seenDay.set(t.date, n + 1); } }
+  const shown = new Set([...big, ...calendar].map(t => t.id));
+  const fresh = SEO.recentlyAdded(db, 7).filter(t => !shown.has(t.id)).sort((a, b) => weight(b) - weight(a)).slice(0, 5).sort((a, b) => a.date.localeCompare(b.date));
   const range = wk.from === wk.to ? md(wk.from) : `${md(wk.from)}–${md(wk.to)}`;
   const top = big[0];
 
@@ -49,8 +51,10 @@ export function buildNewsletter(db, cfg) {
       : P(`Not much is posted for this weekend (${esc(range)}) yet. Here's what's coming up.`),
     big.length ? H('🏆 Big ones this weekend') + `<ul style="padding-left:20px;margin:0 0 8px">${big.map(item).join('')}</ul>` : '',
     weekend.length ? btn(link('/this-weekend/', 'weekend'), `See all ${weekend.length} this weekend`) : '',
+    P(`Looking for a game on a weeknight? ${A(link('/tonight/', 'tonight'), "See tonight's tournaments")}, any day of the week.`),
     states.length ? H('📍 Busiest states this weekend') + P(states.map(([s, n]) => A(link(SEO.weekendPath(s), 'state'), `${STATE_NAMES[s] || s} (${n})`)).join(' &nbsp;·&nbsp; ')) : '',
     calendar.length ? H('📅 Mark your calendar') + `<ul style="padding-left:20px;margin:0 0 8px">${calendar.map(item).join('')}</ul>` : '',
+    fresh.length ? H('🆕 New this week') + `<ul style="padding-left:20px;margin:0 0 8px">${fresh.map(item).join('')}</ul>` + P(A(link('/new/', 'new'), 'See everything added this week →')) : '',
     H('🎯 Running a tournament?'),
     P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')}`),
     P('Good luck out there. May your breaks be dry for the other guy.', 'margin-top:22px'),
@@ -72,6 +76,7 @@ ${body}
     `See all of them: ${link('/this-weekend/', 'weekend')}`, '',
     ...(states.length ? ['BUSIEST STATES: ' + states.map(([s, n]) => `${STATE_NAMES[s] || s} (${n})`).join(', '), ''] : []),
     ...(calendar.length ? ['MARK YOUR CALENDAR', ...calendar.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}${price(t) ? ' (' + price(t) + ')' : ''}`), ''] : []),
+    ...(fresh.length ? ['NEW THIS WEEK', ...fresh.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}`), `All new listings: ${link('/new/', 'new')}`, ''] : []),
     `Running a tournament? Post it free: ${link('/post', 'post')}`, '',
     'Billiard Action Time', '',
     'Don\'t want these emails? Reply "unsubscribe".'

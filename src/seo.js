@@ -798,7 +798,7 @@ export function tonightPage(db, cfg, stateSlugPart) {
 }
 
 // "Just added" (/new/): upcoming tournaments first listed in the last 7 days, newest first, grouped by day.
-function recentlyAdded(db, days = 7) {
+export function recentlyAdded(db, days = 7) {
   const today = todayIso(), since = new Date(Date.now() - days * 864e5).toISOString().slice(0, 19).replace('T', ' ');
   return index(db).all.filter(t => t.date >= today && t.createdAt && t.createdAt >= since)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.date.localeCompare(b.date));
