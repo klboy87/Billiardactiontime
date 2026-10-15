@@ -31,6 +31,9 @@ const kissB = step(kissAc, kissN, D), kissV = unit([0, 0], [kissU[0] + kissN[0],
 const kissA0 = step(kissAc, kissV, -1.3), kissCue = step(kissA0, kissV, -0.7);
 // Kick: mirror the hanger across the top rail to find the rail spot.
 const hanger = [7.75, 3.8], kickCue = [2, 1.2], kickX = +(2 + (hanger[0] - 2) * (1.2 / (1.2 + hanger[1]))).toFixed(3);
+// 9-ball billiard: the cue ball stuns into the 1 and caroms along the tangent line into the hanging 9.
+const bilAc = [5.6, 1.25], bilNine = [7.8, 0.2], bilU = unit(bilAc, bilNine), bilN = [bilU[1], -bilU[0]];
+const bilOne = step(bilAc, bilN, D), bilV = unit([0, 0], [bilU[0] + bilN[0], bilU[1] + bilN[1]]), bilCue = step(bilAc, bilV, -1.6);
 export const SHOTS = [
   {
     slug: 'dead-combination', title: 'The Dead Combination: Two Balls, One Pocket', level: 1, teaches: 'Combination shots and how frozen balls react',
@@ -151,7 +154,7 @@ export const SHOTS = [
     how: ['Picture the table mirrored on the other side of the rail you will kick off. Aim the cue ball at the hanger\'s position on that mirror table.', 'Hit center ball at medium-soft speed. You only need to touch the hanger, so a big target makes this one easy.'],
     why: 'The cue ball leaves a cushion at about the same angle it arrived, so aiming at the mirrored ball sends it to the real one. It is the same idea as the <a href="/play/bank-trainer">bank trainer</a>, with the cue ball instead of the object ball.',
     mistakes: ['Hitting hard. A firm kick comes off the rail at a shorter angle; medium-soft keeps the angle true.', 'Using side spin. Spin changes the angle off the rail. Learn it with a center hit first.'],
-    game: 'Being snookered is not the end. A good kick to a hanger, or just a legal hit that leaves your opponent safe, wins a lot of games.'
+    game: 'Being snookered is not the end. A good kick to a hanger, or just a legal hit that leaves your opponent safe, wins a lot of games. Practice the angles in the free <a href="/play/kick-trainer">kick shot trainer</a> and read <a href="/guides/how-to-kick-in-pool">how to kick in pool</a>.'
   },
   {
     slug: 'kiss-shot', title: 'The Kiss Shot: Carom One Object Ball Off Another', level: 2, teaches: 'The 90-degree rule for object balls',
@@ -184,6 +187,17 @@ export const SHOTS = [
     why: 'Hangers can\'t be missed if you hit them, so the challenge is rhythm and cue ball control: every shot leaves you in place for the next one.',
     mistakes: ['Hitting too hard and scratching. A scratch adds 10 seconds.', 'Walking around the table more than you need to. Plan the order before you start.'],
     game: 'It is a fun warm-up, and it trains the quick, decisive routine that helps under <a href="/guides/pool-tournament-nerves">tournament pressure</a>.'
+  },
+  {
+    slug: 'nine-ball-billiard', title: 'The 9-Ball Billiard: Carom Off the 1 for the Win', level: 2, teaches: 'The 90-degree rule and stun control',
+    desc: 'The 9 is hanging and the 1 is close by. Hit the 1 first (that makes it legal), let the cue ball glance off it, and carom straight into the 9 for the win.',
+    diagram: table({ balls: [{ x: bilOne[0], y: bilOne[1], n: 1 }, { x: bilNine[0], y: bilNine[1], n: 9 }, { x: bilCue[0], y: bilCue[1], n: 0 }],
+      paths: [[bilCue, bilAc], { pts: [bilAc, step(bilNine, bilU, -D)], color: Y }, { pts: [bilOne, step(bilOne, bilN, 0.9)], color: Y }] }, 'The cue ball hits the 1, leaves along the tangent line and knocks in the hanging 9.'),
+    setup: ['Put the 9 in the jaws of a corner pocket and the 1 about two and a half diamonds out from it, a little off the line to the pocket.', 'Place the cue ball so it will hit the 1 at about a half-ball angle.'],
+    how: ['Find the tangent line: the line from the cue ball\'s contact position to the 9. Where the cue ball touches the 1, the 1 should sit at a right angle to that line.', 'Hit the cue ball at center or slightly below with firm, smooth speed so it is sliding (stunning) when it hits the 1. It leaves along the tangent line into the 9.'],
+    why: 'A sliding cue ball leaves the object ball at 90 degrees to the line between their centers. Know that line and you know where the cue ball goes, which is the whole secret of position play.',
+    mistakes: ['Hitting with follow. A rolling cue ball bends forward of the tangent line and misses the 9 on the pocket side.', 'Too soft. The cue ball starts rolling before it reaches the 1 and curves off line.'],
+    game: 'In 9-Ball any ball can win as long as you hit the lowest ball first, so a billiard on a hanging 9 is a real, match-winning shot. Learn the rules in <a href="/guides/9-ball-rules">9-Ball rules</a> and the spin behind it in <a href="/guides/english-in-pool">English in pool</a>.'
   }
 ];
 

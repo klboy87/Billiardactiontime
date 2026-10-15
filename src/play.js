@@ -13,7 +13,7 @@ const GAMES = [
   { href: '/play/which-game', icon: '🎱', title: 'Which Pool Game Is Yours?', desc: 'Five quick questions match you with 8-Ball, 9-Ball, 10-Ball, One Pocket, Banks, Straight Pool or Scotch Doubles.' },
   { href: '/play/practice-log', icon: '📈', title: 'Practice Log', desc: 'Log your drill scores after each session and watch your personal bests climb. Saved on your device, no sign-up.' },
   { href: '/tools/pool-rules-quiz', icon: '❓', title: 'Pool Rules Quiz', desc: 'Twelve questions on 8-Ball, 9-Ball, 10-Ball and more. Share your score with your league.' },
-  { href: '/trick-shots/', icon: '✨', title: 'Trick Shots', desc: 'Fourteen trick shots with diagrams to try at the table, from easy combos to the jump and the massé.' },
+  { href: '/trick-shots/', icon: '✨', title: 'Trick Shots', desc: 'Fifteen trick shots with diagrams to try at the table, from easy combos to the jump and the massé.' },
   { href: '/guides/pool-practice-drills', icon: '📋', title: 'Practice Drills', desc: 'Seven drills with scores to beat. Play the ghost and see how often you really run out.' }
 ];
 
@@ -93,7 +93,7 @@ export function bankTrainerPage(cfg) {
   <section class="sec seo-sec"><h2>More to play</h2><div class="guide-next">
     <a href="/play/aim-trainer"><small>Game</small><b>Aim trainer and daily challenge</b></a>
     <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>Pool rules quiz: 12 questions</b></a>
-    <a href="/trick-shots/"><small>Trick shots</small><b>14 trick shots with diagrams</b></a>
+    <a href="/trick-shots/"><small>Trick shots</small><b>15 trick shots with diagrams</b></a>
     <a href="/guides/safety-play-in-pool"><small>Guide</small><b>Safety play: win without making a ball</b></a>
   </div></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Bank Shot Trainer', url: `${cfg.publicUrl}/play/bank-trainer`, description: 'A free browser game for practicing one-rail bank shots with the mirror method.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
@@ -156,7 +156,7 @@ export function lagChallengePage(cfg) {
   <section class="sec seo-sec"><h2>More to play</h2><div class="guide-next">
     <a href="/play/aim-trainer"><small>Game</small><b>Aim trainer and daily challenge</b></a>
     <a href="/play/bank-trainer"><small>Game</small><b>Bank shot trainer</b></a>
-    <a href="/trick-shots/"><small>Trick shots</small><b>14 trick shots with diagrams</b></a>
+    <a href="/trick-shots/"><small>Trick shots</small><b>15 trick shots with diagrams</b></a>
     <a href="/guides/english-in-pool"><small>Guide</small><b>English explained: follow, draw and side spin</b></a>
   </div></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Lag Challenge', url: `${cfg.publicUrl}/play/lag-challenge`, description: 'A free browser game for practicing pool speed control by lagging to the head rail.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
@@ -194,7 +194,7 @@ export function whichGamePage(cfg) {
     <a href="/play/aim-trainer"><small>Game</small><b>Aim trainer and daily challenge</b></a>
     <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>Pool rules quiz: 12 questions</b></a>
     <a href="/play/lag-challenge"><small>Game</small><b>Lag challenge</b></a>
-    <a href="/trick-shots/"><small>Trick shots</small><b>14 trick shots with diagrams</b></a>
+    <a href="/trick-shots/"><small>Trick shots</small><b>15 trick shots with diagrams</b></a>
   </div></section>`;
   return layout(cfg, { title: 'Which Pool Game Is Yours? 5-Question Quiz | Billiard Action Time', description: 'Take the quiz to find your pool game: 8-Ball, 9-Ball, 10-Ball, One Pocket, Banks, Straight Pool or Scotch Doubles. Then learn the rules and find tournaments.', path: '/play/which-game', body, scripts: ['/play.js'] });
 }
