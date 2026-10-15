@@ -8,6 +8,7 @@ const btn = (extra = '') => `style="padding:10px 14px;font-size:16px;border-radi
 const GAMES = [
   { href: '/play/aim-trainer', icon: '🎯', title: 'Aim Trainer', desc: 'Pocket the ball in the highlighted pocket. Ten shots a round, three levels, and it tells you if you were thick or thin.' },
   { href: '/play/bank-trainer', icon: '↗️', title: 'Bank Shot Trainer', desc: 'Pick the spot on the rail and bank the ball into the highlighted pocket. Learn the mirror method by feel.' },
+  { href: '/play/kick-trainer', icon: '🦵', title: 'Kick Shot Trainer', desc: 'A blocker is in the way. Kick the cue ball off a rail into the target ball, the way you escape a safety in a real match.' },
   { href: '/play/lag-challenge', icon: '📏', title: 'Lag Challenge', desc: 'Stop the power meter and lag the ball to the head rail. Five lags, scored in inches. Pure speed control.' },
   { href: '/play/which-game', icon: '🎱', title: 'Which Pool Game Is Yours?', desc: 'Five quick questions match you with 8-Ball, 9-Ball, 10-Ball, One Pocket, Banks, Straight Pool or Scotch Doubles.' },
   { href: '/play/practice-log', icon: '📈', title: 'Practice Log', desc: 'Log your drill scores after each session and watch your personal bests climb. Saved on your device, no sign-up.' },
@@ -97,6 +98,43 @@ export function bankTrainerPage(cfg) {
   </div></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Bank Shot Trainer', url: `${cfg.publicUrl}/play/bank-trainer`, description: 'A free browser game for practicing one-rail bank shots with the mirror method.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
   return layout(cfg, { title: 'Bank Shot Trainer: Free Pool Banking Game | Billiard Action Time', description: 'Practice one-rail bank shots in your browser. Pick the spot on the rail, bank the ball into the pocket, and learn the mirror method. Free, works on your phone.', path: '/play/bank-trainer', body, jsonld: [ld], scripts: ['/play.js'] });
+}
+
+export function kickTrainerPage(cfg) {
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/play/">Play</a> <span>/</span> <span>Kick Shot Trainer</span></nav>
+  <div class="pagehead"><h1>Kick Shot Trainer</h1><p>You're snookered: the black ball blocks the yellow one. Kick the cue ball off one rail into the yellow ball. Tap the rail where it should hit, fine-tune, and shoot. Ten kicks a round.</p></div>
+  <section id="kickGame" class="card" style="padding:14px">
+    <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <b data-status style="font-size:15px">Loading…</b>
+      <label style="font-size:15px">Level <select data-level style="font-size:15px;padding:4px 6px"><option value="easy">Easy (shows the rebound)</option><option value="normal" selected>Normal</option></select></label>
+    </div>
+    <div data-table style="max-width:min(100%, calc((100vh - 230px) * 1.83), 820px);margin:0 auto"></div>
+    <p data-loading class="muted">Turn on JavaScript to play.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 4px">
+      <button type="button" data-nudge="-1" ${btn()} aria-label="Rotate 1 degree counterclockwise">↺ 1°</button>
+      <button type="button" data-nudge="-0.2" ${btn()} aria-label="Rotate a little counterclockwise">↺</button>
+      <button type="button" data-shoot ${btn('background:#144b2e;color:#fff;border-color:#144b2e;font-weight:700;padding:10px 26px')}>Shoot</button>
+      <button type="button" data-next hidden ${btn('background:#1c6fe6;color:#fff;border-color:#1c6fe6;font-weight:700')}>Next kick →</button>
+      <button type="button" data-nudge="0.2" ${btn()} aria-label="Rotate a little clockwise">↻</button>
+      <button type="button" data-nudge="1" ${btn()} aria-label="Rotate 1 degree clockwise">↻ 1°</button>
+    </div>
+    <p data-msg aria-live="polite" style="margin:8px 2px 0;min-height:3em"></p>
+  </section>
+  <article class="card guide" style="margin-top:16px"><h2 style="margin-top:0">How to aim a one-rail kick</h2>
+  <p>A kick is a bank shot with the cue ball. When your opponent hides the ball you need to hit, you can't go straight at it, so you send the cue ball into a rail first. Missing is a foul, and in most games that means ball in hand for the other player. A good kicker turns their opponent's best safeties into nothing.</p>
+  <ul><li><b>Use the mirror.</b> Picture the yellow ball reflected on the other side of the rail, the same distance past the cushion as it is in front of it. Aim the cue ball at that mirror ball. Where the line crosses the rail is your kick point.</li>
+  <li><b>Aim at the cushion's nose, not the wood.</b> The ball's center bounces off a line half a ball width inside the cushion. That's the line this game uses.</li>
+  <li><b>Medium speed and center ball.</b> Sidespin and hard hits change the rebound angle. Learn the pure angle first, then adjust on a real table.</li>
+  <li><b>Just hit it.</b> In 9-ball and 10-ball you only need to contact the lowest ball, then a ball has to reach a rail. A thin legal hit beats a full miss every time.</li></ul>
+  <p>Practice it for real with the <a href="/guides/pool-practice-drills#5-the-kick-drill">kick drill</a>, learn when to play safe in <a href="/guides/safety-play-in-pool">safety play</a>, and try the <a href="/play/bank-trainer">bank shot trainer</a> for the same geometry with the object ball.</p></article>
+  <section class="sec seo-sec"><h2>More to play</h2><div class="guide-next">
+    <a href="/play/bank-trainer"><small>Game</small><b>Bank shot trainer</b></a>
+    <a href="/play/aim-trainer"><small>Game</small><b>Aim trainer and daily challenge</b></a>
+    <a href="/play/lag-challenge"><small>Game</small><b>Lag challenge</b></a>
+    <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>Pool rules quiz: 12 questions</b></a>
+  </div></section>`;
+  const ld = { '@context': 'https://schema.org', '@type': 'VideoGame', name: 'Kick Shot Trainer', url: `${cfg.publicUrl}/play/kick-trainer`, description: 'A free browser game for practicing one-rail kick shots to escape safeties.', genre: 'Sports', gamePlatform: 'Web browser', applicationCategory: 'Game', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
+  return layout(cfg, { title: 'Kick Shot Trainer: Free Pool Kicking Game | Billiard Action Time', description: 'Practice one-rail kick shots in your browser. Kick the cue ball off a rail around a blocker into the target ball. Learn the mirror method. Free, works on your phone.', path: '/play/kick-trainer', body, jsonld: [ld], scripts: ['/play.js'] });
 }
 
 export function lagChallengePage(cfg) {

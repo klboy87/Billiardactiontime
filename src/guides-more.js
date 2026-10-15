@@ -863,7 +863,7 @@ ${table({ balls: Array.from({ length: 9 }, (_, i) => ({ x: 4 + 0.95 * Math.cos(i
 <h2>5. The kick drill</h2>
 <p>Place an object ball near a corner pocket, frozen on the rail. Put the cue ball where you cannot hit the ball directly (behind another ball or across the table). Kick at it off one rail. Count how many out of ten you hit, and how many you make.</p>
 ${table({ balls: [{ x: 7.4, y: 0.16, n: 9 }, { x: 2, y: 1, n: 0 }, { x: 4.6, y: 0.62, n: 8 }], paths: [[[2, 1], [4.75, 3.97], [7.3, 0.35]]] }, 'Kick drill: one rail into a ball near the corner. Use the diamonds to find your aim point.')}
-<p>Kicks decide a lot of tournament matches, and most players never practice them. Use the diamonds: shooting from a diamond to a diamond on the opposite rail gives you a starting point you can adjust.</p>
+<p>Kicks decide a lot of tournament matches, and most players never practice them. Use the diamonds: shooting from a diamond to a diamond on the opposite rail gives you a starting point you can adjust. Warm up your eye first with the free <a href="/play/kick-trainer">kick shot trainer</a>.</p>
 <h2>6. Long straight-in shots</h2>
 <p>Put an object ball one diamond off the foot rail in line with a corner pocket, and the cue ball on the opposite end, so the shot is the full length of the table. Shoot ten. Then try it with a stop and with draw.</p>
 <p><b>Score:</b> out of ten. If you make fewer than six, your stroke is going off line. Slow down, keep your head still, and finish the stroke.</p>

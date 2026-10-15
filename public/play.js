@@ -445,3 +445,113 @@
   root.querySelector('[data-loading]').remove();
   setUnit(); render();
 })();
+
+/* Kick trainer (/play/kick-trainer): a blocker sits between the cue ball and the target ball, so the only
+   way to hit it is one rail first. Same table drawing and mirror geometry as the bank trainer. */
+(function () {
+  var root = document.getElementById('kickGame');
+  if (!root) return;
+  var U = 50, R = 22, BALL = 0.23, NS = 'http://www.w3.org/2000/svg', LO = BALL / 2;
+  var LEVELS = { easy: { show: true }, normal: { show: false } };
+  var px = function (v) { return R + v * U; };
+  var el = function (tag, a, p) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  var sub = function (a, b) { return [a[0] - b[0], a[1] - b[1]]; }, add = function (a, b) { return [a[0] + b[0], a[1] + b[1]]; }, mul = function (a, k) { return [a[0] * k, a[1] * k]; };
+  var dot = function (a, b) { return a[0] * b[0] + a[1] * b[1]; }, len = function (a) { return Math.hypot(a[0], a[1]); }, norm = function (a) { var l = len(a); return [a[0] / l, a[1] / l]; };
+  var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+  var W = 8 * U + 2 * R, H = 4 * U + 2 * R;
+  var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Pool table', style: 'width:100%;height:auto;display:block;touch-action:manipulation;cursor:crosshair;user-select:none' });
+  root.querySelector('[data-table]').appendChild(svg);
+  el('rect', { x: 0, y: 0, width: W, height: H, rx: 14, fill: '#5a3518' }, svg); el('rect', { x: R, y: R, width: 8 * U, height: 4 * U, fill: '#1f7a4a' }, svg);
+  for (var i = 1; i < 8; i++) if (i !== 4) { el('circle', { cx: px(i), cy: R / 2, r: 2.2, fill: '#f4e7c4' }, svg); el('circle', { cx: px(i), cy: H - R / 2, r: 2.2, fill: '#f4e7c4' }, svg); }
+  for (var j = 1; j < 4; j++) { el('circle', { cx: R / 2, cy: px(j), r: 2.2, fill: '#f4e7c4' }, svg); el('circle', { cx: W - R / 2, cy: px(j), r: 2.2, fill: '#f4e7c4' }, svg); }
+  [[0, 0], [4, -0.06], [8, 0], [0, 4], [4, 4.06], [8, 4]].forEach(function (p) { el('circle', { cx: px(p[0]), cy: px(Math.min(4, Math.max(0, p[1]))), r: 12, fill: '#111' }, svg); });
+  var railMark = el('rect', { height: 6, rx: 3, fill: '#ffd54a', opacity: 0 }, svg);
+  var pathEl = el('polyline', { fill: 'none', stroke: '#fff', 'stroke-width': 1.4, 'stroke-dasharray': '5 4', opacity: 0.85 }, svg);
+  var idealEl = el('polyline', { fill: 'none', stroke: '#ffd54a', 'stroke-width': 1.6, 'stroke-dasharray': '5 4', opacity: 0 }, svg);
+  var mk = function (fill) { return el('circle', { r: BALL / 2 * U, fill: fill, stroke: '#222', 'stroke-width': 0.8 }, svg); };
+  var halo = el('circle', { r: 13, fill: '#ffd54a', opacity: 0.3 }, svg);
+  var targetEl = mk('#f2c230'), blockerEl = mk('#1b1b1b'), cueEl = mk('#fbfbf6');
+  var put = function (e, p) { e.setAttribute('cx', px(p[0])); e.setAttribute('cy', px(p[1])); };
+  var ui = { status: root.querySelector('[data-status]'), msg: root.querySelector('[data-msg]'), shoot: root.querySelector('[data-shoot]'), next: root.querySelector('[data-next]'), level: root.querySelector('[data-level]') };
+  var level = ui.level.value, S, shot, dir, busy = false;
+  var rand = function (a, b) { return a + Math.random() * (b - a); };
+  var rot = function (v, a) { return [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a)]; };
+  // Where along p + s*d the cue ball first touches the ball centered at c (centers BALL apart), or Infinity.
+  function contact(p, d, c) { var v = sub(c, p), s = dot(v, d), q = dot(v, v) - s * s; if (s <= 0 || q >= BALL * BALL) return Infinity; return s - Math.sqrt(BALL * BALL - q); }
+  // Roll the cue ball through up to `rails` cushions. Returns points, what it hit first and rails touched before.
+  function trace(p, d, rails, sh) {
+    var pts = [p], hits = 0;
+    for (var seg = 0; seg <= rails; seg++) {
+      var ts = [], hiX = 8 - LO, hiY = 4 - LO;
+      if (d[0] > 0) ts.push([(hiX - p[0]) / d[0], 0]); if (d[0] < 0) ts.push([(LO - p[0]) / d[0], 0]);
+      if (d[1] > 0) ts.push([(hiY - p[1]) / d[1], 1]); if (d[1] < 0) ts.push([(LO - p[1]) / d[1], 1]);
+      ts.sort(function (a, b) { return a[0] - b[0]; }); var t = Math.max(0, ts[0][0]), axis = ts[0][1];
+      var tT = contact(p, d, sh.t), tB = contact(p, d, sh.b);
+      if (Math.min(tT, tB) <= t) { var s = Math.min(tT, tB); pts.push(add(p, mul(d, s))); return { pts: pts, hit: tT < tB ? 'target' : 'blocker', rails: hits }; }
+      p = add(p, mul(d, t)); pts.push(p);
+      if (seg === rails) break;
+      d = axis === 0 ? [-d[0], d[1]] : [d[0], -d[1]]; hits++;
+    }
+    return { pts: pts, hit: null, rails: hits };
+  }
+  function newRound() { S = { n: 0, made: 0, streak: 0, score: 0 }; newShot(); }
+  function newShot() {
+    for (var tries = 0; tries < 2000; tries++) {
+      var top = Math.random() < 0.5, railY = top ? LO : 4 - LO;
+      var c = [rand(0.8, 7.2), top ? rand(1.2, 3.4) : rand(0.6, 2.8)], tg = [rand(0.8, 7.2), top ? rand(1.0, 3.4) : rand(0.6, 3.0)];
+      if (len(sub(c, tg)) < 2.2) continue;
+      var b = add(c, mul(sub(tg, c), rand(0.4, 0.6)));
+      var cand = { c: c, t: tg, b: b, top: top, railY: railY };
+      var m = [tg[0], 2 * railY - tg[1]], d = norm(sub(m, c)), hitX = c[0] + d[0] * (railY - c[1]) / d[1];
+      if (hitX < 0.5 || hitX > 7.5 || Math.abs(hitX - 4) < 0.3) continue;
+      var tr = trace(c, d, 1, cand); if (tr.hit !== 'target' || tr.rails !== 1) continue;
+      cand.ideal = d; cand.hitX = hitX; shot = cand; break;
+    }
+    dir = rot(shot.ideal, (Math.random() < 0.5 ? -1 : 1) * rand(5, 12) * Math.PI / 180);
+    put(cueEl, shot.c); put(targetEl, shot.t); put(blockerEl, shot.b); put(halo, shot.t);
+    cueEl.setAttribute('opacity', 1); idealEl.setAttribute('opacity', 0); railMark.setAttribute('opacity', 0);
+    ui.next.hidden = true; ui.shoot.hidden = false; busy = false;
+    ui.msg.innerHTML = 'The black ball is in the way. Kick the <b>cue ball</b> off the <b>' + (shot.top ? 'top' : 'bottom') + ' rail</b> into the <b>yellow ball</b>. Tap the rail where it should hit, fine-tune, and shoot.';
+    draw(); status();
+  }
+  function draw() { var tr = trace(shot.c, dir, LEVELS[level].show ? 1 : 0, shot); pathEl.setAttribute('points', tr.pts.map(function (p) { return px(p[0]) + ',' + px(p[1]); }).join(' ')); }
+  function status() { var best = Number(store.get('bat-kick-best-' + level) || 0); ui.status.textContent = 'Kick ' + Math.min(S.n + 1, 10) + ' of 10 · Score ' + S.score + ' · Streak ' + S.streak + ' · Best ' + best; }
+  function shoot() {
+    if (busy) return; busy = true; ui.shoot.hidden = true; pathEl.setAttribute('opacity', 0);
+    var tr = trace(shot.c, dir, 2, shot), pts = tr.pts, total = 0, segs = [];
+    for (var a = 1; a < pts.length; a++) { var l = len(sub(pts[a], pts[a - 1])); segs.push(l); total += l; }
+    var t0 = null, ms = 450 + total * 140;
+    var stepFn = function (ts) {
+      if (!t0) t0 = ts; var k = Math.min(1, (ts - t0) / ms), dist = total * (1 - Math.pow(1 - k, 2)), acc = 0;
+      for (var s = 0; s < segs.length; s++) { if (acc + segs[s] >= dist || s === segs.length - 1) { var f = segs[s] ? Math.min(1, (dist - acc) / segs[s]) : 1; put(cueEl, add(pts[s], mul(sub(pts[s + 1], pts[s]), f))); break; } acc += segs[s]; }
+      if (k < 1) requestAnimationFrame(stepFn); else done(tr);
+    };
+    requestAnimationFrame(stepFn);
+  }
+  function done(tr) {
+    var made = tr.hit === 'target' && tr.rails >= 1;
+    var t = (shot.railY - shot.c[1]) / dir[1], hitX = shot.c[0] + dir[0] * t, off = hitX - shot.hitX;
+    var where = t <= 0 ? '' : ' You hit the rail ' + (Math.abs(off) < 0.05 ? 'right on the spot' : Math.abs(off).toFixed(2) + ' diamonds too far ' + (off > 0 ? 'right' : 'left')) + '.';
+    S.n++; if (made) { S.streak++; S.made++; S.score += 10 + (S.streak - 1) * 2; } else S.streak = 0;
+    var why = made ? '' : tr.hit === 'blocker' ? 'You hit the blocker. That\'s a foul: ball in hand for your opponent.' : tr.hit === 'target' ? 'You hit it, but not off the rail.' : 'Missed it. Foul: ball in hand.';
+    idealEl.setAttribute('points', [shot.c, [shot.hitX, shot.railY], shot.t].map(function (p) { return px(p[0]) + ',' + px(p[1]); }).join(' '));
+    idealEl.setAttribute('opacity', made ? 0 : 0.95);
+    railMark.setAttribute('x', px(shot.hitX) - 8); railMark.setAttribute('width', 16); railMark.setAttribute('y', shot.top ? R - 8 : px(4) + 2); railMark.setAttribute('opacity', made ? 0 : 1);
+    ui.msg.innerHTML = (made ? '✅ Good kick! You hit it.' : '❌ ' + why) + where + (made ? '' : ' <span class="muted">The yellow line shows the kick that works.</span>');
+    if (S.n >= 10) {
+      var key = 'bat-kick-best-' + level, best = Number(store.get(key) || 0), isBest = S.score > best; if (isBest) store.set(key, String(S.score));
+      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 kicks hit, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
+      ui.next.textContent = 'Play another round'; ui.next.onclick = newRound;
+    } else { ui.next.textContent = 'Next kick →'; ui.next.onclick = newShot; }
+    ui.next.hidden = false; pathEl.setAttribute('opacity', 0.85); status();
+  }
+  var toTable = function (ev) { var pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; var m = svg.getScreenCTM(); if (!m) return null; var q = pt.matrixTransform(m.inverse()); return [(q.x - R) / U, (q.y - R) / U]; };
+  var setDir = function (ev) { if (busy) return; var p = toTable(ev); if (!p || len(sub(p, shot.c)) < 0.05) return; dir = norm(sub(p, shot.c)); draw(); };
+  svg.addEventListener('pointerdown', setDir);
+  svg.addEventListener('pointermove', function (ev) { if (ev.pointerType === 'mouse' || ev.buttons) setDir(ev); });
+  root.querySelectorAll('[data-nudge]').forEach(function (b) { b.addEventListener('click', function () { if (busy) return; dir = rot(dir, Number(b.getAttribute('data-nudge')) * Math.PI / 180); draw(); }); });
+  ui.shoot.addEventListener('click', shoot);
+  ui.level.addEventListener('change', function () { level = ui.level.value; newRound(); });
+  root.querySelector('[data-loading]').remove();
+  newRound();
+})();
