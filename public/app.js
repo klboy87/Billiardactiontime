@@ -203,7 +203,7 @@
           </form>
           <p class="eg">Example: 9-Ball Battle Creek</p>
           <div class="totalstat" id="totalStat"><span class="ic">🎱</span> <span id="totalStatText">Loading tournament count…</span></div>
-          <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><a class="btn btn-gold" href="/tonight/">🌙 Tournaments Tonight</a><a class="btn btn-gold" href="/this-weekend/">🔥 This Weekend →</a></p>
+          <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><a class="btn btn-gold" href="/tonight/" id="tonightBtn">🌙 Tournaments Tonight</a><a class="btn btn-gold" href="/this-weekend/">🔥 This Weekend →</a></p>
         </div>
       </section>
       <div id="mmSpot"></div>
@@ -283,6 +283,12 @@
       };
       reader.readAsDataURL(file);
     });
+
+    // Tonight's count on the hero button (local date)
+    (async () => {
+      const d = new Date(), iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      try { const r = await api('/api/tournaments?' + qs({ from: iso, to: iso, limit: 1000 })); const n = (r.tournaments || []).length; if (n) document.getElementById('tonightBtn').textContent = `🌙 Tournaments Tonight (${n})`; } catch {}
+    })();
 
     // Total tournaments listed sitewide
     (async () => {
