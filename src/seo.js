@@ -158,7 +158,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <details class="mnav"><summary aria-label="Menu">☰</summary><div class="mnav-panel">
 <form action="/search" method="get" role="search" class="mnav-search"><input type="search" name="q" placeholder="Search city, room, game…" aria-label="Search tournaments"><button type="submit">Search</button></form>
-<a href="/tonight/">🌙 Tonight</a><a href="/this-weekend/">🔥 This Weekend</a><a href="/near">📍 Near Me</a><a href="/tournaments/">🗺️ By State</a><a href="/big-tournaments/">🏆 Big Events</a><a href="/new/">🆕 Just Added</a><a href="/calendar">📅 Calendar</a>
+<a href="/tonight/">🌙 Tonight</a><a href="/this-weekend/">🔥 This Weekend</a><a href="/near">📍 Near Me</a><a href="/tournaments/">🗺️ By State</a><a href="/pool-halls/">🏠 Pool Halls</a><a href="/big-tournaments/">🏆 Big Events</a><a href="/new/">🆕 Just Added</a><a href="/calendar">📅 Calendar</a>
 <a href="/guides/">📖 Guides</a><a href="/trick-shots/">✨ Trick Shots</a><a href="/play/">🎮 Games</a><a href="/tools/">🧰 Tools</a><a href="/money-matches/">💰 Money Matches</a><a href="/alerts">🔔 Alerts</a><a class="mnav-cta" href="/post">➕ Post a Tournament</a>
 </div></details>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
@@ -181,7 +181,7 @@ function buildFooter(db) {
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
-    <div><h4>Learn &amp; Play</h4><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a></div>
+    <div><h4>Learn &amp; Play</h4><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/pool-halls/">Pool halls</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a></div>
   </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
@@ -513,7 +513,8 @@ export function sitemapXml(db, cfg, extra = []) {
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
   const wk = weekendRange(today);
   add('/this-weekend/', today, '0.9');
-  add('/tonight/', today, '0.9'); add('/new/', today, '0.7');
+  add('/tonight/', today, '0.9'); add('/new/', today, '0.7'); add('/pool-halls/', today, '0.8');
+  for (const st of hallsByState(db).keys()) add(hallsPath(st), today, '0.7');
   const week = new Date(Date.parse(today + 'T00:00:00Z') + 7 * 864e5).toISOString().slice(0, 10);
   for (const st of new Set(up.filter(t => t.date <= week).map(t => t.venue.state))) if (STATE_NAMES[st]) add(tonightPath(st), today, '0.6');
   add('/big-tournaments/', today, '0.9');
@@ -786,4 +787,64 @@ ${items.map(t => { const u = cfg.publicUrl + tournamentPath(db, t), v = t.venue,
   return `<item><title>${x(`${t.name} – ${v.city}, ${v.state} (${shortDate(t.date)})`)}</title><link>${x(u)}</link><guid isPermaLink="true">${x(u)}</guid><pubDate>${rfc(t.createdAt)}</pubDate>
 <description>${x(`${g || 'Pool'} tournament at ${v.name}, ${v.city}, ${v.state} on ${longDate(t.date)}${t.time ? ' at ' + fmtTime(t.time) : ''}.${t.entry != null ? ' Entry ' + money(t.entry) + '.' : ''}${t.added ? ' ' + money(t.added) + ' added.' : ''}`)}</description></item>`; }).join('\n')}
 </channel></rss>`;
+}
+
+// Pool hall directory (/pool-halls/ and /pool-halls/<state>/): rooms that ran or will run tournaments recently,
+// grouped by city, with their weekly nights and next event.
+function hallsByState(db) {
+  const ix = index(db), today = todayIso(), from = new Date(Date.parse(today + 'T00:00:00Z') - 90 * 864e5).toISOString().slice(0, 10);
+  const rooms = new Map();
+  for (const t of ix.all) {
+    if (t.date < from || !STATE_NAMES[t.venue.state]) continue;
+    const id = ix.primaryVenue.get(t.venue.id) ?? t.venue.id;
+    const r = rooms.get(id) || { id, v: t.venue, events: [], next: null };
+    r.events.push(t); if (t.date >= today && (!r.next || t.date < r.next.date)) r.next = t;
+    if (!r.v.address && t.venue.address) r.v = t.venue;
+    rooms.set(id, r);
+  }
+  const byState = new Map();
+  for (const r of rooms.values()) { const st = r.v.state; if (!byState.has(st)) byState.set(st, []); byState.get(st).push(r); }
+  return byState;
+}
+const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function roomNights(r) {
+  const n = new Map();
+  for (const t of r.events) { const d = new Date(t.date + 'T00:00:00Z').getUTCDay(); n.set(d, (n.get(d) || 0) + 1); }
+  return [1, 2, 3, 4, 5, 6, 0].filter(d => (n.get(d) || 0) >= 2).map(d => DAYS_SHORT[d]);
+}
+export const hallsPath = st => st ? `/pool-halls/${stateSlug(st)}/` : '/pool-halls/';
+export function poolHallsIndexPage(db, cfg) {
+  const byState = hallsByState(db), total = [...byState.values()].reduce((a, l) => a + l.length, 0);
+  const states = [...byState].sort((a, b) => (STATE_NAMES[a[0]] || a[0]).localeCompare(STATE_NAMES[b[0]] || b[0]));
+  const bc = crumbs(cfg, [{ name: 'Pool Halls', path: '/pool-halls/' }]);
+  const body = `${bc.html}<div class="pagehead"><h1>Pool Halls &amp; Bars With Pool Tournaments</h1>
+    <p><b>${total.toLocaleString('en-US')}</b> pool halls, billiard rooms and bars in ${byState.size} states that run pool tournaments. Pick a state to see each room's weekly tournament nights and next event.</p></div>
+    <div class="card"><ul class="statelist">${states.map(([st, l]) => `<li><a href="${hallsPath(st)}">${esc(STATE_NAMES[st] || st)}</a> <span class="muted">(${l.length})</span></li>`).join('')}</ul></div>
+    <p style="margin-top:14px">Looking for a game tonight? See <a href="/tonight/">pool tournaments tonight</a> or <a href="/near">tournaments near you</a>.</p>`;
+  return layout(cfg, { title: 'Pool Halls Near You That Run Tournaments, by State | Billiard Action Time', path: '/pool-halls/', body, jsonld: [bc.ld],
+    description: `${total} pool halls, billiard rooms and bars that run pool tournaments, by state: weekly tournament nights, addresses and upcoming events.` });
+}
+export function poolHallsStatePage(db, cfg, slugPart) {
+  const st = STATE_BY_SLUG[String(slugPart || '').toLowerCase()];
+  if (!st) return null;
+  const rooms = hallsByState(db).get(st) || [];
+  if (!rooms.length) return null;
+  const name = STATE_NAMES[st], byCity = new Map();
+  for (const r of rooms) { const c = r.v.city || 'Other'; if (!byCity.has(c)) byCity.set(c, []); byCity.get(c).push(r); }
+  const cities = [...byCity].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
+  const bc = crumbs(cfg, [{ name: 'Pool Halls', path: '/pool-halls/' }, { name, path: hallsPath(st) }]);
+  const card = r => { const nights = roomNights(r), addr = [r.v.address, r.v.city, r.v.state].filter(Boolean).join(', ');
+    return `<li class="hall"><a href="${venuePath(db, r.v)}"><b>${esc(r.v.name)}</b></a><br><span class="muted">${esc(addr)}</span>
+      ${nights.length ? `<br><span class="hall-nights">🔁 Tournaments: ${nights.join(', ')}</span>` : ''}
+      ${r.next ? `<br><span class="muted">Next: <a href="${tournamentPath(db, r.next)}">${esc(r.next.name)}</a> · ${esc(shortDate(r.next.date))}</span>` : ''}</li>`; };
+  const ld = { '@context': 'https://schema.org', '@type': 'ItemList', name: `Pool halls in ${name}`, numberOfItems: rooms.length,
+    itemListElement: rooms.slice(0, 200).map((r, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + venuePath(db, r.v), name: r.v.name })) };
+  const body = `${bc.html}<div class="pagehead"><h1>Pool Halls in ${esc(name)} With Tournaments</h1>
+    <p><b>${plural(rooms.length, 'pool hall')}</b> and bars in ${esc(name)} that run pool tournaments, in ${plural(byCity.size, 'city', 'cities')}. Each shows its regular tournament nights and next event.</p>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="${facetPath({ state: st })}">${esc(name)} Tournaments</a><a class="btn btn-gold" href="${tonightPath(st)}">Tonight in ${esc(name)}</a><a class="btn btn-out" href="/pool-halls/">All States</a></div></div>
+    ${cities.length > 4 ? `<p class="chips">${cities.map(([c, l]) => `<a class="chip" href="#city-${slugify(c)}">${esc(c)} (${l.length})</a>`).join('')}</p>` : ''}
+    ${cities.map(([c, l]) => `<section class="sec seo-sec" id="city-${slugify(c)}" style="padding-top:12px"><h2>${esc(c)}</h2><ul class="hall-list">${l.sort((a, b) => (b.next ? 1 : 0) - (a.next ? 1 : 0) || a.v.name.localeCompare(b.v.name)).map(card).join('')}</ul></section>`).join('')}
+    <p class="muted" style="margin-top:16px">Run a pool room that's missing? <a href="/post">Post your tournament free</a> and your room is added.</p>`;
+  return layout(cfg, { title: `Pool Halls in ${name} With Pool Tournaments (${rooms.length}) | Billiard Action Time`, path: hallsPath(st), body, jsonld: [bc.ld, ld],
+    description: `${rooms.length} pool halls and bars in ${name} that run pool tournaments: addresses, weekly tournament nights and upcoming events in ${cities.slice(0, 4).map(([c]) => c).join(', ')} and more.` });
 }

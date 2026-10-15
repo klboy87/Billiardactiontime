@@ -24,7 +24,7 @@ export const PAGES = {
   'match-page': 'Match Finder Post (shared link)',
   money: 'Money Matches (app)', 'money-post': 'Post a Money Match', 'money-hub': 'Money Matches Page',
   'money-page': 'Money Match Page', 'money-player': 'Money Match Player Page',
-  'weekend-page': 'This Weekend Page', 'tonight-page': 'Tonight Page', 'new-page': 'Just Added Page', guides: 'Guides', guide: 'Guide Article', tools: 'Tools', 'big-page': 'Biggest Tournaments Page', tool: 'Tool (calculator)', brackets: 'Printable Brackets', 'trick-shots': 'Trick Shots', 'trick-shot': 'Trick Shot (one)', play: 'Games', 'aim-trainer': 'Aim Trainer Game', 'bank-trainer': 'Bank Trainer Game', 'lag-challenge': 'Lag Challenge Game', 'which-game': 'Which Game Quiz', 'practice-log': 'Practice Log', bracket: 'Printable Bracket (one size)', about: 'About', contact: 'Contact', 'listing-page': 'Tournament Listing Page (from search/links)'
+  'weekend-page': 'This Weekend Page', 'tonight-page': 'Tonight Page', 'new-page': 'Just Added Page', halls: 'Pool Halls Directory', 'halls-state': 'Pool Halls (state)', guides: 'Guides', guide: 'Guide Article', tools: 'Tools', 'big-page': 'Biggest Tournaments Page', tool: 'Tool (calculator)', brackets: 'Printable Brackets', 'trick-shots': 'Trick Shots', 'trick-shot': 'Trick Shot (one)', play: 'Games', 'aim-trainer': 'Aim Trainer Game', 'bank-trainer': 'Bank Trainer Game', 'lag-challenge': 'Lag Challenge Game', 'which-game': 'Which Game Quiz', 'practice-log': 'Practice Log', bracket: 'Printable Bracket (one size)', about: 'About', contact: 'Contact', 'listing-page': 'Tournament Listing Page (from search/links)'
 };
 const ROUTE_TO_PAGE = { '': 'home', t: 'tournament' };
 export function pageFromHash(route) {
