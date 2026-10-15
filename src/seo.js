@@ -313,7 +313,7 @@ function glanceHtml(list, where, rooms, showGame) {
   if (list.length < 5) return '';
   const top = (arr) => { const m = new Map(); for (const k of arr) if (k) m.set(k, (m.get(k) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); };
   const nights = top(list.map(t => DOW[new Date(t.date + 'T00:00:00Z').getUTCDay()]));
-  const games = top(list.map(t => t.game && String(t.game).replace(/^(\d+)[\s-]*Ball$/i, '$1-Ball').replace(/^8-Ball Scotch Doubles$|^9-Ball Scotch Doubles$/i, 'Scotch Doubles')));
+  const games = top(list.map(t => t.game && t.game !== 'Other' && String(t.game).replace(/^(\d+)[\s-]*Ball$/i, '$1-Ball').replace(/^8-Ball Scotch Doubles$|^9-Ball Scotch Doubles$/i, 'Scotch Doubles')));
   const fees = list.map(t => t.entry).filter(n => n != null && n > 0).sort((a, b) => a - b);
   const median = fees.length >= 3 ? fees[Math.floor(fees.length / 2)] : null;
   const added = list.filter(t => t.added > 0).length;
@@ -376,6 +376,7 @@ export function listingPage(db, cfg, parts) {
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="/search?${new URLSearchParams({ ...(f.state ? { state: f.state } : {}), ...(f.cityName ? { city: f.cityName } : {}), ...(f.game ? { game: f.game } : {}) })}">Search &amp; Filter</a>
     <a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/post">Post a Tournament</a>${f.state && !f.city && !f.game ? `<a class="btn btn-gold" href="${weekendPath(f.state)}">This Weekend in ${esc(stateName)}</a>` : !f.state && !f.city ? `<a class="btn btn-gold" href="/this-weekend/">This Weekend</a>` : ''}</div></div>
   ${glanceHtml(upcoming, place ? (f.cityName || stateName) : 'Nationwide', venues.size, !g)}
+  ${f.city ? weeklyScheduleHtml(db, inScope, { showCity: false, title: `Weekly ${g ? g + ' ' : ''}tournaments in ${f.cityName}` }) : ''}
   ${upcoming.length ? eventRows(db, upcoming.slice(0, 300), { showCity: !f.city }) : ''}
   ${upcoming.length > 300 ? `<p class="muted">Showing the next 300. <a href="/search">Search for more</a>.</p>` : ''}
   ${venues.size ? `<section class="sec seo-sec"><h2>Pool rooms${place ? ' in ' + esc(f.cityName || stateName) : ''} running ${g ? esc(g) + ' ' : ''}tournaments</h2><ul class="seo-list seo-cols">${[...venues.values()].sort((a, b) => b.n - a.n).slice(0, 60)
@@ -405,6 +406,26 @@ function statesIndexPage(db, cfg) {
 }
 
 // ---- venue page (kept at /venue/:id) ----
+
+// Weekly schedule: events that repeat on the same weekday at the same room (seen at least twice in the last
+// 60 days or upcoming), laid out Monday to Sunday. Returns '' when nothing repeats.
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+function weeklyScheduleHtml(db, list, { showCity = true, title = 'Weekly schedule' } = {}) {
+  const ix = index(db), today = todayIso(), from = new Date(Date.parse(today + 'T00:00:00Z') - 60 * 864e5).toISOString().slice(0, 10);
+  const key = t => (ix.primaryVenue.get(t.venue.id) ?? t.venue.id) + '|' + new Date(t.date + 'T00:00:00Z').getUTCDay() + '|' + String(t.name).toLowerCase().replace(/\b(mon|tues|wednes|thurs|fri|satur|sun)day\b|\bnight\b|\bweekly\b|[^a-z0-9]/g, '');
+  const groups = new Map();
+  const DAY_RE = /\b(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i;
+  const dayMismatch = t => { const m = String(t.name).match(DAY_RE); return m && m[1].toLowerCase() !== ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][new Date(t.date + 'T00:00:00Z').getUTCDay()]; };
+  for (const t of list) { if (t.date < from || dayMismatch(t)) continue; const k = key(t); const g = groups.get(k) || { n: 0, next: null, last: t }; g.n++; if (t.date >= today && (!g.next || t.date < g.next.date)) g.next = t; groups.set(k, g); }
+  const regular = [...groups.values()].filter(g => g.n >= 2 && g.next);
+  if (!regular.length) return '';
+  const byDay = WEEKDAYS.map(() => []);
+  for (const g of regular) { const d = (new Date(g.next.date + 'T00:00:00Z').getUTCDay() + 6) % 7; byDay[d].push(g.next); }
+  const rows = byDay.map((evs, d) => evs.length ? `<tr><th class="seo-date">${WEEKDAYS[d]}s</th><td>${evs.sort((a, b) => String(a.time || '').localeCompare(String(b.time || ''))).map(t =>
+    `<div><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(t.venue.name)}${showCity ? ', ' + esc(t.venue.city) : ''}${t.time ? ' · ' + esc(fmtTime(t.time)) : ''}${t.entry != null ? ' · ' + esc(money(t.entry)) : ''}</span></div>`).join('')}</td></tr>` : '').join('');
+  return `<section class="sec seo-sec"><h2>${esc(title)}</h2><p class="muted" style="margin:0 0 8px">Tournaments that run every week. Each links to the next date.</p><div class="card seo-tbl"><table class="t"><tbody>${rows}</tbody></table></div></section>`;
+}
+
 export function venuePage(db, cfg, venueId) {
   const ix = index(db), today = todayIso();
   const primary = ix.primaryVenue.get(venueId);
@@ -424,6 +445,7 @@ export function venuePage(db, cfg, venueId) {
   const body = `${bc.html}<div class="pagehead"><h1>${esc(v.name)}</h1><p>${esc(where)}${v.phone ? ' · ' + esc(v.phone) : ''}</p>
     <p>${up.length ? `${plural(up.length, 'upcoming pool tournament')} at ${esc(v.name)} in ${esc(v.city)}, ${esc(STATE_NAMES[v.state] || v.state)}.` : `No upcoming tournaments listed at ${esc(v.name)} right now.`}</p>
     <div class="actbar"><a class="btn btn-out" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name + ', ' + where)}">Directions</a><a class="btn btn-out" href="${facetPath({ state: v.state, city: v.city })}">More in ${esc(v.city)}</a></div></div>
+    ${weeklyScheduleHtml(db, all, { showCity: false, title: `Weekly at ${v.name}` })}
     ${up.length ? eventRows(db, up, { showCity: false }) : ''}
     ${past.length ? `<section class="sec seo-sec"><h2>Recent tournaments at ${esc(v.name)}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)}</span></li>`).join('')}</ul></section>` : ''}`;
   return layout(cfg, { title: `${v.name} – Pool Tournaments in ${v.city}, ${v.state} | Billiard Action Time`, path, body,
