@@ -638,3 +638,4 @@ table.t tr.noline td{border-bottom:0}
 .skip-link{position:absolute;left:-9999px;top:8px;z-index:100;background:#fff;color:#000;padding:8px 12px;border-radius:6px;font-weight:700}
 .skip-link:focus{left:8px}
 .seo a:focus-visible,.seo button:focus-visible,.seo input:focus-visible,.seo select:focus-visible,.mnav summary:focus-visible,.nav a:focus-visible{outline:3px solid #f3c34a;outline-offset:2px}
+@media (max-width:600px){a.ts-card[style*="grid-template-columns"]{grid-template-columns:1fr!important}}

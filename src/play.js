@@ -1,6 +1,8 @@
 // Games (/play/...): the aim trainer runs in public/play.js; the page text is server-rendered so it reads
 // well and teaches the idea behind the game even without JavaScript.
 import { layout } from './seo.js';
+import { SHOTS } from './trickshots.js';
+import { todayIso } from './db.js';
 
 const btn = (extra = '') => `style="padding:10px 14px;font-size:16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;${extra}"`;
 const GAMES = [
@@ -17,6 +19,8 @@ const GAMES = [
 export function playIndexPage(cfg) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Play</span></nav>
   <div class="pagehead"><h1>Pool Games &amp; Challenges</h1><p>Sharpen your eye between tournaments. Free, no sign-up, and they work on your phone.</p></div>
+  ${(() => { const day = Math.floor(Date.parse(todayIso() + 'T00:00:00Z') / 864e5), shot = SHOTS[day % SHOTS.length];
+    return `<a class="ts-card" href="/trick-shots/${shot.slug}" style="margin-bottom:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:center"><div>${shot.diagram.replace(/<figcaption>[\s\S]*?<\/figcaption>/, '')}</div><div><span class="ts-meta">✨ Trick shot of the day</span><br><b style="font-size:20px">${shot.title}</b><br><span class="muted">${shot.desc}</span><br><span style="font-weight:700">Learn it →</span></div></a>`; })()}
   <div class="ts-grid">${GAMES.map(g => `<a class="ts-card" href="${g.href}"><span style="font-size:38px;line-height:1">${g.icon}</span><b>${g.title}</b><span class="muted">${g.desc}</span></a>`).join('')}</div>
   <p style="margin-top:16px"><a href="/guides/">Read the guides →</a> · <a href="/this-weekend/">Find a tournament this weekend →</a></p>`;
   return layout(cfg, { title: 'Pool Games: Aim Trainer, Rules Quiz & Trick Shots | Billiard Action Time', description: 'Free pool games and challenges: an aim trainer that scores your cut shots, a pool rules quiz, trick shots and practice drills.', path: '/play/', body });
