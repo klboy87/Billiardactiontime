@@ -730,7 +730,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/guides\/([a-z0-9-]{2,80})\/?$/))) {
       SEO.ensureFooter(db);
       const GAME_OF = { '8-ball-rules': '8-Ball', '9-ball-rules': '9-Ball', '10-ball-rules': '10-Ball', 'one-pocket': 'One Pocket', 'scotch-doubles': 'Scotch Doubles', 'bank-pool-rules': 'Banks', 'straight-pool-rules': 'Straight Pool', '8-ball-patterns': '8-Ball', '9-ball-strategy': '9-Ball', 'bar-rules-vs-tournament-rules': '8-Ball' };
-      const out = GU.guidePage(cfg, x[1], GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : '');
+      const out = GU.guidePage(cfg, x[1], GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : SEO.tonightCta(db));
       if (!out) return notFoundPage();
       trackVisit(req, 'guide');
       return html(200, out);
@@ -740,7 +740,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (p === '/trick-shots' || p === '/trick-shots/')) { if (p === '/trick-shots') return moved('/trick-shots/'); SEO.ensureFooter(db); trackVisit(req, 'trick-shots'); return html(200, TS.trickShotsIndexPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/trick-shots\/([a-z0-9-]{2,80})\/?$/))) {
       SEO.ensureFooter(db);
-      const out = TS.trickShotPage(cfg, x[1]);
+      const out = TS.trickShotPage(cfg, x[1])?.replace('</article>\n  <section class="sec seo-sec"><h2>Next shot</h2>', '</article>' + SEO.tonightCta(db) + '\n  <section class="sec seo-sec"><h2>Next shot</h2>');
       if (!out) return notFoundPage();
       trackVisit(req, 'trick-shot');
       return html(200, out);

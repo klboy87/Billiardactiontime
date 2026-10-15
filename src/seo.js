@@ -935,3 +935,12 @@ small{color:${c.mute}}.f{margin-top:8px;padding-top:8px;border-top:1px solid ${c
 <body><div class="w"><h1>Upcoming tournaments at ${esc(v.name)}</h1>${up.length ? `<ul>${rows}</ul>` : `<p>No upcoming tournaments listed right now.</p>`}
 <div class="f"><a href="${esc(u(venuePath(db, v)))}" target="_blank" rel="noopener">Full schedule</a> · <a href="${esc(u('/alerts'))}" target="_blank" rel="noopener">Get alerts</a> · Powered by <a href="${esc(u('/'))}" target="_blank" rel="noopener">Billiard Action Time</a></div></div></body></html>`;
 }
+
+// Call to action for content pages: tonight's count, with this weekend as a second option.
+export function tonightCta(db) {
+  const ix = index(db), today = todayIso(), wk = weekendRange(today);
+  const n = ix.all.filter(t => t.date === today).length, w = ix.all.filter(t => t.date >= wk.from && t.date <= wk.to).length;
+  if (!n && !w) return '';
+  return `<section class="card" style="padding:14px 18px;margin-top:16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center"><b style="font-size:18px">🎱 Put it to work:</b>
+    ${n ? `<a class="btn btn-gold" href="/tonight/">${plural(n, 'tournament')} tonight</a>` : ''}${w ? `<a class="btn btn-blue" href="/this-weekend/">${plural(w, 'tournament')} this weekend</a>` : ''}<a class="btn btn-out" href="/near">Near me</a></section>`;
+}
