@@ -156,7 +156,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
 <link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
-<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
+<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
 <main class="wrap page seo">${body}${ALERT_CTA}</main>
 ${footer(cfg)}</body></html>`;
@@ -176,7 +176,7 @@ function buildFooter(db) {
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
-    <div><h4>Learn &amp; Play</h4><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a></div>
+    <div><h4>Learn &amp; Play</h4><a href="/tonight/">Tonight</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a></div>
   </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
@@ -451,6 +451,9 @@ export function sitemapXml(db, cfg, extra = []) {
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
   const wk = weekendRange(today);
   add('/this-weekend/', today, '0.9');
+  add('/tonight/', today, '0.9');
+  const week = new Date(Date.parse(today + 'T00:00:00Z') + 7 * 864e5).toISOString().slice(0, 10);
+  for (const st of new Set(up.filter(t => t.date <= week).map(t => t.venue.state))) if (STATE_NAMES[st]) add(tonightPath(st), today, '0.6');
   add('/big-tournaments/', today, '0.9');
   for (const st of new Set(up.filter(t => t.date >= wk.from && t.date <= wk.to).map(t => t.venue.state))) if (STATE_NAMES[st]) add(weekendPath(st), today, '0.7');
   for (const e of extra) add(e.path, e.lastmod || today, e.pri || '0.6');
@@ -549,7 +552,7 @@ export function weekendPage(db, cfg, stateSlugPart) {
     itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   const body = `${bc.html}
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
-    <div class="actbar" style="margin-top:12px">${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-gold" href="${tonightPath(state)}">Tonight${esc(where)}</a>${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>This weekend by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${weekendPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : soon.length ? `<h2 class="seo-h2">Coming up next${where}</h2>${eventRows(db, soon, { showCity: true })}` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
@@ -640,4 +643,49 @@ function googleCalUrl(cfg, db, t) {
   else dates = `${d}/${new Date(Date.parse(t.date + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10).replace(/-/g, '')}`;
   const q = new URLSearchParams({ action: 'TEMPLATE', text: t.name, dates, location: [v.name, v.address, v.city, v.state].filter(Boolean).join(', '), details: `${cfg.publicUrl}${tournamentPath(db, t)}` });
   return 'https://calendar.google.com/calendar/render?' + q.toString();
+}
+
+// "Pool tournaments tonight" (/tonight/ and /tonight/<state>/): today's events, with tomorrow as a fallback.
+export const tonightPath = state => state ? `/tonight/${stateSlug(state)}/` : '/tonight/';
+export function tonightPage(db, cfg, stateSlugPart) {
+  const state = stateSlugPart ? STATE_BY_SLUG[String(stateSlugPart).toLowerCase()] : null;
+  if (stateSlugPart && !state) return null;
+  const ix = index(db), today = todayIso(), tomorrow = new Date(Date.parse(today + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10);
+  const inState = t => !state || t.venue.state === state;
+  const byTime = (a, b) => String(a.time || '99').localeCompare(String(b.time || '99')) || a.venue.state.localeCompare(b.venue.state) || a.venue.city.localeCompare(b.venue.city);
+  const list = ix.all.filter(t => t.date === today && inState(t)).sort(byTime);
+  const next = ix.all.filter(t => t.date === tomorrow && inState(t)).sort(byTime);
+  const stateName = state ? STATE_NAMES[state] : '', where = stateName ? ` in ${stateName}` : '';
+  const dayName = longDate(today).split(',')[0];
+  const h1 = `Pool Tournaments Tonight${where}`;
+  const path = tonightPath(state);
+  const games = (() => { const m = new Map(); for (const t of list) { const g = gameWord(t.game); if (g) m.set(g, (m.get(g) || 0) + 1); } return [...m].sort((a, b) => b[1] - a[1]); })();
+  const intro = list.length
+    ? `<b>${plural(list.length, 'pool tournament')}</b>${where || ' across the US'} tonight, ${esc(longDate(today))}${games.length ? `: ${games.slice(0, 4).map(([g, n]) => `${esc(g)} (${n})`).join(', ')}` : ''}. Most weekly events start between 6 and 8 pm, so call the room to confirm sign-up time.`
+    : `Nothing is listed${where} for tonight (${esc(longDate(today))}). ${next.length ? `Here's tomorrow's list.` : `See what's coming up this weekend.`}`;
+  const states = !state ? (() => { const m = new Map(); for (const t of list) m.set(t.venue.state, (m.get(t.venue.state) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); })() : [];
+  const title = `${h1} (${dayName}${list.length ? `, ${plural(list.length, 'Event')}` : ''}) | Billiard Action Time`;
+  const description = list.length
+    ? `${plural(list.length, 'pool tournament')}${where || ' in the US'} tonight, ${longDate(today)}: weekly 8-Ball and 9-Ball nights, pool halls, entry fees and directions. Updated daily.`
+    : `Pool tournaments${where} tonight and tomorrow: weekly 8-Ball and 9-Ball nights, pool halls and entry fees. Updated daily.`;
+  const url = cfg.publicUrl + path, u = encodeURIComponent(url + '?utm_source=share');
+  const shareText = list.length ? `${plural(list.length, 'pool tournament')}${where} tonight` : `Pool tournaments${where} tonight`, tx = encodeURIComponent(shareText);
+  const bc = crumbs(cfg, [{ name: 'Tournaments', path: '/tournaments/' }, ...(state ? [{ name: 'Tonight', path: '/tonight/' }, { name: stateName, path }] : [{ name: 'Tonight', path }])]);
+  const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: list.length,
+    itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
+  const body = `${bc.html}
+  <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-gold" href="/near">📍 Closest to Me</a><a class="btn btn-blue" href="${weekendPath(state)}">This Weekend${esc(where)}</a>${state ? `<a class="btn btn-out" href="/tonight/">Whole Country</a>` : `<a class="btn btn-out" href="/alerts">Get Alerts</a>`}</div></div>
+  ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${tonightPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
+  ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : ''}
+  ${next.length ? `<section class="sec seo-sec"><h2>Tomorrow${esc(where)} (${esc(shortDate(tomorrow))})</h2>${eventRows(db, next.slice(0, list.length ? 25 : 200), { showCity: true })}${list.length && next.length > 25 ? `<p class="muted">And ${next.length - 25} more tomorrow.</p>` : ''}</section>` : ''}
+  <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
+    <h2 class="seo-h2" style="margin-top:0">Looking for a game tonight?</h2>
+    <p class="muted">Share this link with your pool friends. It always shows tonight's list, so the same link works every day.</p>
+    <div class="actbar"><button type="button" class="btn btn-green" data-share="native" hidden>Share…</button>
+      <a class="btn btn-blue" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${u}">Facebook</a>
+      <a class="btn btn-out" href="sms:?&amp;body=${tx}%20${u}">Text</a>
+      <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
+  </section>`;
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !next.length });
 }

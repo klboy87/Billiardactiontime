@@ -178,7 +178,10 @@ export function tx(db, fn) {
 }
 
 export const nowIso = () => new Date().toISOString();
-export const todayIso = () => new Date().toISOString().slice(0, 10);
+// "Today" for listings is the US Pacific date, so an evening's tournaments stay listed until midnight on the
+// West Coast instead of disappearing at 8 pm Eastern when UTC rolls over.
+const pacificDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' });
+export const todayIso = () => pacificDay.format(new Date());
 
 export function venueKey(v) {
   const addr = slugify(v.address), z = zip5(v.zip);
