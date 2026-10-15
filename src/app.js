@@ -19,7 +19,7 @@ function cachedCard(key, make) {
   if (cardCache.has(key)) { const v = cardCache.get(key); cardCache.delete(key); cardCache.set(key, v); return v; }
   const png = make();
   cardCache.set(key, png);
-  if (cardCache.size > 300) cardCache.delete(cardCache.keys().next().value);
+  if (cardCache.size > 120) cardCache.delete(cardCache.keys().next().value);
   return png;
 }
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
