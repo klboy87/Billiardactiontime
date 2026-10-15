@@ -637,7 +637,7 @@ ${table({ balls: [{ x: 6.2, y: 1.3, n: 1 }, { x: 5.96, y: 1.48, n: 'g' }, { x: 3
 <h2>Follow, draw and stun</h2>
 <ul>
 <li><b>Follow (topspin):</b> after hitting the object ball, the cue ball keeps rolling forward. On a straight-in shot, it follows the object ball toward the pocket.</li>
-<li><b>Draw (backspin):</b> the cue ball comes back toward you after contact. The farther the cue ball has to travel to the object ball, the more draw you need, because the cloth wears the backspin off.</li>
+<li><b>Draw (backspin):</b> the cue ball comes back toward you after contact. The farther the cue ball has to travel to the object ball, the more draw you need, because the cloth wears the backspin off. Step-by-step help: <a href="/guides/how-to-draw-the-cue-ball">how to draw the cue ball</a>.</li>
 <li><b>Stun (stop):</b> a center or slightly-low hit that makes the cue ball slide, with no spin, at contact. On a straight-in shot it stops dead. On a cut, it leaves at 90 degrees to the object ball's path (see the <a href="/trick-shots/ninety-degree-carom">90-degree carom</a>).</li>
 </ul>
 <p>On cut shots, follow bends the cue ball forward of the 90-degree line, and draw bends it back. That is the main tool for position play.</p>
@@ -689,7 +689,7 @@ ${table({ balls: [{ x: 6.2, y: 1.3, n: 1 }, { x: 5.96, y: 1.48, n: 'g' }, { x: 3
 <li><b>Roll up in 8-Ball.</b> Push the cue ball gently behind one of your balls so it blocks your opponent's shot, while a ball still reaches a rail.</li>
 </ol>
 <h2>Kicking out of safeties</h2>
-<p>Once you start playing safeties, your opponent will too. Learn one-rail kicks using the diamonds: they are the best answer to a good safety. The <a href="/guides/pool-practice-drills">kick drill</a> is a great place to start.</p>
+<p>Once you start playing safeties, your opponent will too. Learn one-rail kicks using the diamonds: they are the best answer to a good safety. Read <a href="/guides/how-to-kick-in-pool">how to kick in pool</a>, then try the <a href="/guides/pool-practice-drills">kick drill</a> and the <a href="/play/kick-trainer">kick shot trainer</a>.</p>
 <p>Next: learn to plan your runs with <a href="/guides/8-ball-patterns">8-Ball pattern play</a>, or try a <a href="/guides/one-pocket">game of One Pocket</a>, where almost every shot is part offense, part safety.</p>`
   },
   {
@@ -1008,5 +1008,71 @@ ${table({ balls: [{ x: 6, y: 2, n: 1 }, { x: 0.6, y: 3.6, n: 0 }], paths: [[[0.6
 <p>A loose rack spreads poorly no matter how well you hit it. Make sure the balls are frozen together. In many tournaments, the opponent racks; if you are allowed to look, check the rack before you break.</p>
 <h2>Practice your break</h2>
 <p>Break 20 racks and keep track of: balls made, where the cue ball ended up, and whether you had a shot after the break. Change one thing at a time (cue ball position, speed, or where you hit the cue ball) and compare. Add it to the <a href="/guides/pool-practice-drills">practice drills</a> you already do.</p>`
+  },
+  {
+    slug: 'how-to-draw-the-cue-ball', title: 'How to Draw the Cue Ball: Backspin Made Simple',
+    desc: 'How to draw the cue ball in pool: where to hit, how to stroke through, why draw dies on long shots, and four drills to build a reliable draw shot.',
+    body: `
+<p>A draw shot makes the cue ball come back toward you after it hits the object ball. It is the first "real" cue ball control most players learn, and it is the shot that turns a straight-in ball into position for the next one. The good news: draw is about a smooth, accurate stroke, not strength.</p>
+<h2>What makes the cue ball come back</h2>
+<p>When you hit the cue ball below center, it leaves the tip spinning backward. On the way to the object ball, the cloth slowly wears that backspin away. If some backspin is still there when the cue ball hits the object ball, the cue ball stops for an instant and then the spin pulls it back. More backspin at contact means more draw.</p>
+${table({ balls: [{ x: 5, y: 2, n: 3 }, { x: 3, y: 2, n: 0 }], paths: [[[3, 2], [4.78, 2]], [[4.78, 2], [2.2, 2]]], labels: [[2.2, 1.6, 'draws back']] }, 'Straight-in draw: hit low, the object ball goes in, the cue ball comes straight back.')}
+<h2>Five keys to a good draw shot</h2>
+<ul>
+<li><b>Hit low, but not too low.</b> Aim about one tip-width below center to start, then go lower as your stroke gets straighter. The very bottom of the ball invites a miscue.</li>
+<li><b>Level cue.</b> Keep the butt of the cue as low as the rail allows. Jacking up turns draw into a swerve.</li>
+<li><b>Loose grip.</b> A tight grip kills the cue's speed through the ball. Hold it like you'd hold a small bird.</li>
+<li><b>Follow through.</b> Let the tip go six inches or more past where the cue ball was. Most failed draw shots are stabs that stop at the ball.</li>
+<li><b>Chalk every shot.</b> A low hit with a dry tip is a miscue waiting to happen.</li>
+</ul>
+<h2>Why your draw dies on long shots</h2>
+<p>The farther the cue ball travels, the more backspin the cloth rubs off. On a long shot, a soft stroke may arrive with no spin left, and the cue ball just stops (a stop shot) or even rolls forward. Two fixes: hit a little lower, and add speed so the ball gets there before the spin wears off. A smooth stroke with more speed beats a hard jab every time.</p>
+<h2>Draw on a cut shot</h2>
+<p>On a cut, draw doesn't send the cue ball straight back. It pulls it backward from the normal "tangent line" path, so it comes off the object ball at a sharper angle toward you. That is how good players open up position on the next ball without going rail to rail.</p>
+${table({ balls: [{ x: 6, y: 1.2, n: 5 }, { x: 3.4, y: 2.4, n: 0 }], paths: [[[3.4, 2.4], [5.8, 1.3]], [[5.8, 1.3], [4.6, 3.6]]] }, 'Cut shot with draw: the cue ball comes back off the tangent line, toward the shooter.')}
+<h2>Four drills that build a reliable draw</h2>
+<ol>
+<li><b>Short draw.</b> Object ball one diamond from a corner pocket, cue ball one diamond behind it, straight in. Draw the cue ball back one diamond. Ten in a row.</li>
+<li><b>Draw to the line.</b> Same setup, but pick a diamond to draw back to: one, two, then three diamonds. Speed control is the whole game.</li>
+<li><b>Longer distance.</b> Move the cue ball back one diamond at a time. Find the distance where your draw stops working, and practice right there.</li>
+<li><b>Stop shot.</b> Before you can draw well, you should be able to stop the cue ball dead. Try the <a href="/guides/pool-practice-drills#1-the-stop-shot-ladder">stop-shot ladder</a>.</li>
+</ol>
+<p>Log your scores in the <a href="/play/practice-log">practice log</a> and watch them climb. For side spin, read <a href="/guides/english-in-pool">English in pool</a>. For aiming the shot itself, read <a href="/guides/how-to-aim-in-pool">how to aim in pool</a>, or warm up with the <a href="/play/aim-trainer">aim trainer</a>.</p>
+<h2>Common mistakes</h2>
+<ul>
+<li><b>Lifting up on the shot.</b> Stay down until the cue ball has hit the object ball.</li>
+<li><b>Too much speed on short shots.</b> Close to the object ball, a gentle stroke draws plenty. Hard hits make the cue ball jump.</li>
+<li><b>Aiming low but hitting center.</b> Ask a friend to watch where your tip lands, or use a striped ball as the cue ball: the stripe shows the spin.</li>
+</ul>
+<p>Once your draw is reliable, put it to work: <a href="/tonight/">find a tournament tonight</a>.</p>`
+  },
+  {
+    slug: 'how-to-kick-in-pool', title: 'How to Kick in Pool: Escape Any Snooker with One Rail',
+    desc: 'How to aim kick shots in pool: the mirror method, the half-ball-width rule, speed and spin, plus the rules on legal hits and fouls when you are snookered.',
+    body: `
+<p>A kick shot is when you send the cue ball into a rail before it hits the ball you need. You kick when your opponent leaves you snookered: another ball blocks the straight path. In 9-Ball and 10-Ball, missing the lowest ball is a foul and gives your opponent ball in hand, so kicking well is one of the fastest ways to win more matches.</p>
+<h2>The mirror method</h2>
+<p>A ball bounces off a cushion at about the same angle it went in. So imagine a mirror image of the table on the other side of the rail. Find where the target ball would sit on that mirror table, the same distance behind the rail as it is in front of it. Aim the cue ball straight at that mirror ball. Where your aim line crosses the rail is your kick point.</p>
+${table({ balls: [{ x: 5.6, y: 2.4, n: 7 }, { x: 3.6, y: 2.6, n: 8 }, { x: 1.6, y: 2.8, n: 0 }], paths: [[[1.6, 2.8], [3.76, 0.12]], [[3.76, 0.12], [5.5, 2.27]]] }, 'One-rail kick around a blocker: aim at the mirror image of the target ball behind the rail.')}
+<h2>Aim at the right line</h2>
+<p>The cue ball's center never reaches the cushion. It bounces off a line half a ball width inside the rail. When you picture the mirror, measure from that line, not from the wood. On a 9-foot table this is a small number, but on a long kick it is the difference between a hit and a miss.</p>
+<h2>Speed and spin change the angle</h2>
+<ul>
+<li><b>Medium speed, center ball.</b> This gives the truest mirror angle. Start here.</li>
+<li><b>Hard hits come off shorter.</b> The cushion squashes and the ball comes off at a narrower angle.</li>
+<li><b>Running English makes the angle wider; reverse makes it narrower.</b> Use spin only once your plain kicks are reliable.</li>
+<li><b>Slow rolls drift long</b> and can roll off line on worn cloth.</li>
+</ul>
+<h2>The rules when you kick</h2>
+<p>Under most rules (WPA, BCA and APA among them), you must hit the correct ball first, and then a ball must reach a rail or go in a pocket. A great kick that touches the ball but leaves everything off the rails is still a foul. That's why many players kick with enough speed to drive the cue ball or object ball to a cushion. House and bar rules vary, so read <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs tournament rules</a> and the <a href="/guides/9-ball-rules">9-Ball rules</a>.</p>
+<h2>Kick to hide, not just to hit</h2>
+<p>A good kick does more than make contact. Think about where the balls end up. A soft kick that hits the ball and leaves your opponent with no shot is a safety of your own. Learn the ideas in <a href="/guides/safety-play-in-pool">safety play in pool</a>.</p>
+<h2>Practice</h2>
+<ul>
+<li>Play the free <a href="/play/kick-trainer">kick shot trainer</a> to learn the angles by feel. It scores ten kicks a round.</li>
+<li>On a real table, run the <a href="/guides/pool-practice-drills#5-the-kick-drill">kick drill</a>: ten kicks at a ball near the corner, count your hits.</li>
+<li>For the same geometry with the object ball, try the <a href="/play/bank-trainer">bank shot trainer</a> and read the <a href="/guides/bank-pool-rules">bank pool rules</a>.</li>
+</ul>
+<p>Most players never practice kicks, so a little work goes a long way. Then test it: <a href="/tonight/">find a tournament tonight</a>.</p>`
   }
 ];
