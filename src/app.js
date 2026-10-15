@@ -69,7 +69,7 @@ async function readJson(req, limit = 3_000_000) {
 function send(req, res, status, body, headers = {}) {
   const buf = Buffer.isBuffer(body) ? body : Buffer.from(body);
   const h = { ...SECURITY, ...headers };
-  if (buf.length > 1024 && /gzip/.test(req.headers['accept-encoding'] || '') && /json|text|javascript|svg/.test(h['Content-Type'] || '')) {
+  if (buf.length > 1024 && /gzip/.test(req.headers['accept-encoding'] || '') && /json|text|javascript|svg|xml/.test(h['Content-Type'] || '')) {
     res.writeHead(status, { ...h, 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' });
     return res.end(zlib.gzipSync(buf));
   }
