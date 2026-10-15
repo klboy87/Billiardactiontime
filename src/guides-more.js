@@ -138,6 +138,53 @@ ${groups}
 
 export const MORE_GUIDES = [
   {
+    slug: 'how-to-read-a-tournament-flyer', title: 'How to Read a Pool Tournament Flyer: Every Term Explained',
+    desc: 'Decode a pool tournament flyer: added money, entry and greens fees, races, double elimination, the hot seat, true double, player caps, Fargo limits, Calcuttas and more.',
+    body: `
+<p>Tournament flyers pack a lot into a few lines, and most of it is shorthand. Here's how to read one, line by line, so you know exactly what you're signing up for.</p>
+<h2>A sample flyer</h2>
+<div class="tip"><b>FALL 9-BALL OPEN · $500 ADDED</b><br>Sat Nov 7 · Sign-ups 11 am, play 12 noon<br>$40 entry ($10 greens) · 64 player cap<br>Double elimination · Race to 5 / 4 on the one-loss side · True double final<br>Fargo 650 & under · Calcutta at 11:30 · Break box in effect</div>
+<h2>The money</h2>
+<ul>
+<li><b>$500 added:</b> the room or a sponsor puts $500 into the prize fund on top of the entry fees. More added money usually means a stronger field.</li>
+<li><b>$40 entry ($10 greens):</b> you pay $40. $10 goes to the room for table time (the greens fee) and $30 goes into the prize fund. See our <a href="/guides/pool-tournament-payouts">payout guide</a> or try the <a href="/tools/payout-calculator">payout calculator</a>.</li>
+<li><b>Calcutta at 11:30:</b> an auction where people bid on players before the event; the pot is paid to whoever "owns" the winners. Read <a href="/guides/calcutta-auction-explained">Calcutta auctions explained</a>.</li>
+</ul>
+<h2>The schedule</h2>
+<ul>
+<li><b>Sign-ups 11 am, play 12 noon:</b> be there before sign-ups close. Many events close the bracket on time and start the draw.</li>
+<li><b>64 player cap:</b> the bracket is limited. Big events can fill up, so call ahead or pre-register if the flyer offers it.</li>
+</ul>
+<h2>The format</h2>
+<ul>
+<li><b>Double elimination:</b> you're out after two losses. See <a href="/guides/double-elimination-brackets">double-elimination brackets</a>.</li>
+<li><b>Race to 5 / 4 on the one-loss side:</b> winners-side matches are first to 5 games; once you've lost once, matches are first to 4, which keeps the event moving.</li>
+<li><b>Hot seat:</b> the match between the last two undefeated players. The winner waits in the "hot seat" for the final.</li>
+<li><b>True double final:</b> the undefeated player has to be beaten twice, so the losers-side player may need two sets to win.</li>
+<li><b>Single race final / one set:</b> the final is one set no matter what, which saves time.</li>
+<li><b>Modified single:</b> double elimination early, then single elimination. See <a href="/guides/tournament-formats">tournament formats</a>.</li>
+</ul>
+<h2>Who can play</h2>
+<ul>
+<li><b>Fargo 650 & under:</b> only players with a FargoRate rating of 650 or lower may enter. See the <a href="/guides/fargo-rating-chart">Fargo rating chart</a>.</li>
+<li><b>Handicapped / rated:</b> races change based on your rating or skill level, so stronger players race to more games.</li>
+<li><b>Open:</b> anyone can enter, from beginners to pros.</li>
+<li><b>Amateur / no pros:</b> professional players are not allowed. The flyer or director decides who counts as a pro.</li>
+<li><b>Ladies / juniors / seniors:</b> divisions limited to those players.</li>
+<li><b>Scotch doubles / Jack & Jill:</b> two-player teams taking turns; Jack & Jill means one man and one woman. See <a href="/guides/scotch-doubles">Scotch doubles</a>.</li>
+</ul>
+<h2>Table and rules</h2>
+<ul>
+<li><b>Bar box / 7-foot or 9-foot:</b> the table size. See <a href="/guides/pool-table-sizes">pool table sizes</a>.</li>
+<li><b>Break box:</b> on the break, the cue ball must start inside a marked area, usually near the side rail.</li>
+<li><b>Winner breaks / alternate breaks:</b> who breaks each rack. Alternate breaks give both players an equal chance.</li>
+<li><b>Ball in hand / call pocket / BCA or WPA rules:</b> which rule set is used. See <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs. tournament rules</a>.</li>
+<li><b>Shot clock:</b> a time limit per shot, mostly at bigger events and streamed matches.</li>
+</ul>
+<h2>Before you go</h2>
+<p>Call the room to confirm. Flyers get printed weeks in advance, and details change. Then take a photo of the flyer and <a href="/scan">post it on Billiard Action Time</a> so other players can find it, or <a href="/tonight/">find a tournament tonight</a>. New words? Check the <a href="/guides/pool-terms-glossary">pool glossary</a>.</p>`
+  },
+  {
     slug: 'pool-leagues-explained', title: 'Pool Leagues Explained: APA, USA Pool League (BCA) and VNEA',
     desc: 'How pool leagues work: teams, weekly matches, handicaps and skill levels, sessions, and the road to the national championships in Las Vegas. Plus how to join one.',
     body: `
