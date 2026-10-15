@@ -609,3 +609,6 @@ table.t tr.noline td{border-bottom:0}
 .tcard-simple .badges{display:flex;flex-wrap:wrap;gap:6px}
 .tcard-simple h3{font-size:22px;overflow-wrap:anywhere}
 .tcard-simple .facts{display:flex;flex-wrap:wrap;gap:6px 12px}
+.share-peek summary{cursor:pointer;font-weight:600;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:var(--surface2);list-style:none}
+.share-peek summary::-webkit-details-marker{display:none}.share-peek[open] summary{margin-bottom:10px}
+@media (min-width:701px){.share-grid{grid-template-columns:240px 1fr}}

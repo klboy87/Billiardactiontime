@@ -290,7 +290,7 @@ function shareBox(cfg, db, t, g) {
   const text = `${t.added ? money(t.added) + ' added ' : ''}${g || 'Pool'} tournament: ${t.name} at ${v.name}, ${v.city}, ${v.state} on ${shortDate(t.date)}${t.entry != null ? `. ${money(t.entry)} entry` : ''}.`;
   const u = encodeURIComponent(url), tx = encodeURIComponent(text);
   return `<section id="share" class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(t.name)}" data-share-text="${esc(text)}" data-share-card="/t/${t.id}/card-square.png">
-    <div class="share-grid"><img class="share-preview" src="/t/${t.id}/card-square.png" alt="Share card for ${esc(t.name)}" width="1080" height="1080" loading="lazy">
+    <div class="share-grid"><details class="share-peek"><summary>🖼️ Preview the share graphic</summary><img class="share-preview" src="/t/${t.id}/card-square.png" alt="Share card for ${esc(t.name)}" width="1080" height="1080" loading="lazy"></details>
     <div><h2 class="seo-h2" style="margin-top:0">Share this tournament</h2>
     <p class="muted">Post it and help fill the bracket. The link shows this graphic automatically on Facebook, TikTok, X and in texts.</p>
     <div class="actbar"><button type="button" class="btn btn-green" data-share="native" hidden>Share…</button>
