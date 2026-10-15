@@ -801,6 +801,8 @@ export function tonightPage(db, cfg, stateSlugPart) {
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
     <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="/near" data-near-fallback>📍 Closest to Me</a><a class="btn btn-blue" href="${weekendPath(state)}">This Weekend${esc(where)}</a>${state ? `<a class="btn btn-out" href="/tonight/">Whole Country</a>` : `<a class="btn btn-out" href="/alerts">Get Alerts</a>`}</div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${tonightPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
+  ${state && list.length > 3 ? (() => { const m = new Map(); for (const t of list) m.set(t.venue.city, (m.get(t.venue.city) || 0) + 1);
+    return `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by city</h2><div class="chips">${[...m].sort((a, b) => b[1] - a[1]).map(([c, n]) => `<a class="chip" href="${facetPath({ state, city: c })}">${esc(c)} (${n})</a>`).join('')}</div></section>`; })() : ''}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : ''}
   ${next.length ? `<section class="sec seo-sec"><h2>Tomorrow${esc(where)} (${esc(shortDate(tomorrow))})</h2>${eventRows(db, next.slice(0, list.length ? 25 : 200), { showCity: true })}${list.length && next.length > 25 ? `<p class="muted">And ${next.length - 25} more tomorrow.</p>` : ''}</section>` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
