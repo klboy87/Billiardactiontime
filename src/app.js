@@ -578,7 +578,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
 
     // ---- share cards (see sharecard.js): og.png = link-preview size, square = posts, story = TikTok/Stories ----
     const host = (() => { try { return new URL(cfg.publicUrl).host; } catch { return 'billiardactiontime.com'; } })();
-    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/og\/list\/(tonight|weekend)\/\d{4}-\d{2}-\d{2}(?:\/([a-z-]{2,40}))?\.png$/))) {
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/og\/list\/(tonight|weekend|big)\/\d{4}-\d{2}-\d{2}(?:\/([a-z-]{2,40}))?\.png$/))) {
       const txt = SEO.listCardText(db, x[1], x[2]);
       if (!txt) return send(req, res, 404, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png' });
       const png = cachedCard(`list|${txt.headline}|${txt.sub}`, () => renderHeadlineCard(txt.headline, txt.sub, host));

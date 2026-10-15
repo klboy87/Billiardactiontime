@@ -701,7 +701,7 @@ export function bigTournamentsPage(db, cfg) {
   const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: list.length,
     itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   return layout(cfg, { title: `${h1} (Next 60 Days) | Billiard Action Time`, description: `${plural(list.length, 'bigger pool tournament')} coming up across the US: added-money events, opens, championships and tour stops, with dates, rooms and entry fees. Updated daily.`,
-    path: '/big-tournaments/', body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length , scripts: ['/near-sort.js'] });
+    path: '/big-tournaments/', body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length , scripts: ['/near-sort.js'], ogImage: listCardUrl(cfg, 'big') });
 }
 
 // "Play it near you" box for guide pages: the next few upcoming tournaments of one game, nationwide.
@@ -969,6 +969,10 @@ export function listCardText(db, kind, stateSlugPart) {
   const state = stateSlugPart ? STATE_BY_SLUG[String(stateSlugPart).toLowerCase()] : null;
   if (stateSlugPart && !state) return null;
   const ix = index(db), today = todayIso(), inState = t => !state || t.venue.state === state, where = state ? ` in ${STATE_NAMES[state]}` : '';
+  if (kind === 'big') {
+    const end = new Date(Date.parse(today + 'T00:00:00Z') + 60 * 864e5).toISOString().slice(0, 10), n = ix.all.filter(t => t.date >= today && t.date <= end && isBigEvent(t)).length;
+    return { headline: `${n ? n + ' ' : ''}big pool tournaments coming up`, sub: 'Added money, opens and tour stops' };
+  }
   if (kind === 'tonight') {
     const n = ix.all.filter(t => t.date === today && inState(t)).length;
     return { headline: n ? `${plural(n, 'pool tournament')} tonight${where}` : `Pool tournaments tonight${where}`, sub: longDate(today) };
