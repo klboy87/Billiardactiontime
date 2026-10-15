@@ -612,3 +612,15 @@ table.t tr.noline td{border-bottom:0}
 .share-peek summary{cursor:pointer;font-weight:600;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:var(--surface2);list-style:none}
 .share-peek summary::-webkit-details-marker{display:none}.share-peek[open] summary{margin-bottom:10px}
 @media (min-width:701px){.share-grid{grid-template-columns:240px 1fr}}
+/* Content pages: a no-JS menu (with search) for phones and tablets. */
+.mnav{display:none;margin-left:auto}
+.mnav summary{list-style:none;cursor:pointer;border:1px solid #2a4a72;color:#fff;border-radius:8px;padding:6px 12px;font-size:20px;line-height:1}
+.mnav summary::-webkit-details-marker{display:none}
+.mnav-panel{position:absolute;left:0;right:0;top:100%;background:#0a1a2e;border-bottom:1px solid #1d3a5e;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;padding:12px 16px 16px;max-height:80vh;overflow:auto}
+.mnav-panel a{color:#c9d8ec;font-weight:600;font-size:16px;padding:11px 8px;border-radius:6px}
+.mnav-panel a:hover{background:#12294a;color:#fff;text-decoration:none}
+.mnav-panel .mnav-cta{grid-column:1/-1;background:var(--blue);color:#fff;text-align:center;margin-top:6px}
+.mnav-search{grid-column:1/-1;display:flex;margin-bottom:8px}
+.mnav-search input{flex:1;min-width:0;padding:10px 12px;font-size:16px;border-radius:8px 0 0 8px;border:1px solid #2a4a72;background:#07111f;color:#fff}
+.mnav-search button{padding:10px 14px;font-size:16px;font-weight:700;border:0;border-radius:0 8px 8px 0;background:var(--green);color:#fff}
+@media (max-width:1040px){.mnav{display:block}}
