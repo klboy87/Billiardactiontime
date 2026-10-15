@@ -222,12 +222,13 @@ function eventRows(db, list, { showCity = true, byDay = false } = {}) {
   let month = '', html = '';
   const today = todayIso(), tomorrow = new Date(Date.parse(today + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10);
   const badge = d => d === today ? '<br><span class="when-badge when-today">Tonight</span>' : d === tomorrow ? '<br><span class="when-badge">Tomorrow</span>' : '';
+  const going = list.length ? D.goingCounts(db) : new Map();
   for (const t of list) {
     const ml = byDay ? `${longDate(t.date)}${t.date === today ? ' · Tonight' : t.date === tomorrow ? ' · Tomorrow' : ''}` : monthLabel(t.date);
     if (ml !== month) { if (month) html += '</tbody></table></div>'; month = ml; html += `<h3 class="seo-month">${esc(ml)}</h3><div class="card seo-tbl"><table class="t"><tbody>`; }
     const v = t.venue;
     html += `<tr${v.lat != null && v.lng != null ? ` data-lat="${v.lat}" data-lng="${v.lng}"` : ''}><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${byDay ? "" : badge(t.date)}</td>
-      <td><a href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b></a><br><small class="muted">${esc(v.name)}${showCity ? ` · ${esc(v.city)}, ${esc(v.state)}` : ''}${gameWord(t.game) ? ' · ' + esc(t.game) : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · ' + money(t.added) + ' added' : ''}</small></td></tr>`;
+      <td><a href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b></a><br><small class="muted">${esc(v.name)}${showCity ? ` · ${esc(v.city)}, ${esc(v.state)}` : ''}${gameWord(t.game) ? ' · ' + esc(t.game) : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · ' + money(t.added) + ' added' : ''}${going.get(t.id) ? ` · <b>👍 ${going.get(t.id)} going</b>` : ''}</small></td></tr>`;
   }
   return html + (month ? '</tbody></table></div>' : '');
 }

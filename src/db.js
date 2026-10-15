@@ -441,3 +441,4 @@ export function setGoing(db, id, key, on) {
   else db.prepare('DELETE FROM going WHERE tournament_id=? AND voter=?').run(id, key);
   return goingCount(db, id);
 }
+export const goingCounts = db => new Map(db.prepare('SELECT tournament_id id, COUNT(*) n FROM going GROUP BY tournament_id').all().map(r => [r.id, r.n]));
