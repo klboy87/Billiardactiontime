@@ -490,6 +490,9 @@ export function venuePage(db, cfg, venueId) {
     ${weeklyScheduleHtml(db, all, { showCity: false, title: `Weekly at ${v.name}` })}
     ${(() => { const others = (hallsByState(db).get(v.state) || []).filter(r => r.id !== primary && slugify(r.v.city) === slugify(v.city)).slice(0, 8);
       return others.length ? `<section class="sec seo-sec"><h2>Other pool halls in ${esc(v.city)}</h2><ul class="seo-list">${others.map(r => `<li><a href="${venuePath(db, r.v)}">${esc(r.v.name)}</a>${roomNights(r).length ? ` <span class="muted">· tournaments ${roomNights(r).join(', ')}</span>` : ''}</li>`).join('')}</ul></section>` : ''; })()}
+    ${up.length ? (() => { const feed = `${cfg.publicUrl}/venue/${venueId}/calendar.ics`, webcal = feed.replace(/^https?:/, 'webcal:');
+      return `<section class="card" style="padding:14px 18px;margin-top:14px"><h2 class="seo-h2" style="margin-top:0">📅 Never miss a tournament here</h2><p class="muted" style="margin:4px 0 10px">Subscribe once and every upcoming tournament at ${esc(v.name)} shows up in your calendar, updated automatically.</p>
+      <div class="actbar"><a class="btn btn-blue" href="${esc(webcal)}">iPhone / Apple Calendar</a><a class="btn btn-out" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener nofollow">Google Calendar</a><a class="btn btn-out" href="/venue/${venueId}/calendar.ics" download>Download (.ics)</a></div></section>`; })() : ''}
     <p class="muted" style="margin:10px 0 0">More: <a href="${hallsPath(v.state)}">pool halls in ${esc(STATE_NAMES[v.state] || v.state)}</a> · <a href="${facetPath({ state: v.state, city: v.city })}">tournaments in ${esc(v.city)}</a> · <a href="${tonightPath(v.state)}">tonight in ${esc(STATE_NAMES[v.state] || v.state)}</a></p>
     ${up.length ? eventRows(db, up, { showCity: false }) : ''}
     ${past.length ? `<section class="sec seo-sec"><h2>Recent tournaments at ${esc(v.name)}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)}</span></li>`).join('')}</ul></section>` : ''}`;
@@ -697,11 +700,31 @@ export function tournamentIcs(cfg, db, t) {
   const when = t.time ? [`DTSTART:${d}T${t.time.replace(':', '')}00`, 'DURATION:PT5H'] : [`DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${next}`];
   const url = cfg.publicUrl + tournamentPath(db, t);
   const info = [gameWord(t.game) ? gameWord(t.game) + ' tournament' : 'Pool tournament', t.entry != null ? 'Entry ' + money(t.entry) : '', t.added ? money(t.added) + ' added' : '', 'Confirm details with the room before you go', url].filter(Boolean).join('. ');
-  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Billiard Action Time//Tournaments//EN', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT',
-    `UID:tournament-${t.id}@billiardactiontime.com`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`, ...when,
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Billiard Action Time//Tournaments//EN', 'CALSCALE:GREGORIAN', ...icsEvent(t, when, e, url, info, v), 'END:VCALENDAR'].join('\r\n') + '\r\n';
+}
+function icsEvent(t, when, e, url, info, v) {
+  return ['BEGIN:VEVENT', `UID:tournament-${t.id}@billiardactiontime.com`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`, ...when,
     `SUMMARY:${e(t.name)}`, `LOCATION:${e([v.name, v.address, v.city, v.state, v.zip].filter(Boolean).join(', '))}`, `DESCRIPTION:${e(info)}`, `URL:${url}`,
-    ...(t.time ? ['BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:Pool tournament in 2 hours', 'END:VALARM'] : []),
-    'END:VEVENT', 'END:VCALENDAR'].join('\r\n') + '\r\n';
+    ...(t.time ? ['BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:Pool tournament in 2 hours', 'END:VALARM'] : []), 'END:VEVENT'];
+}
+// Subscribable calendar of every upcoming tournament at one pool room (/venue/<id>/calendar.ics).
+export function venueIcs(cfg, db, venueId) {
+  const ix = index(db), today = todayIso(), primary = ix.primaryVenue.get(venueId);
+  if (primary == null) return null;
+  const list = ix.all.filter(t => (ix.primaryVenue.get(t.venue.id) ?? t.venue.id) === primary && t.date >= today).slice(0, 200);
+  const name = list[0]?.venue.name || ix.all.find(t => ix.primaryVenue.get(t.venue.id) === primary)?.venue.name || 'Pool room';
+  const lines = [];
+  for (const t of list) {
+    const v = t.venue, d = t.date.replace(/-/g, ''), e = x => String(x || '').replace(/[\\;,]/g, c => '\\' + c).replace(/\n/g, '\\n');
+    const next = new Date(Date.parse(t.date + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10).replace(/-/g, '');
+    const when = t.time ? [`DTSTART:${d}T${t.time.replace(':', '')}00`, 'DURATION:PT5H'] : [`DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${next}`];
+    const url = cfg.publicUrl + tournamentPath(db, t);
+    const info = [gameWord(t.game) ? gameWord(t.game) + ' tournament' : 'Pool tournament', t.entry != null ? 'Entry ' + money(t.entry) : '', 'Confirm details with the room before you go', url].filter(Boolean).join('. ');
+    lines.push(...icsEvent(t, when, e, url, info, v));
+  }
+  const esc2 = x => String(x || '').replace(/[\\;,]/g, c => '\\' + c);
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Billiard Action Time//Pool Room Calendar//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    `X-WR-CALNAME:${esc2(name)} tournaments`, 'X-PUBLISHED-TTL:PT12H', 'REFRESH-INTERVAL;VALUE=DURATION:PT12H', ...lines, 'END:VCALENDAR'].join('\r\n') + '\r\n';
 }
 function googleCalUrl(cfg, db, t) {
   const v = t.venue, d = t.date.replace(/-/g, '');
