@@ -268,6 +268,18 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const t = D.getTournament(db, Number(x[1]));
       return t ? json(req, res, 200, { ...t, pageUrl: t.status === 'published' ? cfg.publicUrl + SEO.tournamentPath(db, t) : null }) : json(req, res, 404, { error: 'Tournament not found' });
     }
+    if ((x = p.match(/^\/api\/tournaments\/(\d+)\/going$/)) && (m === 'GET' || m === 'POST')) {
+      const id = Number(x[1]), t = D.getTournament(db, id);
+      if (!t || t.status !== 'published') return json(req, res, 404, { error: 'Tournament not found' });
+      const voter = clean(req.headers['x-voter']).slice(0, 64);
+      const key = voter.length >= 16 ? MM.voterKey(voter, cfg.adminToken || 'bat') : null;
+      if (m === 'GET') return json(req, res, 200, { count: D.goingCount(db, id), mine: D.goingMine(db, id, key) }, { 'Cache-Control': 'no-store' });
+      if (!key) return json(req, res, 400, { error: 'Your browser blocked this. Try again.' });
+      if (t.date < D.todayIso()) return json(req, res, 400, { error: 'This tournament has already been played.' });
+      if (limitedBy(joinHits, clientIp(req) + ':going', 40, 3_600_000)) return json(req, res, 429, { error: 'Too many taps from here. Try again later.' });
+      const b = (await readJson(req, 500)) || {};
+      return json(req, res, 200, { count: D.setGoing(db, id, key, !!b.going), mine: !!b.going }, { 'Cache-Control': 'no-store' });
+    }
     if (m === 'GET' && (x = p.match(/^\/api\/tournaments\/(\d+)\/flyer$/))) {
       const data = D.getFlyer(db, Number(x[1]));
       const mm = data && data.match(/^data:(image\/[a-z]+);base64,(.+)$/);

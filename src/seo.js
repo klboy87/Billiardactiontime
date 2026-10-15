@@ -287,7 +287,7 @@ export function tournamentPage(db, cfg, t) {
     <div class="actbar"><a class="btn btn-out" href="${esc(maps)}" rel="noopener" target="_blank">Directions</a>
       ${t.registrationUrl ? `<a class="btn btn-blue" href="${esc(t.registrationUrl)}" rel="noopener nofollow" target="_blank">Register</a>` : ''}
       ${t.website ? `<a class="btn btn-out" href="${esc(t.website)}" rel="noopener nofollow" target="_blank">Website</a>` : ''}
-      <a class="btn btn-green" href="/#/t/${t.id}">Save / Share in the App</a></div>
+      <a class="btn btn-green" href="/#/t/${t.id}">Save / Share in the App</a>${ended ? '' : (() => { const n = D.goingCount(db, t.id); return `<button type="button" class="btn btn-out going-btn" data-going="${t.id}" data-count="${n}">👍 I'm going${n ? ` · ${n}` : ''}</button>`; })()}</div>
     ${ended ? '' : `<div class="actbar cal-bar" style="margin-top:8px"><span class="muted" style="align-self:center;font-size:14px">Add to calendar:</span><a class="btn btn-out" href="${esc(googleCalUrl(cfg, db, t))}" rel="noopener nofollow" target="_blank">Google</a><a class="btn btn-out" href="/t/${t.id}/event.ics" rel="nofollow" download>Apple / Outlook (.ics)</a></div><p class="muted" style="font-size:13.5px;margin:6px 0 0">Go every week? <a href="${venuePath(db, v)}">Subscribe to all tournaments at ${esc(v.name)}</a>.</p>`}
     ${t.hasFlyer ? `<img class="previewimg" src="/api/tournaments/${t.id}/flyer" alt="Flyer for ${esc(t.name)}" loading="lazy">` : ''}
     ${t.notes && !/^source:/i.test(t.notes) ? `<p style="margin-top:12px">${esc(t.notes.replace(/\s*Source:.*$/i, ''))}</p>` : ''}
@@ -311,7 +311,7 @@ export function tournamentPage(db, cfg, t) {
     <a class="chip" href="${facetPath({ state: v.state, city: v.city })}">${esc(v.city)} tournaments</a>
     ${g && gameSlug(t.game) ? `<a class="chip" href="${facetPath({ state: v.state, city: v.city, game: t.game })}">${esc(g)} in ${esc(v.city)}</a><a class="chip" href="${facetPath({ game: t.game })}">${esc(g)} tournaments nationwide</a>` : ''}
   </div></section>`;
-  return layout(cfg, { title, description, path, body, jsonld: [eventLd(cfg, db, t), bc.ld], ogImage: `${cfg.publicUrl}/t/${t.id}/og.png`, noindex: isThinListing(t) });
+  return layout(cfg, { title, description, path, body, jsonld: [eventLd(cfg, db, t), bc.ld], ogImage: `${cfg.publicUrl}/t/${t.id}/og.png`, noindex: isThinListing(t), scripts: ['/going.js'] });
 }
 
 function shareBox(cfg, db, t, g) {

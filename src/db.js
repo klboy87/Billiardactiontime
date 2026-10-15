@@ -147,6 +147,10 @@ CREATE TABLE IF NOT EXISTS auction_chat (
   name TEXT NOT NULL, host INTEGER NOT NULL DEFAULT 0, text TEXT NOT NULL, at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_achat ON auction_chat(auction_id, id);
+CREATE TABLE IF NOT EXISTS going (
+  tournament_id INTEGER NOT NULL, voter TEXT NOT NULL, at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (tournament_id, voter)
+);
 `;
 
 export function openDb(file) {
@@ -427,4 +431,13 @@ export function visitBreakdown(db, { days = 30, dailyDays = 14, todayStr = today
 // can include real places even before they have a tournament -- see places.js for the rest.
 export function venueCities(db) {
   return db.prepare(`SELECT DISTINCT city, state FROM venues WHERE city IS NOT NULL AND city <> '' AND state IS NOT NULL AND state <> ''`).all();
+}
+
+// "I'm going" on tournament pages: one row per (tournament, anonymous voter key).
+export const goingCount = (db, id) => db.prepare('SELECT COUNT(*) n FROM going WHERE tournament_id=?').get(id).n;
+export const goingMine = (db, id, key) => !!(key && db.prepare('SELECT 1 FROM going WHERE tournament_id=? AND voter=?').get(id, key));
+export function setGoing(db, id, key, on) {
+  if (on) db.prepare('INSERT OR IGNORE INTO going (tournament_id, voter) VALUES (?,?)').run(id, key);
+  else db.prepare('DELETE FROM going WHERE tournament_id=? AND voter=?').run(id, key);
+  return goingCount(db, id);
 }
