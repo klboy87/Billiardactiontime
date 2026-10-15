@@ -287,7 +287,7 @@ export function tournamentPage(db, cfg, t) {
       ${t.registrationUrl ? `<a class="btn btn-blue" href="${esc(t.registrationUrl)}" rel="noopener nofollow" target="_blank">Register</a>` : ''}
       ${t.website ? `<a class="btn btn-out" href="${esc(t.website)}" rel="noopener nofollow" target="_blank">Website</a>` : ''}
       <a class="btn btn-green" href="/#/t/${t.id}">Save / Share in the App</a></div>
-    ${ended ? '' : `<div class="actbar cal-bar" style="margin-top:8px"><span class="muted" style="align-self:center;font-size:14px">Add to calendar:</span><a class="btn btn-out" href="${esc(googleCalUrl(cfg, db, t))}" rel="noopener nofollow" target="_blank">Google</a><a class="btn btn-out" href="/t/${t.id}/event.ics" rel="nofollow" download>Apple / Outlook (.ics)</a></div>`}
+    ${ended ? '' : `<div class="actbar cal-bar" style="margin-top:8px"><span class="muted" style="align-self:center;font-size:14px">Add to calendar:</span><a class="btn btn-out" href="${esc(googleCalUrl(cfg, db, t))}" rel="noopener nofollow" target="_blank">Google</a><a class="btn btn-out" href="/t/${t.id}/event.ics" rel="nofollow" download>Apple / Outlook (.ics)</a></div><p class="muted" style="font-size:13.5px;margin:6px 0 0">Go every week? <a href="${venuePath(db, v)}">Subscribe to all tournaments at ${esc(v.name)}</a>.</p>`}
     ${t.hasFlyer ? `<img class="previewimg" src="/api/tournaments/${t.id}/flyer" alt="Flyer for ${esc(t.name)}" loading="lazy">` : ''}
     ${t.notes && !/^source:/i.test(t.notes) ? `<p style="margin-top:12px">${esc(t.notes.replace(/\s*Source:.*$/i, ''))}</p>` : ''}
     <p class="muted" style="font-size:13px;margin-top:14px">Details can change. Confirm with the room before you go. Run this event? <a href="/#/claim/${t.id}">Claim it</a> · <a href="/#/report/${t.id}">Report a problem</a></p>
@@ -398,6 +398,8 @@ export function listingPage(db, cfg, parts) {
     <a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/post">Post a Tournament</a>${f.state && !f.city && !f.game ? `<a class="btn btn-out" href="${hallsPath(f.state)}">Pool Halls in ${esc(stateName)}</a><a class="btn btn-gold" href="${weekendPath(f.state)}">This Weekend in ${esc(stateName)}</a>` : !f.state && !f.city ? `<a class="btn btn-gold" href="/this-weekend/">This Weekend</a>` : ''}</div></div>
   ${glanceHtml(upcoming, place ? (f.cityName || stateName) : 'Nationwide', venues.size, !g)}
   ${f.city ? weeklyScheduleHtml(db, inScope, { showCity: false, title: `Weekly ${g ? g + ' ' : ''}tournaments in ${f.cityName}` }) : ''}
+  ${f.state && !f.city && !f.game && upcoming.length ? (() => { const feed = `${cfg.publicUrl}${facetPath({ state: f.state })}/calendar.ics`.replace(/\/\/calendar/, '/calendar'), webcal = feed.replace(/^https?:/, 'webcal:');
+    return `<p class="muted cal-sub" style="margin:0 0 14px">📅 <b>Subscribe:</b> get every ${esc(stateName)} tournament in your calendar, updated automatically: <a href="${esc(webcal)}">Apple / iPhone</a> · <a href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener nofollow">Google</a></p>`; })() : ''}
   ${upcoming.length ? eventRows(db, upcoming.slice(0, 300), { showCity: !f.city }) : ''}
   ${upcoming.length > 300 ? `<p class="muted">Showing the next 300. <a href="/search">Search for more</a>.</p>` : ''}
   ${venues.size ? `<section class="sec seo-sec"><h2>Pool rooms${place ? ' in ' + esc(f.cityName || stateName) : ''} running ${g ? esc(g) + ' ' : ''}tournaments</h2><ul class="seo-list seo-cols">${[...venues.values()].sort((a, b) => b.n - a.n).slice(0, 60)
@@ -713,6 +715,16 @@ export function venueIcs(cfg, db, venueId) {
   if (primary == null) return null;
   const list = ix.all.filter(t => (ix.primaryVenue.get(t.venue.id) ?? t.venue.id) === primary && t.date >= today).slice(0, 200);
   const name = list[0]?.venue.name || ix.all.find(t => ix.primaryVenue.get(t.venue.id) === primary)?.venue.name || 'Pool room';
+  return calendarFeed(cfg, db, list, `${name} tournaments`);
+}
+// Subscribable calendar of every upcoming tournament in a state (/tournaments/<state>/calendar.ics).
+export function stateIcs(cfg, db, slugPart) {
+  const st = STATE_BY_SLUG[String(slugPart || '').toLowerCase()];
+  if (!st) return null;
+  const today = todayIso(), list = index(db).all.filter(t => t.venue.state === st && t.date >= today).slice(0, 400);
+  return calendarFeed(cfg, db, list, `${STATE_NAMES[st]} pool tournaments`);
+}
+function calendarFeed(cfg, db, list, calName) {
   const lines = [];
   for (const t of list) {
     const v = t.venue, d = t.date.replace(/-/g, ''), e = x => String(x || '').replace(/[\\;,]/g, c => '\\' + c).replace(/\n/g, '\\n');
@@ -724,7 +736,7 @@ export function venueIcs(cfg, db, venueId) {
   }
   const esc2 = x => String(x || '').replace(/[\\;,]/g, c => '\\' + c);
   return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Billiard Action Time//Pool Room Calendar//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
-    `X-WR-CALNAME:${esc2(name)} tournaments`, 'X-PUBLISHED-TTL:PT12H', 'REFRESH-INTERVAL;VALUE=DURATION:PT12H', ...lines, 'END:VCALENDAR'].join('\r\n') + '\r\n';
+    `X-WR-CALNAME:${esc2(calName)}`, 'X-PUBLISHED-TTL:PT12H', 'REFRESH-INTERVAL;VALUE=DURATION:PT12H', ...lines, 'END:VCALENDAR'].join('\r\n') + '\r\n';
 }
 function googleCalUrl(cfg, db, t) {
   const v = t.venue, d = t.date.replace(/-/g, '');
