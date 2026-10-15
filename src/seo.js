@@ -403,7 +403,7 @@ export function listingPage(db, cfg, parts) {
   const body = `${bc.html}
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="/search?${new URLSearchParams({ ...(f.state ? { state: f.state } : {}), ...(f.cityName ? { city: f.cityName } : {}), ...(f.game ? { game: f.game } : {}) })}">Search &amp; Filter</a>
-    <a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/post">Post a Tournament</a>${f.state && !f.city && !f.game ? `<a class="btn btn-gold" href="${tonightPath(f.state)}">Tonight in ${esc(stateName)}</a><a class="btn btn-out" href="${hallsPath(f.state)}">Pool Halls in ${esc(stateName)}</a><a class="btn btn-gold" href="${weekendPath(f.state)}">This Weekend in ${esc(stateName)}</a>` : !f.state && !f.city ? `<a class="btn btn-gold" href="/this-weekend/">This Weekend</a>` : ''}</div></div>
+    <button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/post">Post a Tournament</a>${f.state && !f.city && !f.game ? `<a class="btn btn-gold" href="${tonightPath(f.state)}">Tonight in ${esc(stateName)}</a><a class="btn btn-out" href="${hallsPath(f.state)}">Pool Halls in ${esc(stateName)}</a><a class="btn btn-gold" href="${weekendPath(f.state)}">This Weekend in ${esc(stateName)}</a>` : !f.state && !f.city ? `<a class="btn btn-gold" href="/this-weekend/">This Weekend</a>` : ''}</div></div>
   ${glanceHtml(upcoming, place ? (f.cityName || stateName) : 'Nationwide', venues.size, !g)}
   ${f.city ? weeklyScheduleHtml(db, inScope, { showCity: false, title: `Weekly ${g ? g + ' ' : ''}tournaments in ${f.cityName}` }) : ''}
   ${f.state && !f.city && !f.game && upcoming.length ? (() => { const feed = `${cfg.publicUrl}${facetPath({ state: f.state })}/calendar.ics`.replace(/\/\/calendar/, '/calendar'), webcal = feed.replace(/^https?:/, 'webcal:');
@@ -416,7 +416,7 @@ export function listingPage(db, cfg, parts) {
   ${stateLinks ? `<section class="sec seo-sec"><h2>${g ? esc(g) + ' tournaments' : 'Tournaments'} by state</h2><div class="chips">${stateLinks}</div></section>` : ''}
   ${gameLinks || up1 || upState ? `<section class="sec seo-sec"><h2>Browse by game</h2><div class="chips">${up1}${upState}${gameLinks}</div></section>` : ''}
   ${past.length ? `<section class="sec seo-sec"><h2>Recent ${g ? esc(g) + ' ' : ''}tournaments${place ? ' in ' + esc(f.cityName || stateName) : ''}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)} · ${esc(t.venue.name)}</span></li>`).join('')}</ul></section>` : ''}`;
-  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(upcoming.length ? [itemList] : [])], noindex: !upcoming.length });
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(upcoming.length ? [itemList] : [])], noindex: !upcoming.length, scripts: ['/near-sort.js'] });
 }
 
 
