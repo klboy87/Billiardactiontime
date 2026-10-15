@@ -280,7 +280,7 @@ export function tournamentPage(db, cfg, t) {
     <p class="lead-muted">${esc(g || 'Pool')} tournament at <b>${esc(v.name)}</b> in ${esc(v.city)}, ${esc(STATE_NAMES[v.state] || v.state)} on <b>${esc(longDate(t.date))}</b>${t.time ? ' at ' + esc(fmtTime(t.time)) : ''}.</p>
     <table class="t"><tbody>${rows}</tbody></table>
     <h2 class="seo-h2">Where</h2>
-    <p><b>${esc(v.name)}</b><br>${esc(where)}${v.phone ? `<br>${esc(v.phone)}` : ''}</p>
+    <p><b>${esc(v.name)}</b><br>${esc(where)}${v.phone ? `<br>📞 <a href="tel:${esc(String(v.phone).replace(/[^\d+]/g, ''))}">${esc(v.phone)}</a>` : ''}</p>
     <div class="actbar"><a class="btn btn-out" href="${esc(maps)}" rel="noopener" target="_blank">Directions</a>
       ${t.registrationUrl ? `<a class="btn btn-blue" href="${esc(t.registrationUrl)}" rel="noopener nofollow" target="_blank">Register</a>` : ''}
       ${t.website ? `<a class="btn btn-out" href="${esc(t.website)}" rel="noopener nofollow" target="_blank">Website</a>` : ''}
@@ -482,7 +482,7 @@ export function venuePage(db, cfg, venueId) {
   const place = { '@context': 'https://schema.org', '@type': 'Place', name: v.name, url: cfg.publicUrl + path,
     address: { '@type': 'PostalAddress', streetAddress: v.address || undefined, addressLocality: v.city, addressRegion: v.state, postalCode: v.zip || undefined, addressCountry: 'US' },
     ...(v.phone ? { telephone: v.phone } : {}), ...(v.lat != null && v.lng != null ? { geo: { '@type': 'GeoCoordinates', latitude: v.lat, longitude: v.lng } } : {}) };
-  const body = `${bc.html}<div class="pagehead"><h1>${esc(v.name)}</h1><p>${esc(where)}${v.phone ? ' · ' + esc(v.phone) : ''}</p>
+  const body = `${bc.html}<div class="pagehead"><h1>${esc(v.name)}</h1><p>${esc(where)}${v.phone ? ` · 📞 <a href="tel:${esc(String(v.phone).replace(/[^\d+]/g, ''))}">${esc(v.phone)}</a>` : ''}</p>
     <p>${up.length ? `${plural(up.length, 'upcoming pool tournament')} at ${esc(v.name)} in ${esc(v.city)}, ${esc(STATE_NAMES[v.state] || v.state)}.` : `No upcoming tournaments listed at ${esc(v.name)} right now.`}</p>
     <div class="actbar"><a class="btn btn-out" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name + ', ' + where)}">Directions</a><a class="btn btn-out" href="${facetPath({ state: v.state, city: v.city })}">More in ${esc(v.city)}</a></div></div>
     ${weeklyScheduleHtml(db, all, { showCity: false, title: `Weekly at ${v.name}` })}
