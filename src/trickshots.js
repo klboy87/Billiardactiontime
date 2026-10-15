@@ -232,5 +232,5 @@ export function trickShotPage(cfg, slug) {
   </div><p style="margin-top:12px"><a href="/trick-shots/">All ${SHOTS.length} trick shots →</a> · <a href="/this-weekend/">Find a tournament this weekend →</a></p></section>`;
   const ld = { '@context': 'https://schema.org', '@type': 'HowTo', name: s.title, description: s.desc, url: `${cfg.publicUrl}/trick-shots/${s.slug}`,
     step: [...s.setup, ...s.how].map((t, k) => ({ '@type': 'HowToStep', position: k + 1, text: t.replace(/<[^>]+>/g, '') })) };
-  return layout(cfg, { title: `${s.title} | Pool Trick Shots | Billiard Action Time`, description: s.desc, path: `/trick-shots/${s.slug}`, body, jsonld: [ld], scripts: ['/play.js'] });
+  return layout(cfg, { title: `${s.title} | Pool Trick Shots | Billiard Action Time`, description: s.desc, path: `/trick-shots/${s.slug}`, body, jsonld: [ld], scripts: ['/play.js'], ogImage: `${cfg.publicUrl}/og/trick-shots/${s.slug}.png` });
 }

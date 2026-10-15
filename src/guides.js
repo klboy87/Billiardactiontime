@@ -423,7 +423,7 @@ export function guidePage(cfg, slug, extraHtml = '') {
     publisher: { '@type': 'Organization', name: 'Billiard Action Time', logo: { '@type': 'ImageObject', url: cfg.publicUrl + '/icons/icon-512.png' } }, author: { '@type': 'Organization', name: 'Billiard Action Time' } };
   const bc = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: cfg.publicUrl + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: cfg.publicUrl + '/guides/' }, { '@type': 'ListItem', position: 3, name: g.title, item: `${cfg.publicUrl}/guides/${g.slug}` }] };
-  return layout(cfg, { title: `${g.title} | Billiard Action Time`, description: g.desc, path: `/guides/${g.slug}`, body, jsonld: [ld, bc] });
+  return layout(cfg, { title: `${g.title} | Billiard Action Time`, description: g.desc, path: `/guides/${g.slug}`, body, jsonld: [ld, bc], ogImage: `${cfg.publicUrl}/og/guides/${g.slug}.png` });
 }
 
 export function aboutPage(cfg) {

@@ -584,6 +584,13 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const png = cachedCard(`list|${txt.headline}|${txt.sub}`, () => renderHeadlineCard(txt.headline, txt.sub, host));
       return send(req, res, 200, png, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' });
     }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/og\/(guides|trick-shots)\/([a-z0-9-]{2,80})\.png$/))) {
+      const item = x[1] === 'guides' ? GU.GUIDES.find(g => g.slug === x[2]) : TS.SHOTS.find(t => t.slug === x[2]);
+      if (!item) return send(req, res, 404, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png' });
+      const title = item.title.replace(/\s*\(.*?\)\s*$/, '').split(':')[0].length > 18 ? item.title.split(':')[0] : item.title.replace(/\s*\(.*?\)\s*$/, '');
+      const png = cachedCard(`page|${x[1]}|${x[2]}`, () => renderHeadlineCard(title, x[1] === 'guides' ? 'Free pool guide' : 'Pool trick shot · step by step', host));
+      return send(req, res, 200, png, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
+    }
     if ((m === 'GET' || m === 'HEAD') && p === '/og.png') {
       return send(req, res, 200, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
     }
