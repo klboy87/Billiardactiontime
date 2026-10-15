@@ -432,7 +432,7 @@
     function dayCell(iso, label) {
       const has = (byDate[iso] || []).length;
       const cls = ['cday']; if (iso === todayIso) cls.push('today'); if (iso === selected) cls.push('sel');
-      return `<button type="button" class="${cls.join(' ')}" data-d="${iso}"><span class="n">${label}</span>${has ? `<small>${has} tourney${has === 1 ? '' : 's'}</small>` : ''}</button>`;
+      return `<button type="button" class="${cls.join(' ')}" data-d="${iso}"><span class="n">${label}</span>${has ? `<small>${has}<span class="cw"> tourney${has === 1 ? '' : 's'}</span></small>` : ''}</button>`;
     }
 
     function monthBody() {
