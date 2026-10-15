@@ -605,6 +605,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; frame-ancestors *; base-uri 'none'; form-action 'none'" };
       return send(req, res, out ? 200 : 404, out || 'Not found', embedHeaders);
     }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/venue\/(\d+)\/poster\/?$/))) {
+      const out = SEO.venuePoster(cfg, db, Number(x[1]));
+      if (!out) return send(req, res, 404, 'Not found', { 'Content-Type': 'text/plain; charset=utf-8' });
+      trackVisit(req, 'venue-poster');
+      return send(req, res, 200, out, { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex', 'Cache-Control': 'public, max-age=1800' });
+    }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/venue\/(\d+)\/calendar\.ics$/))) {
       const out = SEO.venueIcs(cfg, db, Number(x[1]));
       if (!out) return send(req, res, 404, 'Not found', { 'Content-Type': 'text/plain; charset=utf-8' });

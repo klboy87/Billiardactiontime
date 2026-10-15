@@ -510,7 +510,7 @@ function statesIndexPage(db, cfg) {
 // Weekly schedule: events that repeat on the same weekday at the same room (seen at least twice in the last
 // 60 days or upcoming), laid out Monday to Sunday. Returns '' when nothing repeats.
 const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-function weeklyScheduleHtml(db, list, { showCity = true, title = 'Weekly schedule' } = {}) {
+function weeklyByDay(db, list) {
   const ix = index(db), today = todayIso(), from = new Date(Date.parse(today + 'T00:00:00Z') - 60 * 864e5).toISOString().slice(0, 10);
   const key = t => (ix.primaryVenue.get(t.venue.id) ?? t.venue.id) + '|' + new Date(t.date + 'T00:00:00Z').getUTCDay() + '|' + String(t.name).toLowerCase().replace(/\b(mon|tues|wednes|thurs|fri|satur|sun)day\b|\bnight\b|\bweekly\b|[^a-z0-9]/g, '');
   const groups = new Map();
@@ -518,10 +518,16 @@ function weeklyScheduleHtml(db, list, { showCity = true, title = 'Weekly schedul
   const dayMismatch = t => { const m = String(t.name).match(DAY_RE); return m && m[1].toLowerCase() !== ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][new Date(t.date + 'T00:00:00Z').getUTCDay()]; };
   for (const t of list) { if (t.date < from || dayMismatch(t)) continue; const k = key(t); const g = groups.get(k) || { n: 0, next: null, last: t }; g.n++; if (t.date >= today && (!g.next || t.date < g.next.date)) g.next = t; groups.set(k, g); }
   const regular = [...groups.values()].filter(g => g.n >= 2 && g.next);
-  if (!regular.length) return '';
+  if (!regular.length) return null;
   const byDay = WEEKDAYS.map(() => []);
   for (const g of regular) { const d = (new Date(g.next.date + 'T00:00:00Z').getUTCDay() + 6) % 7; byDay[d].push(g.next); }
-  const rows = byDay.map((evs, d) => evs.length ? `<tr><th class="seo-date">${WEEKDAYS[d]}s</th><td>${evs.sort((a, b) => String(a.time || '').localeCompare(String(b.time || ''))).map(t =>
+  for (const evs of byDay) evs.sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+  return byDay;
+}
+function weeklyScheduleHtml(db, list, { showCity = true, title = 'Weekly schedule' } = {}) {
+  const byDay = weeklyByDay(db, list);
+  if (!byDay) return '';
+  const rows = byDay.map((evs, d) => evs.length ? `<tr><th class="seo-date">${WEEKDAYS[d]}s</th><td>${evs.map(t =>
     `<div><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(t.venue.name)}${showCity ? ', ' + esc(t.venue.city) : ''}${t.time ? ' · ' + esc(fmtTime(t.time)) : ''}${t.entry != null ? ' · ' + esc(money(t.entry)) : ''}</span></div>`).join('')}</td></tr>` : '').join('');
   return `<section class="sec seo-sec"><h2>${esc(title)}</h2><p class="muted" style="margin:0 0 8px">Tournaments that run every week. Each links to the next date.</p><div class="card seo-tbl"><table class="t"><tbody>${rows}</tbody></table></div></section>`;
 }
@@ -559,7 +565,8 @@ export function venuePage(db, cfg, venueId) {
     ${up.length ? `<details class="card" style="padding:12px 16px;margin-top:14px"><summary style="cursor:pointer;font-weight:700">🖥️ Run this room? Show this schedule on your website</summary>
       <p class="muted" style="margin:8px 0">Paste this code into your website. It shows your next tournaments and updates automatically. Free.</p>
       <textarea readonly rows="3" style="width:100%;font:13px monospace;padding:8px;border:1px solid var(--line);border-radius:8px" aria-label="Embed code">&lt;iframe src="${esc(cfg.publicUrl)}/embed/venue/${venueId}" width="100%" height="420" style="border:0;max-width:520px" title="Tournaments at ${esc(esc(v.name))}" loading="lazy"&gt;&lt;/iframe&gt;</textarea>
-      <p class="muted" style="font-size:13px;margin:6px 0 0">Dark website? Use <code>/embed/venue/${venueId}?theme=dark</code>. <a href="/embed/venue/${venueId}" target="_blank" rel="noopener">Preview</a></p></details>` : ''}
+      <p class="muted" style="font-size:13px;margin:6px 0 0">Dark website? Use <code>/embed/venue/${venueId}?theme=dark</code>. <a href="/embed/venue/${venueId}" target="_blank" rel="noopener">Preview</a></p>
+      <p style="margin:10px 0 0">🖨️ <a href="/venue/${venueId}/poster">Print a poster of your tournament nights</a> for the wall or the front door.</p></details>` : ''}
     <p class="muted" style="margin:10px 0 0">More: <a href="${hallsPath(v.state)}">pool halls in ${esc(STATE_NAMES[v.state] || v.state)}</a> · <a href="${facetPath({ state: v.state, city: v.city })}">tournaments in ${esc(v.city)}</a> · <a href="${tonightPath(v.state)}">tonight in ${esc(STATE_NAMES[v.state] || v.state)}</a></p>
     ${up.length ? eventRows(db, up, { showCity: false }) : ''}
     ${past.length ? `<section class="sec seo-sec"><h2>Recent tournaments at ${esc(v.name)}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)}</span></li>`).join('')}</ul></section>` : ''}`;
@@ -998,6 +1005,33 @@ ul{list-style:none;margin:0;padding:0}li{display:flex;gap:12px;padding:8px 0;bor
 small{color:${c.mute}}.f{margin-top:8px;padding-top:8px;border-top:1px solid ${c.line};font-size:12px;color:${c.mute}}.f a{font-weight:400}</style></head>
 <body><div class="w"><h1>Upcoming tournaments at ${esc(v.name)}</h1>${up.length ? `<ul>${rows}</ul>` : `<p>No upcoming tournaments listed right now.</p>`}
 <div class="f"><a href="${esc(u(venuePath(db, v)))}" target="_blank" rel="noopener">Full schedule</a> · <a href="${esc(u('/alerts'))}" target="_blank" rel="noopener">Get alerts</a> · Powered by <a href="${esc(u('/'))}" target="_blank" rel="noopener">Billiard Action Time</a></div></div></body></html>`;
+}
+
+// Printable wall poster for a pool room: weekly nights in big type, the next dates, and where to find more.
+export function venuePoster(cfg, db, venueId) {
+  const ix = index(db), today = todayIso(), primary = ix.primaryVenue.get(venueId);
+  if (primary == null) return null;
+  const all = ix.all.filter(t => (ix.primaryVenue.get(t.venue.id) ?? t.venue.id) === primary);
+  if (!all.length) return null;
+  const v = (all.find(t => t.venue.address) || all[0]).venue, byDay = weeklyByDay(db, all);
+  const wkey = t => new Date(t.date + 'T00:00:00Z').getUTCDay() + '|' + String(t.name).toLowerCase();
+  const weekly = new Set(byDay ? byDay.flat().map(wkey) : []);
+  const up = all.filter(t => t.date >= today && !weekly.has(wkey(t))).slice(0, byDay ? 6 : 10);
+  const host = cfg.publicUrl.replace(/^https?:\/\//, '');
+  const line = t => `${esc(t.name)}<small>${[t.time ? fmtTime(t.time) : '', gameWord(t.game), t.entry != null ? money(t.entry) + ' entry' : '', t.added ? money(t.added) + ' added' : ''].filter(Boolean).map(esc).join(' · ')}</small>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Poster: Tournaments at ${esc(v.name)}</title>
+<style>body{margin:0;font:18px/1.35 -apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#e9edf3;color:#0f1b2d}.bar{max-width:8.5in;margin:14px auto;display:flex;gap:10px;align-items:center;padding:0 12px;flex-wrap:wrap}.bar button{font:700 16px Arial;padding:10px 18px;border-radius:8px;border:0;background:#144b2e;color:#fff;cursor:pointer}.bar a{color:#1559bd}
+.pg{background:#fff;max-width:8.5in;margin:0 auto 24px;padding:.55in .6in;box-sizing:border-box;box-shadow:0 2px 12px rgba(0,0,0,.12)}h1{font-size:44px;line-height:1.05;margin:0 0 6px;text-transform:uppercase;letter-spacing:.5px}.sub{font-size:20px;color:#3b4a5e;margin:0 0 22px}
+.top{font:800 15px Arial;letter-spacing:3px;color:#144b2e;text-transform:uppercase;margin:0 0 8px}table{width:100%;border-collapse:collapse;margin:0 0 18px}th{text-align:left;vertical-align:top;width:1.7in;font-size:24px;padding:12px 10px 12px 0;color:#144b2e}td{padding:12px 0;font-size:22px;font-weight:700;border-top:2px solid #e3e8ef}th{border-top:2px solid #e3e8ef}td div+div{margin-top:8px}small{display:block;font-size:16px;font-weight:400;color:#56677e}
+h2{font-size:22px;margin:18px 0 6px}ul{list-style:none;margin:0;padding:0}li{padding:8px 0;border-top:1px solid #e3e8ef;font-weight:700;font-size:19px}li b{display:inline-block;min-width:1.4in}.ft{margin-top:26px;padding-top:16px;border-top:4px solid #144b2e;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:18px}.ft b{font-size:22px}
+@media (max-width:640px){.pg{padding:22px 18px}h1{font-size:30px}th{display:block;width:auto;padding:12px 0 0;font-size:20px}td{display:block;border-top:0;padding:4px 0 12px;font-size:19px}li b{min-width:0;margin-right:8px}}
+@media print{body{background:#fff}.bar{display:none}.pg{box-shadow:none;margin:0;max-width:none;padding:0}@page{margin:.5in}}</style></head>
+<body><div class="bar"><button type="button" data-print>🖨️ Print this poster</button><a href="${venuePath(db, v)}">← Back to ${esc(v.name)}</a></div>
+<div class="pg"><p class="top">🎱 Pool tournaments</p><h1>${esc(v.name)}</h1><p class="sub">${esc([v.address, v.city, v.state].filter(Boolean).join(', '))}${v.phone ? ' · ' + esc(v.phone) : ''}</p>
+${byDay ? `<table><tbody>${byDay.map((evs, d) => evs.length ? `<tr><th>${WEEKDAYS[d]}s</th><td>${evs.map(t => `<div>${line(t)}</div>`).join('')}</td></tr>` : '').join('')}</tbody></table>` : ''}
+${up.length ? `<h2>${byDay ? 'Also coming up' : 'Coming up'}</h2><ul>${up.map(t => `<li><b>${esc(shortDate(t.date))}</b> ${esc(t.name)}${t.time ? ' · ' + esc(fmtTime(t.time)) : ''}</li>`).join('')}</ul>` : ''}
+<div class="ft"><div>Full schedule, dates and alerts:<br><b>${esc(host)}/venue/${primary}</b></div><div style="text-align:right">Find tournaments near you:<br><b>${esc(host)}</b></div></div></div>
+<script src="/print.js"></script></body></html>`;
 }
 
 // Call to action for content pages: tonight's count, with this weekend as a second option.
