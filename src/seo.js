@@ -515,8 +515,9 @@ export function venuePage(db, cfg, venueId) {
     <p class="muted" style="margin:10px 0 0">More: <a href="${hallsPath(v.state)}">pool halls in ${esc(STATE_NAMES[v.state] || v.state)}</a> · <a href="${facetPath({ state: v.state, city: v.city })}">tournaments in ${esc(v.city)}</a> · <a href="${tonightPath(v.state)}">tonight in ${esc(STATE_NAMES[v.state] || v.state)}</a></p>
     ${up.length ? eventRows(db, up, { showCity: false }) : ''}
     ${past.length ? `<section class="sec seo-sec"><h2>Recent tournaments at ${esc(v.name)}</h2><ul class="seo-list">${past.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} ${t.date.slice(0, 4)}</span></li>`).join('')}</ul></section>` : ''}`;
-  return layout(cfg, { title: `${v.name} – Pool Tournaments in ${v.city}, ${v.state} | Billiard Action Time`, path, body,
-    description: `${up.length ? plural(up.length, 'upcoming pool tournament') + ' at ' : 'Pool tournaments at '}${v.name}, ${v.city}, ${v.state}. Dates, games and entry fees.`,
+  const nights = roomNights({ events: all.filter(t => t.date >= new Date(Date.parse(today + 'T00:00:00Z') - 90 * 864e5).toISOString().slice(0, 10)) });
+  return layout(cfg, { title: nights.length ? `${v.name} – Pool Tournaments ${nights.join(', ')} · ${v.city}, ${v.state} | Billiard Action Time` : `${v.name} – Pool Tournaments in ${v.city}, ${v.state} | Billiard Action Time`, path, body,
+    description: `${up.length ? plural(up.length, 'upcoming pool tournament') + ' at ' : 'Pool tournaments at '}${v.name}, ${v.city}, ${v.state}.${nights.length ? ` Weekly tournaments on ${nights.join(', ')}.` : ''} Dates, games, entry fees and directions.`,
     jsonld: [place, bc.ld], noindex: !up.length });
 }
 
