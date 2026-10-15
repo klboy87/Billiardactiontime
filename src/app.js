@@ -593,7 +593,9 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     // ---- search-engine pages (see seo.js) ----
     const html = (status, body, extra = {}) => send(req, res, status, body, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300', ...extra });
     const moved = to => { res.writeHead(301, { Location: to, 'Cache-Control': 'public, max-age=86400' }); res.end(); };
-    const notFoundPage = () => { SEO.ensureFooter(db); return html(404, SEO.listingPage(db, cfg, []).replace('<h1>Pool Tournaments by State</h1>', '<h1>Page not found</h1><p>That page moved or never existed. Browse tournaments by state below.</p>')); };
+    const notFoundPage = () => { SEO.ensureFooter(db); return html(404, SEO.listingPage(db, cfg, []).replace('<h1>Pool Tournaments by State</h1>', `<h1>Page not found</h1><p>That page moved or never existed. Try a search, or jump to one of these:</p>
+      <form action="/search" method="get" role="search" style="display:flex;max-width:460px;margin:12px 0"><input type="search" name="q" placeholder="Search city, room, game…" aria-label="Search tournaments" style="flex:1;min-width:0;padding:10px 12px;font-size:16px;border:1px solid var(--line);border-radius:8px 0 0 8px"><button type="submit" class="btn btn-blue" style="border-radius:0 8px 8px 0">Search</button></form>
+      <div class="actbar"><a class="btn btn-gold" href="/tonight/">Tonight</a><a class="btn btn-out" href="/this-weekend/">This Weekend</a><a class="btn btn-out" href="/pool-halls/">Pool Halls</a><a class="btn btn-out" href="/guides/">Guides</a></div>`).replace('<meta name="robots"', '<meta name="x-ignore"').replace('</title>', '</title><meta name="robots" content="noindex">')); };
     // Links built from a missing value ("…/null", "…/undefined") were being crawled: send them to the page above.
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^(.*?)\/(?:null|undefined)\/?$/))) return moved(x[1] === '/tournament' ? '/tournaments/' : x[1] || '/');
     if ((m === 'GET' || m === 'HEAD') && (p === '/tournament' || p === '/tournament/')) return moved('/tournaments/');

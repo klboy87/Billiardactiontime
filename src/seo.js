@@ -155,7 +155,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
 <link rel="stylesheet" href="/styles.css"><link rel="alternate" type="application/rss+xml" title="New pool tournaments" href="/feed.xml">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
-<body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
+<body><a class="skip-link" href="#main">Skip to content</a><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <details class="mnav"><summary aria-label="Menu">☰</summary><div class="mnav-panel">
 <form action="/search" method="get" role="search" class="mnav-search"><input type="search" name="q" placeholder="Search city, room, game…" aria-label="Search tournaments"><button type="submit">Search</button></form>
 <a href="/tonight/">🌙 Tonight</a><a href="/this-weekend/">🔥 This Weekend</a><a href="/near">📍 Near Me</a><a href="/tournaments/">🗺️ By State</a><a href="/pool-halls/">🏠 Pool Halls</a><a href="/big-tournaments/">🏆 Big Events</a><a href="/new/">🆕 Just Added</a><a href="/calendar">📅 Calendar</a>
@@ -163,7 +163,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 </div></details>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
-<main class="wrap page seo">${body}${ALERT_CTA}</main>
+<main id="main" class="wrap page seo">${body}${ALERT_CTA}</main>
 ${footer(cfg)}</body></html>`;
 }
 let footCache = null;
