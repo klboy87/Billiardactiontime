@@ -388,6 +388,26 @@ export function listingPage(db, cfg, parts) {
   return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(upcoming.length ? [itemList] : [])], noindex: !upcoming.length });
 }
 
+
+// US tile map: one square per state, shaded by number of upcoming tournaments, each linking to its state page.
+const TILES = { AK: [0, 0], ME: [11, 0], WI: [6, 1], VT: [10, 1], NH: [11, 1], WA: [1, 2], ID: [2, 2], MT: [3, 2], ND: [4, 2], MN: [5, 2], IL: [6, 2], MI: [7, 2], NY: [9, 2], MA: [10, 2],
+  OR: [1, 3], NV: [2, 3], WY: [3, 3], SD: [4, 3], IA: [5, 3], IN: [6, 3], OH: [7, 3], PA: [8, 3], NJ: [9, 3], CT: [10, 3], RI: [11, 3],
+  CA: [1, 4], UT: [2, 4], CO: [3, 4], NE: [4, 4], MO: [5, 4], KY: [6, 4], WV: [7, 4], VA: [8, 4], MD: [9, 4], DE: [10, 4],
+  AZ: [2, 5], NM: [3, 5], KS: [4, 5], AR: [5, 5], TN: [6, 5], NC: [7, 5], SC: [8, 5], DC: [9, 5], OK: [4, 6], LA: [5, 6], MS: [6, 6], AL: [7, 6], GA: [8, 6], HI: [0, 7], TX: [4, 7], FL: [9, 7] };
+function stateTileMap(counts) {
+  const max = Math.max(1, ...counts.values()), S = 46, G = 4;
+  const shade = n => !n ? 'var(--surface2)' : ['#cfe8d6', '#9fd1ad', '#5fb37a', '#2f8f52', '#14683a'][Math.min(4, Math.floor(Math.sqrt(n / max) * 5))];
+  const ink = n => !n ? 'var(--muted)' : Math.min(4, Math.floor(Math.sqrt(n / max) * 5)) >= 3 ? '#fff' : '#0f1b2d';
+  const tiles = Object.entries(TILES).map(([st, [x, y]]) => {
+    const n = counts.get(st) || 0, name = STATE_NAMES[st] || st, X = x * (S + G), Y = y * (S + G);
+    const inner = `<rect x="${X}" y="${Y}" width="${S}" height="${S}" rx="6" fill="${shade(n)}" stroke="var(--line)"/><text x="${X + S / 2}" y="${Y + 21}" text-anchor="middle" font-size="16" font-weight="700" fill="${ink(n)}" font-family="Arial">${st}</text><text x="${X + S / 2}" y="${Y + 38}" text-anchor="middle" font-size="14" fill="${ink(n)}" font-family="Arial">${n || ''}</text><title>${esc(name)}: ${n} upcoming</title>`;
+    return n && STATE_NAMES[st] ? `<a href="${facetPath({ state: st })}" aria-label="${esc(name)}: ${n} upcoming tournaments">${inner}</a>` : `<g opacity=".75">${inner}</g>`;
+  }).join('');
+  const W = 12 * (S + G), H = 8 * (S + G);
+  return `<figure class="card statemap" style="padding:14px;margin:0 0 16px"><svg viewBox="-2 -2 ${W + 4} ${H + 4}" role="img" aria-label="Map of upcoming pool tournaments by state" style="width:100%;height:auto;display:block;max-width:640px;margin:0 auto">${tiles}</svg>
+  <figcaption class="muted" style="text-align:center;font-size:13px;margin-top:6px">Darker = more upcoming tournaments. Tap a state to see them.</figcaption></figure>`;
+}
+
 function statesIndexPage(db, cfg) {
   const ix = index(db), today = todayIso();
   const up = ix.all.filter(t => t.date >= today);
@@ -399,6 +419,7 @@ function statesIndexPage(db, cfg) {
   const states = Object.entries(STATE_NAMES).sort((a, b) => a[1].localeCompare(b[1]));
   const body = `${bc.html}<div class="pagehead"><h1>Pool Tournaments by State</h1>
     <p><b>${up.length.toLocaleString('en-US')}</b> upcoming pool and billiards tournaments across ${counts.size} states, updated every day. Pick a state to see every tournament, city and pool room.</p></div>
+    ${stateTileMap(counts)}
     <section class="sec seo-sec" style="padding-top:0"><h2>By game</h2><div class="chips">${[...gameCounts].sort((a, b) => b[1] - a[1]).map(([g, n]) => `<a class="chip" href="${facetPath({ game: g })}">${esc(g)} (${n})</a>`).join('')}</div></section>
     <div class="card"><ul class="statelist">${states.map(([c, n]) => counts.get(c) ? `<li><a href="${facetPath({ state: c })}">${esc(n)}</a> <span class="muted">(${counts.get(c)})</span></li>` : `<li><span class="muted">${esc(n)} (0)</span></li>`).join('')}</ul></div>`;
   return layout(cfg, { title: 'Pool Tournaments by State – Find Billiards Tournaments Near You | Billiard Action Time', path: '/tournaments/',
