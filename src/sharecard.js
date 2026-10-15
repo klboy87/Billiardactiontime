@@ -343,3 +343,20 @@ export function renderSiteShareCard(siteHost = 'billiardactiontime.com') {
   roundRect(c, 0, L.h - 8, L.w, 8, 0, GOLD);
   return encodePng(c);
 }
+
+// Headline card for list pages ("29 POOL TOURNAMENTS TONIGHT"), same look as the site card.
+export function renderHeadlineCard(headline, sub, siteHost = 'billiardactiontime.com') {
+  const L = LAYOUTS.landscape, c = canvas(L.w, L.h);
+  background(c, 600, 250);
+  roundRect(c, 0, 0, L.w, 8, 0, GOLD);
+  ball(c, 1030, 300, 120, '9-Ball'); ball(c, 900, 420, 80, '8-Ball');
+  const bf = font('black', 30);
+  emoji(c, 'ball', 60, 70, 38); text(c, bf, 'BILLIARD ACTION TIME', 112, 72, GOLD, { tracking: 4 });
+  const h = fit('black', String(headline).toUpperCase(), 780, [96, 84, 72, 62], 3);
+  let y = 150;
+  for (const l of h.lines) { text(c, h.f, l, 60, y, WHITE); y += h.f.size * 1.08; }
+  if (sub) { const sf = fit('medium', String(sub), 720, [38, 34, 30], 1); for (const l of sf.lines) { text(c, sf.f, l, 60, y + 14, SOFT); y += sf.f.size * 1.2; } }
+  const uf = font('medium', 30); text(c, uf, siteHost, 60, L.h - 100, SOFT);
+  roundRect(c, 0, L.h - 8, L.w, 8, 0, GOLD);
+  return encodePng(c);
+}

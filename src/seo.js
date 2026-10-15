@@ -658,7 +658,7 @@ export function weekendPage(db, cfg, stateSlugPart) {
       <a class="btn btn-out" href="sms:?&amp;body=${tx}%20${u}">Text</a>
       <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
   </section>`;
-  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !soon.length, scripts: ['/near-sort.js'] });
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !soon.length, scripts: ['/near-sort.js'], ogImage: listCardUrl(cfg, 'weekend', state) });
 }
 
 // Plain-HTML heading and intro for the home page. The app replaces it once it loads; search engines
@@ -813,7 +813,7 @@ export function tonightPage(db, cfg, stateSlugPart) {
       <a class="btn btn-out" href="sms:?&amp;body=${tx}%20${u}">Text</a>
       <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
   </section>`;
-  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !next.length, scripts: ['/near-sort.js'] });
+  return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !next.length, scripts: ['/near-sort.js'], ogImage: listCardUrl(cfg, 'tonight', state) });
 }
 
 // "Just added" (/new/): upcoming tournaments first listed in the last 7 days, newest first, grouped by day.
@@ -963,3 +963,17 @@ export function tonightCta(db) {
   return `<section class="card" style="padding:14px 18px;margin-top:16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center"><b style="font-size:18px">🎱 Put it to work:</b>
     ${n ? `<a class="btn btn-gold" href="/tonight/">${plural(n, 'tournament')} tonight</a>` : ''}${w ? `<a class="btn btn-blue" href="/this-weekend/">${plural(w, 'tournament')} this weekend</a>` : ''}<a class="btn btn-out" href="/near">Near me</a></section>`;
 }
+
+// Text for the list-page share images (/og/list/<tonight|weekend>/<date>[/<state>].png).
+export function listCardText(db, kind, stateSlugPart) {
+  const state = stateSlugPart ? STATE_BY_SLUG[String(stateSlugPart).toLowerCase()] : null;
+  if (stateSlugPart && !state) return null;
+  const ix = index(db), today = todayIso(), inState = t => !state || t.venue.state === state, where = state ? ` in ${STATE_NAMES[state]}` : '';
+  if (kind === 'tonight') {
+    const n = ix.all.filter(t => t.date === today && inState(t)).length;
+    return { headline: n ? `${plural(n, 'pool tournament')} tonight${where}` : `Pool tournaments tonight${where}`, sub: longDate(today) };
+  }
+  const wk = weekendRange(today), n = ix.all.filter(t => t.date >= wk.from && t.date <= wk.to && inState(t)).length;
+  return { headline: n ? `${plural(n, 'pool tournament')} this weekend${where}` : `Pool tournaments this weekend${where}`, sub: rangeLabel(wk) };
+}
+export const listCardUrl = (cfg, kind, state) => `${cfg.publicUrl}/og/list/${kind}/${todayIso()}${state ? '/' + stateSlug(state) : ''}.png`;

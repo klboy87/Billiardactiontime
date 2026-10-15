@@ -11,7 +11,7 @@ import { ingest, runSync } from './sync.js';
 import { geocodePending } from './geocode.js';
 import { readFlyer, readMoneyFlyer } from './scan.js';
 import { placesPayload, citiesForState, statesList } from './places.js';
-import { renderShareCard, renderSiteShareCard, moneyMatchContent } from './sharecard.js';
+import { renderShareCard, renderSiteShareCard, renderHeadlineCard, moneyMatchContent } from './sharecard.js';
 
 // Drawing a card takes a fraction of a second, so keep the most recent ones in memory.
 const cardCache = new Map();
@@ -578,6 +578,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
 
     // ---- share cards (see sharecard.js): og.png = link-preview size, square = posts, story = TikTok/Stories ----
     const host = (() => { try { return new URL(cfg.publicUrl).host; } catch { return 'billiardactiontime.com'; } })();
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/og\/list\/(tonight|weekend)\/\d{4}-\d{2}-\d{2}(?:\/([a-z-]{2,40}))?\.png$/))) {
+      const txt = SEO.listCardText(db, x[1], x[2]);
+      if (!txt) return send(req, res, 404, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png' });
+      const png = cachedCard(`list|${txt.headline}|${txt.sub}`, () => renderHeadlineCard(txt.headline, txt.sub, host));
+      return send(req, res, 200, png, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' });
+    }
     if ((m === 'GET' || m === 'HEAD') && p === '/og.png') {
       return send(req, res, 200, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
     }
