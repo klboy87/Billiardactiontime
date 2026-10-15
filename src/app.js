@@ -663,7 +663,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tournament\/([a-z0-9-]{3,220})\/?$/))) {
       SEO.ensureFooter(db);
       const t = SEO.findTournamentBySlug(db, x[1]);
-      if (!t) return notFoundPage();
+      if (!t) { const to = SEO.fallbackForSlug(db, x[1]); return to ? moved(to) : notFoundPage(); }
       const canon = SEO.tournamentPath(db, t);
       if (canon !== '/tournament/' + x[1]) return moved(canon);
       trackVisit(req, 'tournament-page');
@@ -795,6 +795,10 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (p === '/about' || p === '/about/')) { SEO.ensureFooter(db); trackVisit(req, 'about'); return html(200, GU.aboutPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/contact' || p === '/contact/')) { SEO.ensureFooter(db); trackVisit(req, 'contact'); return html(200, GU.contactPage(cfg)); }
     if (m === 'GET' && (p === '/privacy' || p === '/privacy/')) { SEO.ensureFooter(db); return send(req, res, 200, SEO.privacyPage(cfg), { 'Content-Type': 'text/html; charset=utf-8' }); }
+    // Lets Chrome prefetch our pages from Google results through its privacy proxy, so clicks open faster.
+    if (m === 'GET' && p === '/.well-known/traffic-advice') return send(req, res, 200, JSON.stringify([{ user_agent: 'prefetch-proxy', google_prefetch_proxy_eap: { fraction: 1.0 } }]), { 'Content-Type': 'application/trafficadvice+json', 'Cache-Control': 'public, max-age=86400' });
+    // Phones and browsers ask for these at the site root regardless of the page's link tags.
+    if ((m === 'GET' || m === 'HEAD') && (p === '/apple-touch-icon.png' || p === '/apple-touch-icon-precomposed.png')) return moved('/icons/apple-touch-icon.png');
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
     const appPage = (m === 'GET' || m === 'HEAD') ? appPageFor(p) : null;

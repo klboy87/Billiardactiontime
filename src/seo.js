@@ -83,6 +83,21 @@ export function findTournamentBySlug(db, slug) {
   return id != null ? ix.byId.get(id) : null;
 }
 
+// A tournament URL that no longer exists (event removed or renamed): find the closest live page so old links
+// and search results land somewhere useful. Same name + room on another date first, then the room's page.
+export function fallbackForSlug(db, slug) {
+  const ix = index(db), today = todayIso();
+  const base = slug.replace(/-(january|february|march|april|may|june|july|august|september|october|november|december)-\d{1,2}-\d{4}(-\d+)?$/, '');
+  if (base !== slug && base.length >= 8) {
+    const same = ix.all.filter(t => { const sl = tournamentPath(db, t).slice(12); return sl.startsWith(base + '-'); });
+    const pick = same.find(t => t.date >= today) || same[same.length - 1];
+    if (pick) return tournamentPath(db, pick);
+  }
+  let best = null;
+  for (const t of ix.all) { const vs = cleanSlug(t.venue.name, 6); if (vs.length >= 5 && (base + '-').includes('-' + vs + '-') && (!best || vs.length > best[1])) best = [t.venue, vs.length]; }
+  return best ? venuePath(db, best[0]) : null;
+}
+
 const cityKey = (state, city) => `${state}|${slugify(city)}`;
 function facetPath({ state, city, game } = {}) {
   let p = '/tournaments';
