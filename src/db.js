@@ -442,3 +442,5 @@ export function setGoing(db, id, key, on) {
   return goingCount(db, id);
 }
 export const goingCounts = db => new Map(db.prepare('SELECT tournament_id id, COUNT(*) n FROM going GROUP BY tournament_id').all().map(r => [r.id, r.n]));
+export const goingTop = (db, limit = 15) => db.prepare(`SELECT g.tournament_id id, COUNT(*) n, t.name, t.date, v.name venue, v.city, v.state FROM going g JOIN tournaments t ON t.id = g.tournament_id JOIN venues v ON v.id = t.venue_id
+  WHERE t.date >= ? GROUP BY g.tournament_id ORDER BY n DESC, t.date LIMIT ?`).all(todayIso(), limit);

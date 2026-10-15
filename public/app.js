@@ -956,6 +956,7 @@
     catch { localStorage.removeItem('bat_admin_token'); app.innerHTML = errorBox('Session expired. Reloading login…'); setTimeout(() => { location.hash = '#/admin'; render(); }, 800); return; }
     let pending;
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
+    let goingTop = []; try { goingTop = (await api('/api/admin/going')).top; } catch {}
     let pendingStakes;
     try { pendingStakes = (await api('/api/admin/stakes/pending')).stakes; } catch { pendingStakes = []; }
     let stakeAdmin;
@@ -1018,6 +1019,8 @@
         <div id="nlPreview" style="border:1px solid #ddd;border-radius:8px;background:#fff;color:#222;padding:10px;max-height:520px;overflow:auto">Loading…</div>
         <form id="nlRemove" class="actbar" style="margin-top:12px;flex-wrap:wrap"><input name="email" type="email" required placeholder="Email to unsubscribe" style="max-width:280px"><button class="btn btn-out btn-sm" type="submit">Remove From List</button></form>
       </div>
+      <h2>Most Players Going (${goingTop.length})</h2>
+      ${goingTop.length ? `<div class="card" style="padding:8px 14px;margin-bottom:16px"><table class="t"><tbody>${goingTop.map(g => `<tr><td style="width:1%;white-space:nowrap"><b>👍 ${g.n}</b></td><td><a href="#/t/${g.id}">${esc(g.name)}</a><br><small class="muted">${esc(fmtDate(g.date))} · ${esc(g.venue)}, ${esc(g.city)}, ${esc(g.state)}</small></td></tr>`).join('')}</tbody></table><p class="muted" style="font-size:13px;margin:6px 0">Good candidates to feature in the newsletter and Facebook posts.</p></div>` : '<p class="muted">No one has tapped "I\'m going" on an upcoming tournament yet.</p>'}
       <h2>Needs Review (${pending.length})</h2>
       ${pending.length > 1 ? `<p class="actbar"><button type="button" class="btn btn-blue btn-sm" id="approveAll">Approve all ${pending.length}</button></p>` : ''}
       <div id="pendingList" class="review">

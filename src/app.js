@@ -538,6 +538,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Match not found' });
       }
       if (m === 'GET' && p === '/api/admin/summary') return json(req, res, 200, D.summary(db));
+      if (m === 'GET' && p === '/api/admin/going') return json(req, res, 200, { top: D.goingTop(db) }, { 'Cache-Control': 'no-store' });
       if (m === 'GET' && p === '/api/admin/pageviews') {
         flushPageviews();
         const traffic = D.visitBreakdown(db);
