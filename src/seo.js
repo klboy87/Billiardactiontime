@@ -218,15 +218,15 @@ function eventLd(cfg, db, t) {
   };
 }
 
-function eventRows(db, list, { showCity = true } = {}) {
+function eventRows(db, list, { showCity = true, byDay = false } = {}) {
   let month = '', html = '';
   const today = todayIso(), tomorrow = new Date(Date.parse(today + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10);
   const badge = d => d === today ? '<br><span class="when-badge when-today">Tonight</span>' : d === tomorrow ? '<br><span class="when-badge">Tomorrow</span>' : '';
   for (const t of list) {
-    const ml = monthLabel(t.date);
+    const ml = byDay ? `${longDate(t.date)}${t.date === today ? ' · Tonight' : t.date === tomorrow ? ' · Tomorrow' : ''}` : monthLabel(t.date);
     if (ml !== month) { if (month) html += '</tbody></table></div>'; month = ml; html += `<h3 class="seo-month">${esc(ml)}</h3><div class="card seo-tbl"><table class="t"><tbody>`; }
     const v = t.venue;
-    html += `<tr${v.lat != null && v.lng != null ? ` data-lat="${v.lat}" data-lng="${v.lng}"` : ''}><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${badge(t.date)}</td>
+    html += `<tr${v.lat != null && v.lng != null ? ` data-lat="${v.lat}" data-lng="${v.lng}"` : ''}><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${byDay ? "" : badge(t.date)}</td>
       <td><a href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b></a><br><small class="muted">${esc(v.name)}${showCity ? ` · ${esc(v.city)}, ${esc(v.state)}` : ''}${gameWord(t.game) ? ' · ' + esc(t.game) : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · ' + money(t.added) + ' added' : ''}</small></td></tr>`;
   }
   return html + (month ? '</tbody></table></div>' : '');
@@ -644,7 +644,7 @@ export function weekendPage(db, cfg, stateSlugPart) {
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
     <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="${tonightPath(state)}">Tonight${esc(where)}</a>${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>This weekend by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${weekendPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
-  ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : soon.length ? `<h2 class="seo-h2">Coming up next${where}</h2>${eventRows(db, soon, { showCity: true })}` : ''}
+  ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true, byDay: true }) : soon.length ? `<h2 class="seo-h2">Coming up next${where}</h2>${eventRows(db, soon, { showCity: true })}` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
     <h2 class="seo-h2" style="margin-top:0">Share this weekend's list</h2>
     <p class="muted">Post this link in your pool group. It always shows the coming weekend, so you can share the same link every week.</p>
