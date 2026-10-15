@@ -557,6 +557,11 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && p === '/og.png') {
       return send(req, res, 200, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
     }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/t\/(\d+)\/event\.ics$/))) {
+      const t = D.getTournament(db, Number(x[1]));
+      if (!t) return send(req, res, 404, 'Not found', { 'Content-Type': 'text/plain; charset=utf-8' });
+      return send(req, res, 200, SEO.tournamentIcs(cfg, db, t), { 'Content-Type': 'text/calendar; charset=utf-8', 'Content-Disposition': `attachment; filename="tournament-${t.id}.ics"`, 'Cache-Control': 'public, max-age=3600', 'X-Robots-Tag': 'noindex' });
+    }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/t\/(\d+)\/(og|card-square|card-story)\.png$/))) {
       const t = D.getTournament(db, Number(x[1]));
       if (!t) return send(req, res, 404, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png' });

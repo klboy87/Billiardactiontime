@@ -266,6 +266,7 @@ export function tournamentPage(db, cfg, t) {
       ${t.registrationUrl ? `<a class="btn btn-blue" href="${esc(t.registrationUrl)}" rel="noopener nofollow" target="_blank">Register</a>` : ''}
       ${t.website ? `<a class="btn btn-out" href="${esc(t.website)}" rel="noopener nofollow" target="_blank">Website</a>` : ''}
       <a class="btn btn-green" href="/#/t/${t.id}">Save / Share in the App</a></div>
+    ${ended ? '' : `<div class="actbar cal-bar" style="margin-top:8px"><span class="muted" style="align-self:center;font-size:14px">Add to calendar:</span><a class="btn btn-out" href="${esc(googleCalUrl(cfg, db, t))}" rel="noopener nofollow" target="_blank">Google</a><a class="btn btn-out" href="/t/${t.id}/event.ics" rel="nofollow" download>Apple / Outlook (.ics)</a></div>`}
     ${t.hasFlyer ? `<img class="previewimg" src="/api/tournaments/${t.id}/flyer" alt="Flyer for ${esc(t.name)}" loading="lazy">` : ''}
     ${t.notes && !/^source:/i.test(t.notes) ? `<p style="margin-top:12px">${esc(t.notes.replace(/\s*Source:.*$/i, ''))}</p>` : ''}
     <p class="muted" style="font-size:13px;margin-top:14px">Details can change. Confirm with the room before you go. Run this event? <a href="/#/claim/${t.id}">Claim it</a> · <a href="/#/report/${t.id}">Report a problem</a></p>
@@ -615,4 +616,28 @@ export function upcomingGameHtml(db, game, n = 6) {
   const list = [...pool.filter(isBigEvent), ...pool.filter(t => !isBigEvent(t))].slice(0, n).sort((a, b) => a.date.localeCompare(b.date));
   if (!list.length) return '';
   return `<section class="sec seo-sec"><h2>Upcoming ${esc(game)} tournaments</h2><ul class="seo-list">${list.map(t => `<li><a href="${tournamentPath(db, t)}">${esc(t.name)}</a> <span class="muted">· ${esc(shortDate(t.date))} · ${esc(t.venue.city)}, ${esc(t.venue.state)}</span></li>`).join('')}</ul><a href="${facetPath({ game })}">All ${esc(game)} tournaments →</a> · <a href="/near">Near me →</a></section>`;
+}
+
+// Calendar file for one tournament. Times are "floating" (no time zone), so they show at the listed local
+// time wherever the player is. Without a start time it is an all-day event.
+export function tournamentIcs(cfg, db, t) {
+  const v = t.venue, d = t.date.replace(/-/g, ''), e = x => String(x || '').replace(/[\\;,]/g, c => '\\' + c).replace(/\n/g, '\\n');
+  const next = new Date(Date.parse(t.date + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10).replace(/-/g, '');
+  const when = t.time ? [`DTSTART:${d}T${t.time.replace(':', '')}00`, 'DURATION:PT5H'] : [`DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${next}`];
+  const url = cfg.publicUrl + tournamentPath(db, t);
+  const info = [gameWord(t.game) ? gameWord(t.game) + ' tournament' : 'Pool tournament', t.entry != null ? 'Entry ' + money(t.entry) : '', t.added ? money(t.added) + ' added' : '', 'Confirm details with the room before you go', url].filter(Boolean).join('. ');
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Billiard Action Time//Tournaments//EN', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT',
+    `UID:tournament-${t.id}@billiardactiontime.com`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`, ...when,
+    `SUMMARY:${e(t.name)}`, `LOCATION:${e([v.name, v.address, v.city, v.state, v.zip].filter(Boolean).join(', '))}`, `DESCRIPTION:${e(info)}`, `URL:${url}`,
+    ...(t.time ? ['BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:Pool tournament in 2 hours', 'END:VALARM'] : []),
+    'END:VEVENT', 'END:VCALENDAR'].join('\r\n') + '\r\n';
+}
+function googleCalUrl(cfg, db, t) {
+  const v = t.venue, d = t.date.replace(/-/g, '');
+  let dates;
+  if (t.time) { const [h, m] = t.time.split(':').map(Number), end = h + 5; const pad = n => String(n).padStart(2, '0');
+    dates = `${d}T${pad(h)}${pad(m)}00/${end < 24 ? d + 'T' + pad(end) + pad(m) + '00' : d + 'T235900'}`; }
+  else dates = `${d}/${new Date(Date.parse(t.date + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10).replace(/-/g, '')}`;
+  const q = new URLSearchParams({ action: 'TEMPLATE', text: t.name, dates, location: [v.name, v.address, v.city, v.state].filter(Boolean).join(', '), details: `${cfg.publicUrl}${tournamentPath(db, t)}` });
+  return 'https://calendar.google.com/calendar/render?' + q.toString();
 }
