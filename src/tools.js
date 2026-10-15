@@ -129,6 +129,7 @@ export function directorsPage(cfg) {
     ['📷', 'Snap the flyer instead', 'Take a photo of your flyer and the flyer scanner fills in the details for you.', '/scan', 'Scan a flyer'],
     ['📣', 'Ready-made share graphics', 'Every tournament gets its own page plus square, tall and wide graphics for Facebook, Instagram and TikTok.', '/tonight/', 'See examples'],
     ['🖥️', 'A schedule widget for your website', 'One line of code shows your upcoming tournaments on your own site and updates itself. Find it on your room\'s page.', '/pool-halls/', 'Find your room'],
+    ['🖨️', 'A printable poster for your wall', 'Your weekly tournament nights in big type, ready to print and tape up by the door or the bar. It updates whenever your schedule does.', '/pool-halls/', 'Find your room'],
     ['📅', 'Calendar feeds for your regulars', 'Players subscribe once and every tournament at your room lands in their phone calendar.', '/pool-halls/', 'Find your room'],
     ['🏆', 'Printable brackets with names', 'Double-elimination brackets for 8 to 64 players, filled in with a random draw and spread-out byes.', '/tools/brackets/', 'Print a bracket'],
     ['💵', 'Payout calculator', 'Prize pool, greens fee, added money and fair splits for any field size.', '/tools/payout-calculator', 'Work out payouts'],
