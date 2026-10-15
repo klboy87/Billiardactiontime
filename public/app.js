@@ -348,8 +348,9 @@
     const state = params.get('state') || '', city = params.get('city') || '', game = params.get('game') || '', q = params.get('q') || '';
     app.innerHTML = `
       <div class="pagehead"><h1>Find Tournaments</h1></div>
+      <button type="button" class="btn btn-out ftoggle" id="fToggle" aria-controls="filters" aria-expanded="false">🔍 Search &amp; Filters${[q, city, state, game].filter(Boolean).length ? ': ' + esc([q && '"' + q + '"', city, state, game].filter(Boolean).join(' · ')) : ''}</button>
       <div class="slayout">
-        <form class="filters card" id="filters">
+        <form class="filters card${[q, city, state, game].some(Boolean) ? '' : ' open'}" id="filters">
           <div class="fg"><label for="fQuery">Search</label><input type="text" id="fQuery" placeholder="Name, city, venue, game…" value="${esc(q)}"></div>
           ${stateCitySelects({ state, city, idPrefix: 'f' })}
           <div class="fg">
@@ -366,6 +367,13 @@
         </div>
       </div>`;
     const filtersEl = document.getElementById('filters');
+    const fToggle = document.getElementById('fToggle');
+    filtersEl.addEventListener('submit', () => {
+      const vals = [document.getElementById('fQuery').value.trim(), document.getElementById('fCity')?.value, document.getElementById('fState')?.value, document.getElementById('fGame').value].filter(Boolean);
+      fToggle.textContent = '🔍 Search & Filters' + (vals.length ? ': ' + vals.map((v, i) => i === 0 && v === document.getElementById('fQuery').value.trim() ? '"' + v + '"' : v).join(' · ') : '');
+      if (matchMedia('(max-width:860px)').matches) { filtersEl.classList.remove('open'); fToggle.setAttribute('aria-expanded', 'false'); }
+    });
+    fToggle.addEventListener('click', () => { const open = filtersEl.classList.toggle('open'); fToggle.setAttribute('aria-expanded', String(open)); if (open) document.getElementById('fQuery').focus(); });
     await wireStateCitySelects(filtersEl, 'f', { state, city });
     document.getElementById('fGame').value = game;
 
