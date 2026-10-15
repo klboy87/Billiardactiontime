@@ -154,7 +154,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
-<link rel="stylesheet" href="/styles.css">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
+<link rel="stylesheet" href="/styles.css"><link rel="alternate" type="application/rss+xml" title="New pool tournaments" href="/feed.xml">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
 <body><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
@@ -176,7 +176,7 @@ function buildFooter(db) {
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
-    <div><h4>Learn &amp; Play</h4><a href="/tonight/">Tonight</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a></div>
+    <div><h4>Learn &amp; Play</h4><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a></div>
   </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
@@ -494,7 +494,7 @@ export function sitemapXml(db, cfg, extra = []) {
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
   const wk = weekendRange(today);
   add('/this-weekend/', today, '0.9');
-  add('/tonight/', today, '0.9');
+  add('/tonight/', today, '0.9'); add('/new/', today, '0.7');
   const week = new Date(Date.parse(today + 'T00:00:00Z') + 7 * 864e5).toISOString().slice(0, 10);
   for (const st of new Set(up.filter(t => t.date <= week).map(t => t.venue.state))) if (STATE_NAMES[st]) add(tonightPath(st), today, '0.6');
   add('/big-tournaments/', today, '0.9');
@@ -731,4 +731,40 @@ export function tonightPage(db, cfg, stateSlugPart) {
       <button type="button" class="btn btn-out" data-share="copy">Copy Link</button></div>
   </section>`;
   return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !next.length });
+}
+
+// "Just added" (/new/): upcoming tournaments first listed in the last 7 days, newest first, grouped by day.
+function recentlyAdded(db, days = 7) {
+  const today = todayIso(), since = new Date(Date.now() - days * 864e5).toISOString().slice(0, 19).replace('T', ' ');
+  return index(db).all.filter(t => t.date >= today && t.createdAt && t.createdAt >= since)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.date.localeCompare(b.date));
+}
+export function newTournamentsPage(db, cfg) {
+  const list = recentlyAdded(db, 7);
+  const bc = crumbs(cfg, [{ name: 'Tournaments', path: '/tournaments/' }, { name: 'Just added', path: '/new/' }]);
+  const byDay = new Map();
+  for (const t of list) { const d = t.createdAt.slice(0, 10); if (!byDay.has(d)) byDay.set(d, []); byDay.get(d).push(t); }
+  const big = list.filter(isBigEvent).slice(0, 3);
+  const body = `${bc.html}
+  <div class="pagehead"><h1>Just Added: New Pool Tournaments</h1>
+    <p>${list.length ? `<b>${plural(list.length, 'upcoming tournament')}</b> added in the last 7 days.${big.length ? ` Including ${big.map(t => `<a href="${tournamentPath(db, t)}">${esc(t.name)}</a>`).join(', ')}.` : ''}` : 'No new tournaments in the last 7 days. Check back soon: we add new events every day.'} New listings are added every day from pool rooms, directors and players.</p>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-gold" href="/alerts">Get Alerts by Email</a><a class="btn btn-out" href="/feed.xml">RSS Feed</a><a class="btn btn-out" href="/post">Post a Tournament</a></div></div>
+  ${[...byDay].map(([d, ts]) => `<section class="sec seo-sec" style="padding-top:8px"><h2>Added ${esc(longDate(d))}</h2>${eventRows(db, ts, { showCity: true })}</section>`).join('')}`;
+  return layout(cfg, { title: `New Pool Tournaments Added This Week${list.length ? ` (${list.length})` : ''} | Billiard Action Time`,
+    description: `${list.length ? plural(list.length, 'new pool tournament') + ' added this week' : 'Newly added pool tournaments'}: weekly nights, opens and added-money events across the US. Updated daily.`,
+    path: '/new/', body, jsonld: [bc.ld], noindex: !list.length });
+}
+export function rssFeed(db, cfg) {
+  const items = recentlyAdded(db, 14).slice(0, 100);
+  const x = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
+  const rfc = s => new Date(s.replace(' ', 'T') + 'Z').toUTCString();
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>
+<title>Billiard Action Time: New Pool Tournaments</title><link>${x(cfg.publicUrl)}/new/</link>
+<atom:link href="${x(cfg.publicUrl)}/feed.xml" rel="self" type="application/rss+xml"/>
+<description>Newly listed pool and billiards tournaments across the US.</description><language>en-us</language>
+${items.map(t => { const u = cfg.publicUrl + tournamentPath(db, t), v = t.venue, g = gameWord(t.game);
+  return `<item><title>${x(`${t.name} – ${v.city}, ${v.state} (${shortDate(t.date)})`)}</title><link>${x(u)}</link><guid isPermaLink="true">${x(u)}</guid><pubDate>${rfc(t.createdAt)}</pubDate>
+<description>${x(`${g || 'Pool'} tournament at ${v.name}, ${v.city}, ${v.state} on ${longDate(t.date)}${t.time ? ' at ' + fmtTime(t.time) : ''}.${t.entry != null ? ' Entry ' + money(t.entry) + '.' : ''}${t.added ? ' ' + money(t.added) + ' added.' : ''}`)}</description></item>`; }).join('\n')}
+</channel></rss>`;
 }

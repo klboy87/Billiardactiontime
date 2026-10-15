@@ -275,7 +275,7 @@ export function shape(r) {
     director: { name: r.director_name, phone: r.director_phone, email: r.director_email },
     registrationUrl: r.registration_url, website: r.website, notes: r.notes,
     flyerUrl: r.flyer_url, hasFlyer: !!r.flyer_data, verified: !!r.verified, status: r.status, source: r.source,
-    updatedAt: r.updated_at,
+    updatedAt: r.updated_at, createdAt: r.created_at,
     venue: { id: r.venue_id, name: r.v_name, address: r.v_address, city: r.v_city, state: r.v_state, zip: r.v_zip, phone: r.v_phone,
       website: r.v_website, lat: r.v_lat, lng: r.v_lng, tables: r.v_tables }
   };

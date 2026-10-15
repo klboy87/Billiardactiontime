@@ -577,6 +577,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     // Links built from a missing value ("…/null", "…/undefined") were being crawled: send them to the page above.
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^(.*?)\/(?:null|undefined)\/?$/))) return moved(x[1] === '/tournament' ? '/tournaments/' : x[1] || '/');
     if ((m === 'GET' || m === 'HEAD') && (p === '/tournament' || p === '/tournament/')) return moved('/tournaments/');
+    if ((m === 'GET' || m === 'HEAD') && (p === '/new' || p === '/new/')) { if (p === '/new') return moved('/new/'); SEO.ensureFooter(db); trackVisit(req, 'new-page'); return html(200, SEO.newTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }
+    if ((m === 'GET' || m === 'HEAD') && p === '/feed.xml') return send(req, res, 200, SEO.rssFeed(db, cfg), { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=1800' });
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tonight(?:\/([a-z-]{2,40}))?(\/)?$/))) {
       if (!x[2]) return moved(`/tonight/${x[1] ? x[1] + '/' : ''}`);
       SEO.ensureFooter(db);
