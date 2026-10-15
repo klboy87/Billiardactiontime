@@ -279,7 +279,8 @@ export function tournamentPage(db, cfg, t) {
       return weekly;
     })()}
     <h1 class="dtitle">${esc(t.name)}</h1>
-    <p class="lead-muted">${esc(g || 'Pool')} tournament at <b>${esc(v.name)}</b> in ${esc(v.city)}, ${esc(STATE_NAMES[v.state] || v.state)} on <b>${esc(longDate(t.date))}</b>${t.time ? ' at ' + esc(fmtTime(t.time)) : ''}.</p>
+    <p class="lead-muted">${esc(g || 'Pool')} tournament at <b>${esc(v.name)}</b> in ${esc(v.city)}, ${esc(STATE_NAMES[v.state] || v.state)} on <b>${esc(longDate(t.date))}</b>${t.time ? ' at ' + esc(fmtTime(t.time)) : ''}.${ended ? '' : (() => { const d = Math.round((Date.parse(t.date + 'T00:00:00Z') - Date.parse(today + 'T00:00:00Z')) / 864e5);
+      return ` <span class="when-badge${d === 0 ? ' when-today' : ''}" style="vertical-align:middle">${d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : `In ${d} days`}</span>`; })()}</p>
     <table class="t"><tbody>${rows}</tbody></table>
     <h2 class="seo-h2">Where</h2>
     <p><b>${esc(v.name)}</b><br>${esc(where)}${v.phone ? `<br>📞 <a href="tel:${esc(String(v.phone).replace(/[^\d+]/g, ''))}">${esc(v.phone)}</a>` : ''}</p>
@@ -878,7 +879,7 @@ export function poolHallsStatePage(db, cfg, slugPart) {
   const cities = [...byCity].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
   const bc = crumbs(cfg, [{ name: 'Pool Halls', path: '/pool-halls/' }, { name, path: hallsPath(st) }]);
   const card = r => { const nights = roomNights(r), addr = [r.v.address, r.v.city, r.v.state].filter(Boolean).join(', ');
-    return `<li class="hall"><a href="${venuePath(db, r.v)}"><b>${esc(r.v.name)}</b></a><br><span class="muted">${esc(addr)}</span>
+    return `<li class="hall"><a href="${venuePath(db, r.v)}"><b>${esc(r.v.name)}</b></a><br><span class="muted">${esc(addr)}</span> <a class="muted" style="font-size:13px" href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent([r.v.name, addr].join(', '))}" target="_blank" rel="noopener">Directions</a>
       ${nights.length ? `<br><span class="hall-nights">🔁 Tournaments: ${nights.join(', ')}</span>` : ''}
       ${r.next ? `<br><span class="muted">Next: <a href="${tournamentPath(db, r.next)}">${esc(r.next.name)}</a> · ${esc(shortDate(r.next.date))}</span>` : ''}</li>`; };
   const ld = { '@context': 'https://schema.org', '@type': 'ItemList', name: `Pool halls in ${name}`, numberOfItems: rooms.length,
