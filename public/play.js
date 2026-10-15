@@ -130,7 +130,7 @@
       var shown = first ? S.made + '|' + S.marks : prior;
       var share = 'Billiard Action Time Daily Aim #' + dayNo + ' 🎯 ' + shown.split('|')[0] + '/5\n' + shown.split('|')[1] + '\n' + location.origin + '/play/aim-trainer';
       ui.msg.innerHTML += '<div class="aim-final"><b>Daily challenge #' + dayNo + ': ' + S.made + ' of 5.</b> ' + S.marks + (first ? '' : ' <span class="muted">(Your first try today counts: ' + prior.split('|')[0] + '/5.)</span>') +
-        '<p style="margin:8px 0 0">New shots tomorrow. <button type="button" data-share-daily style="padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:15px">Copy result to share</button> <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.origin + '/play/aim-trainer') + '">Share on Facebook</a></p></div>';
+        '<p style="margin:8px 0 0">New shots tomorrow. <button type="button" data-share-daily style="padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:15px">Copy result to share</button> <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.origin + '/play/aim-trainer') + '">Share on Facebook</a></p></div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
       var sb = ui.msg.querySelector('[data-share-daily]');
       sb.addEventListener('click', function () { if (navigator.clipboard) navigator.clipboard.writeText(share).then(function () { sb.textContent = 'Copied!'; }, function () { sb.textContent = 'Copy failed'; }); });
       ui.next.textContent = 'Play a regular round'; ui.next.onclick = function () { ui.level.value = 'normal'; level = 'normal'; newRound(); };
@@ -138,7 +138,7 @@
       var best = Number(store.get(bestKey()) || 0), isBest = S.score > best;
       if (isBest) store.set(bestKey(), String(S.score));
       ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 made, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') +
-        ' ' + (S.made >= 9 ? (level === 'pro' ? 'Pro-level eye. Share your score!' : 'Sharp eye. Try a harder level.') : S.made >= 6 ? 'Solid shooting.' : 'Keep at it: aim at the ghost ball, not the object ball.') + '</div>';
+        ' ' + (S.made >= 9 ? (level === 'pro' ? 'Pro-level eye. Share your score!' : 'Sharp eye. Try a harder level.') : S.made >= 6 ? 'Solid shooting.' : 'Keep at it: aim at the ghost ball, not the object ball.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
       ui.next.textContent = 'Play another round'; ui.next.onclick = function () { newRound(); };
     } else { ui.next.textContent = 'Next shot →'; ui.next.onclick = function () { newShot(); }; }
     ui.next.hidden = false; aimLine.setAttribute('opacity', 0.85); status();
@@ -263,7 +263,7 @@
     ui.msg.innerHTML = (made ? '✅ Banked it! ' : '❌ ' + why + ' ') + 'You hit the rail ' + where + '.' + (made ? '' : ' <span class="muted">The yellow line shows the bank that works.</span>');
     if (S.n >= 10) {
       var key = 'bat-bank-best-' + level, best = Number(store.get(key) || 0), isBest = S.score > best; if (isBest) store.set(key, String(S.score));
-      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 banked, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') + '</div>';
+      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 banked, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
       ui.next.textContent = 'Play another round'; ui.next.onclick = newRound;
     } else { ui.next.textContent = 'Next bank →'; ui.next.onclick = newShot; }
     ui.next.hidden = false; pathEl.setAttribute('opacity', 0.85); status();
@@ -325,7 +325,7 @@
     ui.msg.innerHTML = (reached && inches < 6 ? '✅ ' : '') + verdict + (reached ? ' <b>' + inches.toFixed(1) + '"</b> from the head rail.' : '');
     if (S.n >= 5) {
       var best = Number(store.get('bat-lag-best') || 0), isBest = !best || S.total < best; if (isBest) store.set('bat-lag-best', S.total.toFixed(1));
-      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.total.toFixed(1) + '" total over 5 lags</b> (lower is better). ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best.toFixed(1) + '".') + '</div>';
+      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.total.toFixed(1) + '" total over 5 lags</b> (lower is better). ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best.toFixed(1) + '".') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
       phase = 'done'; ui.go.textContent = 'Play again';
     } else { phase = 'shown'; ui.go.textContent = 'Next lag →'; }
     ui.go.disabled = false; status();
