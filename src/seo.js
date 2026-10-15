@@ -297,6 +297,13 @@ export function tournamentPage(db, cfg, t) {
     <p class="muted" style="margin:6px 0">${GUIDE_FOR_GAME[t.game] ? `Brush up on <a href="/guides/${GUIDE_FOR_GAME[t.game][0]}">${GUIDE_FOR_GAME[t.game][1]}</a>, then read ` : 'Read '}<a href="/guides/first-pool-tournament">what to expect at your first tournament</a> and <a href="/guides/double-elimination-brackets">how double-elimination brackets work</a>.</p><p class="muted" style="margin:6px 0">Warming up? Take today's <a href="/play/aim-trainer">aim trainer challenge</a> or learn a <a href="/trick-shots/">trick shot</a>.</p></section>
   ${shareBox(cfg, db, t, g)}
   ${sameVenue.length ? `<section class="sec seo-sec"><h2>More at ${esc(v.name)}</h2><ul class="seo-list">${mini(sameVenue)}</ul><a href="${venuePath(db, v)}">All tournaments at ${esc(v.name)} →</a></section>` : ''}
+  ${(() => {
+    if (v.lat == null || v.lng == null) return '';
+    const R = 3958.8, rad = Math.PI / 180, mi = (a, b) => { const dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad, x = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+    const end = new Date(Date.parse(today + 'T00:00:00Z') + 14 * 864e5).toISOString().slice(0, 10);
+    const near = up.filter(x => x.date <= end && x.venue.lat != null && x.venue.lng != null && !sameRoom(db, x.venue.id, v.id)).map(x => [x, mi(v, x.venue)]).filter(([, d]) => d <= 40).sort((a, b) => a[0].date.localeCompare(b[0].date) || a[1] - b[1]).slice(0, 8);
+    return near.length ? `<section class="sec seo-sec"><h2>Nearby in the next 2 weeks</h2><ul class="seo-list">${near.map(([x, d]) => `<li><a href="${tournamentPath(db, x)}">${esc(x.name)}</a> <span class="muted">· ${esc(shortDate(x.date))} · ${esc(x.venue.name)}, ${esc(x.venue.city)} · ${d < 10 ? d.toFixed(1) : Math.round(d)} mi</span></li>`).join('')}</ul></section>` : '';
+  })()}
   ${sameCity.length ? `<section class="sec seo-sec"><h2>More pool tournaments in ${esc(v.city)}</h2><ul class="seo-list">${mini(sameCity)}</ul><a href="${facetPath({ state: v.state, city: v.city })}">All ${esc(v.city)} tournaments →</a></section>` : ''}
   ${sameGameState.length ? `<section class="sec seo-sec"><h2>${esc(g)} tournaments elsewhere in ${esc(STATE_NAMES[v.state] || v.state)}</h2><ul class="seo-list">${mini(sameGameState)}</ul><a href="${facetPath({ state: v.state, game: t.game })}">All ${esc(g)} tournaments in ${esc(STATE_NAMES[v.state] || v.state)} →</a></section>` : ''}
   <section class="sec seo-sec"><div class="chips">
