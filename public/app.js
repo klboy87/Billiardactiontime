@@ -594,7 +594,7 @@
   };
 
   routes['/venues'] = async () => {
-    app.innerHTML = `<div class="pagehead"><h1>Venue Directory</h1></div><div id="vlist" class="vgrid">${loading()}</div>`;
+    app.innerHTML = `<div class="pagehead"><h1>Venue Directory</h1><p class="muted">Want each room's weekly tournament nights? <a href="/pool-halls/">Browse pool halls by state →</a></p></div><div id="vlist" class="vgrid">${loading()}</div>`;
     try {
       const data = await api('/api/tournaments?limit=5000');
       const venues = new Map();
