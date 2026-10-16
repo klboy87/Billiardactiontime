@@ -1074,5 +1074,39 @@ ${table({ balls: [{ x: 5.6, y: 2.4, n: 7 }, { x: 3.6, y: 2.6, n: 8 }, { x: 1.6, 
 <li>For the same geometry with the object ball, try the <a href="/play/bank-trainer">bank shot trainer</a> and read the <a href="/guides/bank-pool-rules">bank pool rules</a>.</li>
 </ul>
 <p>Most players never practice kicks, so a little work goes a long way. Then test it: <a href="/tonight/">find a tournament tonight</a>.</p>`
+  },
+  {
+    slug: 'pool-vs-billiards-vs-snooker', title: 'Pool vs Billiards vs Snooker: What\'s the Difference?',
+    desc: 'Pool, billiards and snooker explained: tables, balls, pockets and how each game is played, plus carom billiards, English billiards and which one to try first.',
+    body: `
+<p>People use "pool" and "billiards" for the same thing, and snooker looks like pool on a giant table. They are related, but they are different games with different tables, balls and skills. Here is the short version, then the details.</p>
+<h2>The short answer</h2>
+<ul>
+<li><b>Billiards</b> is the family name for all cue sports. In the US, people often say "billiards" when they mean pool.</li>
+<li><b>Pool</b> (pocket billiards) is played on a table with six pockets and numbered balls. 8-Ball and 9-Ball are pool games.</li>
+<li><b>Snooker</b> is played on a much bigger table with smaller pockets, 15 red balls and six colored balls.</li>
+<li><b>Carom billiards</b> has no pockets at all. You score by making the cue ball hit other balls and the cushions.</li>
+</ul>
+<h2>Side by side</h2>
+<div class="seo-tbl" style="overflow-x:auto"><table class="t" style="font-size:14px;min-width:300px"><thead><tr><th></th><th>Pool</th><th>Snooker</th><th>Carom</th></tr></thead><tbody>
+<tr><th>Table</th><td>7, 8 or 9 ft</td><td>12 ft</td><td>10 ft (heated slate)</td></tr>
+<tr><th>Pockets</th><td>6, fairly wide</td><td>6, small and rounded</td><td>None</td></tr>
+<tr><th>Balls</th><td>15 numbered + cue ball</td><td>15 reds, 6 colors + cue ball</td><td>3 (two cue balls and a red)</td></tr>
+<tr><th>Ball size</th><td>2¼ in (57 mm)</td><td>About 2 1/16 in (52.5 mm)</td><td>About 2 7/16 in (61.5 mm)</td></tr>
+<tr><th>Popular in</th><td>US, worldwide</td><td>UK, China, Asia</td><td>Europe, Asia, South America</td></tr>
+<tr><th>Best known game</th><td>8-Ball, 9-Ball</td><td>Snooker</td><td>Three-cushion</td></tr>
+</tbody></table></div>
+<h2>Pool (pocket billiards)</h2>
+<p>Pool is what you'll find in most American bars and pool halls. The table has six pockets and the balls are numbered 1 to 15. In <a href="/guides/8-ball-rules">8-Ball</a> you shoot your group (solids or stripes) and then the 8. In <a href="/guides/9-ball-rules">9-Ball</a> and <a href="/guides/10-ball-rules">10-Ball</a> you must always hit the lowest ball first. Other pool games include <a href="/guides/one-pocket">One Pocket</a>, <a href="/guides/straight-pool-rules">straight pool</a>, <a href="/guides/bank-pool-rules">banks</a> and <a href="/guides/cutthroat-pool-rules">cutthroat</a>.</p>
+<p>Bar tables are usually 7 feet; tournaments often use 9-foot tables. See <a href="/guides/pool-table-sizes">pool table sizes</a> for the details.</p>
+<h2>Snooker</h2>
+<p>Snooker is played on a 12-foot table with smaller balls and tight, rounded pockets, so long pots are much harder than in pool. Players alternate potting a red (1 point) and a color (2 to 7 points: yellow, green, brown, blue, pink, black). When the reds are gone, the colors go down in order. The maximum break is 147. Snooker rewards long, careful break-building and safety play.</p>
+<h2>Carom billiards</h2>
+<p>Carom tables have no pockets. In three-cushion, the most popular carom game, you score a point when your cue ball hits both other balls and touches at least three cushions before hitting the second ball. It is a game of angles and spin, and the best players see paths around the table that look impossible. If you've played the <a href="/play/kick-trainer">kick shot trainer</a>, you've had a taste of it.</p>
+<h2>English billiards</h2>
+<p>English billiards uses a snooker-size table and three balls. You score by potting balls, going in-off (the cue ball dropping into a pocket after hitting a ball) and making cannons (caroms). It is older than snooker and still played in the UK and India.</p>
+<h2>Which one should you play?</h2>
+<p>If you're in the US, start with pool: tables are everywhere, the games are quick, and there are weekly tournaments in almost every town. Learn the basics in <a href="/guides/pool-basics-for-beginners">pool for beginners</a>, take the <a href="/play/which-game">which pool game is yours?</a> quiz, and then <a href="/guides/first-pool-tournament">play your first tournament</a>. The skills carry over: a good stroke and cue ball control help in every cue sport.</p>
+<p>Ready to play? <a href="/tonight/">See pool tournaments tonight</a> or <a href="/pool-halls/">find a pool hall near you</a>.</p>`
   }
 ];
