@@ -125,6 +125,7 @@ export function toolPage(cfg, slug) {
 // Landing page for tournament directors and room owners (/directors/): everything free that helps fill a bracket.
 export function directorsPage(cfg) {
   const F = [
+    ['⭐', 'Feature it for more players', 'Put your event first on its city, state, Tonight and This Weekend pages with a gold Featured badge. From $15.', '/advertise', 'See Featured plans'],
     ['➕', 'Post your tournament free', 'Takes two minutes. Weekly event? Choose "Repeats every week" and post up to 12 weeks at once.', '/post', 'Post a tournament'],
     ['📷', 'Snap the flyer instead', 'Take a photo of your flyer and the flyer scanner fills in the details for you.', '/scan', 'Scan a flyer'],
     ['📣', 'Ready-made share graphics', 'Every tournament gets its own page plus square, tall and wide graphics for Facebook, Instagram and TikTok.', '/tonight/', 'See examples'],
@@ -149,4 +150,28 @@ export function directorsPage(cfg) {
   <p>Learn more: <a href="/guides/how-to-run-a-pool-tournament">how to run a pool tournament</a>, <a href="/guides/tournament-formats">tournament formats</a>, <a href="/guides/pool-tournament-payouts">payouts</a> and <a href="/guides/calcutta-auction-explained">Calcutta auctions</a>.</p></article>`;
   return layout(cfg, { title: 'Free Tools for Pool Tournament Directors: List, Promote & Run Events | Billiard Action Time', path: '/directors/', body,
     description: 'List your pool tournament free and fill your bracket: weekly repeat posting, share graphics, a website schedule widget, calendar feeds, printable brackets, payout and round robin tools.' });
+}
+
+
+// ---- /advertise: paid Featured listings for tournament directors and pool rooms ----
+export const PLANS = [
+  { key: 'feature', name: 'Featured Tournament', price: '$15', per: 'one event', points: ['⭐ Featured badge and first spot on its day in every list', 'Featured box at the top of its city, state, Tonight and This Weekend pages', 'Shown on tournament pages across your state until the event is played'] },
+  { key: 'weekly', name: 'Featured Weekly Night', price: '$39', per: 'per month', best: true, points: ['Every date of your weekly tournament featured for 30 days', 'Everything in Featured Tournament, every week', 'Two extra $20 entries a month covers the cost'] },
+  { key: 'big', name: 'Big Event Package', price: '$49', per: 'one event', points: ['Featured for up to 30 days before your event', 'Top spot in the weekly email to players', 'Best for added-money events, Calcuttas and opens'] }
+];
+const EMAIL = 'billiardactiontime@gmail.com';
+export function advertisePage(cfg, t = null) {
+  const mail = (plan) => `mailto:${EMAIL}?subject=${encodeURIComponent(`Feature request: ${plan.name}${t ? ' - ' + t.name : ''}`)}&body=${encodeURIComponent(`Hi! I'd like the ${plan.name} (${plan.price} ${plan.per}).\n\nTournament: ${t ? t.name + '\n' + cfg.publicUrl + t.path : '(name, pool hall, city and date, or the link to its page)'}\n\nMy name and phone:\n`)}`;
+  const cta = plan => cfg.payLinks?.[plan.key] ? `<a class="btn btn-green" href="${cfg.payLinks[plan.key]}" target="_blank" rel="noopener">Pay ${plan.price} and get featured</a><a class="muted" style="font-size:13px" href="${mail(plan)}">Questions? Email us</a>`
+    : `<a class="btn btn-green" href="${mail(plan)}">Get featured: email us</a>`;
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/directors/">For Directors</a> <span>/</span> <span>Feature Your Tournament</span></nav>
+  <div class="pagehead"><h1>Feature Your Tournament: Fill Your Bracket</h1><p>Players come here to find a tournament tonight, this weekend and near them. A Featured listing puts yours first, with a gold badge, on every page where it shows up.${t ? ` You're featuring <b>${t.name.replace(/[<>&"]/g, '')}</b>.` : ''}</p></div>
+  <div class="plans">${PLANS.map(pl => `<div class="plan${pl.best ? ' plan-best' : ''}">${pl.best ? '<span class="plan-tag">Most popular</span>' : ''}<h2>${pl.name}</h2><p class="plan-price"><b>${pl.price}</b> <span class="muted">${pl.per}</span></p><ul>${pl.points.map(x => `<li>${x}</li>`).join('')}</ul><div class="plan-cta">${cta(pl)}</div></div>`).join('')}</div>
+  <article class="card guide" style="margin-top:18px"><h2 style="margin-top:0">How it works</h2>
+  <ol><li>Pick a plan and ${Object.values(cfg.payLinks || {}).some(Boolean) ? 'pay online, then email us the link to your tournament page' : 'email us the link to your tournament page (or its name, pool hall and date)'}.</li>
+  <li>Not listed yet? <a href="/post">Post it free</a> first. It takes two minutes.</li>
+  <li>We switch Featured on within a day and send you the link. It stays on until your event is played or your month is up.</li></ol>
+  <p>Listing a tournament is always free. Featured is for directors who want more players. Questions? Email <a href="mailto:${EMAIL}">${EMAIL}</a>.</p></article>
+  <p style="margin-top:14px"><a href="/directors/">More free tools for directors →</a></p>`;
+  return layout(cfg, { title: 'Feature Your Pool Tournament: Get More Players | Billiard Action Time', description: 'Put your pool tournament at the top of its city, state, Tonight and This Weekend pages with a Featured listing. From $15. Listing is always free.', path: '/advertise', body });
 }

@@ -2,7 +2,7 @@
 // states, and big events coming up. The admin page shows it ready to copy into Gmail (or any email
 // program), so the owner can send it to the subscriber list with one paste.
 import * as SEO from './seo.js';
-import { todayIso, goingTop } from './db.js';
+import { todayIso, goingTop, featuredIds } from './db.js';
 import { STATE_NAMES } from './normalize.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -29,7 +29,8 @@ export function buildNewsletter(db, cfg) {
   for (const t of later) { const n = seenDay.get(t.date) || 0; if (n < 2 && calendar.length < 5) { calendar.push(t); seenDay.set(t.date, n + 1); } }
   const byId = new Map(all.map(t => [t.id, t]));
   const popular = goingTop(db, 10).filter(g => g.n >= 2 && byId.has(g.id)).slice(0, 4).map(g => ({ t: byId.get(g.id), n: g.n }));
-  const shown = new Set([...big, ...calendar, ...popular.map(p => p.t)].map(t => t.id));
+  const fids = featuredIds(db), featured = all.filter((t, i, a) => fids.has(t.id) && t.date >= today && t.date <= addDays(today, 30) && a.findIndex(x => fids.has(x.id) && x.date >= today && x.name === t.name && x.venue.id === t.venue.id) === i).slice(0, 4);   // paid placements
+  const shown = new Set([...big, ...calendar, ...popular.map(p => p.t), ...featured].map(t => t.id));
   const fresh = SEO.recentlyAdded(db, 7).filter(t => !shown.has(t.id)).sort((a, b) => weight(b) - weight(a)).slice(0, 5).sort((a, b) => a.date.localeCompare(b.date));
   const range = wk.from === wk.to ? md(wk.from) : `${md(wk.from)}–${md(wk.to)}`;
   const top = big[0];
@@ -51,6 +52,7 @@ export function buildNewsletter(db, cfg) {
     weekend.length
       ? P(`There are <b>${weekend.length} tournaments</b> on the board this weekend (${esc(range)}). Here's what stands out.`)
       : P(`Not much is posted for this weekend (${esc(range)}) yet. Here's what's coming up.`),
+    featured.length ? H('⭐ Featured tournaments') + `<ul style="padding-left:20px;margin:0 0 8px">${featured.map(item).join('')}</ul>` : '',
     big.length ? H('🏆 Big ones this weekend') + `<ul style="padding-left:20px;margin:0 0 8px">${big.map(item).join('')}</ul>` : '',
     weekend.length ? btn(link('/this-weekend/', 'weekend'), `See all ${weekend.length} this weekend`) : '',
     P(`Looking for a game on a weeknight? ${A(link('/tonight/', 'tonight'), "See tonight's tournaments")}, any day of the week.`),
@@ -59,7 +61,7 @@ export function buildNewsletter(db, cfg) {
     popular.length ? H('🔥 Players are going to these') + `<ul style="padding-left:20px;margin:0 0 8px">${popular.map(({ t, n }) => item(t).replace('</span></li>', ` · <b>${n} going</b></span></li>`)).join('')}</ul>` : '',
     fresh.length ? H('🆕 New this week') + `<ul style="padding-left:20px;margin:0 0 8px">${fresh.map(item).join('')}</ul>` + P(A(link('/new/', 'new'), 'See everything added this week →')) : '',
     H('🎯 Running a tournament?'),
-    P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')}`),
+    P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')} Want more players? ${A(link('/advertise', 'advertise'), 'Feature it from $15 →')}`),
     P('Good luck out there. May your breaks be dry for the other guy.', 'margin-top:22px'),
     P('<b>Billiard Action Time</b>'),
     `<hr style="border:0;border-top:1px solid #ddd;margin:22px 0 12px">`,
@@ -75,6 +77,7 @@ ${body}
   const text = [
     'Hey,', '',
     weekend.length ? `There are ${weekend.length} tournaments on the board this weekend (${range}). Here's what stands out.` : `Here's what's coming up.`, '',
+    ...(featured.length ? ['FEATURED TOURNAMENTS', ...featured.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.name}, ${t.venue.city}, ${t.venue.state}${price(t) ? ' (' + price(t) + ')' : ''}`), ''] : []),
     ...(big.length ? ['BIG ONES THIS WEEKEND', ...big.map(t => `- ${t.name}: ${t.venue.name}, ${t.venue.city}, ${t.venue.state}. ${day(t.date)}${price(t) ? ', ' + price(t) : ''}`), ''] : []),
     `See all of them: ${link('/this-weekend/', 'weekend')}`, '',
     ...(states.length ? ['BUSIEST STATES: ' + states.map(([s, n]) => `${STATE_NAMES[s] || s} (${n})`).join(', '), ''] : []),

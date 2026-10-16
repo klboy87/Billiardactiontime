@@ -771,7 +771,7 @@
       try {
         const res = await api('/api/tournaments', { method: 'POST', body });
         recordSubmission({ id: res.id, name: body.name, date: body.date, venue: body.venue, status: res.status, submittedAt: new Date().toISOString() });
-        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted${res.count > 1 ? ` ${res.count} weekly dates` : ''}! ${res.count > 1 ? 'They' : 'It'} will appear once an admin approves ${res.count > 1 ? 'them' : 'it'}. <a href="#/account">View it on your account</a>.</p></div>`;
+        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted${res.count > 1 ? ` ${res.count} weekly dates` : ''}! ${res.count > 1 ? 'They' : 'It'} will appear once an admin approves ${res.count > 1 ? 'them' : 'it'}. <a href="#/account">View it on your account</a>.</p><p style="margin-top:10px">⭐ <b>Want more players?</b> Put it first on its city, state and Tonight pages with a gold Featured badge. <a href="/advertise">Feature it from $15 →</a></p></div>`;
         e.target.reset();
         showFlyerPreview(null);
       } catch (err) { msg.innerHTML = errorBox(err.message); }
@@ -957,6 +957,7 @@
     let pending;
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
     let goingTop = []; try { goingTop = (await api('/api/admin/going')).top; } catch {}
+    let promos = []; try { promos = (await api('/api/admin/promotions')).promotions; } catch {}
     let pendingStakes;
     try { pendingStakes = (await api('/api/admin/stakes/pending')).stakes; } catch { pendingStakes = []; }
     let stakeAdmin;
@@ -1018,6 +1019,18 @@
         <p style="margin:6px 0"><b>Subject:</b> <span id="nlSubj" class="muted">Loading…</span></p>
         <div id="nlPreview" style="border:1px solid #ddd;border-radius:8px;background:#fff;color:#222;padding:10px;max-height:520px;overflow:auto">Loading…</div>
         <form id="nlRemove" class="actbar" style="margin-top:12px;flex-wrap:wrap"><input name="email" type="email" required placeholder="Email to unsubscribe" style="max-width:280px"><button class="btn btn-out btn-sm" type="submit">Remove From List</button></form>
+      </div>
+      <h2>💵 Featured Listings (paid)</h2>
+      <div class="card" style="padding:12px 16px;margin-bottom:16px">
+        <p class="muted" style="margin:0 0 8px;font-size:14px">When a director pays (see <a href="/advertise" target="_blank">/advertise</a>), paste their tournament link here and pick the plan.</p>
+        <form id="promoForm" style="display:grid;gap:8px">
+          <input name="ref" required placeholder="Tournament link or id, e.g. https://billiardactiontime.com/tournament/...">
+          <select name="plan"><option value="feature">Featured Tournament ($15): until the event is played</option><option value="weekly">Featured Weekly Night ($39): every date for 30 days</option><option value="big">Big Event Package ($49): until the event is played</option></select>
+          <input name="note" placeholder="Note (who paid, how much)" maxlength="200">
+          <button class="btn btn-green btn-sm" type="submit">Turn on Featured</button>
+        </form>
+        <p id="promoMsg" class="muted" style="min-height:1.2em;margin:8px 0"></p>
+        ${promos.length ? `<table class="t"><tbody>${promos.map(x => `<tr><td>${x.until >= todayLocal() ? '⭐' : '<span class="muted">ended</span>'}</td><td>${x.name ? `<a href="#/t/${x.id}">${esc(x.name)}</a>` : '#' + x.id}<br><small class="muted">${x.date ? esc(fmtDate(x.date)) + ' · ' : ''}${esc([x.venue, x.city, x.state].filter(Boolean).join(', '))}${x.note ? ' · ' + esc(x.note) : ''} · until ${esc(x.until)}</small></td><td><button class="btn btn-out btn-sm promo-off" data-id="${x.id}">Remove</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted" style="margin:0">No featured listings yet.</p>'}
       </div>
       <h2>Most Players Going (${goingTop.length})</h2>
       ${goingTop.length ? `<div class="card" style="padding:8px 14px;margin-bottom:16px"><table class="t"><tbody>${goingTop.map(g => `<tr><td style="width:1%;white-space:nowrap"><b>👍 ${g.n}</b></td><td><a href="#/t/${g.id}">${esc(g.name)}</a><br><small class="muted">${esc(fmtDate(g.date))} · ${esc(g.venue)}, ${esc(g.city)}, ${esc(g.state)}</small></td></tr>`).join('')}</tbody></table><p class="muted" style="font-size:13px;margin:6px 0">Good candidates to feature in the newsletter and Facebook posts.</p></div>` : '<p class="muted">No one has tapped "I\'m going" on an upcoming tournament yet.</p>'}
@@ -1100,6 +1113,19 @@
       catch (e) { m.textContent = 'Error: ' + e.message; }
     });
     const approveCards = async cards => { for (const c of cards) { await api(`/api/admin/tournaments/${c.dataset.id}/approve`, { method: 'POST' }).catch(() => {}); c.remove(); } };
+    document.getElementById('promoForm')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const f = new FormData(e.target), plan = f.get('plan'), out = document.getElementById('promoMsg');
+      try {
+        const r = await api('/api/admin/promotions', { method: 'POST', body: { ref: f.get('ref'), series: plan === 'weekly', days: 30, note: [plan, f.get('note')].filter(Boolean).join(': ') } });
+        out.textContent = `✓ Featured: ${r.featured.map(x => x.name + ' (' + fmtDate(x.date) + ')').join(', ')}. Live within a minute.`;
+        setTimeout(render, 1500);
+      } catch (err) { out.textContent = '⚠ ' + err.message; }
+    });
+    document.querySelectorAll('.promo-off').forEach(b => b.addEventListener('click', async () => {
+      if (!confirm('Remove Featured from this listing?')) return;
+      try { await api('/api/admin/promotions/remove', { method: 'POST', body: { id: Number(b.dataset.id) } }); render(); } catch (err) { alert(err.message); }
+    }));
     document.getElementById('approveAll')?.addEventListener('click', async e => {
       const cards = [...document.querySelectorAll('#pendingList [data-id]')];
       if (!cards.length || !confirm(`Approve all ${cards.length} pending tournaments?`)) return;

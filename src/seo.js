@@ -51,7 +51,7 @@ function index(db) {
   const primaryVenue = new Map(), roomIds = new Map();
   for (const t of all) { const k = roomKey(t.venue); if (!roomIds.has(k)) roomIds.set(k, new Set()); roomIds.get(k).add(t.venue.id); }
   for (const ids of roomIds.values()) { const p = Math.min(...ids); for (const id of ids) primaryVenue.set(id, p); }
-  cache = { at: Date.now(), all, bySlug, pathById, byId: new Map(all.map(t => [t.id, t])), primaryVenue };
+  cache = { at: Date.now(), all, bySlug, pathById, byId: new Map(all.map(t => [t.id, t])), primaryVenue, featured: D.featuredIds(db) };
   return cache;
 }
 export function invalidate() { cache = null; }
@@ -199,7 +199,7 @@ function buildFooter(db) {
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
     <div><h4>Learn &amp; Play</h4><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/pool-halls/">Pool halls</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a><a href="/directors/">For directors</a></div>
-  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/contact">Contact</a> · <a href="/advertise">Advertise</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.
@@ -235,17 +235,29 @@ function eventLd(cfg, db, t) {
   };
 }
 
+// Paid "Featured" listings in a highlighted box at the top of a list page. `list` is the page's own events, so a
+// featured event only shows where it belongs (its state, city, tonight, the weekend). Ends with the sales link.
+function featuredBox(db, list, { max = 3, showCity = true } = {}) {
+  const F = index(db).featured, today = todayIso();
+  const picks = F.size ? list.filter(t => F.has(t.id) && t.date >= today).slice(0, max) : [];
+  if (!picks.length) return '';
+  return `<section class="feat-box" aria-label="Featured tournaments"><h2>⭐ Featured tournaments</h2>${picks.map(t => `<a class="feat-item" href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b><span>${esc(longDate(t.date))}${t.time ? ' · ' + esc(fmtTime(t.time)) : ''}</span><span class="muted">${esc(t.venue.name)}${showCity ? ` · ${esc(t.venue.city)}, ${esc(t.venue.state)}` : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · <b>' + money(t.added) + ' added</b>' : ''}</span></a>`).join('')}
+  <p class="feat-foot"><a href="/advertise">Feature your tournament →</a></p></section>`;
+}
+
 function eventRows(db, list, { showCity = true, byDay = false } = {}) {
   let month = '', html = '';
   const today = todayIso(), tomorrow = new Date(Date.parse(today + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10);
   const badge = d => d === today ? '<br><span class="when-badge when-today">Tonight</span>' : d === tomorrow ? '<br><span class="when-badge">Tomorrow</span>' : '';
   const going = list.length ? D.goingCounts(db) : new Map();
+  const F = index(db).featured;
+  if (F.size) list = list.map((t, i) => [t, i]).sort((a, b) => a[0].date === b[0].date ? (F.has(b[0].id) - F.has(a[0].id)) || a[1] - b[1] : a[1] - b[1]).map(x => x[0]);   // featured first on its day
   for (const t of list) {
     const ml = byDay ? `${longDate(t.date)}${t.date === today ? ' · Tonight' : t.date === tomorrow ? ' · Tomorrow' : ''}` : monthLabel(t.date);
     if (ml !== month) { if (month) html += '</tbody></table></div>'; month = ml; html += `<h3 class="seo-month">${esc(ml)}</h3><div class="card seo-tbl"><table class="t"><tbody>`; }
     const v = t.venue;
-    html += `<tr${v.lat != null && v.lng != null ? ` data-lat="${v.lat}" data-lng="${v.lng}"` : ''}><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${byDay ? "" : badge(t.date)}</td>
-      <td><a href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b></a><br><small class="muted">${esc(v.name)}${showCity ? ` · ${esc(v.city)}, ${esc(v.state)}` : ''}${gameWord(t.game) ? ' · ' + esc(t.game) : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · ' + money(t.added) + ' added' : ''}${going.get(t.id) ? ` · <b>👍 ${going.get(t.id)} going</b>` : ''}</small></td></tr>`;
+    html += `<tr${F.has(t.id) ? ' class="feat-row"' : ''}${v.lat != null && v.lng != null ? ` data-lat="${v.lat}" data-lng="${v.lng}"` : ''}><td class="seo-date">${esc(shortDate(t.date))}${t.time ? `<br><small class="muted">${esc(fmtTime(t.time))}</small>` : ''}${byDay ? "" : badge(t.date)}</td>
+      <td>${F.has(t.id) ? '<span class="feat-badge">⭐ Featured</span> ' : ''}<a href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b></a><br><small class="muted">${esc(v.name)}${showCity ? ` · ${esc(v.city)}, ${esc(v.state)}` : ''}${gameWord(t.game) ? ' · ' + esc(t.game) : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · ' + money(t.added) + ' added' : ''}${going.get(t.id) ? ` · <b>👍 ${going.get(t.id)} going</b>` : ''}</small></td></tr>`;
   }
   return html + (month ? '</tbody></table></div>' : '');
 }
@@ -258,6 +270,19 @@ const GUIDE_FOR_GAME = { '8-Ball': ['8-ball-rules', '8-Ball rules'], '9-Ball': [
 export function isThinListing(t) {
   const notes = String(t.notes || '').replace(/source:\s*[\w.-]+/gi, '').replace(/recurring[^.]*/gi, '').replace(/[\s.]+/g, ' ').trim();
   return t.entry == null && !t.added && !t.time && !t.race && !t.format && !t.registrationUrl && !t.hasFlyer && !notes && !t.venue?.address;
+}
+
+// For /advertise and the admin Featured tools: resolve an id, slug or full URL to a listed tournament.
+export function tournamentRef(db, ref) {
+  const ix = index(db), str = String(ref ?? '').trim();
+  const m = str.match(/\/tournament\/([a-z0-9-]+)/) || str.match(/^([a-z0-9-]*[a-z][a-z0-9-]*)$/);
+  const t = /^\d+$/.test(str) ? ix.byId.get(Number(str)) : m ? findTournamentBySlug(db, m[1]) : null;
+  return t ? { id: t.id, name: t.name, date: t.date, path: tournamentPath(db, t), t } : null;
+}
+// Every upcoming date of the same weekly event within `days` (for the Featured Weekly Night plan).
+export function seriesWithin(db, t, days) {
+  const today = todayIso(), end = new Date(Date.parse(today + 'T00:00:00Z') + days * 864e5).toISOString().slice(0, 10);
+  return [t, ...seriesOf(db, t)].filter(x => x.date >= today && x.date <= end);
 }
 
 // ---- tournament page ----
@@ -314,6 +339,8 @@ export function tournamentPage(db, cfg, t) {
   <section class="card" style="margin-top:16px;padding:14px 18px"><h2 class="seo-h2" style="margin-top:0">New to tournaments?</h2>
     <p class="muted" style="margin:6px 0">${GUIDE_FOR_GAME[t.game] ? `Brush up on <a href="/guides/${GUIDE_FOR_GAME[t.game][0]}">${GUIDE_FOR_GAME[t.game][1]}</a>, then read ` : 'Read '}<a href="/guides/first-pool-tournament">what to expect at your first tournament</a> and <a href="/guides/double-elimination-brackets">how double-elimination brackets work</a>.</p><p class="muted" style="margin:6px 0">Warming up? Take today's <a href="/play/aim-trainer">aim trainer challenge</a> or learn a <a href="/trick-shots/">trick shot</a>.</p></section>
   ${shareBox(cfg, db, t, g)}
+  ${t.date >= today && !index(db).featured.has(t.id) ? `<p class="muted" style="margin:12px 0 0;font-size:14px">📣 Running this tournament? <a href="/advertise?t=${t.id}">Feature it</a> at the top of ${esc(v.city)} and ${esc(STATE_NAMES[v.state] || v.state)} listings and fill your bracket.</p>` : ''}
+  ${featuredBox(db, up.filter(x => x.id !== t.id && x.venue.state === v.state), { max: 2 })}
   ${sameVenue.length ? `<section class="sec seo-sec"><h2>More at ${esc(v.name)}</h2><ul class="seo-list">${mini(sameVenue)}</ul><a href="${venuePath(db, v)}">All tournaments at ${esc(v.name)} →</a></section>` : ''}
   ${(() => {
     if (v.lat == null || v.lng == null) return '';
@@ -455,6 +482,7 @@ export function listingPage(db, cfg, parts) {
   ${f.city ? weeklyScheduleHtml(db, inScope, { showCity: false, title: `Weekly ${g ? g + ' ' : ''}tournaments in ${f.cityName}` }) : ''}
   ${f.state && !f.city && !f.game && upcoming.length ? (() => { const feed = `${cfg.publicUrl}${facetPath({ state: f.state })}/calendar.ics`.replace(/\/\/calendar/, '/calendar'), webcal = feed.replace(/^https?:/, 'webcal:');
     return `<p class="muted cal-sub" style="margin:0 0 14px">📅 <b>Subscribe:</b> get every ${esc(stateName)} tournament in your calendar, updated automatically: <a href="${esc(webcal)}">Apple / iPhone</a> · <a href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener nofollow">Google</a></p>`; })() : ''}
+  ${featuredBox(db, upcoming, { showCity: !f.city })}
   ${upcoming.length ? eventRows(db, upcoming.slice(0, 300), { showCity: !f.city }) : ''}
   ${upcoming.length > 300 ? `<p class="muted">Showing the next 300. <a href="/search">Search for more</a>.</p>` : ''}
   ${venues.size ? `<section class="sec seo-sec"><h2>Pool rooms${place ? ' in ' + esc(f.cityName || stateName) : ''} running ${g ? esc(g) + ' ' : ''}tournaments</h2><ul class="seo-list seo-cols">${[...venues.values()].sort((a, b) => b.n - a.n).slice(0, 60)
@@ -700,6 +728,7 @@ export function weekendPage(db, cfg, stateSlugPart) {
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
     <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="${tonightPath(state)}">Tonight${esc(where)}</a>${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>This weekend by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${weekendPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
+  ${featuredBox(db, list)}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true, byDay: true }) : soon.length ? `<h2 class="seo-h2">Coming up next${where}</h2>${eventRows(db, soon, { showCity: true })}` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
     <h2 class="seo-h2" style="margin-top:0">Share this weekend's list</h2>
@@ -747,6 +776,7 @@ export function bigTournamentsPage(db, cfg) {
   <div class="pagehead"><h1>${h1}</h1><p>${intro}</p>
     <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="/this-weekend/">This Weekend</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/alerts">Get Alerts</a></div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>By state</h2><div class="chips">${states.map(([st, n]) => `<a class="chip" href="${facetPath({ state: st })}">${esc(STATE_NAMES[st] || st)} (${n})</a>`).join('')}</div></section>` : ''}
+  ${featuredBox(db, list)}
   ${list.length ? eventRows(db, list) : ''}
   <section class="card" style="margin-top:16px;padding:14px 18px"><h2 class="seo-h2" style="margin-top:0">Running a big event?</h2>
     <p class="muted" style="margin:6px 0">List it free and it shows up here, on its state page and in our weekly email. <a href="/post">Post a tournament →</a> Planning payouts? Try the <a href="/tools/payout-calculator">payout calculator</a>.</p><p class="muted" style="margin:6px 0">Planning a trip? See the <a href="/guides/major-pool-events-calendar">major pool events of the season</a>: Derby City Classic, league nationals in Las Vegas, Super Billiards Expo and more.</p></section>`;
@@ -855,6 +885,7 @@ export function tonightPage(db, cfg, stateSlugPart) {
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${tonightPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
   ${state && list.length > 3 ? (() => { const m = new Map(); for (const t of list) m.set(t.venue.city, (m.get(t.venue.city) || 0) + 1);
     return `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by city</h2><div class="chips">${[...m].sort((a, b) => b[1] - a[1]).map(([c, n]) => `<a class="chip" href="${facetPath({ state, city: c })}">${esc(c)} (${n})</a>`).join('')}</div></section>`; })() : ''}
+  ${featuredBox(db, [...list, ...next])}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : ''}
   ${next.length ? `<section class="sec seo-sec"><h2>Tomorrow${esc(where)} (${esc(shortDate(tomorrow))})</h2>${eventRows(db, next.slice(0, list.length ? 25 : 200), { showCity: true })}${list.length && next.length > 25 ? `<p class="muted">And ${next.length - 25} more tomorrow.</p>` : ''}</section>` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">

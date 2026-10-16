@@ -147,6 +147,9 @@ CREATE TABLE IF NOT EXISTS auction_chat (
   name TEXT NOT NULL, host INTEGER NOT NULL DEFAULT 0, text TEXT NOT NULL, at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_achat ON auction_chat(auction_id, id);
+CREATE TABLE IF NOT EXISTS promotions (            -- paid "Featured" listings, kept apart from synced data
+  tournament_id INTEGER PRIMARY KEY, until TEXT NOT NULL, note TEXT, created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 CREATE TABLE IF NOT EXISTS going (
   tournament_id INTEGER NOT NULL, voter TEXT NOT NULL, at TEXT NOT NULL DEFAULT (datetime('now')),
   PRIMARY KEY (tournament_id, voter)
@@ -441,6 +444,12 @@ export function setGoing(db, id, key, on) {
   else db.prepare('DELETE FROM going WHERE tournament_id=? AND voter=?').run(id, key);
   return goingCount(db, id);
 }
+// Featured listings: active while `until` (YYYY-MM-DD) is today or later.
+export const featuredIds = db => new Set(db.prepare('SELECT tournament_id id FROM promotions WHERE until >= ?').all(todayIso()).map(r => r.id));
+export const setPromotion = (db, id, until, note) => db.prepare('INSERT INTO promotions (tournament_id, until, note) VALUES (?, ?, ?) ON CONFLICT(tournament_id) DO UPDATE SET until = excluded.until, note = excluded.note').run(id, until, note || null);
+export const removePromotion = (db, id) => db.prepare('DELETE FROM promotions WHERE tournament_id = ?').run(id);
+export const listPromotions = db => db.prepare(`SELECT p.tournament_id id, p.until, p.note, p.created_at createdAt, t.name, t.date, v.name venue, v.city, v.state FROM promotions p
+  LEFT JOIN tournaments t ON t.id = p.tournament_id LEFT JOIN venues v ON v.id = t.venue_id ORDER BY p.until DESC LIMIT 100`).all();
 export const goingCounts = db => new Map(db.prepare('SELECT tournament_id id, COUNT(*) n FROM going GROUP BY tournament_id').all().map(r => [r.id, r.n]));
 export const goingTop = (db, limit = 15) => db.prepare(`SELECT g.tournament_id id, COUNT(*) n, t.name, t.date, v.name venue, v.city, v.state FROM going g JOIN tournaments t ON t.id = g.tournament_id JOIN venues v ON v.id = t.venue_id
   WHERE t.date >= ? GROUP BY g.tournament_id ORDER BY n DESC, t.date LIMIT ?`).all(todayIso(), limit);

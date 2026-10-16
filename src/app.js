@@ -538,6 +538,22 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Match not found' });
       }
       if (m === 'GET' && p === '/api/admin/summary') return json(req, res, 200, D.summary(db));
+      if (m === 'GET' && p === '/api/admin/promotions') return json(req, res, 200, { promotions: D.listPromotions(db) }, { 'Cache-Control': 'no-store' });
+      if (m === 'POST' && p === '/api/admin/promotions') {
+        const b = (await readJson(req, 4000)) || {};
+        const ref = SEO.tournamentRef(db, b.ref ?? b.id);
+        if (!ref) return json(req, res, 404, { error: 'No listed tournament matches that link or id.' });
+        const days = Math.max(1, Math.min(120, Number(b.days) || 30));
+        const targets = b.series ? SEO.seriesWithin(db, ref.t, days) : [ref.t];
+        if (!targets.length) return json(req, res, 400, { error: 'That tournament has already been played.' });
+        for (const x of targets) D.setPromotion(db, x.id, b.series ? x.date : (b.until && /^\d{4}-\d{2}-\d{2}$/.test(b.until) ? b.until : x.date), String(b.note || '').slice(0, 200));
+        SEO.invalidate();
+        return json(req, res, 200, { ok: true, featured: targets.map(x => ({ id: x.id, name: x.name, date: x.date })) });
+      }
+      if (m === 'POST' && p === '/api/admin/promotions/remove') {
+        const b = (await readJson(req, 500)) || {}; D.removePromotion(db, Number(b.id)); SEO.invalidate();
+        return json(req, res, 200, { ok: true });
+      }
       if (m === 'GET' && p === '/api/admin/going') return json(req, res, 200, { top: D.goingTop(db) }, { 'Cache-Control': 'no-store' });
       if (m === 'GET' && p === '/api/admin/pageviews') {
         flushPageviews();
@@ -638,6 +654,11 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     // Links built from a missing value ("…/null", "…/undefined") were being crawled: send them to the page above.
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^(.*?)\/(?:null|undefined)\/?$/))) return moved(x[1] === '/tournament' ? '/tournaments/' : x[1] || '/');
     if ((m === 'GET' || m === 'HEAD') && (p === '/tournament' || p === '/tournament/')) return moved('/tournaments/');
+    if ((m === 'GET' || m === 'HEAD') && (p === '/advertise' || p === '/advertise/')) {
+      SEO.ensureFooter(db); trackVisit(req, 'advertise');
+      const ref = url.searchParams.get('t') ? SEO.tournamentRef(db, url.searchParams.get('t')) : null;
+      return html(200, TL.advertisePage(cfg, ref), ref ? { 'X-Robots-Tag': 'noindex' } : {});
+    }
     if ((m === 'GET' || m === 'HEAD') && (p === '/directors' || p === '/directors/')) { if (p === '/directors') return moved('/directors/'); SEO.ensureFooter(db); trackVisit(req, 'directors'); return html(200, TL.directorsPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/pool-halls' || p === '/pool-halls/')) { if (p === '/pool-halls') return moved('/pool-halls/'); SEO.ensureFooter(db); trackVisit(req, 'halls'); return html(200, SEO.poolHallsIndexPage(db, cfg), { 'Cache-Control': 'public, max-age=1800' }); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/pool-halls\/([a-z-]{2,40})(\/)?$/))) {
@@ -750,7 +771,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
+      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/advertise', pri: '0.6' }, { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
         { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
