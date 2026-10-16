@@ -771,7 +771,7 @@
       try {
         const res = await api('/api/tournaments', { method: 'POST', body });
         recordSubmission({ id: res.id, name: body.name, date: body.date, venue: body.venue, status: res.status, submittedAt: new Date().toISOString() });
-        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted${res.count > 1 ? ` ${res.count} weekly dates` : ''}! ${res.count > 1 ? 'They' : 'It'} will appear once an admin approves ${res.count > 1 ? 'them' : 'it'}. <a href="#/account">View it on your account</a>.</p><p style="margin-top:10px">⭐ <b>Want more players?</b> Put it first on its city, state and Tonight pages with a gold Featured badge. <a href="/advertise">Feature it from $15 →</a></p></div>`;
+        msg.innerHTML = `<div class="loadwrap"><p class="muted">✓ Submitted${res.count > 1 ? ` ${res.count} weekly dates` : ''}! ${res.count > 1 ? 'They' : 'It'} will appear once an admin approves ${res.count > 1 ? 'them' : 'it'}. <a href="#/account">View it on your account</a>.</p></div>`;
         e.target.reset();
         showFlyerPreview(null);
       } catch (err) { msg.innerHTML = errorBox(err.message); }
