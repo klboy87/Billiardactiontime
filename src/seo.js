@@ -237,6 +237,12 @@ function eventLd(cfg, db, t) {
   };
 }
 
+// Holiday season (Oct 15 to Dec 24): a one-line pointer to the gift guide on the busiest list pages.
+function giftLine() {
+  const md = todayIso().slice(5);
+  return md >= '10-15' && md <= '12-24' ? '<p class="muted" style="margin:14px 0 0;font-size:15px">🎁 Shopping for a pool player? <a href="/gear/gifts-for-pool-players">15 gift ideas they will actually use</a>.</p>' : '';
+}
+
 // Paid "Featured" listings in a highlighted box at the top of a list page. `list` is the page's own events, so a
 // featured event only shows where it belongs (its state, city, tonight, the weekend). Ends with the sales link.
 function featuredBox(db, list, { max = 3, showCity = true } = {}) {
@@ -729,7 +735,7 @@ export function weekendPage(db, cfg, stateSlugPart) {
   <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
     <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="${tonightPath(state)}">Tonight${esc(where)}</a>${state ? `<a class="btn btn-blue" href="${facetPath({ state })}">All ${esc(stateName)} Tournaments</a><a class="btn btn-out" href="/this-weekend/">Whole Country</a>` : `<a class="btn btn-blue" href="/tournaments/">Browse by State</a>`}<a class="btn btn-out" href="/calendar">Calendar</a></div></div>
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>This weekend by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${weekendPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
-  ${featuredBox(db, list)}
+  ${featuredBox(db, list)}${giftLine()}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true, byDay: true }) : soon.length ? `<h2 class="seo-h2">Coming up next${where}</h2>${eventRows(db, soon, { showCity: true })}` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
     <h2 class="seo-h2" style="margin-top:0">Share this weekend's list</h2>
@@ -886,7 +892,7 @@ export function tonightPage(db, cfg, stateSlugPart) {
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${tonightPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
   ${state && list.length > 3 ? (() => { const m = new Map(); for (const t of list) m.set(t.venue.city, (m.get(t.venue.city) || 0) + 1);
     return `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by city</h2><div class="chips">${[...m].sort((a, b) => b[1] - a[1]).map(([c, n]) => `<a class="chip" href="${facetPath({ state, city: c })}">${esc(c)} (${n})</a>`).join('')}</div></section>`; })() : ''}
-  ${featuredBox(db, [...list, ...next])}
+  ${featuredBox(db, [...list, ...next])}${giftLine()}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : ''}
   ${next.length ? `<section class="sec seo-sec"><h2>Tomorrow${esc(where)} (${esc(shortDate(tomorrow))})</h2>${eventRows(db, next.slice(0, list.length ? 25 : 200), { showCity: true })}${list.length && next.length > 25 ? `<p class="muted">And ${next.length - 25} more tomorrow.</p>` : ''}</section>` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">
