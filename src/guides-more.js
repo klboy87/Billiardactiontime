@@ -1407,5 +1407,36 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <h2>Pool today</h2>
 <p>Today pool is played in leagues and tournaments in nearly every town, with ratings like Fargo matching players fairly (see <a href="/guides/fargo-ratings-handicaps">Fargo ratings</a>). The big pro events are streamed online; see the <a href="/guides/major-pool-events-calendar">major pool events calendar</a>. And every week, thousands of local tournaments keep the game going.</p>
 <p>Be part of it: <a href="/tonight/">find a pool tournament tonight</a>.</p>`
+  },
+  {
+    slug: 'pool-cue-weight', title: 'What Weight Pool Cue Should I Use? 18, 19, 20 or 21 Ounces',
+    desc: 'How to pick a pool cue weight: what lighter and heavier cues do, the most common weights, weights for breaking and jumping, and how to test before you buy.',
+    body: `
+<p>Most pool cues weigh between 18 and 21 ounces, and 19 ounces is the most common choice. The right weight is the one that lets you stroke smoothly and control speed. Here is how to choose.</p>
+<h2>Lighter cues (18 to 18.5 oz)</h2>
+<ul>
+<li>Easier to accelerate, so many players get more spin and a livelier hit.</li>
+<li>Good for players with a fast, snappy stroke and for finesse games like 9-Ball position play.</li>
+<li>Can feel "whippy" if you push the cue instead of stroking it.</li>
+</ul>
+<h2>Middle weights (19 to 19.5 oz)</h2>
+<p>The default for most players, and the weight most cues are sold at. If you are not sure, start at 19 ounces.</p>
+<h2>Heavier cues (20 to 21 oz)</h2>
+<ul>
+<li>The extra mass moves the cue ball with a slower, smoother stroke.</li>
+<li>Some players feel more stable, especially on long shots and firm hits.</li>
+<li>Harder to control on soft touch shots, and the arm tires faster over a long tournament day.</li>
+</ul>
+<h2>Break and jump cues</h2>
+<p>Break cues are usually 18 to 20 ounces; many good breakers use a lighter cue because cue <i>speed</i> moves the rack more than weight. Jump cues are much lighter, often around 8 to 10 ounces, and shorter. Read <a href="/guides/how-to-break-in-pool">how to break in pool</a>.</p>
+<h2>Balance matters too</h2>
+<p>Two cues of the same weight can feel different. A forward-balanced cue feels heavier at the tip; a rear-balanced cue feels lighter. Hold your grip a few inches behind the balance point (see <a href="/guides/how-to-hold-a-pool-cue">how to hold a pool cue</a>).</p>
+<h2>How to test before you buy</h2>
+<ol>
+<li>Try house cues of different weights at your pool hall; many are stamped with the weight on the butt.</li>
+<li>Shoot the same 10 shots with each: a long straight-in, a draw shot and a soft cut.</li>
+<li>Pick the weight where your speed control feels most natural, not the one that hits hardest.</li>
+</ol>
+<p>Many cues let you change the weight with a weight bolt in the butt, so you can adjust by half an ounce later. Ready to shop? See <a href="/guides/how-to-choose-a-pool-cue">how to choose a pool cue</a> and <a href="/gear/pool-cue-prices">what a pool cue costs</a>.</p>`
   }
 ];
