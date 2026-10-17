@@ -1325,5 +1325,62 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <li><b>Wrong:</b> nobody makes every shot, and real hustles are slower and quieter than Hollywood's. Real tournaments are friendlier, too: here's <a href="/guides/first-pool-tournament">what to expect at your first one</a>.</li>
 </ul>
 <p>Inspired? Learn a <a href="/trick-shots/">trick shot</a>, play the <a href="/play/">free pool games</a>, or <a href="/tonight/">find a tournament tonight</a>.</p>`
+  },
+  {
+    slug: 'how-to-clean-a-pool-table', title: 'How to Clean a Pool Table: Cloth, Rails, Pockets and Balls',
+    desc: 'How to clean a pool table the right way: brushing and vacuuming the cloth, removing chalk and spills, cleaning the rails, pockets and balls, and how often to do it.',
+    body: `
+<p>A clean table plays faster and truer, and the cloth lasts years longer. Chalk dust and dirt act like sandpaper on the cloth and slow the balls down. Here is how to clean every part of a pool table.</p>
+<h2>Brush the cloth</h2>
+<ol>
+<li>Use a soft brush made for billiard cloth, never a stiff household broom.</li>
+<li>Brush in straight, short strokes from the foot of the table toward the head, the way the cloth's nap runs. Don't scrub in circles: it pills the cloth.</li>
+<li>Brush the chalk out from under the cushion edges first, then the bed.</li>
+<li>Sweep the dust into a pocket or onto a dustpan at the end.</li>
+</ol>
+<h2>Vacuum (carefully)</h2>
+<p>A handheld vacuum with a brush attachment picks up what the brush loosens. Use low suction and keep the nozzle just above the cloth; strong suction can stretch the cloth and pull it loose from the slate.</p>
+<h2>Spills and stains</h2>
+<ul>
+<li><b>Blot, don't rub.</b> Soak up a spill right away with a dry cloth or paper towel.</li>
+<li>For a sticky spill, dab with a cloth barely dampened with cold water and a drop of mild dish soap, then blot dry. Never soak the cloth: water can warp the slate backing and leave rings.</li>
+<li>Chalk smudges usually brush out. Leave stubborn stains alone rather than scrubbing the cloth bald.</li>
+</ul>
+<h2>Rails, pockets and the frame</h2>
+<p>Wipe the wooden rails and frame with a soft, slightly damp cloth and dry them. Use wood polish only on the wood, never near the cloth. Empty the pockets now and then and wipe the leather or rubber with a dry cloth.</p>
+<h2>Clean the balls</h2>
+<p>Dirty balls drag chalk around and stick together on contact. Wash them in warm water with a little mild soap, dry them right away, and buff them with a soft cloth. Ball cleaner and polish make them look and roll like new. Never use a dishwasher.</p>
+<h2>How often?</h2>
+<ul>
+<li><b>After every session:</b> a quick brush.</li>
+<li><b>Weekly (home table):</b> brush and light vacuum; wipe the rails.</li>
+<li><b>Monthly:</b> clean the balls and empty the pockets.</li>
+<li><b>Always:</b> cover the table when it is not being used, and keep drinks off the rails.</li>
+</ul>
+<p>Setting up a game room? See our <a href="/gear/home-pool-table">home pool table buying guide</a> and <a href="/gear/game-room-setup">game room setup guide</a>. Is your table rolling off? Read <a href="/guides/how-to-level-a-pool-table">how to level a pool table</a>.</p>`
+  },
+  {
+    slug: 'how-to-level-a-pool-table', title: 'How to Level a Pool Table (and Check If It Rolls Off)',
+    desc: 'How to check if a pool table is level and how to fix it: the rolling-ball test, using a machinist level, adjusting the legs and shims, and when to call a pro for a slate table.',
+    body: `
+<p>A table that is not level makes slow shots roll off line, and no amount of skill fixes that. The good news: checking is easy, and small fixes are often simple. Here is how.</p>
+<h2>Test it: the rolling ball</h2>
+<ol>
+<li>Roll a ball very slowly down the middle of the table from the head rail toward the foot rail, then back.</li>
+<li>Roll balls slowly across the table at the head, the middle and the foot.</li>
+<li>If a slow ball curves the same way every time, the table leans that way. A ball that wanders differently in different spots usually means the slate or cloth is uneven, not just the legs.</li>
+</ol>
+<h2>Measure it with a level</h2>
+<p>Use a good machinist level (a cheap bubble level is not precise enough). Lay it on the cloth across the width and along the length, near each corner and in the middle. Note which way and how much each spot is off.</p>
+<h2>Fix it</h2>
+<ul>
+<li><b>Adjustable legs:</b> many tables have leveling feet or screws at the bottom of each leg. Raise the low side a little at a time, re-checking with the level after each change.</li>
+<li><b>Shims:</b> on tables without adjustable feet, slide thin hardwood or plastic shims under the low legs. Work in small amounts.</li>
+<li><b>Check the floor:</b> a sagging floor or a thick rug under one end is often the real problem. On carpet, legs can sink over time, so re-check after a week.</li>
+<li><b>Work end to end, then side to side:</b> level the length first, then the width, then check the length again.</li>
+</ul>
+<h2>When to call a pro</h2>
+<p>Slate tables are leveled at the slate itself, using shims between the slate and the frame, and the seams between the slate pieces are filled and leveled too. If the slate is off, the seams are raised, or the table was just moved, a table mechanic can level it properly, usually while recovering or tightening the cloth. Non-slate tables that sag in the middle usually can't be fixed by leveling.</p>
+<p>Keep it playing well with <a href="/guides/how-to-clean-a-pool-table">how to clean a pool table</a>. Shopping? See the <a href="/gear/home-pool-table">home pool table buying guide</a>.</p>`
   }
 ];
