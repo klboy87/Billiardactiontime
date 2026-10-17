@@ -1176,5 +1176,39 @@ ${RULES_QA.map(([q, a]) => `<h2>${q}</h2>\n<p>${a}</p>`).join('\n')}
 </ol>
 <p>Next, learn to aim with <a href="/guides/how-to-aim-in-pool">how to aim in pool</a>, put spin on the ball in <a href="/guides/english-in-pool">English in pool</a>, and practice with the <a href="/guides/pool-practice-drills">practice drills</a>. Start from the beginning in <a href="/guides/pool-basics-for-beginners">pool for beginners</a>.</p>
 <p>Ready to try it? <a href="/tonight/">Find a tournament tonight</a>.</p>`
+  },
+  {
+    slug: 'pool-cue-tips', title: 'Pool Cue Tips Explained: Soft vs Hard, Size, Shape and When to Replace',
+    desc: 'Everything about pool cue tips: soft, medium and hard tips, layered vs solid leather, tip sizes, the right shape, how to keep a tip in shape, and when to replace it.',
+    body: `
+<p>The tip is the only part of the cue that touches the cue ball, so it changes everything: how much spin you get, how often you miscue, and how the cue feels. Here is what you need to know.</p>
+<h2>Soft, medium or hard?</h2>
+<ul>
+<li><b>Soft tips</b> grip the cue ball longer, so spin comes easier and the hit feels muted. They flatten and wear out faster and need shaping more often.</li>
+<li><b>Medium tips</b> are the most popular: a good mix of spin, feel and life. If you are not sure, start here.</li>
+<li><b>Hard tips</b> keep their shape for a long time and give a crisp, solid hit, but they need good chalk and a good stroke to avoid miscues. Very hard (phenolic) tips are used on break and jump cues, not playing cues.</li>
+</ul>
+<h2>Layered or solid leather?</h2>
+<p>Layered tips are made of thin layers of leather glued together. They are more consistent from tip to tip and hold their shape longer, so most serious players use them. Solid (one-piece) tips are cheaper and fine for house and beginner cues.</p>
+<h2>Tip size</h2>
+<p>Most playing cues use 12 to 13 mm tips; 13 mm is the most common. A smaller tip can feel more precise for spin, while a bigger tip feels more forgiving. The tip must match the ferrule (the white collar at the end of the shaft): a new tip is trimmed flush to it.</p>
+<h2>The right shape</h2>
+<p>Keep the tip rounded like the edge of a nickel or a dime. A nickel shape is a good all-around curve; a dime shape is a little rounder and some players like it for more spin. A flat tip miscues on spin shots, so reshape it when it flattens.</p>
+<h2>Keeping a tip in shape</h2>
+<ul>
+<li><b>Chalk before every shot.</b> Brush the chalk on lightly; don't grind the tip into the cube.</li>
+<li><b>Scuff it now and then</b> with a tip tool so it holds chalk. Don't overdo it: every scuff takes leather off.</li>
+<li><b>Shape it when it flattens</b> with a shaper, working around the edge.</li>
+<li><b>Keep the cue in a case</b> and out of hot cars. Heat and moisture loosen the glue.</li>
+</ul>
+<h2>When to replace your tip</h2>
+<ul>
+<li>It is thinner than about 3 mm, or you can see the ferrule through the side.</li>
+<li>It mushrooms (spreads wider than the ferrule) and won't stay trimmed.</li>
+<li>It won't hold chalk or keeps miscuing even after scuffing.</li>
+<li>It is coming loose or has a crack.</li>
+</ul>
+<p>Most pool halls and cue repair shops can replace a tip while you wait. Some players do it themselves with a tip kit, glue and a clamp, but a pro job is cheap and gets the shape and trim right.</p>
+<p>More cue care in <a href="/guides/pool-cue-care">how to take care of your pool cue</a>, picking a new cue in <a href="/guides/how-to-choose-a-pool-cue">how to choose a pool cue</a>, and spin shots in <a href="/guides/english-in-pool">English in pool</a>.</p>`
   }
 ];
