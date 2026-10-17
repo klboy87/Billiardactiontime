@@ -41,7 +41,7 @@ export function gearPage(cfg) {
   <li><b>Roll it before you buy it</b> if you can: a warped shaft wobbles when you roll it on a flat table.</li>
   <li><b>Keep it out of the car.</b> Heat and cold warp shafts. A good case helps, but bring your cue inside.</li></ul>
   <p>Then put it to use: <a href="/tonight/">find a tournament tonight</a>.</p></article>`;
-  return layout(cfg, { title: 'Pool Gear Guide: Cues, Cases, Chalk & More for Tournament Players | Billiard Action Time', description: 'What pool gear you actually need: a playing cue, case, chalk, glove, tip tool, break and jump cues, training balls and more, with what to look for in each.', path: '/gear/', body });
+  return layout(cfg, { title: 'Pool Gear Guide: Cues, Cases, Chalk & More for Tournament Players | Billiard Action Time', description: 'What pool gear you actually need: a playing cue, case, chalk, glove, tip tool, break and jump cues, training balls and more, with what to look for in each.', path: '/gear/', body, ogImage: `${cfg.publicUrl}/og/gear/index.png` });
 }
 
 // ---- Buying guides under /gear/<slug>: shopping intent pages (gifts, home tables). Same Amazon search links. ----
@@ -97,5 +97,5 @@ export function buyingPage(cfg, slug) {
   ${disclosure(cfg)}
   <article class="card guide" style="margin-top:16px"><h2 style="margin-top:0">Tips</h2><ul>${g.tips.map(t => `<li>${t}</li>`).join('')}</ul></article>
   <section class="sec seo-sec"><h2>More gear guides</h2><div class="guide-next"><a href="/gear/"><small>Gear</small><b>Pool gear guide: what players need</b></a>${BUYING.filter(x => x.slug !== g.slug).map(x => `<a href="/gear/${x.slug}"><small>Buying guide</small><b>${esc(x.title)}</b></a>`).join('')}<a href="/guides/how-to-choose-a-pool-cue"><small>Guide</small><b>How to choose a pool cue</b></a></div></section>`;
-  return layout(cfg, { title: `${g.title} | Billiard Action Time`, description: g.desc, path: `/gear/${g.slug}`, body });
+  return layout(cfg, { title: `${g.title} | Billiard Action Time`, description: g.desc, path: `/gear/${g.slug}`, body, ogImage: `${cfg.publicUrl}/og/gear/${g.slug}.png` });
 }

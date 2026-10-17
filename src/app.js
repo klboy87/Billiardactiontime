@@ -608,6 +608,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const png = cachedCard(`page|${x[1]}|${x[2]}`, () => renderHeadlineCard(title, x[1] === 'guides' ? 'Free pool guide' : 'Pool trick shot · step by step', host));
       return send(req, res, 200, png, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
     }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/og\/gear\/([a-z0-9-]{2,80})\.png$/))) {
+      const g = x[1] === 'index' ? { title: 'Pool Gear Guide' } : GR.BUYING.find(b => b.slug === x[1]);
+      if (!g) return send(req, res, 404, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png' });
+      const png = cachedCard(`page|gear|${x[1]}`, () => renderHeadlineCard(g.title.split(':')[0], x[1] === 'gifts-for-pool-players' ? '15 gift ideas, every budget' : 'What to buy and what to look for', host));
+      return send(req, res, 200, png, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
+    }
     if ((m === 'GET' || m === 'HEAD') && p === '/og.png') {
       return send(req, res, 200, cachedCard('site', () => renderSiteShareCard(host)), { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
     }
