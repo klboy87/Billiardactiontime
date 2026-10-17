@@ -239,6 +239,7 @@
           <a href="/play/aim-trainer"><small>🎯 Daily challenge</small><b>Today's 5-shot aim challenge: same shots for everyone. Can you go 5 for 5?</b></a>
           <a href="/play/"><small>🎮 Games</small><b>Bank trainer, lag challenge and more pool games</b></a>
           <a href="/trick-shots/"><small>✨ Trick shots</small><b>15 trick shots with diagrams to try at the table</b></a>
+          <a href="/gear/"><small>🛒 Pool gear</small><b>What to buy: cue, case, chalk and more</b></a>
           <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>How well do you know the rules? Take the 12-question quiz</b></a>
           <a href="/guides/pool-practice-drills"><small>For players</small><b>7 practice drills that actually make you better</b></a>
           <a href="/guides/fargo-rating-chart"><small>For players</small><b>Fargo rating chart: win odds by rating gap</b></a>
