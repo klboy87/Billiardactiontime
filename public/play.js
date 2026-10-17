@@ -1,3 +1,14 @@
+/* "Share my score" button on every game's round-over message: the phone's share sheet, or copy to clipboard. */
+function scoreBtn(text, path) {
+  return '<p style="margin:8px 0 0"><button type="button" data-share-score="' + encodeURIComponent(text + ' ' + location.origin + path) + '" style="padding:9px 16px;border-radius:8px;border:0;background:#1c6fe6;color:#fff;font-weight:700;cursor:pointer;font-size:15px">📣 Share my score</button></p>';
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest && e.target.closest('[data-share-score]'); if (!b) return;
+  var text = decodeURIComponent(b.getAttribute('data-share-score'));
+  if (navigator.share) { navigator.share({ text: text }).catch(function () {}); return; }
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { b.textContent = '✓ Copied! Paste it anywhere'; }, function () { b.textContent = 'Copy failed'; });
+});
+
 /* Aim trainer (/play/aim-trainer). Kept in its own file because the site's security policy blocks inline
    scripts. Units are diamonds on a 7-foot bar-box table: x 0–8 (long), y 0–4. A ball is about 0.23
    diamonds across on a bar box. Contact is computed with simple ball geometry (no throw or spin). */
@@ -138,7 +149,7 @@
       var best = Number(store.get(bestKey()) || 0), isBest = S.score > best;
       if (isBest) store.set(bestKey(), String(S.score));
       ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 made, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') +
-        ' ' + (S.made >= 9 ? (level === 'pro' ? 'Pro-level eye. Share your score!' : 'Sharp eye. Try a harder level.') : S.made >= 6 ? 'Solid shooting.' : 'Keep at it: aim at the ghost ball, not the object ball.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
+        ' ' + (S.made >= 9 ? (level === 'pro' ? 'Pro-level eye. Share your score!' : 'Sharp eye. Try a harder level.') : S.made >= 6 ? 'Solid shooting.' : 'Keep at it: aim at the ghost ball, not the object ball.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>' + scoreBtn('I made ' + S.made + ' of 10 in the Aim Trainer (' + S.score + ' points). Beat me:', '/play/aim-trainer');
       ui.next.textContent = 'Play another round'; ui.next.onclick = function () { newRound(); };
     } else { ui.next.textContent = 'Next shot →'; ui.next.onclick = function () { newShot(); }; }
     ui.next.hidden = false; aimLine.setAttribute('opacity', 0.85); status();
@@ -263,7 +274,7 @@
     ui.msg.innerHTML = (made ? '✅ Banked it! ' : '❌ ' + why + ' ') + 'You hit the rail ' + where + '.' + (made ? '' : ' <span class="muted">The yellow line shows the bank that works.</span>');
     if (S.n >= 10) {
       var key = 'bat-bank-best-' + level, best = Number(store.get(key) || 0), isBest = S.score > best; if (isBest) store.set(key, String(S.score));
-      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 banked, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
+      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 banked, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>' + scoreBtn('I banked ' + S.made + ' of 10 in the Bank Shot Trainer (' + S.score + ' points). Beat me:', '/play/bank-trainer');
       ui.next.textContent = 'Play another round'; ui.next.onclick = newRound;
     } else { ui.next.textContent = 'Next bank →'; ui.next.onclick = newShot; }
     ui.next.hidden = false; pathEl.setAttribute('opacity', 0.85); status();
@@ -325,7 +336,7 @@
     ui.msg.innerHTML = (reached && inches < 6 ? '✅ ' : '') + verdict + (reached ? ' <b>' + inches.toFixed(1) + '"</b> from the head rail.' : '');
     if (S.n >= 5) {
       var best = Number(store.get('bat-lag-best') || 0), isBest = !best || S.total < best; if (isBest) store.set('bat-lag-best', S.total.toFixed(1));
-      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.total.toFixed(1) + '" total over 5 lags</b> (lower is better). ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best.toFixed(1) + '".') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
+      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.total.toFixed(1) + '" total over 5 lags</b> (lower is better). ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best.toFixed(1) + '".') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>' + scoreBtn('My Lag Challenge total: ' + S.total.toFixed(1) + ' inches over 5 lags. Can you beat it?', '/play/lag-challenge');
       phase = 'done'; ui.go.textContent = 'Play again';
     } else { phase = 'shown'; ui.go.textContent = 'Next lag →'; }
     ui.go.disabled = false; status();
@@ -540,7 +551,7 @@
     ui.msg.innerHTML = (made ? '✅ Good kick! You hit it.' : '❌ ' + why) + where + (made ? '' : ' <span class="muted">The yellow line shows the kick that works.</span>');
     if (S.n >= 10) {
       var key = 'bat-kick-best-' + level, best = Number(store.get(key) || 0), isBest = S.score > best; if (isBest) store.set(key, String(S.score));
-      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 kicks hit, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>';
+      ui.msg.innerHTML += '<div class="aim-final"><b>Round over: ' + S.made + ' of 10 kicks hit, ' + S.score + ' points.</b> ' + (isBest ? '🏆 New personal best!' : 'Best: ' + best + '.') + '</div>' + '<p class="muted" style="margin:8px 0 0">🎱 Ready for the real thing? <a href="/tonight/">Tournaments tonight</a> · <a href="/near">near you</a></p>' + scoreBtn('I hit ' + S.made + ' of 10 kicks in the Kick Shot Trainer (' + S.score + ' points). Beat me:', '/play/kick-trainer');
       ui.next.textContent = 'Play another round'; ui.next.onclick = newRound;
     } else { ui.next.textContent = 'Next kick →'; ui.next.onclick = newShot; }
     ui.next.hidden = false; pathEl.setAttribute('opacity', 0.85); status();
