@@ -136,6 +136,25 @@ ${groups}
 <p style="margin-top:20px">Know the words, now learn the games: <a href="/guides/8-ball-rules">8-Ball</a>, <a href="/guides/9-ball-rules">9-Ball</a> and <a href="/guides/10-ball-rules">10-Ball</a> rules, or read <a href="/guides/first-pool-tournament">what to expect at your first tournament</a>.</p>`;
 };
 
+// Pool rules Q&A: each answer is plain text so it can also feed the FAQPage structured data.
+const RULES_QA = [
+  ['What happens if you scratch on the 8-ball?', 'If you pocket the 8 and the cue ball also goes in, you lose the game under almost every rule set. If you scratch while shooting at the 8 but the 8 does not go in, it is a normal foul under tournament (WPA, BCA, APA) rules: your opponent gets ball in hand. Many bars play that any scratch on the 8 loses, so agree before you play.'],
+  ['What happens if you scratch on the break in 8-Ball?', 'It is a foul. Balls pocketed on the break stay down and the table stays open. Under WPA rules the incoming player gets the cue ball in hand behind the head string; many leagues and bars give ball in hand anywhere. Check your league or event rules.'],
+  ['What happens if you make the 8-ball on the break?', 'It depends on the rules. In APA it is a win, unless the cue ball also scratches, which is a loss. Under WPA rules the breaker chooses to re-spot the 8 and keep shooting, or to re-rack and break again; it is not a win or a loss. Bar rules vary, so ask first.'],
+  ['Do you have to call your shots in 8-Ball?', 'In most tournament and league play, yes: you call the ball and the pocket, except on obvious shots. You never have to call kisses, banks or caroms. The 8-ball must always be called. In casual bar pool, slop often counts, so agree before the game.'],
+  ['Can you hit the 8-ball first?', 'Not while you still have balls of your group on the table. Hitting the 8 first is a foul, and on an open table most rules also make it a foul. Once your group is cleared, the 8 becomes your legal ball.'],
+  ['What is ball in hand?', 'After a foul, the incoming player may place the cue ball anywhere on the table and shoot. Some rules limit it to behind the head string after certain fouls, like a scratch on the break.'],
+  ['What counts as a legal break in 8-Ball?', 'Under WPA and most tournament rules, the breaker must pocket a ball or drive at least four object balls to the rails. If not, it is an illegal break, and the opponent can accept the table, re-rack and break, or have the breaker break again.'],
+  ['Does a ball have to hit a rail after contact?', 'Yes. On every shot, after the cue ball hits a legal ball, either a ball must be pocketed or the cue ball or any object ball must touch a rail. If nothing reaches a rail, it is a foul.'],
+  ['Is a jump shot legal?', 'In tournament play, yes, if you strike down on the cue ball and make it jump off the cloth. Scooping under the cue ball with the tip is a foul. Many bars ban jump shots and jump cues, so ask first.'],
+  ['What is a push out in 9-Ball?', 'On the shot right after the break, the shooter may announce a push out: they can shoot the cue ball anywhere without hitting the lowest ball or a rail. The opponent then chooses to shoot from there or make the pusher shoot again.'],
+  ['What is the three-foul rule in 9-Ball?', 'Under WPA rules, a player who fouls on three shots in a row in the same rack loses the game, but only after being warned after the second foul. Many leagues and bars do not use it.'],
+  ['What happens if you make the 9-ball on the break?', 'In 9-Ball it is a win as long as the break is legal and you do not scratch. If you scratch, the 9 is spotted and your opponent gets ball in hand. Some events re-spot the 9 instead; 10-Ball always re-spots the 10 on the break.'],
+  ['Is it a foul to double hit the cue ball?', 'Yes. Hitting the cue ball twice on one stroke, or pushing it with the tip, is a foul. It most often happens when the cue ball is very close to the object ball.'],
+  ['Is it a foul to touch a ball with your hand or clothes?', 'Touching the cue ball is always a foul in tournament play. Touching an object ball depends on the event: some use cue-ball fouls only, and others treat any moved ball as a foul. Ask at the players meeting.'],
+  ['Do you need a foot on the floor?', 'Yes. Under tournament rules you must have at least one foot touching the floor when you strike the cue ball. Use the mechanical bridge or a long bridge on hard reaches.']
+];
+
 export const MORE_GUIDES = [
   {
     slug: 'how-to-read-a-tournament-flyer', title: 'How to Read a Pool Tournament Flyer: Every Term Explained',
@@ -1108,5 +1127,16 @@ ${table({ balls: [{ x: 5.6, y: 2.4, n: 7 }, { x: 3.6, y: 2.6, n: 8 }, { x: 1.6, 
 <h2>Which one should you play?</h2>
 <p>If you're in the US, start with pool: tables are everywhere, the games are quick, and there are weekly tournaments in almost every town. Learn the basics in <a href="/guides/pool-basics-for-beginners">pool for beginners</a>, take the <a href="/play/which-game">which pool game is yours?</a> quiz, and then <a href="/guides/first-pool-tournament">play your first tournament</a>. The skills carry over: a good stroke and cue ball control help in every cue sport.</p>
 <p>Ready to play? <a href="/tonight/">See pool tournaments tonight</a> or <a href="/pool-halls/">find a pool hall near you</a>.</p>`
+  },
+  {
+    slug: 'pool-rules-questions', title: 'Pool Rules Q&A: Scratches, Breaks, the 8-Ball and More',
+    desc: 'Quick answers to the pool rules questions players argue about: scratching on the 8, making the 8 on the break, calling shots, ball in hand, jump shots, push outs and more.',
+    faq: RULES_QA,
+    body: `
+<p>Every pool room has an argument about the rules sooner or later. Here are straight answers to the questions players ask most, based on tournament rules (WPA, BCA and APA league rules where they differ). Bar rules vary, so when in doubt, agree before the first break.</p>
+${RULES_QA.map(([q, a]) => `<h2>${q}</h2>\n<p>${a}</p>`).join('\n')}
+<h2>Full rules for each game</h2>
+<p>For the complete rules, read <a href="/guides/8-ball-rules">8-Ball rules</a>, <a href="/guides/9-ball-rules">9-Ball rules</a>, <a href="/guides/10-ball-rules">10-Ball rules</a>, and <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs tournament rules</a>. Then test yourself with the <a href="/tools/pool-rules-quiz">pool rules quiz</a>.</p>
+<p>Ready to play by the book? <a href="/tonight/">Find a tournament tonight</a>.</p>`
   }
 ];
