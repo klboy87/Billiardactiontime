@@ -1495,5 +1495,29 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <h2>Sizing and care</h2>
 <p>A glove should fit snugly with no loose material where the cue slides; loose fabric bunches up and catches the cue. Most come in sizes from small to extra large. Wash it by hand in cool water and let it air dry, and keep a spare in your case for long tournament days.</p>
 <p>See more of what to bring in the <a href="/gear/">pool gear guide</a> and <a href="/guides/first-pool-tournament">your first pool tournament</a>. Learn the bridge itself in <a href="/guides/how-to-hold-a-pool-cue">how to hold a pool cue</a>.</p>`
+  },
+  {
+    slug: 'pool-table-cloth', title: 'Pool Table Cloth Guide: Worsted vs Felt, Colors, and When to Replace It',
+    desc: 'How to choose pool table cloth: worsted (tournament) cloth vs woolen felt, speed, colors, how long cloth lasts, and what recovering a table involves.',
+    body: `
+<p>The cloth is the surface every shot rolls on, and it changes how a table plays more than anything except the slate. Here is how to pick cloth and know when it is time for new.</p>
+<h2>Worsted cloth vs woolen felt</h2>
+<ul>
+<li><b>Worsted (tournament) cloth</b> is tightly woven from combed wool and nylon, with a smooth, flat surface. Balls roll faster and truer, it shows less wear, and it is what pool halls and tournaments use. Simonis is the best-known worsted brand.</li>
+<li><b>Woolen cloth ("felt")</b> is thicker and fuzzier, with a nap. It plays slower, pills and wears faster, and the ball can drift with the nap. It comes on most budget home tables and costs less.</li>
+</ul>
+<p>If you play seriously or want your home table to play like the pool hall, worsted cloth is the single biggest upgrade.</p>
+<h2>Colors</h2>
+<p>Green is traditional and easy on the eyes. Tournament blue (TV blue) is popular because the balls stand out well on camera and under bright light. Any color plays the same; darker colors show chalk more, lighter ones show stains.</p>
+<h2>How long does cloth last?</h2>
+<ul>
+<li><b>Pool halls:</b> often once a year or more.</li>
+<li><b>Home tables:</b> worsted cloth can last 5 years or more with light play; woolen felt wears faster.</li>
+<li><b>Replace it when:</b> it has holes, tears or bald spots, balls roll slowly or drift, the cloth is loose or wrinkled, or stains won't come out.</li>
+</ul>
+<h2>Recovering a table</h2>
+<p>New cloth has to be stretched tight and even, glued or stapled to the slate, and wrapped around the cushions. Most owners hire a table mechanic, who can also re-level the slate and check the cushions in the same visit. It is a good moment to replace worn cushion rubber too.</p>
+<h2>Make it last</h2>
+<p>Brush after every session, cover the table, keep drinks off the rails, and chalk away from the table. See <a href="/guides/how-to-clean-a-pool-table">how to clean a pool table</a> and <a href="/guides/how-to-level-a-pool-table">how to level a pool table</a>. Shopping for a whole table? Read the <a href="/gear/home-pool-table">home pool table buying guide</a>.</p>`
   }
 ];
