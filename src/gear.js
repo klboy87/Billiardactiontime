@@ -88,6 +88,28 @@ export const BUYING = [
     tips: ['Have slate tables leveled by a pro after delivery. A table that is not level never plays right.', 'Worsted (tournament) cloth plays faster and truer than the felt on cheap tables. It is the most noticeable upgrade.', 'Learn the games your family will play: <a href="/guides/8-ball-rules">8-Ball rules</a>, <a href="/guides/cutthroat-pool-rules">cutthroat</a> for three players, and our <a href="/play/">free pool games</a> for rainy days.'] }
 ];
 
+BUYING.push({ slug: 'game-room-setup', icon: '🍻', title: 'Game Room Setup: Everything Around the Pool Table',
+  desc: 'How to set up a home game room around a pool table: lighting, cue racks, seating, a scoreboard, flooring, a dartboard and the small things that make it feel like a pool hall.',
+  intro: 'The table is the star, but the room around it decides whether people want to hang out and play. Here is what to add, in the order most people should buy it.',
+  groups: [
+    { h: 'Light and space first', items: [
+      ['💡', 'A pool table light', 'pool table light fixture', 'Even light over the whole playing surface, with no shadows from the rails. Hang it about 32 to 36 inches above the cloth.'],
+      ['🧮', 'A wall cue rack', 'wall mount pool cue rack', 'Keeps cues straight and off the floor, with a spot for the bridge, balls and chalk.'],
+      ['🟫', 'A rug or floor protection', 'game room area rug', 'Protects the floor from chalk and dropped balls, and quiets the room. Keep it under the whole table and stroke area.']]},
+    { h: 'Make people stay', items: [
+      ['🪑', 'Spectator chairs or pub stools', 'spectator chairs pool', 'Tall seats along the wall let people watch the game without standing in the way of a stroke.'],
+      ['🍸', 'A pub table', 'pub table set', 'A spot for drinks that is not the rail of your table. Keep it outside the stroke area.'],
+      ['🧾', 'A scoreboard', 'billiard scoreboard wall', 'A bead scoreboard or a chalkboard keeps race-to-7 sets honest and adds pool hall style.']]},
+    { h: 'More games', items: [
+      ['🎯', 'A dartboard cabinet', 'dartboard cabinet set', 'The classic partner to a pool table. Put it on a different wall so dart throwers and shooters do not collide.'],
+      ['🃏', 'A card and game table', 'folding card table', 'For poker night and board games when the table is busy.'],
+      ['📺', 'A TV mount for streams', 'tv wall mount', 'Watch pro events and streams between racks. Mount it high so it clears the cue.']]},
+    { h: 'Finishing touches', items: [
+      ['🖼️', 'Billiard wall art', 'billiards wall art', 'Vintage pool posters and neon signs give the room character.'],
+      ['🧹', 'A table brush and cover', 'pool table brush cover', 'Brush the cloth after play and cover it to keep dust and spills off.'],
+      ['🔵', 'A better ball set', 'billiard ball set', 'The balls that come with most tables are the first thing worth upgrading.']]}],
+  tips: ['Plan the stroke area before anything else: about 5 feet around the playing surface, clear of furniture and walls.', 'A dimmer on the room lights (not the table light) makes the table pop and sets the mood.', 'Host a home tournament: print a free <a href="/tools/brackets/">tournament bracket</a> and use the <a href="/tools/payout-calculator">payout calculator</a> for the pot.'] });
+
 export function buyingPage(cfg, slug) {
   const g = BUYING.find(x => x.slug === slug); if (!g) return null;
   const item = ([ic, name, q, why]) => `<article class="card gear-card"><span class="gear-ic" aria-hidden="true">${ic}</span><h3 style="font-size:18px;margin:6px 0">${esc(name)}</h3><p>${esc(why)}</p><p class="gear-cta">${q.startsWith('/') ? `<a class="btn btn-blue btn-sm" href="${q}">Find a big tournament</a>` : `<a class="btn btn-gold btn-sm" href="${esc(href(cfg, q))}" target="_blank" rel="sponsored nofollow noopener">See prices on Amazon</a>`}</p></article>`;
