@@ -62,6 +62,7 @@ export function buildNewsletter(db, cfg) {
     fresh.length ? H('🆕 New this week') + `<ul style="padding-left:20px;margin:0 0 8px">${fresh.map(item).join('')}</ul>` + P(A(link('/new/', 'new'), 'See everything added this week →')) : '',
     H('🎯 Running a tournament?'),
     P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')}`),
+    P(`🎁 Shopping for a pool player? ${A(link('/gear/gifts-for-pool-players', 'gifts'), 'Gift ideas they will actually use →')}`),
     P('Good luck out there. May your breaks be dry for the other guy.', 'margin-top:22px'),
     P('<b>Billiard Action Time</b>'),
     `<hr style="border:0;border-top:1px solid #ddd;margin:22px 0 12px">`,
@@ -84,6 +85,7 @@ ${body}
     ...(calendar.length ? ['MARK YOUR CALENDAR', ...calendar.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}${price(t) ? ' (' + price(t) + ')' : ''}`), ''] : []),
     ...(fresh.length ? ['NEW THIS WEEK', ...fresh.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}`), `All new listings: ${link('/new/', 'new')}`, ''] : []),
     `Running a tournament? Post it free: ${link('/post', 'post')}`, '',
+    `Shopping for a pool player? Gift ideas: ${link('/gear/gifts-for-pool-players', 'gifts')}`, '',
     'Billiard Action Time', '',
     'Don\'t want these emails? Reply "unsubscribe".'
   ].join('\n');
