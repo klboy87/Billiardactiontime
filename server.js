@@ -29,3 +29,6 @@ if (cfg.source.url && cfg.syncIntervalMinutes > 0) {
 }
 if (cfg.anthropicKey) console.log('Flyer reading is ON (ANTHROPIC_API_KEY is set)');
 else console.log('Flyer reading is OFF -- set ANTHROPIC_API_KEY in .env to turn it on');
+// Announce new pages to search engines (IndexNow) a few minutes after start, then every 6 hours.
+setTimeout(() => server.indexNow().catch(e => console.error('IndexNow error', e.message)), 180_000).unref();
+setInterval(() => server.indexNow().catch(e => console.error('IndexNow error', e.message)), 6 * 3600_000).unref();

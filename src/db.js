@@ -147,6 +147,7 @@ CREATE TABLE IF NOT EXISTS auction_chat (
   name TEXT NOT NULL, host INTEGER NOT NULL DEFAULT 0, text TEXT NOT NULL, at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_achat ON auction_chat(auction_id, id);
+CREATE TABLE IF NOT EXISTS indexnow_sent (url TEXT PRIMARY KEY, at TEXT NOT NULL DEFAULT (datetime('now')));   -- pages already announced to IndexNow
 CREATE TABLE IF NOT EXISTS promotions (            -- paid "Featured" listings, kept apart from synced data
   tournament_id INTEGER PRIMARY KEY, until TEXT NOT NULL, note TEXT, created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

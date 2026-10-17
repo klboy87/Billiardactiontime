@@ -111,6 +111,7 @@ export function validateSubmission(b) {
 }
 
 // ---- the server ------------------------------------------------------------
+const INDEXNOW_KEY = '7c1f4a9e2b6d48d3a05e9f1c3b8d2e6a';   // public by design: served at /<key>.txt to prove we own the site
 export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   const hits = new Map();
   const limited = ip => {
@@ -832,6 +833,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/.well-known/traffic-advice') return send(req, res, 200, JSON.stringify([{ user_agent: 'prefetch-proxy', google_prefetch_proxy_eap: { fraction: 1.0 } }]), { 'Content-Type': 'application/trafficadvice+json', 'Cache-Control': 'public, max-age=86400' });
     // Phones and browsers ask for these at the site root regardless of the page's link tags.
     if ((m === 'GET' || m === 'HEAD') && (p === '/apple-touch-icon.png' || p === '/apple-touch-icon-precomposed.png')) return moved('/icons/apple-touch-icon.png');
+    if (m === 'GET' && p === `/${INDEXNOW_KEY}.txt`) return send(req, res, 200, INDEXNOW_KEY, { 'Content-Type': 'text/plain; charset=utf-8' });
     if (m === 'GET' && p === '/robots.txt') return send(req, res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${cfg.publicUrl}/sitemap.xml\n`, { 'Content-Type': 'text/plain; charset=utf-8' });
 
     const appPage = (m === 'GET' || m === 'HEAD') ? appPageFor(p) : null;
@@ -863,5 +865,23 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   });
   server.syncNow = syncNow;
   server.flushPageviews = flushPageviews;
+  // IndexNow: tell Bing (and the engines that share its index: DuckDuckGo, Yahoo, ChatGPT search) about pages we
+  // have not announced yet. First run sends the whole sitemap once; after that only new pages. Off for local runs.
+  server.indexNow = async () => {
+    if (!/^https:\/\/(?!localhost)/.test(cfg.publicUrl) || process.env.INDEXNOW === 'off') return;
+    const r = await fetchFn(`http://127.0.0.1:${cfg.port}/sitemap.xml`); if (!r.ok) return;
+    const all = [...(await r.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].replace(/&amp;/g, '&'));
+    const sent = new Set(db.prepare('SELECT url FROM indexnow_sent').all().map(x => x.url));
+    const fresh = all.filter(u => !sent.has(u)).slice(0, 10000);
+    if (!fresh.length) return;
+    const host = new URL(cfg.publicUrl).host;
+    const res2 = await fetchFn('https://api.indexnow.org/indexnow', { method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ host, key: INDEXNOW_KEY, keyLocation: `${cfg.publicUrl}/${INDEXNOW_KEY}.txt`, urlList: fresh }) });
+    if (res2.status === 200 || res2.status === 202) {
+      const ins = db.prepare('INSERT OR IGNORE INTO indexnow_sent (url) VALUES (?)');
+      db.exec('BEGIN'); for (const u of fresh) ins.run(u); db.exec('COMMIT');
+    }
+    log(`IndexNow: sent ${fresh.length} pages, status ${res2.status}`);
+  };
   return server;
 }
