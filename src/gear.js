@@ -27,7 +27,7 @@ export const GEAR_FOR = { 'how-to-choose-a-pool-cue': ['cue', 'case', 'tip'], 'p
 
 export function gearBox(cfg, slug) {
   const keys = GEAR_FOR[slug]; if (!keys) return '';
-  return `<section class="card gear-box" style="padding:14px 18px;margin-top:16px"><h2 class="seo-h2" style="margin-top:0">🛒 Gear for this</h2><ul class="gear-list">${keys.map(k => BY[k]).map(g => `<li><span aria-hidden="true">${g.icon}</span> <a href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">${esc(g.name)}</a> <span class="muted">· ${esc(g.why.split('. ')[0])}.</span></li>`).join('')}</ul><p style="margin:6px 0 0"><a href="/gear/">Full pool gear guide →</a> · <a href="/gear/gifts-for-pool-players">🎁 Gift ideas for pool players</a>${['pool-table-sizes', 'cutthroat-pool-rules', '8-ball-rules', 'pool-basics-for-beginners'].includes(slug) ? ' · <a href="/gear/home-pool-table">🏠 Buying a home pool table</a>' : ''}</p>${disclosure(cfg)}</section>`;
+  return `<section class="card gear-box" style="padding:14px 18px;margin-top:16px"><h2 class="seo-h2" style="margin-top:0">🛒 Gear for this</h2><ul class="gear-list">${keys.map(k => BY[k]).map(g => `<li><span aria-hidden="true">${g.icon}</span> <a href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">${esc(g.name)}</a> <span class="muted">· ${esc(g.why.split('. ')[0])}.</span></li>`).join('')}</ul><p style="margin:6px 0 0"><a href="/gear/">Full pool gear guide →</a> · <a href="/gear/gifts-for-pool-players">🎁 Gift ideas for pool players</a>${['pool-table-sizes', 'cutthroat-pool-rules', '8-ball-rules', 'pool-basics-for-beginners'].includes(slug) ? ' · <a href="/gear/home-pool-table">🏠 Buying a home pool table</a>' : ''}${['how-to-choose-a-pool-cue', 'pool-cue-tips', 'pool-cue-care', 'pool-basics-for-beginners'].includes(slug) ? ' · <a href="/gear/pool-cue-prices">💲 What a pool cue costs</a>' : ''}</p>${disclosure(cfg)}</section>`;
 }
 
 export function gearPage(cfg) {
@@ -110,6 +110,22 @@ BUYING.push({ slug: 'game-room-setup', icon: '🍻', title: 'Game Room Setup: Ev
       ['🧹', 'A table brush and cover', 'pool table brush cover', 'Brush the cloth after play and cover it to keep dust and spills off.'],
       ['🔵', 'A better ball set', 'billiard ball set', 'The balls that come with most tables are the first thing worth upgrading.']]}],
   tips: ['Plan the stroke area before anything else: about 5 feet around the playing surface, clear of furniture and walls.', 'A dimmer on the room lights (not the table light) makes the table pop and sets the mood.', 'Host a home tournament: print a free <a href="/tools/brackets/">tournament bracket</a> and use the <a href="/tools/payout-calculator">payout calculator</a> for the pot.'] });
+
+BUYING.push({ slug: 'pool-cue-prices', icon: '💲', title: 'How Much Does a Pool Cue Cost? Prices by Level',
+  desc: 'What pool cues cost at every level: house and starter cues, good beginner cues, mid-range player cues and custom cues, plus what you get for the money and where to spend it.',
+  intro: 'You can buy a pool cue for $25 or $2,500. The good news: you do not need an expensive cue to play well. Here is what each price range gets you, so you spend where it matters.',
+  groups: [
+    { h: 'Under $75: starter cues', items: [
+      ['🎱', 'A starter one-piece or two-piece cue', 'pool cue under 75', 'Straight wood, a basic tip and a simple wrap. Fine for learning and home tables. Check that it rolls straight, and plan on upgrading the tip.'],
+      ['🔘', 'A better tip', 'pool cue tips 13mm layered', 'The cheapest upgrade there is. A good layered tip makes a starter cue play much better.']]},
+    { h: '$75 to $250: the sweet spot for most players', items: [
+      ['🎯', 'A good beginner to league cue', 'pool cue 150', 'Better shafts, layered tips, a real joint and a wrap that stays put. Most league players never need more than this.'],
+      ['🧳', 'A case to protect it', 'hard pool cue case 2x2', 'Once you own a real cue, a hard case keeps it straight. Budget $40 to $100.']]},
+    { h: '$250 to $800: serious player cues', items: [
+      ['🏆', 'A player cue with a low-deflection shaft', 'low deflection pool cue shaft', 'Low-deflection (low squirt) shafts move the cue ball less off line when you use English. Popular with tournament players.'],
+      ['💥', 'A separate break cue', 'pool break cue', 'Serious players break with a different cue to save the tip and shaft on their playing cue. Good ones start around $100.']]},
+    { h: '$800 and up: custom cues', html: '<p>Custom cues are built by hand by cue makers, with exotic woods, inlays and a long wait list. They play beautifully, but the extra money mostly buys craftsmanship and looks, not more made balls. Buy one because you love it, not to fix your game.</p>' }],
+  tips: ['Spend on the shaft and tip first. They decide how the cue plays; the butt mostly decides how it looks.', 'Most players like 18 to 20 ounces and 58 inches. If you are not sure, start at 19 ounces.', 'Buying used? Roll the cue on a flat table to check it is straight, and look for cracks near the joint and ferrule.', 'Read <a href="/guides/how-to-choose-a-pool-cue">how to choose a pool cue</a> and <a href="/guides/pool-cue-tips">pool cue tips explained</a> before you buy.'] });
 
 export function buyingPage(cfg, slug) {
   const g = BUYING.find(x => x.slug === slug); if (!g) return null;
