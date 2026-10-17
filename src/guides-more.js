@@ -526,7 +526,7 @@ ${table({ balls: rack([[1], [2, 3], [4, 10, 5], [6, 7, 8, 9]]) }, '10-Ball: the 
 <li>Stay balanced: you should be able to hold your stance without leaning on the table.</li>
 </ul>
 <h2>Bridge</h2>
-<p>The bridge is your front hand. It has to hold the cue steady and let it slide straight.</p>
+<p>The bridge is your front hand. It has to hold the cue steady and let it slide straight. (More detail in <a href="/guides/how-to-hold-a-pool-cue">how to hold a pool cue</a>.)</p>
 <ul>
 <li><b>Open bridge:</b> lay your hand flat on the cloth, raise the knuckles slightly and rest the cue in the V between your thumb and the base of your first finger. Easy and stable; good for beginners.</li>
 <li><b>Closed bridge:</b> curl your first finger over the cue to make a loop. More control on firm shots.</li>
@@ -1138,5 +1138,43 @@ ${RULES_QA.map(([q, a]) => `<h2>${q}</h2>\n<p>${a}</p>`).join('\n')}
 <h2>Full rules for each game</h2>
 <p>For the complete rules, read <a href="/guides/8-ball-rules">8-Ball rules</a>, <a href="/guides/9-ball-rules">9-Ball rules</a>, <a href="/guides/10-ball-rules">10-Ball rules</a>, and <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs tournament rules</a>. Then test yourself with the <a href="/tools/pool-rules-quiz">pool rules quiz</a>.</p>
 <p>Ready to play by the book? <a href="/tonight/">Find a tournament tonight</a>.</p>`
+  },
+  {
+    slug: 'how-to-hold-a-pool-cue', title: 'How to Hold a Pool Cue: Grip, Bridge and Stance',
+    desc: 'How to hold a pool cue the right way: where to grip, how loose to hold it, the open, closed and rail bridges, bridge length, and a stance that keeps your stroke straight.',
+    body: `
+<p>Most missed shots start before the stroke: a tight grip, a wobbly bridge or a stance that pulls the cue off line. Fix these three things and the same aim makes more balls. Here is how to hold a pool cue, step by step. (Left-handed? Swap left and right.)</p>
+<h2>The grip (back hand)</h2>
+<ul>
+<li><b>Where to hold it:</b> find the cue's balance point (balance it on one finger), then move your hand 3 to 6 inches behind it. When the tip is at the cue ball, your forearm should hang straight down, at 90 degrees to the cue.</li>
+<li><b>How tight:</b> loose. Cradle the cue with your thumb and first two or three fingers, with a small gap between the cue and your palm. A tight fist makes the tip steer and kills speed.</li>
+<li><b>Wrist:</b> let it hang straight, not cocked in or out. A wrist turned sideways pushes the cue sideways.</li>
+</ul>
+<h2>The bridge (front hand)</h2>
+<p>The bridge is the guide the cue slides through. It has to be steady and let the cue move perfectly straight.</p>
+<ul>
+<li><b>Open bridge:</b> lay your hand flat on the cloth, spread the fingers, then raise the knuckles a little. Press your thumb against the base of your first finger to make a V and rest the cue in it. Easiest to learn, and best for soft shots and seeing the line.</li>
+<li><b>Closed (loop) bridge:</b> curl your first finger over the cue to make a loop, with the cue resting against your thumb and middle finger. It locks the cue in place, so it is better for firm shots, draw and the break.</li>
+<li><b>Rail bridge:</b> when the cue ball is near the cushion, rest the cue on the rail and guide it between your first and second fingers, or slide it along the rail under your fingers.</li>
+<li><b>Over a ball:</b> raise your hand on your fingertips (a "tripod") so the cue clears the blocking ball. Shorten the stroke and keep it smooth.</li>
+<li><b>Mechanical bridge (the rake):</b> for shots you can't reach. Set it flat on the table a few inches from the cue ball and stroke with your hand at shoulder height, elbow out.</li>
+</ul>
+<h2>How long should your bridge be?</h2>
+<p>Keep your bridge hand about 6 to 9 inches from the cue ball on normal shots. Go a little longer for the break and power shots, and shorter for delicate shots and when the cue ball is close to another ball. Too long and the tip wanders; too short and you cannot follow through.</p>
+<h2>The stance</h2>
+<ul>
+<li><b>Feet:</b> step into the shot line with your back foot right on it (right foot for right-handers). Put your front foot forward and to the side, about shoulder width apart, pointing toward the shot.</li>
+<li><b>Body:</b> bend at the waist so your chin is a few inches above the cue. Lower is more accurate; most good players get their chin close to the cue.</li>
+<li><b>Head:</b> keep it still and over the cue. Your eyes should look straight down the line, like sighting a rifle.</li>
+<li><b>Balance:</b> you should be stable enough that someone could tap your shoulder without you wobbling. Under tournament rules you must keep at least one foot on the floor.</li>
+</ul>
+<h2>Check yourself in 2 minutes</h2>
+<ol>
+<li><b>The mirror check:</b> get down on a shot facing a mirror or a phone camera. The cue, your forearm and your eyes should all line up.</li>
+<li><b>The straight-stroke test:</b> shoot the cue ball straight up the table over the second diamond. It should come straight back to your tip. If it drifts, your grip or stance is pulling it.</li>
+<li><b>The bottle drill:</b> stroke into the neck of an empty bottle lying on the table without touching the sides.</li>
+</ol>
+<p>Next, learn to aim with <a href="/guides/how-to-aim-in-pool">how to aim in pool</a>, put spin on the ball in <a href="/guides/english-in-pool">English in pool</a>, and practice with the <a href="/guides/pool-practice-drills">practice drills</a>. Start from the beginning in <a href="/guides/pool-basics-for-beginners">pool for beginners</a>.</p>
+<p>Ready to try it? <a href="/tonight/">Find a tournament tonight</a>.</p>`
   }
 ];
