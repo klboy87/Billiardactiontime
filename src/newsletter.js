@@ -3,6 +3,7 @@
 // program), so the owner can send it to the subscriber list with one paste.
 import * as SEO from './seo.js';
 import { todayIso, goingTop, featuredIds } from './db.js';
+import { GUIDES } from './guides.js';
 import { STATE_NAMES } from './normalize.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -33,6 +34,9 @@ export function buildNewsletter(db, cfg) {
   const shown = new Set([...big, ...calendar, ...popular.map(p => p.t), ...featured].map(t => t.id));
   const fresh = SEO.recentlyAdded(db, 7).filter(t => !shown.has(t.id)).sort((a, b) => weight(b) - weight(a)).slice(0, 5).sort((a, b) => a.date.localeCompare(b.date));
   const range = wk.from === wk.to ? md(wk.from) : `${md(wk.from)}–${md(wk.to)}`;
+  // Three guides a week, rotating through the newest first, so every email has something new to read.
+  const wkNo = Math.floor(Date.parse(today + 'T00:00:00Z') / (7 * 864e5)), pool = [...GUIDES].reverse();
+  const reads = [0, 1, 2].map(i => pool[(wkNo * 3 + i) % pool.length]);
   const top = big[0];
 
   const subject = weekend.length
@@ -60,6 +64,8 @@ export function buildNewsletter(db, cfg) {
     calendar.length ? H('📅 Mark your calendar') + `<ul style="padding-left:20px;margin:0 0 8px">${calendar.map(item).join('')}</ul>` : '',
     popular.length ? H('🔥 Players are going to these') + `<ul style="padding-left:20px;margin:0 0 8px">${popular.map(({ t, n }) => item(t).replace('</span></li>', ` · <b>${n} going</b></span></li>`)).join('')}</ul>` : '',
     fresh.length ? H('🆕 New this week') + `<ul style="padding-left:20px;margin:0 0 8px">${fresh.map(item).join('')}</ul>` + P(A(link('/new/', 'new'), 'See everything added this week →')) : '',
+    H('📖 Worth a read'),
+    `<ul style="padding-left:20px;margin:0 0 8px">${reads.map(g => `<li style="margin:0 0 8px;font:16px/1.45 Arial,Helvetica,sans-serif">${A(link('/guides/' + g.slug, 'read'), g.title)}</li>`).join('')}</ul>`,
     H('🎯 Running a tournament?'),
     P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')}`),
     P(`🎁 Shopping for a pool player? ${A(link('/gear/gifts-for-pool-players', 'gifts'), 'Gift ideas they will actually use →')}`),
@@ -84,6 +90,7 @@ ${body}
     ...(states.length ? ['BUSIEST STATES: ' + states.map(([s, n]) => `${STATE_NAMES[s] || s} (${n})`).join(', '), ''] : []),
     ...(calendar.length ? ['MARK YOUR CALENDAR', ...calendar.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}${price(t) ? ' (' + price(t) + ')' : ''}`), ''] : []),
     ...(fresh.length ? ['NEW THIS WEEK', ...fresh.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}`), `All new listings: ${link('/new/', 'new')}`, ''] : []),
+    'WORTH A READ', ...reads.map(g => `- ${g.title}: ${link('/guides/' + g.slug, 'read')}`), '',
     `Running a tournament? Post it free: ${link('/post', 'post')}`, '',
     `Shopping for a pool player? Gift ideas: ${link('/gear/gifts-for-pool-players', 'gifts')}`, '',
     'Billiard Action Time', '',
