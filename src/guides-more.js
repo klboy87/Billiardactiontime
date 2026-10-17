@@ -1238,5 +1238,34 @@ ${table({ balls: [{ x: 4, y: 2.6, n: 6 }, { x: 3.52, y: 3.36, n: 0 }], paths: [[
 <li>Try the same shot soft, medium and firm, and see how the angle changes.</li>
 </ol>
 <p>Train your eye for free with the <a href="/play/bank-trainer">bank shot trainer</a>, then try the <a href="/trick-shots/cross-corner-bank">cross-corner bank</a> trick shot. For banks with the cue ball, read <a href="/guides/how-to-kick-in-pool">how to kick in pool</a>. Love banks? There is a whole game of them: <a href="/guides/bank-pool-rules">bank pool</a>.</p>`
+  },
+  {
+    slug: 'pool-ball-colors-and-numbers', title: 'Pool Ball Colors and Numbers: Solids, Stripes and the 8',
+    desc: 'What color is each pool ball? The standard colors of balls 1 to 15, solids vs stripes, the cue ball, and how the numbers are used in 8-Ball, 9-Ball and other games.',
+    body: `
+<p>A standard pool set has 16 balls: a white cue ball and 15 numbered object balls. The 1 through 8 are solid colors, and the 9 through 15 are white with a colored stripe. Each stripe uses the same color as the solid eight numbers below it.</p>
+${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y: 1.3, n })).concat([9, 10, 11, 12, 13, 14, 15].map((n, i) => ({ x: 0.6 + i * 0.95, y: 2.7, n }))).concat([{ x: 7.25, y: 2.7, n: 0 }]) }, 'Top row: the solids, 1 to 8. Bottom row: the stripes, 9 to 15, and the cue ball.')}
+<h2>The colors, ball by ball</h2>
+<div class="seo-tbl" style="overflow-x:auto"><table class="t"><thead><tr><th>Color</th><th>Solid</th><th>Stripe</th></tr></thead><tbody>
+<tr><td>Yellow</td><td>1</td><td>9</td></tr>
+<tr><td>Blue</td><td>2</td><td>10</td></tr>
+<tr><td>Red</td><td>3</td><td>11</td></tr>
+<tr><td>Purple</td><td>4</td><td>12</td></tr>
+<tr><td>Orange</td><td>5</td><td>13</td></tr>
+<tr><td>Green</td><td>6</td><td>14</td></tr>
+<tr><td>Maroon (burgundy)</td><td>7</td><td>15</td></tr>
+<tr><td>Black</td><td>8</td><td>none</td></tr>
+</tbody></table></div>
+<p>A quick way to remember them: the stripe is always the solid's number plus eight. The 3 is red, so the 11 is red-striped. Some sets use slightly different shades (a pink 4, a brown 7), and TV and pro sets sometimes use brighter colors so they show up on camera.</p>
+<h2>The cue ball</h2>
+<p>The cue ball is plain white. Some are marked with a red or blue dot or logo so players and viewers can see spin. Coin-operated bar tables sometimes use a slightly larger or heavier cue ball so the table can send it back to the player; it plays a little differently from a standard one.</p>
+<h2>How the numbers are used</h2>
+<ul>
+<li><b>8-Ball:</b> one player takes the solids (1 to 7), the other the stripes (9 to 15), and the 8 is last. See <a href="/guides/8-ball-rules">8-Ball rules</a>.</li>
+<li><b>9-Ball and 10-Ball:</b> only balls 1 to 9 (or 1 to 10) are used, and you must hit the lowest-numbered ball first. See <a href="/guides/9-ball-rules">9-Ball rules</a> and <a href="/guides/10-ball-rules">10-Ball rules</a>.</li>
+<li><b>Straight pool and One Pocket:</b> the numbers don't matter; every ball counts the same.</li>
+<li><b>Cutthroat:</b> three players each own a group: 1 to 5, 6 to 10 and 11 to 15. See <a href="/guides/cutthroat-pool-rules">cutthroat rules</a>.</li>
+</ul>
+<p>Setting up a game? Read <a href="/guides/how-to-rack-pool-balls">how to rack pool balls</a> for every game. Need a new set for a home table? See the <a href="/gear/home-pool-table">home pool table buying guide</a>.</p>`
   }
 ];
