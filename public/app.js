@@ -241,6 +241,8 @@
           <a href="/trick-shots/"><small>✨ Trick shots</small><b>15 trick shots with diagrams to try at the table</b></a>
           <a href="/gear/"><small>🛒 Pool gear</small><b>What to buy: cue, case, chalk and more</b></a>
           ${(() => { const md = new Date().getMonth() * 100 + new Date().getDate(); return md >= 915 && md <= 1124 ? '<a href="/gear/gifts-for-pool-players"><small>🎁 Holiday gifts</small><b>15 gift ideas for the pool player in your life</b></a>' : ''; })()}
+          <a href="/guides/pool-rules-questions"><small>⚖️ Settle the argument</small><b>Pool rules Q&amp;A: scratches, the 8 on the break and more</b></a>
+          <a href="/guides/pool-games-to-play"><small>🎉 Game night</small><b>14 pool games to play with friends</b></a>
           <a href="/tools/pool-rules-quiz"><small>Quiz</small><b>How well do you know the rules? Take the 12-question quiz</b></a>
           <a href="/guides/pool-practice-drills"><small>For players</small><b>7 practice drills that actually make you better</b></a>
           <a href="/guides/fargo-rating-chart"><small>For players</small><b>Fargo rating chart: win odds by rating gap</b></a>
