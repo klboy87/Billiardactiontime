@@ -1020,13 +1020,13 @@
         <div id="nlPreview" style="border:1px solid #ddd;border-radius:8px;background:#fff;color:#222;padding:10px;max-height:520px;overflow:auto">Loading…</div>
         <form id="nlRemove" class="actbar" style="margin-top:12px;flex-wrap:wrap"><input name="email" type="email" required placeholder="Email to unsubscribe" style="max-width:280px"><button class="btn btn-out btn-sm" type="submit">Remove From List</button></form>
       </div>
-      <h2>💵 Featured Listings (paid)</h2>
+      <h2>⭐ Featured Listings</h2>
       <div class="card" style="padding:12px 16px;margin-bottom:16px">
-        <p class="muted" style="margin:0 0 8px;font-size:14px">When a director pays (see <a href="/advertise" target="_blank">/advertise</a>), paste their tournament link here and pick the plan.</p>
+        <p class="muted" style="margin:0 0 8px;font-size:14px">Highlight a tournament for free (a big added-money event, a new weekly night). Paste its link and pick how long.</p>
         <form id="promoForm" style="display:grid;gap:8px">
           <input name="ref" required placeholder="Tournament link or id, e.g. https://billiardactiontime.com/tournament/...">
-          <select name="plan"><option value="feature">Featured Tournament ($15): until the event is played</option><option value="weekly">Featured Weekly Night ($39): every date for 30 days</option><option value="big">Big Event Package ($49): until the event is played</option></select>
-          <input name="note" placeholder="Note (who paid, how much)" maxlength="200">
+          <select name="plan"><option value="feature">This date only, until it's played</option><option value="weekly">Every weekly date for the next 30 days</option></select>
+          <input name="note" placeholder="Note (optional)" maxlength="200">
           <button class="btn btn-green btn-sm" type="submit">Turn on Featured</button>
         </form>
         <p id="promoMsg" class="muted" style="min-height:1.2em;margin:8px 0"></p>

@@ -42,8 +42,7 @@ export function getConfig(env = process.env) {
     placesFile: env.PLACES_FILE || '',
     // Google AdSense publisher id ("ca-pub-1234567890123456"). Ads stay off until this is set.
     adsenseClient: /^ca-pub-\d{10,20}$/.test((env.ADSENSE_CLIENT || '').trim()) ? env.ADSENSE_CLIENT.trim() : '',
-    // Optional checkout links (Square, Stripe or PayPal payment links) for the /advertise plans. Without them the
-    // buttons open an email to us instead.
-    payLinks: Object.fromEntries(['FEATURE', 'WEEKLY', 'BIG'].map(k => [k.toLowerCase(), /^https:\/\//.test(env['PAY_' + k + '_URL'] || '') ? env['PAY_' + k + '_URL'] : '']))
+    // Amazon Associates tracking id (e.g. "yoursite-20"). Gear links work without it but only earn with it.
+    amazonTag: /^[\w-]{3,40}-2[0-9]$/.test((env.AMAZON_TAG || '').trim()) ? env.AMAZON_TAG.trim() : ''
   };
 }

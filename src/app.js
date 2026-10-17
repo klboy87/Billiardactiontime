@@ -37,6 +37,7 @@ import * as TL from './tools.js';
 import * as BR from './brackets.js';
 import * as TS from './trickshots.js';
 import * as PL from './play.js';
+import * as GR from './gear.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
@@ -654,11 +655,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     // Links built from a missing value ("…/null", "…/undefined") were being crawled: send them to the page above.
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^(.*?)\/(?:null|undefined)\/?$/))) return moved(x[1] === '/tournament' ? '/tournaments/' : x[1] || '/');
     if ((m === 'GET' || m === 'HEAD') && (p === '/tournament' || p === '/tournament/')) return moved('/tournaments/');
-    if ((m === 'GET' || m === 'HEAD') && (p === '/advertise' || p === '/advertise/')) {
-      SEO.ensureFooter(db); trackVisit(req, 'advertise');
-      const ref = url.searchParams.get('t') ? SEO.tournamentRef(db, url.searchParams.get('t')) : null;
-      return html(200, TL.advertisePage(cfg, ref), ref ? { 'X-Robots-Tag': 'noindex' } : {});
-    }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/gear' || p === '/gear/')) { if (p === '/gear') return moved('/gear/'); SEO.ensureFooter(db); trackVisit(req, 'gear'); return html(200, GR.gearPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/advertise' || p === '/advertise/')) return moved('/directors/');   // paid plans retired: posting and listing are free
     if ((m === 'GET' || m === 'HEAD') && (p === '/directors' || p === '/directors/')) { if (p === '/directors') return moved('/directors/'); SEO.ensureFooter(db); trackVisit(req, 'directors'); return html(200, TL.directorsPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/pool-halls' || p === '/pool-halls/')) { if (p === '/pool-halls') return moved('/pool-halls/'); SEO.ensureFooter(db); trackVisit(req, 'halls'); return html(200, SEO.poolHallsIndexPage(db, cfg), { 'Cache-Control': 'public, max-age=1800' }); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/pool-halls\/([a-z-]{2,40})(\/)?$/))) {
@@ -771,7 +769,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/advertise', pri: '0.6' }, { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
+      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/gear/', pri: '0.7' }, { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
         { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
@@ -783,7 +781,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/guides\/([a-z0-9-]{2,80})\/?$/))) {
       SEO.ensureFooter(db);
       const GAME_OF = { '8-ball-rules': '8-Ball', '9-ball-rules': '9-Ball', '10-ball-rules': '10-Ball', 'one-pocket': 'One Pocket', 'scotch-doubles': 'Scotch Doubles', 'bank-pool-rules': 'Banks', 'straight-pool-rules': 'Straight Pool', '8-ball-patterns': '8-Ball', '9-ball-strategy': '9-Ball', 'bar-rules-vs-tournament-rules': '8-Ball' };
-      const out = GU.guidePage(cfg, x[1], GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : SEO.tonightCta(db));
+      const out = GU.guidePage(cfg, x[1], GR.gearBox(cfg, x[1]) + (GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : SEO.tonightCta(db)));
       if (!out) return notFoundPage();
       trackVisit(req, 'guide');
       return html(200, out);
@@ -793,7 +791,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (p === '/trick-shots' || p === '/trick-shots/')) { if (p === '/trick-shots') return moved('/trick-shots/'); SEO.ensureFooter(db); trackVisit(req, 'trick-shots'); return html(200, TS.trickShotsIndexPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/trick-shots\/([a-z0-9-]{2,80})\/?$/))) {
       SEO.ensureFooter(db);
-      const out = TS.trickShotPage(cfg, x[1])?.replace('</article>\n  <section class="sec seo-sec"><h2>Next shot</h2>', '</article>' + SEO.tonightCta(db) + '\n  <section class="sec seo-sec"><h2>Next shot</h2>');
+      const out = TS.trickShotPage(cfg, x[1])?.replace('</article>\n  <section class="sec seo-sec"><h2>Next shot</h2>', '</article>' + GR.gearBox(cfg, x[1]) + SEO.tonightCta(db) + '\n  <section class="sec seo-sec"><h2>Next shot</h2>');
       if (!out) return notFoundPage();
       trackVisit(req, 'trick-shot');
       return html(200, out);

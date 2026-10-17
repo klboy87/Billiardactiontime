@@ -663,3 +663,7 @@ table.t tr.noline td{border-bottom:0}
 .plan ul{padding-left:18px;margin:8px 0 14px;flex:1}
 .plan li{margin:4px 0}
 .plan-cta{display:grid;gap:6px;justify-items:start}
+.gear-list{list-style:none;padding:0;margin:0}.gear-list li{padding:6px 0;border-top:1px solid var(--line)}.gear-list li:first-child{border-top:0}
+.gear-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.gear-card{padding:16px 18px;display:flex;flex-direction:column}.gear-card h2{font-size:19px;margin:6px 0}.gear-card p{margin:0 0 10px}.gear-ic{font-size:30px;line-height:1}
+.gear-cta{margin-top:auto!important;display:flex;gap:12px;align-items:center;flex-wrap:wrap}

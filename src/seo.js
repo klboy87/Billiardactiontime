@@ -199,7 +199,7 @@ function buildFooter(db) {
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
     <div><h4>Learn &amp; Play</h4><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/pool-halls/">Pool halls</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a><a href="/directors/">For directors</a></div>
-  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/contact">Contact</a> · <a href="/advertise">Advertise</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/gear/">Pool Gear</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.
@@ -242,7 +242,7 @@ function featuredBox(db, list, { max = 3, showCity = true } = {}) {
   const picks = F.size ? list.filter(t => F.has(t.id) && t.date >= today).slice(0, max) : [];
   if (!picks.length) return '';
   return `<section class="feat-box" aria-label="Featured tournaments"><h2>⭐ Featured tournaments</h2>${picks.map(t => `<a class="feat-item" href="${tournamentPath(db, t)}"><b>${esc(t.name)}</b><span>${esc(longDate(t.date))}${t.time ? ' · ' + esc(fmtTime(t.time)) : ''}</span><span class="muted">${esc(t.venue.name)}${showCity ? ` · ${esc(t.venue.city)}, ${esc(t.venue.state)}` : ''}${t.entry != null ? ' · ' + money(t.entry) + ' entry' : ''}${t.added ? ' · <b>' + money(t.added) + ' added</b>' : ''}</span></a>`).join('')}
-  <p class="feat-foot"><a href="/advertise">Feature your tournament →</a></p></section>`;
+</section>`;
 }
 
 function eventRows(db, list, { showCity = true, byDay = false } = {}) {
@@ -272,7 +272,7 @@ export function isThinListing(t) {
   return t.entry == null && !t.added && !t.time && !t.race && !t.format && !t.registrationUrl && !t.hasFlyer && !notes && !t.venue?.address;
 }
 
-// For /advertise and the admin Featured tools: resolve an id, slug or full URL to a listed tournament.
+// For the admin Featured tools: resolve an id, slug or full URL to a listed tournament.
 export function tournamentRef(db, ref) {
   const ix = index(db), str = String(ref ?? '').trim();
   const m = str.match(/\/tournament\/([a-z0-9-]+)/) || str.match(/^([a-z0-9-]*[a-z][a-z0-9-]*)$/);
@@ -339,7 +339,6 @@ export function tournamentPage(db, cfg, t) {
   <section class="card" style="margin-top:16px;padding:14px 18px"><h2 class="seo-h2" style="margin-top:0">New to tournaments?</h2>
     <p class="muted" style="margin:6px 0">${GUIDE_FOR_GAME[t.game] ? `Brush up on <a href="/guides/${GUIDE_FOR_GAME[t.game][0]}">${GUIDE_FOR_GAME[t.game][1]}</a>, then read ` : 'Read '}<a href="/guides/first-pool-tournament">what to expect at your first tournament</a> and <a href="/guides/double-elimination-brackets">how double-elimination brackets work</a>.</p><p class="muted" style="margin:6px 0">Warming up? Take today's <a href="/play/aim-trainer">aim trainer challenge</a> or learn a <a href="/trick-shots/">trick shot</a>.</p></section>
   ${shareBox(cfg, db, t, g)}
-  ${t.date >= today && !index(db).featured.has(t.id) ? `<p class="muted" style="margin:12px 0 0;font-size:14px">📣 Running this tournament? <a href="/advertise?t=${t.id}">Feature it</a> at the top of ${esc(v.city)} and ${esc(STATE_NAMES[v.state] || v.state)} listings and fill your bracket.</p>` : ''}
   ${featuredBox(db, up.filter(x => x.id !== t.id && x.venue.state === v.state), { max: 2 })}
   ${sameVenue.length ? `<section class="sec seo-sec"><h2>More at ${esc(v.name)}</h2><ul class="seo-list">${mini(sameVenue)}</ul><a href="${venuePath(db, v)}">All tournaments at ${esc(v.name)} →</a></section>` : ''}
   ${(() => {

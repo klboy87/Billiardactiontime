@@ -61,7 +61,7 @@ export function buildNewsletter(db, cfg) {
     popular.length ? H('🔥 Players are going to these') + `<ul style="padding-left:20px;margin:0 0 8px">${popular.map(({ t, n }) => item(t).replace('</span></li>', ` · <b>${n} going</b></span></li>`)).join('')}</ul>` : '',
     fresh.length ? H('🆕 New this week') + `<ul style="padding-left:20px;margin:0 0 8px">${fresh.map(item).join('')}</ul>` + P(A(link('/new/', 'new'), 'See everything added this week →')) : '',
     H('🎯 Running a tournament?'),
-    P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')} Want more players? ${A(link('/advertise', 'advertise'), 'Feature it from $15 →')}`),
+    P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')}`),
     P('Good luck out there. May your breaks be dry for the other guy.', 'margin-top:22px'),
     P('<b>Billiard Action Time</b>'),
     `<hr style="border:0;border-top:1px solid #ddd;margin:22px 0 12px">`,
