@@ -1471,5 +1471,29 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 </ol>
 <h2>The better way to play for money</h2>
 <p>If you like playing for something, local tournaments are the fair way to do it: everyone pays the same entry, the bracket is public, and the best player on the day wins the pot. <a href="/tonight/">Find a tournament tonight</a>, or see the <a href="/money-matches/">money match board</a> for posted, public challenge matches. For the Hollywood version, watch our <a href="/guides/best-pool-movies">best pool movies</a>.</p>`
+  },
+  {
+    slug: 'pool-glove', title: 'Do You Need a Pool Glove? What They Do and How to Pick One',
+    desc: 'What a billiard glove does, who should wear one, which hand it goes on, three-finger vs full gloves, sizing, and how to keep it clean.',
+    body: `
+<p>You see them on pro players and on half the players at any weekly tournament: a thin glove with three fingers on the bridge hand. It is not a fashion thing. Here is what a pool glove actually does.</p>
+<h2>What it does</h2>
+<ul>
+<li><b>Smooth stroke:</b> the cue slides over the glove instead of sticking to dry or sweaty skin, so your stroke stays straight.</li>
+<li><b>Same feel every night:</b> humidity, hand lotion and nerves all change how the cue slides. A glove takes those out of the picture.</li>
+<li><b>Less chalk mess:</b> no talc needed, and less chalk on your hand and the table.</li>
+</ul>
+<h2>Who should wear one?</h2>
+<p>Anyone whose cue sticks or drags through the bridge, especially on humid nights or when nerves make your hands sweat in a tournament (see <a href="/guides/pool-tournament-nerves">handling tournament nerves</a>). If your stroke already feels smooth, you don't need one, but most players who try a glove keep it.</p>
+<h2>Which hand?</h2>
+<p>It goes on your <b>bridge hand</b>, the one in front that the cue slides through. For most right-handed players that is the left hand. Gloves are sold for left and right hands, so check before you buy.</p>
+<h2>Three-finger or full glove?</h2>
+<ul>
+<li><b>Three-finger gloves</b> cover the thumb, first and second fingers, the ones the cue touches. They are the most popular because your other fingers still grip the cloth.</li>
+<li><b>Full or five-finger gloves</b> cover the whole hand. Some players like the even feel; others find it slips on the cloth.</li>
+</ul>
+<h2>Sizing and care</h2>
+<p>A glove should fit snugly with no loose material where the cue slides; loose fabric bunches up and catches the cue. Most come in sizes from small to extra large. Wash it by hand in cool water and let it air dry, and keep a spare in your case for long tournament days.</p>
+<p>See more of what to bring in the <a href="/gear/">pool gear guide</a> and <a href="/guides/first-pool-tournament">your first pool tournament</a>. Learn the bridge itself in <a href="/guides/how-to-hold-a-pool-cue">how to hold a pool cue</a>.</p>`
   }
 ];
