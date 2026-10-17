@@ -788,7 +788,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/guides\/([a-z0-9-]{2,80})\/?$/))) {
       SEO.ensureFooter(db);
       const GAME_OF = { '8-ball-rules': '8-Ball', '9-ball-rules': '9-Ball', '10-ball-rules': '10-Ball', 'one-pocket': 'One Pocket', 'scotch-doubles': 'Scotch Doubles', 'bank-pool-rules': 'Banks', 'straight-pool-rules': 'Straight Pool', '8-ball-patterns': '8-Ball', '9-ball-strategy': '9-Ball', 'bar-rules-vs-tournament-rules': '8-Ball' };
-      const out = GU.guidePage(cfg, x[1], GR.gearBox(cfg, x[1]) + (GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : SEO.tonightCta(db)));
+      const out = GR.tagAmazon(cfg, GU.guidePage(cfg, x[1], GR.gearBox(cfg, x[1]) + (GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : SEO.tonightCta(db))));
       if (!out) return notFoundPage();
       trackVisit(req, 'guide');
       return html(200, out);

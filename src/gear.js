@@ -122,3 +122,10 @@ export function buyingPage(cfg, slug) {
   <section class="sec seo-sec"><h2>More gear guides</h2><div class="guide-next"><a href="/gear/"><small>Gear</small><b>Pool gear guide: what players need</b></a>${BUYING.filter(x => x.slug !== g.slug).map(x => `<a href="/gear/${x.slug}"><small>Buying guide</small><b>${esc(x.title)}</b></a>`).join('')}<a href="/guides/how-to-choose-a-pool-cue"><small>Guide</small><b>How to choose a pool cue</b></a></div></section>`;
   return layout(cfg, { title: `${g.title} | Billiard Action Time`, description: g.desc, path: `/gear/${g.slug}`, body, ogImage: `${cfg.publicUrl}/og/gear/${g.slug}.png` });
 }
+
+// Guides with Amazon links written into the text: add the tracking id (and the disclosure) when one is set.
+export function tagAmazon(cfg, html) {
+  if (!cfg.amazonTag || !html || !html.includes('https://www.amazon.com/s?k=')) return html;
+  const out = html.replace(/(https:\/\/www\.amazon\.com\/s\?k=[^"&]+)"/g, (m, u) => `${u}&amp;tag=${encodeURIComponent(cfg.amazonTag)}"`);
+  return out.includes('As an Amazon Associate') ? out : out.replace('</article>', '<p class="muted" style="font-size:13px">As an Amazon Associate we earn from qualifying purchases.</p></article>');
+}

@@ -1299,5 +1299,31 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <h2>Playing alone</h2>
 <p><b>Play the ghost:</b> break, take ball in hand, and try to run the rack. If you miss, the "ghost" wins that rack. Race to 5 and track your score over time. It is in our <a href="/guides/pool-practice-drills">practice drills</a>, and you can log your results in the free <a href="/play/practice-log">practice log</a>. Between sessions, play our <a href="/play/">free pool games</a> online.</p>
 <p>Not sure which game fits you? Take the <a href="/play/which-game">which pool game is yours?</a> quiz. Then find a tournament for it: <a href="/tonight/">tonight</a> or <a href="/this-weekend/">this weekend</a>.</p>`
+  },
+  {
+    slug: 'best-pool-movies', title: 'The Best Pool Movies of All Time: From The Hustler to Poolhall Junkies',
+    desc: 'The best movies about pool and pool hustlers: The Hustler, The Color of Money, Poolhall Junkies, The Baltimore Bullet, Kiss Shot, Turn the River and Stickmen, and what each gets right about the game.',
+    body: `
+<p>Pool has given Hollywood some of its best characters: hustlers, road players and old pros with one last big match in them. Here are the pool movies every player should see, oldest first. Grab some friends and make it a movie night.</p>
+<h2>The Hustler (1961)</h2>
+<p>Paul Newman plays "Fast Eddie" Felson, a young hustler who wants to beat the legendary Minnesota Fats (Jackie Gleason). It is dark, smoky and serious, and the long straight pool marathon is still the best match ever put on film. Many people say this movie filled pool halls across America. <a href="https://www.amazon.com/s?k=The+Hustler+1961" target="_blank" rel="sponsored nofollow noopener">Find it on Amazon</a>.</p>
+<h2>The Baltimore Bullet (1980)</h2>
+<p>James Coburn is an aging road player who teams up with a young partner to set up one huge game. It is lighter than The Hustler, and it features cameos from real pool champions of the era. <a href="https://www.amazon.com/s?k=The+Baltimore+Bullet" target="_blank" rel="sponsored nofollow noopener">Find it on Amazon</a>.</p>
+<h2>The Color of Money (1986)</h2>
+<p>Martin Scorsese's sequel to The Hustler. Paul Newman returns as an older Fast Eddie, now staking a cocky young player (Tom Cruise) on the 9-Ball road. Newman won the Oscar for it. The 9-Ball tournament scenes are a fun look at the game in the eighties. <a href="https://www.amazon.com/s?k=The+Color+of+Money+1986" target="_blank" rel="sponsored nofollow noopener">Find it on Amazon</a>.</p>
+<h2>Kiss Shot (1989)</h2>
+<p>A made-for-TV movie starring Whoopi Goldberg as a single mom who goes back to hustling pool to keep her house. Warm, funny and an easy watch with the family. <a href="https://www.amazon.com/s?k=Kiss+Shot+Whoopi+Goldberg" target="_blank" rel="sponsored nofollow noopener">Find it on Amazon</a>.</p>
+<h2>Stickmen (2001)</h2>
+<p>A comedy from New Zealand about three friends in a pub pool tournament with a mysterious big-money prize. Quirky, quick and full of pub pool. <a href="https://www.amazon.com/s?k=Stickmen+2001+movie" target="_blank" rel="sponsored nofollow noopener">Find it on Amazon</a>.</p>
+<h2>Poolhall Junkies (2002)</h2>
+<p>A hustler tries to go straight and gets pulled back in for one more big game. Christopher Walken steals every scene, and the trick shots and money games make it a favorite with players. <a href="https://www.amazon.com/s?k=Poolhall+Junkies" target="_blank" rel="sponsored nofollow noopener">Find it on Amazon</a>.</p>
+<h2>Turn the River (2007)</h2>
+<p>Famke Janssen plays a hustler who plays high-stakes games to win back her son. A quiet, tense drama with some of the most realistic pool playing in any movie. <a href="https://www.amazon.com/s?k=Turn+the+River+2007" target="_blank" rel="sponsored nofollow noopener">Find it on Amazon</a>.</p>
+<h2>What the movies get right (and wrong)</h2>
+<ul>
+<li><b>Right:</b> the road-player culture, staking, and how much of a money game is about nerve. Read <a href="/guides/money-game-spots">money games and spots</a> to learn how real games are matched.</li>
+<li><b>Wrong:</b> nobody makes every shot, and real hustles are slower and quieter than Hollywood's. Real tournaments are friendlier, too: here's <a href="/guides/first-pool-tournament">what to expect at your first one</a>.</li>
+</ul>
+<p>Inspired? Learn a <a href="/trick-shots/">trick shot</a>, play the <a href="/play/">free pool games</a>, or <a href="/tonight/">find a tournament tonight</a>.</p>`
   }
 ];
