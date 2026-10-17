@@ -1382,5 +1382,30 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <h2>When to call a pro</h2>
 <p>Slate tables are leveled at the slate itself, using shims between the slate and the frame, and the seams between the slate pieces are filled and leveled too. If the slate is off, the seams are raised, or the table was just moved, a table mechanic can level it properly, usually while recovering or tightening the cloth. Non-slate tables that sag in the middle usually can't be fixed by leveling.</p>
 <p>Keep it playing well with <a href="/guides/how-to-clean-a-pool-table">how to clean a pool table</a>. Shopping? See the <a href="/gear/home-pool-table">home pool table buying guide</a>.</p>`
+  },
+  {
+    slug: 'history-of-pool', title: 'The History of Pool: From Lawn Game to Bar Table, and the Players Who Made It',
+    desc: 'A short history of pool and billiards: its roots in a lawn game, why the cloth is green, where the name pool came from, the leather tip and chalk, and legends from Willie Mosconi to Efren Reyes.',
+    body: `
+<p>Pool has been played for hundreds of years, by kings, hustlers and league players in every bar in America. Here is the short version of how the game got here, and the players who made it famous.</p>
+<h2>A lawn game moves indoors</h2>
+<p>Billiards grew out of a lawn game played in Europe in the 1400s, a bit like croquet, where players pushed balls with sticks. When it moved indoors onto a table, the table was covered in green cloth to look like grass. That is why pool tables are still green today.</p>
+<h2>From a mace to a cue</h2>
+<p>Early players pushed the ball with a "mace," a stick with a heavy head. Players started turning it around to use the thin end, or "queue," on hard shots, and by the late 1600s the cue was its own tool. In the early 1800s the leather tip and chalk came along, which let players put spin on the cue ball. Americans still call that spin "English."</p>
+<h2>Why it is called pool</h2>
+<p>In the 1800s, American "poolrooms" were places where people pooled their bets on horse races, and billiard tables kept customers busy between races. The name stuck to the game, and pocket billiards became "pool."</p>
+<h2>The American game</h2>
+<p>Brunswick began building tables in the 1840s and became the biggest name in American tables. Straight pool was the championship game for most of the 1900s, and 9-Ball grew into the fast, TV-friendly game most tournaments play today. Two movies, The Hustler (1961) and The Color of Money (1986), each set off a pool boom across the country. See our <a href="/guides/best-pool-movies">best pool movies</a>.</p>
+<h2>Legends of the game</h2>
+<ul>
+<li><b>Willie Mosconi</b> won the world straight pool title many times between the 1940s and 1950s and set the famous record run of 526 balls in a row in 1954.</li>
+<li><b>Minnesota Fats</b> (Rudolf Wanderone) was the most famous hustler and showman in pool, and a big reason people know the game.</li>
+<li><b>Efren Reyes</b> of the Philippines, "The Magician," is known for impossible shots and is often called the greatest player ever.</li>
+<li><b>Earl Strickland</b>, <b>Johnny Archer</b> and <b>Shane Van Boening</b> are among the top American 9-Ball champions of the modern era.</li>
+<li><b>Jeanette Lee</b>, "The Black Widow," and <b>Allison Fisher</b> brought huge audiences to women's pool in the 1990s and 2000s.</li>
+</ul>
+<h2>Pool today</h2>
+<p>Today pool is played in leagues and tournaments in nearly every town, with ratings like Fargo matching players fairly (see <a href="/guides/fargo-ratings-handicaps">Fargo ratings</a>). The big pro events are streamed online; see the <a href="/guides/major-pool-events-calendar">major pool events calendar</a>. And every week, thousands of local tournaments keep the game going.</p>
+<p>Be part of it: <a href="/tonight/">find a pool tournament tonight</a>.</p>`
   }
 ];
