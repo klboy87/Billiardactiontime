@@ -1438,5 +1438,38 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <li>Pick the weight where your speed control feels most natural, not the one that hits hardest.</li>
 </ol>
 <p>Many cues let you change the weight with a weight bolt in the butt, so you can adjust by half an ounce later. Ready to shop? See <a href="/guides/how-to-choose-a-pool-cue">how to choose a pool cue</a> and <a href="/gear/pool-cue-prices">what a pool cue costs</a>.</p>`
+  },
+  {
+    slug: 'pool-hustlers', title: 'How Pool Hustlers Work (and How Not to Get Hustled)',
+    desc: 'How pool hustles work: sandbagging, the slow raise, the partner setup and the ringer, plus the warning signs and simple rules that keep your money in your pocket.',
+    body: `
+<p>Hustling is as old as pool itself, and the movies made it famous. Real hustles are quieter than Hollywood's: a friendly stranger, a small bet, and a game that somehow gets more expensive. Here is how it works, so you can enjoy a money game without becoming the mark.</p>
+<h2>The classic moves</h2>
+<ul>
+<li><b>Sandbagging:</b> the hustler plays below their real level, missing on purpose or winning by just a little, so you think the game is even.</li>
+<li><b>The slow raise:</b> start at $5 a game, lose a few on purpose, then "let's make it interesting." Once the stakes go up, their real game shows up.</li>
+<li><b>Lucky shots:</b> making a hard shot look like a fluke ("wow, that went in?") hides how good they are.</li>
+<li><b>The partner setup:</b> a friend of the hustler talks them down ("he's not that good") or offers to back you against them.</li>
+<li><b>The ringer:</b> a strong out-of-town player who nobody at the bar recognizes, brought in for one big game.</li>
+<li><b>The spot:</b> they offer you a big spot (like the 7 ball), which sounds generous until you see how well they really play.</li>
+</ul>
+<h2>Warning signs</h2>
+<ul>
+<li>A stranger who is very eager to play for money, especially after watching you play for a while.</li>
+<li>Someone who misses easy shots but always seems to get good position.</li>
+<li>Their own cue in a nice case, but they "don't play much."</li>
+<li>A crowd of their friends who seem very interested in your game.</li>
+<li>Bets that grow fast after they lose a couple.</li>
+</ul>
+<h2>Rules to protect your money</h2>
+<ol>
+<li><b>Set your limit before the first rack</b> and stick to it, win or lose.</li>
+<li><b>Watch before you play.</b> See how they run out and handle the cue ball, not how many balls they make.</li>
+<li><b>Agree on the rules and the race</b> up front: game, spot, who breaks, and what happens on a scratch on the 8. Read <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs tournament rules</a>.</li>
+<li><b>Know the real ratings.</b> If they have a Fargo rating, look it up. A fair spot comes from ratings, not talk (see the <a href="/guides/fargo-rating-chart">Fargo rating chart</a> and <a href="/guides/money-game-spots">money games and spots</a>).</li>
+<li><b>Don't chase losses.</b> "Double or nothing" is how a small loss becomes a big one.</li>
+</ol>
+<h2>The better way to play for money</h2>
+<p>If you like playing for something, local tournaments are the fair way to do it: everyone pays the same entry, the bracket is public, and the best player on the day wins the pot. <a href="/tonight/">Find a tournament tonight</a>, or see the <a href="/money-matches/">money match board</a> for posted, public challenge matches. For the Hollywood version, watch our <a href="/guides/best-pool-movies">best pool movies</a>.</p>`
   }
 ];
