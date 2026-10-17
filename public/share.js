@@ -24,3 +24,19 @@
     else window.prompt('Copy this link:', url);
   });
 })();
+
+/* One-step weekly email signup at the bottom of content pages. */
+(function () {
+  document.querySelectorAll('form[data-sub]').forEach(function (f) {
+    f.addEventListener('submit', function (e) {
+      if (!window.fetch) return;
+      e.preventDefault();
+      var msg = f.parentNode.querySelector('.sub-msg'), btn = f.querySelector('button'), email = f.querySelector('input').value;
+      btn.disabled = true;
+      fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Something went wrong'); }); })
+        .then(function () { f.hidden = true; if (msg) msg.textContent = "✓ You're in! Watch for the weekend email."; })
+        .catch(function (err) { if (msg) msg.textContent = '⚠ ' + err.message; btn.disabled = false; });
+    });
+  });
+})();

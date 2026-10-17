@@ -157,9 +157,11 @@ export function privacyPage(cfg) {
 // ---- shared page chrome ----
 // Shown at the bottom of every server-rendered page: the easiest way to turn a one-time visitor into a regular.
 const ALERT_CTA = `<section class="card seo-cta" style="margin:28px 0 8px;padding:18px 20px">
-  <h2 class="seo-h2" style="margin-top:0">Never miss a tournament near you</h2>
-  <p class="muted" style="margin:6px 0 12px">Get an email when new pool tournaments are posted in your area. Free, and you can unsubscribe any time.</p>
-  <div class="actbar"><a class="btn btn-green" href="/alerts">Get Tournament Alerts</a><a class="btn btn-out" href="/this-weekend/">See This Weekend's Tournaments</a></div>
+  <h2 class="seo-h2" style="margin-top:0">Get the weekend's best tournaments by email</h2>
+  <p class="muted" style="margin:6px 0 12px">One short email a week: the big events this weekend, what's new, and tips. Free, unsubscribe any time.</p>
+  <form class="sub-form" data-sub action="/alerts" method="get"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"><button class="btn btn-green" type="submit">Sign Me Up</button></form>
+  <p class="sub-msg muted" aria-live="polite" style="margin:8px 0 0;min-height:1.2em"></p>
+  <p class="muted" style="margin:4px 0 0;font-size:14px">Want alerts for your area only? <a href="/alerts">Set up tournament alerts</a> · <a href="/this-weekend/">This weekend's tournaments</a></p>
 </section>`;
 export function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage, scripts = [] }) {
   const url = cfg.publicUrl + path;
