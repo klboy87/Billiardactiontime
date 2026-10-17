@@ -1267,5 +1267,37 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <li><b>Cutthroat:</b> three players each own a group: 1 to 5, 6 to 10 and 11 to 15. See <a href="/guides/cutthroat-pool-rules">cutthroat rules</a>.</li>
 </ul>
 <p>Setting up a game? Read <a href="/guides/how-to-rack-pool-balls">how to rack pool balls</a> for every game. Need a new set for a home table? See the <a href="/gear/home-pool-table">home pool table buying guide</a>.</p>`
+  },
+  {
+    slug: 'pool-games-to-play', title: '14 Pool Games to Play: With Friends, Alone or at a Party',
+    desc: 'The best pool games beyond 8-Ball: 9-Ball, 10-Ball, cutthroat for three players, rotation, 3-Ball, Kelly pool for groups, one pocket, bank pool, straight pool and more, with how each one works.',
+    body: `
+<p>8-Ball is just the start. Here are 14 pool games worth knowing, grouped by how many people are playing. Each one has a quick "how it works" so you can rack up and play tonight.</p>
+<h2>Two players: the classics</h2>
+<ul>
+<li><b>8-Ball.</b> One player takes solids, the other stripes. Clear your group, then make the 8 to win. The most played game in the world. <a href="/guides/8-ball-rules">Full rules</a>.</li>
+<li><b>Last Pocket 8-Ball.</b> A popular bar version: the 8 must go in the same pocket as your last ball of your group. It makes every rack harder to finish.</li>
+<li><b>9-Ball.</b> Balls 1 to 9. Always hit the lowest ball first; whoever makes the 9 wins, even on a combination. Fast, and the most common tournament game. <a href="/guides/9-ball-rules">Full rules</a>.</li>
+<li><b>10-Ball.</b> Like 9-Ball with ten balls and called shots, so there is less luck. <a href="/guides/10-ball-rules">Full rules</a>.</li>
+<li><b>7-Ball.</b> A quicker version of 9-Ball with only the 1 through 7. Great when you want short racks.</li>
+<li><b>Straight Pool (14.1).</b> Call any ball in any pocket, one point each, and keep shooting until you miss. Re-rack 14 balls and keep going. Games go to 100 or more. <a href="/guides/straight-pool-rules">Full rules</a>.</li>
+<li><b>One Pocket.</b> Each player gets one corner pocket at the foot of the table, and only balls in your pocket count. First to 8 wins. A chess match on a pool table. <a href="/guides/one-pocket">How it works</a>.</li>
+<li><b>Bank Pool.</b> Every ball must be banked off at least one cushion and called. Usually first to 8 in a full rack. <a href="/guides/bank-pool-rules">Full rules</a>.</li>
+<li><b>Rotation (61).</b> Hit the lowest ball first, like 9-Ball, but every ball you make is worth its number in points. There are 120 points on the table, so 61 wins.</li>
+</ul>
+<h2>Three to five players</h2>
+<ul>
+<li><b>Cutthroat.</b> Three players each own a group of five balls (1 to 5, 6 to 10, 11 to 15). Sink your opponents' balls; the last player with a ball left wins. The best game for three. <a href="/guides/cutthroat-pool-rules">Full rules</a>.</li>
+<li><b>3-Ball.</b> Rack just three balls and try to pocket all three in as few shots as possible, break included. Everyone takes a turn and the lowest score wins. Quick, simple and very competitive.</li>
+</ul>
+<h2>Groups and parties</h2>
+<ul>
+<li><b>Kelly Pool.</b> Each player secretly draws a number from 1 to 15. Shoot the balls in rotation; whoever legally pockets the ball that matches their secret number wins. Great for a crowd, because anyone can win.</li>
+<li><b>Killer.</b> Every player starts with three lives and takes one shot per turn. Make a ball and stay alive; miss and lose a life. Last player standing wins. Big groups take turns around the table, so nobody waits long.</li>
+<li><b>Scotch Doubles.</b> Two-player teams take turns shooting: partner A, then partner B, every shot. Perfect for couples and mixed teams. <a href="/guides/scotch-doubles">How it works</a>.</li>
+</ul>
+<h2>Playing alone</h2>
+<p><b>Play the ghost:</b> break, take ball in hand, and try to run the rack. If you miss, the "ghost" wins that rack. Race to 5 and track your score over time. It is in our <a href="/guides/pool-practice-drills">practice drills</a>, and you can log your results in the free <a href="/play/practice-log">practice log</a>. Between sessions, play our <a href="/play/">free pool games</a> online.</p>
+<p>Not sure which game fits you? Take the <a href="/play/which-game">which pool game is yours?</a> quiz. Then find a tournament for it: <a href="/tonight/">tonight</a> or <a href="/this-weekend/">this weekend</a>.</p>`
   }
 ];
