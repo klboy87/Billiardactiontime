@@ -305,7 +305,7 @@ const BASE_GUIDES = [
     slug: 'pool-table-sizes', title: 'Pool Table Sizes: 7-Foot, 8-Foot and 9-Foot Tables Compared',
     desc: 'Playing-surface sizes for 7, 8 and 9-foot pool tables, how much room you need for each, and which size tournaments are played on.',
     body: `
-<p>Pool tables are named by their rough length, but the number that matters for play is the size of the <b>playing surface</b>, measured between the cushion noses. The playing surface is always twice as long as it is wide.</p>
+<p>Pool tables are named by their rough length, but the number that matters for play is the size of the <b>playing surface</b>, measured between the cushion noses. The playing surface is always twice as long as it is wide. Not sure what fits your room? Use the free <a href="/tools/pool-table-room-size">pool table room size calculator</a>.</p>
 <h2>Common sizes</h2>
 <table class="t"><thead><tr><th>Table</th><th>Playing surface (about)</th><th>Room needed with a 58" cue (about)</th><th>Where you see it</th></tr></thead><tbody>
 <tr><td>7-foot ("bar box")</td><td>78" × 39"</td><td>16'2" × 12'11"</td><td>Bars, coin-op tables, many leagues and bar-box tournaments</td></tr>

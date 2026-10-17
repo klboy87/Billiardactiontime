@@ -4,6 +4,29 @@
   var money = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
   var num = function (form, name) { var v = parseFloat(form.elements[name].value); return isFinite(v) && v > 0 ? v : 0; };
 
+  // ---------- pool table room size ----------
+  var roomForm = document.getElementById('roomForm');
+  if (roomForm) {
+    var roomOut = document.getElementById('roomOut');
+    var TABLES = [['7-foot (bar size)', 39, 78], ['8-foot', 44, 88], ['Oversized 8-foot', 46, 92], ['9-foot (tournament)', 50, 100]];
+    var ftin = function (inches) { var f = Math.floor(inches / 12), i = Math.round(inches - f * 12); if (i === 12) { f++; i = 0; } return f + "' " + i + '"'; };
+    var roomCalc = function () {
+      var L = num(roomForm, 'len') * 12, W = num(roomForm, 'wid') * 12, cue = parseFloat(roomForm.elements.cue.value);
+      if (!L || !W) { roomOut.innerHTML = '<p style="margin:0">Enter your room length and width.</p>'; return; }
+      var big = Math.max(L, W), small = Math.min(L, W), best = null;
+      var rows = TABLES.map(function (t) {
+        var needL = t[2] + 2 * cue, needW = t[1] + 2 * cue, fits = big >= needL && small >= needW;
+        var shortL = t[2] + 2 * 48, shortW = t[1] + 2 * 48, withShort = !fits && big >= shortL && small >= shortW;
+        if (fits) best = t[0];
+        return '<tr><td><b>' + t[0] + '</b></td><td>' + ftin(needL) + ' x ' + ftin(needW) + '</td><td>' + (fits ? '✅ Fits' : withShort ? '⚠️ Tight: OK with a short cue on some shots' : '❌ Too small') + '</td></tr>';
+      }).join('');
+      roomOut.innerHTML = '<p style="font-size:1.1em;margin-top:0">' + (best ? 'Best fit for your room: <b>' + best + '</b> table with ' + cue + '-inch cues.' : 'None of the standard tables fit with ' + cue + '-inch cues. Try a shorter cue, or look at a smaller or convertible table.') + '</p>' +
+        '<div style="overflow-x:auto"><table class="t"><thead><tr><th>Table</th><th>Room needed</th><th>Your room</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+        '<p class="muted" style="margin:10px 0 0">Next: <a href="/gear/home-pool-table">how to buy a home pool table</a> · <a href="/gear/game-room-setup">set up the game room</a></p>';
+    };
+    roomForm.addEventListener('input', roomCalc); roomForm.addEventListener('change', roomCalc); roomCalc();
+  }
+
   // ---------- payout calculator ----------
   var SPLITS = {
     2: [70, 30], 3: [50, 30, 20], 4: [45, 25, 15, 15], 5: [40, 25, 15, 10, 10], 6: [40, 24, 14, 10, 6, 6],

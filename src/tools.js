@@ -9,6 +9,8 @@ export const TOOLS = [
     desc: 'Enter two FargoRate ratings and see fair handicapped races, with each player\'s chance to win the match.' },
   { slug: 'round-robin-generator', title: 'Round Robin Schedule Generator for Pool Leagues & Tournaments',
     desc: 'Type in your players or teams and get a printable round robin schedule where everyone plays everyone once, with table numbers and a standings sheet.' },
+  { slug: 'pool-table-room-size', title: 'Pool Table Room Size Calculator: Will a 7, 8 or 9-Foot Table Fit?',
+    desc: 'Enter your room size and see which pool table fits with full-length cues, and when a short cue makes a bigger table work. Free, instant, works on your phone.' },
   { slug: 'pool-rules-quiz', title: 'Pool Rules Quiz: How Well Do You Know 8-Ball, 9-Ball and More?',
     desc: 'Twelve quick questions drawn from a bank of 25 on 8-Ball, 9-Ball, 10-Ball, straight pool, one pocket and more. New questions every time. See your score and share it.' }
 ];
@@ -76,6 +78,18 @@ export function toolPage(cfg, slug) {
     about = `<h2>How the calculator works</h2>
     <p>The prize pool is every player's entry fee minus the greens fee the room keeps, plus any added money, minus the house or director cut if you set one. "Automatic" pays about one place for every eight players (at least two places), using splits that most local tournaments use. Amounts are rounded to whole dollars and any leftover dollars go to first place.</p>
     <p>In a <a href="/guides/double-elimination-brackets">double-elimination bracket</a>, players knocked out in the same round tie, so places like 5th–6th or 7th–8th usually pay the same amount. Always announce the payout before the first match. More detail in our <a href="/guides/pool-tournament-payouts">payout guide</a>.</p>`;
+  } else if (slug === 'pool-table-room-size') {
+    tool = `<form id="roomForm" class="card" style="padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+      <label>Room length (feet)<input ${FIELD} type="number" name="len" min="6" max="60" step="0.5" value="17" inputmode="decimal"></label>
+      <label>Room width (feet)<input ${FIELD} type="number" name="wid" min="6" max="60" step="0.5" value="14" inputmode="decimal"></label>
+      <label>Cue length<select ${FIELD} name="cue"><option value="58">58 in (standard)</option><option value="57">57 in</option><option value="52">52 in (short)</option><option value="48">48 in (short)</option></select></label>
+    </form>
+    <div id="roomOut" class="card" style="padding:16px 18px;margin-top:12px" aria-live="polite"><p class="muted" style="margin:0">Turn on JavaScript to use the calculator.</p></div>`;
+    about = `<h2>How the calculator works</h2>
+    <p>You need room for a full backstroke when the cue ball is frozen against any rail. So the room has to be the table's <b>playing surface</b> plus one cue length on every side. Playing surfaces used here: 7-foot 39 x 78 in, 8-foot 44 x 88 in, oversized 8-foot 46 x 92 in, 9-foot 50 x 100 in.</p>
+    <ul><li>Walls, posts and furniture inside that space will cramp some shots. A few tight spots are fine if you keep a short cue (48 or 52 inches) on the wall.</li>
+    <li>Bar tables (coin-op "bar boxes") vary a little by maker; check the exact playing surface before you buy.</li></ul>
+    <p>Ready to shop? Read the <a href="/gear/home-pool-table">home pool table buying guide</a>, the <a href="/guides/pool-table-sizes">pool table sizes guide</a> and the <a href="/gear/game-room-setup">game room setup guide</a>.</p>`;
   } else if (slug === 'pool-rules-quiz') {
     const qs = QUIZ.map(([q, opts, ok, why], i) => `<li class="card quiz-q" data-ok="${ok}" style="padding:14px 18px;margin:0 0 12px">
       <p style="margin:0 0 8px;font-weight:700">${i + 1}. ${q}</p>
