@@ -1210,5 +1210,33 @@ ${RULES_QA.map(([q, a]) => `<h2>${q}</h2>\n<p>${a}</p>`).join('\n')}
 </ul>
 <p>Most pool halls and cue repair shops can replace a tip while you wait. Some players do it themselves with a tip kit, glue and a clamp, but a pro job is cheap and gets the shape and trim right.</p>
 <p>More cue care in <a href="/guides/pool-cue-care">how to take care of your pool cue</a>, picking a new cue in <a href="/guides/how-to-choose-a-pool-cue">how to choose a pool cue</a>, and spin shots in <a href="/guides/english-in-pool">English in pool</a>.</p>`
+  },
+  {
+    slug: 'how-to-bank-in-pool', title: 'How to Bank in Pool: The Mirror Method and Simple Diamond Aiming',
+    desc: 'How to make bank shots in pool: the mirror method, using the diamonds, why speed and spin change the angle, cross-side and cross-corner banks, and how to practice.',
+    body: `
+<p>A bank shot sends the object ball into a cushion and then into a pocket. Banks win games when there is no direct shot, and good bankers make them look easy. The good news: the geometry is simple, and the rest is feel you build with practice.</p>
+<h2>The mirror method</h2>
+<p>A ball leaves a cushion at about the same angle it went in. So picture the table reflected on the other side of the rail you are banking off: a mirror table. Find where your target pocket would be on that mirror table and aim the object ball straight at it. The point where that line crosses the rail is your bank spot.</p>
+${table({ balls: [{ x: 4, y: 2.6, n: 6 }, { x: 3.52, y: 3.36, n: 0 }], paths: [[[3.52, 3.36], [3.84, 2.85]], [[4, 2.6], [5.56, 0.12]], [[5.56, 0.12], [7.85, 3.85]]], labels: [[5.56, 0.6, 'bank spot']] }, 'Bank off the top rail: aim the 6 at the corner pocket on the mirror table and it comes back into the far corner.')}
+<p>The ball's center never reaches the cushion; it bounces off a line about half a ball inside the rail. Measure your mirror from that line, not from the wood.</p>
+<h2>Using the diamonds</h2>
+<p>The diamonds on the rails are evenly spaced, so they make the mirror easy to measure. For a straight cross-side bank (the object ball across from a side pocket), aim at the diamond halfway between the ball and the pocket on the far rail. For a cross-corner bank, count the diamonds from the ball to the corner and aim at the halfway point on the long rail.</p>
+<h2>Speed and spin change the angle</h2>
+<ul>
+<li><b>Hit it firmly and the ball comes off shorter</b> (a narrower angle), because the cushion squashes and the ball slides.</li>
+<li><b>Hit it softly and it runs a little longer.</b> Most players aim slightly "long" on soft banks and "short" on hard ones.</li>
+<li><b>Cut angle matters:</b> if you cut the object ball into the rail, it picks up spin that pushes it the opposite way off the cushion. Full hits bank the truest.</li>
+<li><b>Keep the cue ball center</b> while you learn. Spin on the cue ball changes the object ball's path too.</li>
+</ul>
+<h2>Watch out for the kiss</h2>
+<p>On short banks, the cue ball can follow the object ball and hit it again on the way back off the rail (a "kiss"). If the cue ball is in the way of the rebound, hit with a little draw or stun, or cut the ball slightly so the cue ball goes another way.</p>
+<h2>How to practice</h2>
+<ol>
+<li>Put an object ball in the middle of the table and bank it cross-side ten times. Count your makes.</li>
+<li>Move the ball one diamond at a time and repeat. Notice where you miss long or short.</li>
+<li>Try the same shot soft, medium and firm, and see how the angle changes.</li>
+</ol>
+<p>Train your eye for free with the <a href="/play/bank-trainer">bank shot trainer</a>, then try the <a href="/trick-shots/cross-corner-bank">cross-corner bank</a> trick shot. For banks with the cue ball, read <a href="/guides/how-to-kick-in-pool">how to kick in pool</a>. Love banks? There is a whole game of them: <a href="/guides/bank-pool-rules">bank pool</a>.</p>`
   }
 ];
