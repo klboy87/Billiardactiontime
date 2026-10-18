@@ -12664,6 +12664,557 @@
       "state": "GA",
       "game": "9-Ball",
       "notes": "Source: mrcues2.com. Recurring weekly Friday 8pm"
+    },
+    {
+      "id": "ft-friday-night-8-ball-two-sisters-billiards-cafe-2026-10-23",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-10-23",
+      "venue": "Two Sisters Billiards & Cafe",
+      "address": "960 E I-10 Service Rd",
+      "city": "Slidell",
+      "state": "LA",
+      "zip": "70461",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "rr-turkey-leg-shootout-play-station-inc-2026-11-21",
+      "name": "Turkey Leg Shootout",
+      "date": "2026-11-21",
+      "venue": "Play Station Inc",
+      "address": "6154 Dixie Hwy",
+      "city": "Bridgeport",
+      "state": "MI",
+      "zip": "48722",
+      "entry": 60,
+      "notes": "Source: rackradar.com"
+    },
+    {
+      "id": "ft-sunday-night-weekly-9-ball-club-billiards-2026-10-25",
+      "name": "Sunday Night Weekly 9-Ball",
+      "date": "2026-10-25",
+      "venue": "Club Billiards",
+      "city": "Wichita",
+      "state": "KS",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-pool-g-street-wunderbar-2026-10-25",
+      "name": "Sunday Afternoon Pool",
+      "date": "2026-10-25",
+      "venue": "G Street Wunderbar",
+      "city": "Davis",
+      "state": "CA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-fargo-handicapped-8-ball-bulldogs-pub-2026-10-25",
+      "name": "Sunday Night Fargo Handicapped 8 Ball",
+      "date": "2026-10-25",
+      "venue": "Bulldogs Pub",
+      "city": "Deltona",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-620-under-pt-2-8-ball-series-felt-billiards-2026-10-25",
+      "name": "Sunday 620 & Under Pt. 2 8-Ball Series",
+      "date": "2026-10-25",
+      "venue": "Felt Billiards",
+      "city": "Englewood",
+      "state": "CO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-9-ball-chip-dozer-s-grill-2026-10-25",
+      "name": "Sunday Afternoon 9 Ball Chip",
+      "date": "2026-10-25",
+      "venue": "Dozer's Grill",
+      "city": "Mesa",
+      "state": "AZ",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-fargo-handicapped-9-ball-chiquito-picosos-kitchen-2026-10-25",
+      "name": "Sunday Night Fargo Handicapped 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Chiquito Picosos Kitchen",
+      "city": "Moreno Valley",
+      "state": "CA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-amateur-pool-night-yale-tavern-2026-10-25",
+      "name": "Sunday Night Amateur Pool Night",
+      "date": "2026-10-25",
+      "venue": "Yale Tavern",
+      "city": "Yale",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-morning-660-and-under-fargo-handicapped-9-ball-slate-family-billiards-2026-10-25",
+      "name": "Sunday Morning 660 and Under Fargo Handicapped 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Slate Family Billiards",
+      "city": "Winter Haven",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-9-ball-r-bar-dance-hall-and-saloon-2026-10-25",
+      "name": "Sunday 9 Ball",
+      "date": "2026-10-25",
+      "venue": "R Bar Dance Hall and Saloon",
+      "city": "Grove",
+      "state": "OK",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-9-ball-vfw-2026-10-25",
+      "name": "Sunday Night 9 Ball",
+      "date": "2026-10-25",
+      "venue": "VFW",
+      "city": "Sherman",
+      "state": "TX",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-9-ball-knock-n-boots-saloon-2026-10-25",
+      "name": "Sunday Afternoon 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Knock'n Boots Saloon",
+      "city": "Largo",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-9-ball-buford-lee-s-rocky-road-tavern-2026-10-25",
+      "name": "Sunday Afternoon 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Buford Lee’s Rocky Road Tavern",
+      "city": "Okemah",
+      "state": "OK",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-9-ball-i-m-not-here-sports-bar-grill-2026-10-25",
+      "name": "Sunday Afternoon 9 Ball",
+      "date": "2026-10-25",
+      "venue": "I'm Not Here Sports Bar & Grill",
+      "city": "Myrtle Beach",
+      "state": "SC",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-9-ball-bogies-west-2026-10-25",
+      "name": "Sunday Night 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Bogies West",
+      "city": "Houston",
+      "state": "TX",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-8-ball-chip-tournament-reo-town-clubhouse-2026-10-25",
+      "name": "8 Ball Chip Tournament",
+      "date": "2026-10-25",
+      "venue": "Reo Town Clubhouse",
+      "city": "Lansing",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-8-ball-howdy-s-restaurant-2026-10-25",
+      "name": "Sunday afternoon 8 ball",
+      "date": "2026-10-25",
+      "venue": "Howdy's Restaurant",
+      "city": "Kerrville",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-8-ball-pool-tournament-extreme-shots-2026-10-25",
+      "name": "8 Ball Pool Tournament",
+      "date": "2026-10-25",
+      "venue": "Extreme Shots",
+      "city": "New Iberia",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-10-ball-tournament-breakers-grill-2026-10-25",
+      "name": "10-Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "Breakers Grill",
+      "city": "Florence",
+      "state": "KY",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-tourney-rack-s-bar-and-grill-2026-10-25",
+      "name": "Sunday Afternoon Tourney",
+      "date": "2026-10-25",
+      "venue": "Rack's Bar and Grill",
+      "city": "Thomasville",
+      "state": "GA",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-8-ball-tournament-gratiot-huddle-sports-bar-and-grill-2026-10-25",
+      "name": "8 Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "Gratiot Huddle Sports Bar and Grill",
+      "city": "Roseville",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-weekly-8-ball-wild-bill-s-whiskeyville-2026-10-25",
+      "name": "Weekly 8 Ball",
+      "date": "2026-10-25",
+      "venue": "Wild Bill's Whiskeyville",
+      "city": "Amherst",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-pool-tournaments-rumors-bar-2026-10-25",
+      "name": "Pool Tournaments",
+      "date": "2026-10-25",
+      "venue": "Rumors Bar",
+      "city": "Centralia",
+      "state": "IL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-8-ball-winners-side-9-ball-losers-side-love-s-shack-pool-pub-2026-10-25",
+      "name": "8 Ball Winners Side, 9 Ball Losers Side",
+      "date": "2026-10-25",
+      "venue": "Love's Shack Pool & Pub",
+      "city": "Denver",
+      "state": "CO",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-funday-9-ball-slovak-catholic-club-2026-10-25",
+      "name": "Sunday Funday 9-Ball",
+      "date": "2026-10-25",
+      "venue": "Slovak Catholic Club",
+      "city": "Torrington",
+      "state": "CT",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-8-ball-tournament-the-office-pub-lounge-2026-10-25",
+      "name": "8-Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "The Office Pub & Lounge",
+      "city": "Winter Haven",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-9-ball-chip-tournament-twisted-rose-2026-10-25",
+      "name": "9-Ball Chip Tournament",
+      "date": "2026-10-25",
+      "venue": "Twisted Rose",
+      "city": "Algonquin",
+      "state": "IL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-straight-8-brokenhorn-productions-2026-10-25",
+      "name": "Straight 8",
+      "date": "2026-10-25",
+      "venue": "Brokenhorn Productions",
+      "city": "Midland",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-9-ball-pool-tournament-rooster-s-eastside-lounge-2026-10-25",
+      "name": "9 Ball Pool Tournament",
+      "date": "2026-10-25",
+      "venue": "Rooster's Eastside Lounge",
+      "city": "Tampa",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-eight-ball-tournament-jb-s-billiards-2026-10-25",
+      "name": "Eight Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "JB's Billiards",
+      "city": "Nashville",
+      "state": "NC",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-handicapped-9-ball-tournament-walter-s-billiards-2026-10-25",
+      "name": "Handicapped 9-Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "Walter's Billiards",
+      "city": "Las Vegas",
+      "state": "NV",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-weekly-9-ball-billiards-tournament-tnt-s-billiards-bar-and-grill-2026-10-25",
+      "name": "Weekly 9 Ball Billiards Tournament",
+      "date": "2026-10-25",
+      "venue": "TNT's Billiards Bar and Grill",
+      "city": "Antioch",
+      "state": "TN",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-weekly-8-ball-tournament-last-call-bar-grill-2026-10-25",
+      "name": "Weekly 8 Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "Last Call Bar & Grill",
+      "city": "Gallatin",
+      "state": "TN",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-9-ball-gunny-s-shack-2026-10-25",
+      "name": "Sunday 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Gunny's Shack",
+      "city": "Owensboro",
+      "state": "KY",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-10-ball-fargo-reported-tournament-pockets-billiards-2026-10-25",
+      "name": "10 Ball Fargo Reported Tournament",
+      "date": "2026-10-25",
+      "venue": "Pockets Billiards",
+      "city": "Crestwood",
+      "state": "IL",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-pool-tournament-kat-s-lounge-2026-10-25",
+      "name": "Pool Tournament",
+      "date": "2026-10-25",
+      "venue": "Kat's Lounge",
+      "city": "Vallejo",
+      "state": "CA",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-9-ball-under-the-eagles-2026-10-25",
+      "name": "Sunday Night 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Under The Eagles",
+      "city": "Ottumwa",
+      "state": "IA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-singles-tournament-21-rock-grill-bar-2026-10-25",
+      "name": "Singles Tournament",
+      "date": "2026-10-25",
+      "venue": "21 Rock Grill & Bar",
+      "city": "Arnold",
+      "state": "MO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-9-ball-tournament-coyotes-2026-10-25",
+      "name": "Sunday Night 9 Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "Coyotes",
+      "city": "Panama City",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-weekly-9-ball-bc-billiards-2026-10-25",
+      "name": "Sunday Night Weekly 9 Ball",
+      "date": "2026-10-25",
+      "venue": "BC Billiards",
+      "city": "Sebring",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-8-ball-double-diamond-saloon-2026-10-25",
+      "name": "Sunday Night 8 Ball",
+      "date": "2026-10-25",
+      "venue": "Double Diamond Saloon",
+      "city": "New Plymouth",
+      "state": "ID",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-8-ball-bank-lounge-2026-10-25",
+      "name": "Sunday Night 8 Ball",
+      "date": "2026-10-25",
+      "venue": "Bank Lounge",
+      "city": "Akron",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-8-ball-diamond-billiard-music-club-2026-10-25",
+      "name": "Sunday Afternoon 8 Ball",
+      "date": "2026-10-25",
+      "venue": "Diamond Billiard & Music Club",
+      "city": "Saint Peters",
+      "state": "MO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-8-ball-side-pocket-billiards-beer-2026-10-25",
+      "name": "Sunday Night 8 Ball",
+      "date": "2026-10-25",
+      "venue": "Side Pocket Billiards & Beer",
+      "city": "Lapeer",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-8-ball-gfb-scottish-pub-2026-10-25",
+      "name": "Sunday Night 8 Ball",
+      "date": "2026-10-25",
+      "venue": "GFB Scottish Pub",
+      "city": "Old Orchard Beach",
+      "state": "ME",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-9-ball-two-sisters-billiards-cafe-2026-10-25",
+      "name": "Sunday Night 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Two Sisters Billiards & Cafe",
+      "city": "Slidell",
+      "state": "LA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-9-ball-j-b-billiards-2026-10-25",
+      "name": "Sunday Afternoon 9 Ball",
+      "date": "2026-10-25",
+      "venue": "J&B Billiards",
+      "city": "Central City",
+      "state": "KY",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-pool-tournament-j9-tavern-2026-10-25",
+      "name": "Sunday Afternoon Pool Tournament",
+      "date": "2026-10-25",
+      "venue": "J9 Tavern",
+      "city": "Guthrie",
+      "state": "OK",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-pool-tournament-25th-street-tavern-2026-10-25",
+      "name": "Sunday Night Pool Tournament",
+      "date": "2026-10-25",
+      "venue": "25th Street Tavern",
+      "city": "Terre Haute",
+      "state": "IN",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-9-ball-trick-shots-2026-10-25",
+      "name": "Sunday Afternoon 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Trick Shots",
+      "city": "Winter Park",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-night-handicapped-9-ball-danny-k-s-billiards-and-sports-bar-2026-10-25",
+      "name": "Sunday Night Handicapped 9 Ball",
+      "date": "2026-10-25",
+      "venue": "Danny K's Billiards and Sports Bar",
+      "city": "Orange",
+      "state": "CA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-evening-8-ball-tournament-racks-n-cues-billiards-and-brews-2026-10-25",
+      "name": "Sunday Evening 8 Ball Tournament",
+      "date": "2026-10-25",
+      "venue": "Racks-N-Cues Billiards and Brews",
+      "city": "Windsor",
+      "state": "CA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-evening-tournament-la-tavern-2026-10-25",
+      "name": "Sunday Evening Tournament",
+      "date": "2026-10-25",
+      "venue": "LA Tavern",
+      "city": "Theodore",
+      "state": "AL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-sunday-afternoon-8-ball-sierra-tavern-2026-10-25",
+      "name": "Sunday afternoon 8 ball",
+      "date": "2026-10-25",
+      "venue": "Sierra Tavern",
+      "city": "Morrilton",
+      "state": "AR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly sunday"
     }
   ]
 }
