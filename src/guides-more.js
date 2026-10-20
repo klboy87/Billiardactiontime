@@ -136,6 +136,10 @@ ${groups}
 <p style="margin-top:20px">Know the words, now learn the games: <a href="/guides/8-ball-rules">8-Ball</a>, <a href="/guides/9-ball-rules">9-Ball</a> and <a href="/guides/10-ball-rules">10-Ball</a> rules, or read <a href="/guides/first-pool-tournament">what to expect at your first tournament</a>.</p>`;
 };
 
+// In-text product link: an Amazon search for the exact thing the advice mentions. The tracking id and the
+// required disclosure are added when the page is served (tagAmazon in gear.js).
+const amz = (q, text) => `<a href="https://www.amazon.com/s?k=${encodeURIComponent(q).replace(/%20/g, '+')}" target="_blank" rel="sponsored nofollow noopener">${text}</a>`;
+
 // Pool rules Q&A: each answer is plain text so it can also feed the FAQPage structured data.
 const RULES_QA = [
   ['What happens if you scratch on the 8-ball?', 'If you pocket the 8 and the cue ball also goes in, you lose the game under almost every rule set. If you scratch while shooting at the 8 but the 8 does not go in, it is a normal foul under tournament (WPA, BCA, APA) rules: your opponent gets ball in hand. Many bars play that any scratch on the 8 loses, so agree before you play.'],
@@ -1519,5 +1523,361 @@ ${table({ balls: [1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => ({ x: 0.6 + i * 0.95, y:
 <p>New cloth has to be stretched tight and even, glued or stapled to the slate, and wrapped around the cushions. Most owners hire a table mechanic, who can also re-level the slate and check the cushions in the same visit. It is a good moment to replace worn cushion rubber too.</p>
 <h2>Make it last</h2>
 <p>Brush after every session, cover the table, keep drinks off the rails, and chalk away from the table. See <a href="/guides/how-to-clean-a-pool-table">how to clean a pool table</a> and <a href="/guides/how-to-level-a-pool-table">how to level a pool table</a>. Shopping for a whole table? Read the <a href="/gear/home-pool-table">home pool table buying guide</a>.</p>`
+  },
+  {
+    slug: '30-day-pool-training-plan', title: 'A 30-Day Pool Training Plan: Get Noticeably Better in a Month',
+    desc: 'A simple 30-day pool practice plan: four weeks of drills for stroke, aim, cue ball control and pressure, about 45 minutes a session, three or four times a week.',
+    body: `
+<p>Most players "practice" by hitting balls around. That feels good but builds very little. This plan gives every session a job. Four weeks, three or four sessions a week, about 45 minutes each. Track your scores in the free <a href="/play/practice-log">practice log</a> so you can see the gains.</p>
+<h2>Before you start</h2>
+<ul>
+<li><b>Get the basics right:</b> a straight cue, a good tip and decent chalk. A warped house cue fights every drill. If you need one, see ${amz('pool cue 58 inch 19 oz', 'playing cues on Amazon')} and our <a href="/guides/how-to-choose-a-pool-cue">cue buying guide</a>.</li>
+<li><b>Bring a way to measure:</b> a notebook or your phone. Every drill below has a score.</li>
+<li><b>Warm up the same way every time:</b> ten minutes of easy straight-in shots.</li>
+</ul>
+<h2>Week 1: a straight stroke</h2>
+<p>Everything else is built on a stroke that goes where you aim it.</p>
+<ul>
+<li><b>Straight-back drill:</b> cue ball on the head spot, shoot it straight up the table over the middle diamonds. It should come straight back to your tip. Ten tries; count how many return within a ball's width.</li>
+<li><b>Bottle drill:</b> stroke into the neck of an empty bottle lying on the table without touching the sides. Twenty strokes.</li>
+<li><b>Stop shots:</b> object ball one diamond away, straight in. Stop the cue ball dead. Ten in a row, then move back a diamond.</li>
+</ul>
+<p>A ${amz('pool cue training aid stroke trainer', 'stroke trainer')} or a phone video from behind (see <a href="/guides/how-to-film-your-pool-stroke">how to film your stroke</a>) shows exactly where your cue wanders.</p>
+<h2>Week 2: aim and cut shots</h2>
+<ul>
+<li><b>The cut-shot ladder:</b> object ball near a corner pocket, cue ball at 15, 30, 45 and 60 degree angles. Five shots each. Write down the angle you miss most.</li>
+<li><b>Long straight-ins:</b> full table length, ten shots.</li>
+<li>Warm up your eye between sessions with the <a href="/play/aim-trainer">aim trainer</a>.</li>
+</ul>
+<h2>Week 3: cue ball control</h2>
+<ul>
+<li><b>Draw to the line:</b> draw back one, two, then three diamonds. A ${amz('training cue ball dots', 'training cue ball')} with dots shows exactly where you hit it.</li>
+<li><b>Follow to the rail:</b> same setup, follow the cue ball to the far rail and stop it within a ball's width.</li>
+<li><b>Stun and 90 degrees:</b> on a half-ball cut, send the cue ball off at 90 degrees (see the <a href="/trick-shots/ninety-degree-carom">90-degree carom</a>).</li>
+</ul>
+<h2>Week 4: patterns and pressure</h2>
+<ul>
+<li><b>Three-ball runouts:</b> scatter three balls, ball in hand, run them in order. Ten racks.</li>
+<li><b>Play the ghost:</b> 9-Ball race to 5 against an imaginary player who never misses: miss once and the ghost wins that rack.</li>
+<li><b>Pressure finish:</b> end every session needing to make five shots in a row before you leave.</li>
+</ul>
+<h2>After 30 days</h2>
+<p>Compare your week-1 and week-4 scores. Keep the two drills where you improved least and make them your warm-up. Then test it for real: <a href="/tonight/">find a tournament tonight</a>. For more drills, see <a href="/guides/pool-practice-drills">7 practice drills</a>.</p>`
+  },
+  {
+    slug: 'how-to-improve-your-pool-stroke', title: 'How to Improve Your Pool Stroke: 7 Fixes for a Straighter Cue',
+    desc: 'How to get a smooth, straight pool stroke: grip pressure, elbow position, pause at the back, follow-through, staying down, and drills to groove it.',
+    body: `
+<p>Your stroke is the engine of your game. A smooth, straight stroke makes the same aim work every time; a crooked one turns good aim into misses. These seven fixes cover almost every stroke problem.</p>
+<h2>1. Relax your grip</h2>
+<p>Hold the cue like a bird: firm enough that it doesn't fly away, loose enough that you don't hurt it. A tight grip steers the cue sideways and kills speed control. Your back hand should feel like it is just guiding the cue.</p>
+<h2>2. Keep the elbow still</h2>
+<p>On most shots, the stroke should swing from the elbow like a pendulum, with the upper arm still. If your elbow drops or flies out before contact, the tip moves off line.</p>
+<h2>3. Forearm straight down at contact</h2>
+<p>When the tip is at the cue ball, your forearm should hang straight down. If it angles forward or back, move your grip hand until it is vertical. More on this in <a href="/guides/how-to-hold-a-pool-cue">how to hold a pool cue</a>.</p>
+<h2>4. Pause at the back</h2>
+<p>A short pause at the end of the backswing separates the backswing from the forward stroke, so you don't jerk the cue forward. Many great players count "back, pause, through."</p>
+<h2>5. Accelerate through the ball</h2>
+<p>The cue should still be speeding up when it hits the cue ball. Decelerating (slowing down at contact) is behind most "chicken wing" misses on soft shots.</p>
+<h2>6. Follow through</h2>
+<p>Let the tip finish several inches past where the cue ball was, and freeze there for a second. If your follow-through goes left or right, so did your stroke.</p>
+<h2>7. Stay down</h2>
+<p>Keep your head and body still until the object ball is in the pocket. Jumping up is the most common reason good players miss easy shots.</p>
+<h2>Drills to groove it</h2>
+<ul>
+<li><b>Straight-back drill:</b> shoot the cue ball straight up the table over the diamonds; it should come straight back to your tip.</li>
+<li><b>Bottle drill:</b> stroke into the neck of an empty bottle on its side without touching the glass.</li>
+<li><b>Film it:</b> a phone on a ${amz('phone tripod with remote', 'small tripod')} behind and beside you shows elbow drop and wobble you can't feel. See <a href="/guides/how-to-film-your-pool-stroke">how to film your stroke</a>.</li>
+<li><b>Training aids:</b> a ${amz('pool cue stroke training aid', 'stroke trainer')} that keeps the cue on a straight line can help early on; see <a href="/guides/pool-training-aids">pool training aids that actually help</a>.</li>
+</ul>
+<p>A glove can help the cue slide evenly, too: see <a href="/guides/pool-glove">do you need a pool glove?</a></p>`
+  },
+  {
+    slug: 'pool-position-play', title: 'Position Play in Pool: How to Control the Cue Ball for the Next Shot',
+    desc: 'Learn position play in pool: think one shot ahead, play the right side of the ball, use the tangent line, stun, follow and draw, and simple patterns that make runouts easier.',
+    body: `
+<p>Making a ball is half the shot. The other half is where the cue ball stops. Good players aren't making harder shots than you; they're leaving themselves easier ones. That is position play.</p>
+<h2>Think one shot ahead</h2>
+<p>Before you shoot, decide where you want the cue ball to stop, and which way you will shoot the next ball from there. Pick a target area about the size of a dinner plate, not an exact spot.</p>
+<h2>Stay on the right side of the ball</h2>
+<p>For every next shot, there is a "right side": the angle that lets the cue ball naturally roll toward the ball after that. Getting dead straight on the next ball is often a mistake, because a straight-in shot leaves you no angle to move the cue ball.</p>
+${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, y: 2.0, n: 0 }], paths: [[[4.6, 2.0], [5.95, 1.37]], [[6.2, 1.2], [7.82, 0.12]], [[5.95, 1.37], [4.3, 2.5]]] }, 'Make the 1 with a little draw and the cue ball comes back toward the 2, with an angle for the next shot.')}
+<h2>Know your three tools</h2>
+<ul>
+<li><b>Stun:</b> the cue ball leaves the object ball at 90 degrees (the tangent line). The most predictable shot in pool.</li>
+<li><b>Follow:</b> topspin bends the cue ball forward of the tangent line.</li>
+<li><b>Draw:</b> backspin bends it backward of the tangent line. See <a href="/guides/how-to-draw-the-cue-ball">how to draw the cue ball</a>.</li>
+</ul>
+<p>Speed matters as much as spin. Most position errors are speed errors, not direction errors. A ${amz('training cue ball dots', 'training cue ball')} with dots helps you see the spin you actually put on the ball.</p>
+<h2>Use the rails</h2>
+<p>When the next ball is far away, send the cue ball off one or two rails rather than straight across the table. Rails give you a longer path with more room for speed error.</p>
+<h2>Keep it simple</h2>
+<ul>
+<li>Use the least spin that works. Center ball with the right speed is the most reliable.</li>
+<li>Avoid crossing the "scratch line" toward a pocket.</li>
+<li>Clear trouble balls early, while you still have options.</li>
+</ul>
+<h2>Drills</h2>
+<ol>
+<li><b>Three-ball position:</b> place three balls, ball in hand, and run them in order. Before each shot, put a coin where you want the cue ball. Count how often you land within a hand's width.</li>
+<li><b>Stop, follow, draw on one shot:</b> same straight-in shot, three different cue ball landing spots.</li>
+</ol>
+<p>Then learn the patterns that tie it together: <a href="/guides/8-ball-patterns">8-Ball patterns</a> and <a href="/guides/9-ball-strategy">9-Ball strategy</a>. A good ${amz('pool billiards position play book', 'book on position play')} is also worth its weight in chalk.</p>`
+  },
+  {
+    slug: 'how-to-practice-pool-alone', title: 'How to Practice Pool Alone: Drills, Games and Ways to Stay Motivated',
+    desc: 'How to practice pool by yourself: solo games like play the ghost and 9-ball ghost, the best solo drills, how to structure a session, and how to track your progress.',
+    body: `
+<p>Most of your improvement happens when nobody is watching. Practicing alone lets you work on exactly what you miss, with no pressure. The trick is to make it focused and measurable so it doesn't turn into aimless hitting.</p>
+<h2>Structure every session</h2>
+<ol>
+<li><b>Warm up (10 minutes):</b> easy straight-in shots and stop shots.</li>
+<li><b>One skill (20 minutes):</b> pick one thing, like long cuts, draw or banks, and drill only that.</li>
+<li><b>Play a solo game (15 minutes):</b> put it together under a little pressure.</li>
+</ol>
+<h2>Solo games that build real skill</h2>
+<ul>
+<li><b>Play the ghost:</b> break a 9-Ball rack, take ball in hand, and run out. If you miss, the ghost wins the rack. Race to 5, and track your score over weeks.</li>
+<li><b>Three-ball, five-ball, seven-ball:</b> scatter that many balls, ball in hand, and run them in order. Add a ball when you can run them three times in a row.</li>
+<li><b>Straight pool practice:</b> rack 15, break, and see how many you can run. Your high run is a great number to track.</li>
+<li><b>Hanger speed run:</b> five balls in the jaws, time how fast you clear them (see the <a href="/trick-shots/hanger-speed-run">speed run</a>).</li>
+</ul>
+<h2>Drills worth doing alone</h2>
+<p>Start with the <a href="/guides/pool-practice-drills">7 practice drills</a>, then the <a href="/guides/30-day-pool-training-plan">30-day training plan</a>. A thin ${amz('pool rack template', 'rack template')} makes break practice faster, and a ${amz('training cue ball dots', 'training cue ball')} turns every shot into feedback on your spin.</p>
+<h2>Stay motivated</h2>
+<ul>
+<li><b>Write scores down.</b> Use the free <a href="/play/practice-log">practice log</a>; seeing a trend line go up is the best motivation there is.</li>
+<li><b>Set a session goal,</b> like "make 7 of 10 long cuts," and stop when you hit it.</li>
+<li><b>Practice where you can get table time cheaply:</b> many halls have day rates. Find one on the <a href="/pool-halls/">pool halls directory</a>.</li>
+<li><b>No table?</b> Keep your eye sharp with the <a href="/play/">free pool games</a> and read about the game: a good ${amz('pool billiards instruction book', 'pool instruction book')} pays off fast.</li>
+</ul>
+<p>When the practice starts paying off, test it: <a href="/tonight/">find a tournament tonight</a>.</p>`
+  },
+  {
+    slug: 'pool-pre-shot-routine', title: 'The Pre-Shot Routine: How the Best Pool Players Make Every Shot the Same',
+    desc: 'Build a pool pre-shot routine: read the shot, pick the cue ball target, stand into the line, practice strokes, pause and shoot. Why routines beat nerves, with examples.',
+    body: `
+<p>Watch a top player and every shot looks the same: same walk, same number of practice strokes, same rhythm. That routine is not a habit by accident. It makes every shot feel familiar, which is exactly what you need when the pressure is on.</p>
+<h2>A simple routine you can copy</h2>
+<ol>
+<li><b>Read the shot from behind the object ball.</b> Find the contact point and the pocket line. Decide speed and spin.</li>
+<li><b>Pick the cue ball target.</b> Where should it stop? Decide before you get down. (See <a href="/guides/pool-position-play">position play</a>.)</li>
+<li><b>Step into the line.</b> Stand behind the cue ball, find the line, and walk into it so your back foot lands on the shot line.</li>
+<li><b>Get down and settle.</b> Bridge, grip, chin low. Check that the tip is pointing at the spot on the cue ball you chose.</li>
+<li><b>Practice strokes:</b> the same number every time, usually two to four, smooth and slow.</li>
+<li><b>Eyes on the object ball, pause, shoot.</b> Last look at the contact point, a short pause at the back, then stroke through.</li>
+<li><b>Stay down</b> until the ball drops.</li>
+</ol>
+<h2>Why it works</h2>
+<ul>
+<li>Your brain stops treating each shot as a new problem.</li>
+<li>Nerves speed you up; a routine sets a pace you can't rush.</li>
+<li>When you miss, you can check which step you skipped.</li>
+</ul>
+<h2>Building it</h2>
+<p>Practice the routine on easy shots until it feels automatic, then use it on every shot, even tap-ins. Have a friend count your practice strokes, or film yourself (see <a href="/guides/how-to-film-your-pool-stroke">how to film your stroke</a>). Some players use a ${amz('stopwatch timer', 'simple timer')} to make sure their routine takes about the same time every shot.</p>
+<h2>When to stop and restart</h2>
+<p>If anything feels off once you are down (a noise, a doubt, the wrong spin), stand up and start the routine again. It costs five seconds and saves the rack.</p>
+<p>Read more about the mental side in <a href="/guides/pool-tournament-nerves">handling tournament nerves</a>. Many players swear by ${amz('the pleasures of small motions pool book', 'books on the mental game of pool')}, too.</p>`
+  },
+  {
+    slug: 'common-pool-mistakes', title: '12 Common Pool Mistakes Beginners Make (and How to Fix Each One)',
+    desc: 'The pool mistakes that cost beginners the most games: hitting too hard, jumping up, aiming at the pocket, overusing English, ignoring position, bad racks and more, with quick fixes.',
+    body: `
+<p>Most beginners miss for the same handful of reasons. Fix these twelve and you'll win more games without changing anything else.</p>
+<ol>
+<li><b>Hitting too hard.</b> Speed makes everything worse: misses, scratches, rattled pockets. Most shots need medium speed. Practice making balls at "just enough" speed.</li>
+<li><b>Jumping up.</b> Lifting your head as you shoot moves the cue. Stay down until the ball drops.</li>
+<li><b>Gripping the cue tightly.</b> A tight grip steers the tip. Loosen up: see <a href="/guides/how-to-improve-your-pool-stroke">how to improve your stroke</a>.</li>
+<li><b>Aiming the cue ball at the object ball's center on cut shots.</b> You have to hit the side of the object ball. Learn the ghost ball method in <a href="/guides/how-to-aim-in-pool">how to aim in pool</a>.</li>
+<li><b>Using English on every shot.</b> Side spin makes the cue ball squirt off line. Use center ball unless you need spin for position.</li>
+<li><b>Not chalking.</b> Chalk before every shot. A miscue is almost always a dry tip. Good ${amz('premium pool cue chalk', 'chalk')} holds better than the bar's old cube.</li>
+<li><b>Shooting the easiest ball, not the right ball.</b> In 8-Ball, think about which ball sets up the next one. See <a href="/guides/8-ball-patterns">8-Ball patterns</a>.</li>
+<li><b>Ignoring the cue ball.</b> Decide where it should stop before every shot. See <a href="/guides/pool-position-play">position play</a>.</li>
+<li><b>A sloppy bridge.</b> A loose bridge lets the cue wobble. Press your hand into the cloth; see <a href="/guides/how-to-hold-a-pool-cue">bridges and stance</a>.</li>
+<li><b>Bad racks.</b> Balls must be frozen together. A thin ${amz('pool rack template', 'rack template')} gives a tight rack every time.</li>
+<li><b>Using a warped house cue.</b> Roll it on the table first; if it wobbles, pick another, or bring your own (see <a href="/gear/pool-cue-prices">what a pool cue costs</a>).</li>
+<li><b>Never practicing on purpose.</b> Playing games isn't practice. Try the <a href="/guides/30-day-pool-training-plan">30-day training plan</a>.</li>
+</ol>
+<p>Fix one at a time. Pick the mistake that cost you the most games this week and work only on that for a few sessions. Then put it to the test at a <a href="/tonight/">local tournament</a>.</p>`
+  },
+  {
+    slug: 'pool-training-aids', title: 'Pool Training Aids That Actually Help (and Ones to Skip)',
+    desc: 'Which pool training aids are worth it: training cue balls, rack templates, stroke trainers, practice cue balls, books and video. What each one teaches and who it is for.',
+    body: `
+<p>There are lots of gadgets that promise to fix your game. A few genuinely help because they give you feedback you can't get on your own. Here are the ones worth having, roughly in order of value.</p>
+<h2>1. A training cue ball</h2>
+<p>A cue ball with dots or stripes on it shows exactly where you hit it and how it spins. It is the fastest way to learn draw, follow and English. ${amz('training cue ball dots', 'See training cue balls')}.</p>
+<h2>2. Your phone (and a small tripod)</h2>
+<p>Video is the best coach most players never use. A ${amz('phone tripod with remote', 'phone tripod')} lets you film your stroke from behind and the side. See <a href="/guides/how-to-film-your-pool-stroke">how to film your stroke</a>.</p>
+<h2>3. Rack templates</h2>
+<p>A thin sheet that holds the balls frozen together. Many tournaments use them, so practice your break with one. ${amz('pool rack template', 'See rack templates')}.</p>
+<h2>4. A stroke trainer</h2>
+<p>Guides that keep the cue on a straight line can help beginners feel a straight stroke. Use one for short sessions, then practice without it so you don't depend on it. ${amz('pool cue stroke training aid', 'See stroke trainers')}.</p>
+<h2>5. Books and drill programs</h2>
+<p>A good instruction book gives you structure that random practice never will. Look for ones with drills and scoring. ${amz('pool billiards instruction book drills', 'See pool books')}.</p>
+<h2>6. Position markers</h2>
+<p>Small stick-on rings or paper reinforcement rings mark ball positions so you can set up the same drill every time. Cheap and surprisingly useful. ${amz('billiard ball position markers', 'See ball markers')}.</p>
+<h2>Skip or wait on</h2>
+<ul>
+<li><b>Expensive gadgets that "aim for you."</b> They don't build the skill you need without them.</li>
+<li><b>A new cue to fix your stroke.</b> A cue won't fix a stroke; drills will.</li>
+</ul>
+<p>Put your training aids to work with the <a href="/guides/30-day-pool-training-plan">30-day plan</a> and the <a href="/guides/pool-practice-drills">practice drills</a>, and track your scores in the <a href="/play/practice-log">practice log</a>. See everything we recommend in the <a href="/gear/">pool gear guide</a>.</p>`
+  },
+  {
+    slug: 'bar-table-pool-tips', title: 'Bar Table Pool Tips: How to Win on a 7-Foot Coin-Op Table',
+    desc: 'How to play better on 7-foot bar tables (bar boxes): the heavier cue ball, tight clusters, breaking, house cues, and strategy for winning 8-Ball in a bar.',
+    body: `
+<p>Most pool in America is played on 7-foot coin-operated bar tables, often called bar boxes. They play differently from the 9-foot tables in pool halls and on TV. Here's how to adjust.</p>
+<h2>The table is crowded</h2>
+<p>Fifteen balls on a small table means more clusters and blocked pockets. Break up clusters early, while you still have options, and don't leave balls tied up near the end of the rack.</p>
+<h2>The cue ball may be heavier</h2>
+<p>Many coin-op tables use a slightly larger or heavier cue ball (or a magnetic one) so the table can return it when you scratch. It draws less and follows more than a standard cue ball. Hit draw shots a little lower and firmer, and expect less backspin.</p>
+<h2>Speed control is everything</h2>
+<p>Shots are shorter, so small speed errors send the cue ball much farther across the table in comparison. Play softer than you think, and use the rails to slow the cue ball down.</p>
+<h2>Breaking on a bar box</h2>
+<ul>
+<li>Break from near the side rail and hit the head ball as full as possible.</li>
+<li>A controlled, solid hit beats a wild one: the cue ball can fly off a small table.</li>
+<li>Learn the details in <a href="/guides/how-to-break-in-pool">how to break in pool</a>.</li>
+</ul>
+<h2>Bring your own cue (and chalk)</h2>
+<p>Bar house cues are often warped, with flat or missing tips. A ${amz('two piece pool cue with case', 'two-piece cue in a case')} travels easily, and a cube of ${amz('premium pool cue chalk', 'good chalk')} in your pocket prevents most miscues. A ${amz('billiard glove', 'glove')} helps on sticky bar cues, too.</p>
+<h2>Strategy for bar 8-Ball</h2>
+<ul>
+<li><b>Check the house rules first:</b> call shots? Scratch on the 8? Ball in hand anywhere or behind the line? See <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs tournament rules</a>.</li>
+<li><b>Play safe when you can't run out.</b> On a bar box, hiding the cue ball behind your balls is easy and very effective. See <a href="/guides/safety-play-in-pool">safety play</a>.</li>
+<li><b>Leave your balls near pockets</b> as blockers for your opponent.</li>
+</ul>
+<p>Most weekly bar tournaments are played on bar boxes. <a href="/tonight/">Find one tonight</a>, and read <a href="/guides/bar-pool-etiquette">bar pool etiquette</a> before you go.</p>`
+  },
+  {
+    slug: 'how-to-teach-someone-pool', title: 'How to Teach Someone to Play Pool (Kids, Friends or a Partner)',
+    desc: 'How to teach a beginner pool: what to show first, simple games that keep it fun, how to correct without overloading, and tips for teaching kids.',
+    body: `
+<p>Teaching someone to play is one of the best parts of the game, and the easiest way to get it wrong is to teach too much at once. Keep it simple, keep it fun, and let them make balls early.</p>
+<h2>Lesson 1: just make balls</h2>
+<ol>
+<li><b>Stance and bridge only.</b> Show an open bridge (hand flat, cue in the V of the thumb) and a relaxed grip. That's it. See <a href="/guides/how-to-hold-a-pool-cue">how to hold a pool cue</a>.</li>
+<li><b>Straight-in shots, close to the pocket.</b> Let them make five in a row before anything else.</li>
+<li><b>One tip per shot.</b> "Stay down" or "follow through," not both.</li>
+</ol>
+<h2>Lesson 2: aiming cut shots</h2>
+<p>Show the ghost ball idea: picture a ball touching the object ball on the line to the pocket, and send the cue ball there. Place a real ball as a target to make it concrete. More in <a href="/guides/how-to-aim-in-pool">how to aim in pool</a>.</p>
+<h2>Games that keep it fun</h2>
+<ul>
+<li><b>Hangers race:</b> balls in the jaws of pockets; who clears them in fewer shots?</li>
+<li><b>Simple 8-Ball with relaxed rules:</b> no call shots, ball in hand after scratches.</li>
+<li><b>Cutthroat</b> for three players: see <a href="/guides/cutthroat-pool-rules">cutthroat rules</a>.</li>
+<li><b>Trick shots:</b> beginners love the <a href="/trick-shots/dead-combination">dead combination</a> and <a href="/trick-shots/three-ball-train">the train</a>.</li>
+</ul>
+<h2>Teaching kids</h2>
+<ul>
+<li><b>Use the right cue.</b> A full-size cue is too long and heavy for most kids. A ${amz('kids pool cue 48 inch', 'shorter 48 or 52-inch cue')} makes a huge difference.</li>
+<li><b>Give them something to stand on</b> only if it's stable; otherwise use a short bridge and closer shots.</li>
+<li><b>Keep sessions short</b>, 20 to 30 minutes, and always end on a made ball.</li>
+<li>A ${amz('training cue ball dots', 'cue ball with dots')} makes spin visible and fun to experiment with.</li>
+</ul>
+<h2>How to correct (without overloading)</h2>
+<ul>
+<li>Praise what went right first, then give one change.</li>
+<li>Let them miss. Discovering why is part of learning.</li>
+<li>Don't play them at full strength. Give spots, or play with your opposite hand.</li>
+</ul>
+<p>Next steps for your new player: <a href="/guides/pool-basics-for-beginners">pool for beginners</a>, the <a href="/play/">free pool games</a> online, and their first <a href="/guides/first-pool-tournament">pool tournament</a>.</p>`
+  },
+  {
+    slug: 'dominant-eye-in-pool', title: 'Your Dominant Eye in Pool: How It Affects Aim and Where to Put Your Head',
+    desc: 'How to find your dominant eye and why it matters in pool: where to place the cue under your chin, why you may be aiming slightly off, and drills to find your vision center.',
+    body: `
+<p>If you aim perfectly but still miss to the same side, your eyes may be the reason. Most people have a dominant eye, and where the cue sits under your chin changes how you see the shot.</p>
+<h2>Find your dominant eye</h2>
+<ol>
+<li>Make a small triangle with your hands at arm's length.</li>
+<li>Look through it at a distant object with both eyes open.</li>
+<li>Close one eye at a time. The eye that still sees the object in the triangle is your dominant eye.</li>
+</ol>
+<h2>Why it matters</h2>
+<p>When you look down the cue, your brain combines both eyes into one view. If the cue is under the center of your chin but one eye is dominant, the line can look straight when it is slightly off. That causes misses that are always to the same side.</p>
+<h2>Find your "vision center"</h2>
+<p>Many players shift the cue slightly toward the dominant eye, and some line it up directly under that eye. The right spot is different for everyone. Test it:</p>
+<ol>
+<li>Set up a straight-in shot: object ball one diamond off a corner pocket, cue ball two diamonds behind it.</li>
+<li>Shoot ten with the cue under your chin's center. Note misses.</li>
+<li>Shift the cue a little toward the dominant eye and shoot ten more. Repeat with a bigger shift.</li>
+<li>Keep the position where straight-ins go straight in most often.</li>
+</ol>
+<p>Film it from behind to make sure your stroke is straight while you test (see <a href="/guides/how-to-film-your-pool-stroke">how to film your stroke</a>), so you are testing your eyes, not your stroke.</p>
+<h2>Glasses and contacts</h2>
+<p>Regular glasses can blur the shot when you look over the frames in a low stance. Some players use contacts for pool, or ${amz('billiard shooting glasses', 'pool glasses')} with lenses set high so you look through the lens when you're down on the shot. Talk to your eye doctor about what fits your eyes.</p>
+<h2>Next</h2>
+<p>Once your eyes are lined up, sharpen your aim with <a href="/guides/how-to-aim-in-pool">how to aim in pool</a> and the <a href="/play/aim-trainer">aim trainer</a>.</p>`
+  },
+  {
+    slug: 'pool-stance-posture-stretches', title: 'Pool Posture and Stretches: Stay Loose Through a Long Tournament Day',
+    desc: 'Simple posture tips and stretches for pool players: a stance that is easy on your back, warm-up moves before you play, and how to stay loose through a long tournament.',
+    body: `
+<p>A long tournament can mean hours of bending over a table. A stance that is easy on your body, plus a few minutes of stretching, keeps you loose and your stroke smooth into the late rounds. (If you have back, neck or joint problems, check with your doctor before trying new stretches.)</p>
+<h2>A stance that is easy on your back</h2>
+<ul>
+<li><b>Bend from the hips,</b> not by rounding your lower back.</li>
+<li><b>Bend the front knee</b> a little to take strain off your back.</li>
+<li><b>Feet about shoulder width,</b> weight balanced so you could hold the position comfortably.</li>
+<li><b>Don't force a very low stance</b> if it hurts. A slightly higher head with a still body beats a low head that wobbles.</li>
+</ul>
+<p>More on setup in <a href="/guides/how-to-hold-a-pool-cue">grip, bridge and stance</a>.</p>
+<h2>Five-minute warm-up before you play</h2>
+<ol>
+<li><b>Shoulder rolls:</b> ten forward, ten back.</li>
+<li><b>Arm circles</b> with your stroking arm, small to large.</li>
+<li><b>Wrist and finger stretches:</b> gently pull fingers back, then forward, on each hand.</li>
+<li><b>Hip hinges:</b> hands on hips, hinge forward with a flat back, stand up tall. Ten times.</li>
+<li><b>Neck tilts:</b> slow and gentle, side to side.</li>
+</ol>
+<h2>Between matches</h2>
+<ul>
+<li>Walk around instead of sitting the whole time.</li>
+<li>Stand tall and stretch your back between racks.</li>
+<li>Drink water. Long days get dehydrating, and it shows in your focus.</li>
+</ul>
+<h2>Gear that helps</h2>
+<ul>
+<li><b>Comfortable shoes</b> with support: you'll be on your feet for hours. ${amz('comfortable standing shoes cushioned', 'See cushioned shoes')}.</li>
+<li>A light ${amz('billiard glove', 'glove')} keeps your bridge hand from tensing up when the cue sticks.</li>
+<li>A ${amz('cue case with shoulder strap', 'cue case with a shoulder strap')} is easier on your back than carrying a cue by hand all day.</li>
+</ul>
+<p>Read <a href="/guides/pool-tournament-nerves">handling tournament nerves</a> for the mental side of a long day, then <a href="/this-weekend/">find a tournament this weekend</a>.</p>`
+  },
+  {
+    slug: 'how-to-film-your-pool-stroke', title: 'How to Film Your Pool Stroke (and What to Look For)',
+    desc: 'Use your phone as a pool coach: where to put the camera, slow-motion settings, and the stroke problems video reveals, like elbow drop, wobble and jumping up.',
+    body: `
+<p>Your phone is the best pool coach you own. You can't see your own stroke while you shoot, but video shows exactly what your cue, elbow and head are doing. Ten minutes of filming can fix what months of practice didn't.</p>
+<h2>What you need</h2>
+<ul>
+<li>A phone with slow motion.</li>
+<li>A ${amz('phone tripod with remote', 'small tripod with a phone holder')} (a stack of books works in a pinch).</li>
+<li>Optional: a ${amz('bluetooth camera remote', 'Bluetooth remote')} so you can start and stop without walking over.</li>
+</ul>
+<h2>Three camera angles</h2>
+<ol>
+<li><b>From behind,</b> in line with the shot, about table height. Shows whether the cue moves straight through the cue ball or swings to the side.</li>
+<li><b>From the side,</b> level with your elbow. Shows elbow drop, grip position and follow-through.</li>
+<li><b>From the front,</b> looking back at you from beyond the object ball. Shows head movement and whether the tip finishes on line.</li>
+</ol>
+<h2>Settings</h2>
+<p>Use slow motion (120 or 240 frames per second) for the stroke itself. Good light on the table matters more than an expensive camera.</p>
+<h2>What to look for</h2>
+<ul>
+<li><b>Cue moves sideways</b> on the backswing or forward stroke: grip too tight, or elbow moving out.</li>
+<li><b>Elbow drops before contact:</b> fine on power shots for some players, but on normal shots it moves the tip.</li>
+<li><b>Head moves up</b> before the object ball drops: you are jumping up.</li>
+<li><b>Short or crooked follow-through:</b> decelerating or steering.</li>
+<li><b>Different number of practice strokes</b> every shot: your <a href="/guides/pool-pre-shot-routine">pre-shot routine</a> needs work.</li>
+</ul>
+<h2>How to use what you see</h2>
+<p>Pick one problem, fix it with drills from <a href="/guides/how-to-improve-your-pool-stroke">how to improve your stroke</a>, and film again in a week. Compare side by side. Keep a few clips from your best sessions as a reference for what "good" looks like for you.</p>
+<p>Pair video with a ${amz('training cue ball dots', 'training cue ball')} to see your spin and you have most of what a coach gives you. Then follow the <a href="/guides/30-day-pool-training-plan">30-day training plan</a>.</p>`
   }
 ];
