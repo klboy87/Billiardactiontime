@@ -199,7 +199,7 @@ export function advertisePage(cfg, stats) {
   <div class="pagehead"><h1>Advertise on Billiard Action Time</h1><p>Put your business in front of pool players while they look for a tournament tonight, read up on technique, or shop for gear. Simple monthly spots, no contracts, first month half price.</p>
     <div class="actbar" style="margin-top:12px"><a class="btn btn-green" href="${mail('Advertising')}">📧 Email us about advertising</a></div></div>
   <section class="glance" aria-label="Who reads the site"><h2 class="glance-h">Who you'll reach</h2><div class="glance-grid">
-    <div><small>Tournaments listed</small><b>${stats.listings.toLocaleString('en-US')}</b><span>updated every night</span></div>
+    <div><small>Tournaments listed</small><b>${stats.listings.toLocaleString('en-US')}</b><span>${stats.upcoming.toLocaleString('en-US')} coming up now, new ones nightly</span></div>
     <div><small>States covered</small><b>${stats.states}</b><span>${stats.rooms} pool halls</span></div>
     <div><small>Free guides</small><b>${stats.guides}</b><span>rules, technique, gear</span></div>
     <div><small>Pages</small><b>~2,000</b><span>in search engines</span></div></div></section>

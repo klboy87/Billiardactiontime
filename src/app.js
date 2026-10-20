@@ -668,8 +668,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (p === '/sponsor' || p === '/sponsor/' || p === '/advertise/')) return moved('/advertise');
     if ((m === 'GET' || m === 'HEAD') && p === '/advertise') {
       SEO.ensureFooter(db); trackVisit(req, 'advertise');
-      const up = SEO.listedTournaments(db).filter(t => t.date >= D.todayIso());
-      const stats = { listings: up.length, states: new Set(up.map(t => t.venue.state)).size, rooms: new Set(up.map(t => t.venue.id)).size, guides: GU.GUIDES.length };
+      const all = SEO.listedTournaments(db), up = all.filter(t => t.date >= D.todayIso());
+      const stats = { listings: all.length, upcoming: up.length, states: new Set(up.map(t => t.venue.state)).size, rooms: new Set(up.map(t => t.venue.id)).size, guides: GU.GUIDES.length };
       return html(200, TL.advertisePage(cfg, stats));
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/directors' || p === '/directors/')) { if (p === '/directors') return moved('/directors/'); SEO.ensureFooter(db); trackVisit(req, 'directors'); return html(200, TL.directorsPage(cfg)); }
