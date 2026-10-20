@@ -92,6 +92,7 @@ ${body}
     ...(fresh.length ? ['NEW THIS WEEK', ...fresh.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}`), `All new listings: ${link('/new/', 'new')}`, ''] : []),
     'WORTH A READ', ...reads.map(g => `- ${g.title}: ${link('/guides/' + g.slug, 'read')}`), '',
     `Running a tournament? Post it free: ${link('/post', 'post')}`, '',
+    `Own a pool business? Advertise with us: ${link('/advertise', 'advertise')}`, '',
     `Shopping for a pool player? Gift ideas: ${link('/gear/gifts-for-pool-players', 'gifts')}`, '',
     'Billiard Action Time', '',
     'Don\'t want these emails? Reply "unsubscribe".'

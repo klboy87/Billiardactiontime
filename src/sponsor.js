@@ -10,5 +10,6 @@ export function sponsorBannerHtml() {
     <span class="spn-pics" aria-hidden="true"><img src="/sponsors/bm-combo.jpg" width="56" height="56" alt="" loading="lazy"><img src="/sponsors/bm-x2.jpg" width="56" height="56" alt="" loading="lazy"><img src="/sponsors/bm-holder.jpg" width="56" height="56" alt="" loading="lazy"></span>
     <span class="spn-cta">Shop now →</span>
   </span>
-</a>`;
+</a>
+<div class="spn-adv wrap"><a href="/advertise">📣 Your business here? Advertise with us</a></div>`;
 }

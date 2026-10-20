@@ -185,3 +185,32 @@ export function linkToUsPage(cfg) {
   <p class="muted" style="margin-top:14px">Questions? Email <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a>.</p>`;
   return layout(cfg, { title: 'Link to Billiard Action Time: Free Badge and Widget for Pool Halls & Leagues | Billiard Action Time', description: 'A free badge, text link and tournament schedule widget for pool halls, leagues and clubs. Help your players find pool tournaments near them.', path: '/link-to-us', body });
 }
+
+// ---- /advertise: sponsorship for businesses (gear brands, shops, pool halls). Listing tournaments stays free. ----
+export function advertisePage(cfg, stats) {
+  const mail = (spot) => `mailto:billiardactiontime@gmail.com?subject=${encodeURIComponent('Sponsorship: ' + spot)}&body=${encodeURIComponent(`Hi Billiard Action Time team,\n\nWe're interested in the ${spot} spot.\n\nBusiness name:\nWebsite:\nContact name and phone:\n\nThanks!`)}`;
+  const spots = [
+    ['📢', 'Site-wide banner', '$100/month', 'Your logo, a one-line message and a link under the header on every page, about 2,000 pages: tournaments, guides, games and tools.'],
+    ['✉️', 'Weekly email sponsor', '$120/month', '"This week\'s email is brought to you by..." with your logo and link in the weekly email to players, every week of the month.'],
+    ['🛒', 'Gear guide feature', '$75/month', 'Your store or products featured on the Pool Gear Guide and the matching buying guides, where players are already shopping.'],
+    ['📍', 'State sponsor', '$50/month', '"Pool tournaments in [State], presented by [You]" on one state\'s tournament pages. Great for pool halls and local shops.']
+  ];
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Advertise</span></nav>
+  <div class="pagehead"><h1>Advertise on Billiard Action Time</h1><p>Put your business in front of pool players while they look for a tournament tonight, read up on technique, or shop for gear. Simple monthly spots, no contracts, first month half price.</p>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-green" href="${mail('Advertising')}">📧 Email us about advertising</a></div></div>
+  <section class="glance" aria-label="Who reads the site"><h2 class="glance-h">Who you'll reach</h2><div class="glance-grid">
+    <div><small>Tournaments listed</small><b>${stats.listings.toLocaleString('en-US')}</b><span>updated every night</span></div>
+    <div><small>States covered</small><b>${stats.states}</b><span>${stats.rooms} pool halls</span></div>
+    <div><small>Free guides</small><b>${stats.guides}</b><span>rules, technique, gear</span></div>
+    <div><small>Pages</small><b>~2,000</b><span>in search engines</span></div></div></section>
+  <p class="muted" style="margin:0 0 14px">Readers are active players: league players, tournament regulars, beginners getting into the game, tournament directors and pool hall owners.</p>
+  <div class="plans">${spots.map(([ic, name, price, desc]) => `<div class="plan"><h2>${ic} ${name}</h2><p class="plan-price"><b>${price}</b></p><p style="flex:1">${desc}</p><div class="plan-cta"><a class="btn btn-gold btn-sm" href="${mail(name)}">Ask about this spot</a></div></div>`).join('')}</div>
+  <article class="card guide" style="margin-top:18px"><h2 style="margin-top:0">How it works</h2>
+  <ol><li>Email us with the spot you want. We'll send a preview with your logo.</li>
+  <li>We send a simple monthly invoice. Pay by card or PayPal; cancel any month.</li>
+  <li>Your ad goes live within a day of payment. Send a new logo or message any time.</li></ol>
+  <p>Who fits best: cue makers and gear brands, billiard supply stores, pool halls and sports bars, cue repair, table installers and movers, leagues and big events.</p>
+  <p class="muted">Posting a tournament on the site is always free. Sponsorship is only for businesses that want extra visibility. Ads are clearly marked as sponsors.</p>
+  <p>Questions? <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></article>`;
+  return layout(cfg, { title: 'Advertise on Billiard Action Time: Reach Pool Players | Billiard Action Time', description: `Sponsor Billiard Action Time and reach pool players across ${stats.states} states: site-wide banner, weekly email, gear guide and state sponsor spots. First month half price.`, path: '/advertise', body });
+}
