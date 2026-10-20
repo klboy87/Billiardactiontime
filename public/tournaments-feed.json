@@ -13537,6 +13537,385 @@
       "state": "NJ",
       "entry": 75,
       "notes": "Source: playhoboken.com. Recurring third Sunday of the month, double elimination"
+    },
+    {
+      "id": "ft-555-under-wild-crooked-cue-lounge-2026-10-24",
+      "name": "555 & Under Wild",
+      "date": "2026-10-24",
+      "venue": "Crooked Cue Lounge",
+      "address": "112 North Tejon Street, Ste 100",
+      "city": "Colorado Springs",
+      "state": "CO",
+      "zip": "80903",
+      "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "ft-fargo-handicapped-8-ball-rookies-sports-bar-and-grill-2026-10-24",
+      "name": "Fargo Handicapped 8 Ball",
+      "date": "2026-10-24",
+      "venue": "Rookies Sports Bar and Grill",
+      "address": "6913 W. 130th Street",
+      "city": "Parma Heights",
+      "state": "OH",
+      "zip": "44130",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "rr-530-under-8-ball-tournament-livingston-s-billiards-2026-11-07",
+      "name": "530 & Under 8-Ball Tournament",
+      "date": "2026-11-07",
+      "venue": "Livingston's Billiards",
+      "address": "4828 14th St W",
+      "city": "Bradenton",
+      "state": "FL",
+      "zip": "34207",
+      "game": "8-Ball",
+      "entry": 60,
+      "notes": "Source: rackradar.com"
+    },
+    {
+      "id": "rr-mo-m-ney-tournaments-hustlers-pizza-and-billiards-2026-11-07",
+      "name": "Mo M$NEY Tournaments",
+      "date": "2026-11-07",
+      "venue": "Hustlers Pizza and Billiards",
+      "address": "8033 N Dort Hwy",
+      "city": "Mount Morris",
+      "state": "MI",
+      "zip": "48458",
+      "entry": 65,
+      "notes": "Source: rackradar.com"
+    },
+    {
+      "id": "rr-open-rated-9-ball-tournament-deep-pockets-billiard-bar-bistro-2026-11-28",
+      "name": "Open Rated 9 Ball Tournament",
+      "date": "2026-11-28",
+      "venue": "Deep Pockets Billiard Bar & Bistro",
+      "address": "7822 West Parkway Blvd N",
+      "city": "Tulsa",
+      "state": "OK",
+      "zip": "74127",
+      "game": "9-Ball",
+      "entry": 120,
+      "notes": "Source: rackradar.com"
+    },
+    {
+      "id": "ft-tuesday-night-fargo-handicapped-9-ball-family-billiards-2026-10-27",
+      "name": "Tuesday Night Fargo Handicapped 9 Ball",
+      "date": "2026-10-27",
+      "venue": "Family Billiards",
+      "city": "San Francisco",
+      "state": "CA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-chips-anastasia-billiards-2026-10-27",
+      "name": "Tuesday Night 8 Ball Chips",
+      "date": "2026-10-27",
+      "venue": "Anastasia Billiards",
+      "city": "Saint Augustine",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-9-ball-cue-bar-2026-10-27",
+      "name": "Tuesday Night 9 Ball",
+      "date": "2026-10-27",
+      "venue": "Cue Bar",
+      "city": "Bellmore",
+      "state": "NY",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-knock-n-boots-saloon-2026-10-27",
+      "name": "Tuesday Night 8 Ball",
+      "date": "2026-10-27",
+      "venue": "Knock'n Boots Saloon",
+      "city": "Largo",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-donelson-pub-2026-10-27",
+      "name": "Tuesday Night 8 Ball",
+      "date": "2026-10-27",
+      "venue": "Donelson Pub",
+      "city": "Nashville",
+      "state": "TN",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-mini-manias-the-8-ball-lounge-2026-10-27",
+      "name": "Tuesday Night Mini Manias",
+      "date": "2026-10-27",
+      "venue": "The 8 Ball Lounge",
+      "city": "Bartonsville",
+      "state": "PA",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-lone-star-ice-house-2026-10-27",
+      "name": "Tuesday Night 8 Ball",
+      "date": "2026-10-27",
+      "venue": "Lone Star Ice House",
+      "city": "Houston",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-8-ball-tournament-froggy-s-bar-grill-2026-10-27",
+      "name": "8 Ball Tournament",
+      "date": "2026-10-27",
+      "venue": "Froggy's Bar & Grill",
+      "city": "Monroe",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-howdy-s-restaurant-2026-10-27",
+      "name": "Tuesday Night 8 ball",
+      "date": "2026-10-27",
+      "venue": "Howdy's Restaurant",
+      "city": "Kerrville",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-fast-8-tournament-extreme-shots-2026-10-27",
+      "name": "Fast 8 Tournament",
+      "date": "2026-10-27",
+      "venue": "Extreme Shots",
+      "city": "New Iberia",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-tournament-whiskey-willy-s-2026-10-27",
+      "name": "Tuesday Night Tournament",
+      "date": "2026-10-27",
+      "venue": "Whiskey Willy's",
+      "city": "Lutz",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-9-ball-tournament-apple-lounge-2026-10-27",
+      "name": "9-Ball Tournament",
+      "date": "2026-10-27",
+      "venue": "Apple Lounge",
+      "city": "Winter Haven",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-9-ball-chip-tournament-cushion-lounge-2026-10-27",
+      "name": "9 Ball Chip Tournament",
+      "date": "2026-10-27",
+      "venue": "Cushion Lounge",
+      "city": "Oxford",
+      "state": "MI",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-eight-ball-tournament-one-eyed-jacks-2026-10-27",
+      "name": "Eight Ball Tournament",
+      "date": "2026-10-27",
+      "venue": "One Eyed Jacks",
+      "city": "Show Low",
+      "state": "AZ",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-remix-tournament-series-good-times-billiards-2026-10-27",
+      "name": "Remix Tournament Series",
+      "date": "2026-10-27",
+      "venue": "Good Times Billiards",
+      "city": "Lakewood",
+      "state": "CA",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-10-ball-tournament-jeffro-s-billiards-2026-10-27",
+      "name": "10 Ball Tournament",
+      "date": "2026-10-27",
+      "venue": "Jeffro's Billiards",
+      "city": "Arlington",
+      "state": "TX",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-eastside-billiards-2026-10-27",
+      "name": "Tuesday Night 8 Ball",
+      "date": "2026-10-27",
+      "venue": "Eastside Billiards",
+      "city": "Grand Rapids",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-tournament-stix-billiards-2026-10-27",
+      "name": "Tuesday Tournament",
+      "date": "2026-10-27",
+      "venue": "Stix Billiards",
+      "city": "Cookeville",
+      "state": "TN",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-6-under-8-ball-tournament-bola-8-sport-bar-2026-10-27",
+      "name": "6 & Under 8-Ball Tournament",
+      "date": "2026-10-27",
+      "venue": "Bola 8 Sport Bar",
+      "city": "Lafayette",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-8-ball-tournament-every-week-bayou-billiards-2026-10-27",
+      "name": "Tuesday 8 ball Tournament Every Week",
+      "date": "2026-10-27",
+      "venue": "Bayou Billiards",
+      "city": "Ruston",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-9-ball-tournament-u-time-billiards-2026-10-27",
+      "name": "Tuesday Night 9 Ball Tournament",
+      "date": "2026-10-27",
+      "venue": "U-Time Billiards",
+      "city": "Aurora",
+      "state": "CO",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-pool-tournament-henry-hudson-s-2026-10-27",
+      "name": "Pool Tournament",
+      "date": "2026-10-27",
+      "venue": "Henry Hudson's",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-chip-tournament-kickshot-billiards-2026-10-27",
+      "name": "Tuesday Night 8 Ball Chip Tournament",
+      "date": "2026-10-27",
+      "venue": "Kickshot Billiards",
+      "city": "Florence",
+      "state": "KY",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-9-ball-rj-billiards-2026-10-27",
+      "name": "Tuesday Night 9 Ball",
+      "date": "2026-10-27",
+      "venue": "RJ Billiards",
+      "city": "Jackson",
+      "state": "MS",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-pool-tournament-sharks-billiards-2026-10-27",
+      "name": "Tuesday Night Pool Tournament",
+      "date": "2026-10-27",
+      "venue": "Sharks Billiards",
+      "city": "Shawnee",
+      "state": "KS",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-misery-jen-2026-10-27",
+      "name": "Tuesday Night 8 Ball",
+      "date": "2026-10-27",
+      "venue": "Misery & Jen",
+      "city": "Hamilton",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-9-ball-peterman-s-shamrock-2026-10-27",
+      "name": "Tuesday Night 9 Ball",
+      "date": "2026-10-27",
+      "venue": "Peterman's Shamrock",
+      "city": "Saint Joseph",
+      "state": "MO",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-california-billiards-2026-10-27",
+      "name": "Tuesday Night 8 Ball",
+      "date": "2026-10-27",
+      "venue": "California Billiards",
+      "city": "Fremont",
+      "state": "CA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-weekly-handicapped-9-ball-tournament-danny-k-s-billiards-and-sports-bar-2026-10-27",
+      "name": "Weekly Handicapped 9 Ball Tournament",
+      "date": "2026-10-27",
+      "venue": "Danny K's Billiards and Sports Bar",
+      "city": "Orange",
+      "state": "CA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-8-ball-la-tavern-2026-10-27",
+      "name": "Tuesday Night 8 Ball",
+      "date": "2026-10-27",
+      "venue": "LA Tavern",
+      "city": "Theodore",
+      "state": "AL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "ft-tuesday-night-9-ball-scratch-pizza-billiards-2026-10-27",
+      "name": "Tuesday Night 9 Ball",
+      "date": "2026-10-27",
+      "venue": "Scratch Pizza & Billiards",
+      "city": "Fife",
+      "state": "WA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly tuesday"
+    },
+    {
+      "id": "mrcues2-com-open-9-ball-tournament-2026-11-02",
+      "name": "Open 9-Ball Tournament",
+      "date": "2026-11-02",
+      "venue": "Mr. Cue's II Billiards",
+      "city": "Atlanta",
+      "state": "GA",
+      "game": "9-Ball",
+      "notes": "Source: mrcues2.com. Recurring weekly Monday 8pm"
     }
   ]
 }
