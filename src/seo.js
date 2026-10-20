@@ -182,6 +182,8 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 </div></details>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
+<section class="subtop" data-sub-top aria-label="Email signup"><div class="wrap subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get the weekend's best pool tournaments by email. Free.</span></p>
+<form class="sub-form subtop-form" data-sub action="/alerts" method="get"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"><button class="btn btn-green btn-sm" type="submit">Sign up</button></form><p class="sub-msg" aria-live="polite"></p></div></section>
 <main id="main" class="wrap page seo">${body}${ALERT_CTA}${supportStrip(cfg)}</main>
 ${footer(cfg)}</body></html>`;
 }

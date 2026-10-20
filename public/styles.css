@@ -670,3 +670,11 @@ table.t tr.noline td{border-bottom:0}
 .sub-form{display:flex;gap:8px;flex-wrap:wrap}.sub-form input{flex:1 1 220px;min-width:0;padding:10px 12px;font-size:16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}
 .support-strip{display:grid;gap:8px;padding:14px 18px;margin:14px 0 0}.support-strip .actbar{margin:0}
 .spn-adv{text-align:right;font-size:12px;padding-top:4px;padding-bottom:0}.spn-adv a{color:var(--muted)}
+/* Email signup bar near the top of pages */
+.subtop{background:linear-gradient(90deg,rgba(20,138,56,.12),rgba(28,111,230,.10));border-bottom:1px solid var(--line)}
+.subtop-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding-top:10px;padding-bottom:10px}
+.subtop-txt{margin:0;font-size:15px}.subtop-txt span{color:var(--muted)}
+.subtop-form{flex:0 1 360px}.subtop-form input{padding:8px 10px;font-size:16px}
+.subtop .sub-msg{margin:0;font-weight:700;width:100%}.subtop .sub-msg:empty{display:none}
+.home-sub{border:1px solid var(--line);border-radius:14px;margin:14px 0 0}.home-sub .subtop-in{padding:12px 16px}
+@media (max-width:600px){.subtop-txt span{display:block}.subtop-form{flex:1 1 100%}}

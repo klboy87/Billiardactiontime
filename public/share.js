@@ -25,8 +25,9 @@
   });
 })();
 
-/* One-step weekly email signup at the bottom of content pages. */
+/* One-step weekly email signup (top bar and bottom of content pages). Subscribers don't see the top bar again. */
 (function () {
+  try { if (localStorage.getItem('bat_subscribed')) document.querySelectorAll('[data-sub-top]').forEach(function (el) { el.hidden = true; }); } catch (e) {}
   document.querySelectorAll('form[data-sub]').forEach(function (f) {
     f.addEventListener('submit', function (e) {
       if (!window.fetch) return;
@@ -35,7 +36,7 @@
       btn.disabled = true;
       fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })
         .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Something went wrong'); }); })
-        .then(function () { f.hidden = true; if (msg) msg.textContent = "✓ You're in! Watch for the weekend email."; })
+        .then(function () { f.hidden = true; if (msg) msg.textContent = "✓ You're in! Watch for the weekend email."; try { localStorage.setItem('bat_subscribed', '1'); } catch (e) {} })
         .catch(function (err) { if (msg) msg.textContent = '⚠ ' + err.message; btn.disabled = false; });
     });
   });
