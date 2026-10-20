@@ -178,12 +178,18 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <details class="mnav"><summary aria-label="Menu">☰</summary><div class="mnav-panel">
 <form action="/search" method="get" role="search" class="mnav-search"><input type="search" name="q" placeholder="Search city, room, game…" aria-label="Search tournaments"><button type="submit">Search</button></form>
 <a href="/tonight/">🌙 Tonight</a><a href="/this-weekend/">🔥 This Weekend</a><a href="/near">📍 Near Me</a><a href="/tournaments/">🗺️ By State</a><a href="/pool-halls/">🏠 Pool Halls</a><a href="/big-tournaments/">🏆 Big Events</a><a href="/new/">🆕 Just Added</a><a href="/calendar">📅 Calendar</a>
-<a href="/guides/">📖 Guides</a><a href="/trick-shots/">✨ Trick Shots</a><a href="/play/">🎮 Games</a><a href="/gear/">🛒 Pool Gear</a><a href="/tools/">🧰 Tools</a><a href="/money-matches/">💰 Money Matches</a><a href="/alerts">🔔 Alerts</a><a href="/directors/">🎯 For Directors</a><a class="mnav-cta" href="/post">➕ Post a Tournament</a>
+<a href="/guides/">📖 Guides</a><a href="/trick-shots/">✨ Trick Shots</a><a href="/play/">🎮 Games</a><a href="/gear/">🛒 Pool Gear</a>${cfg.merchUrl ? `<a href="${esc(cfg.merchUrl)}" target="_blank" rel="noopener">👕 Merch</a>` : ''}<a href="/tools/">🧰 Tools</a><a href="/money-matches/">💰 Money Matches</a><a href="/alerts">🔔 Alerts</a><a href="/directors/">🎯 For Directors</a><a class="mnav-cta" href="/post">➕ Post a Tournament</a>
 </div></details>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
-<main id="main" class="wrap page seo">${body}${ALERT_CTA}</main>
+<main id="main" class="wrap page seo">${body}${ALERT_CTA}${supportStrip(cfg)}</main>
 ${footer(cfg)}</body></html>`;
+}
+// Voluntary ways to back the site: a tip page and a merch store. Each shows only once its link is set.
+function supportStrip(cfg) {
+  if (!cfg.supportUrl && !cfg.merchUrl) return '';
+  return `<section class="card support-strip"><b>❤️ Keep Billiard Action Time free</b><span class="muted">Every listing, guide and game here is free. If the site helps you find a game, you can help keep it running.</span>
+  <span class="actbar">${cfg.supportUrl ? `<a class="btn btn-gold btn-sm" href="${esc(cfg.supportUrl)}" target="_blank" rel="noopener">☕ Buy us a coffee</a>` : ''}${cfg.merchUrl ? `<a class="btn btn-out btn-sm" href="${esc(cfg.merchUrl)}" target="_blank" rel="noopener">👕 Shop shirts &amp; hats</a>` : ''}</span></section>`;
 }
 let footCache = null;
 function footer(cfg) { return footCache ? footCache.html : ''; }
@@ -201,7 +207,7 @@ function buildFooter(db) {
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
     <div><h4>Learn &amp; Play</h4><a href="/gear/">Pool gear guide</a><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/pool-halls/">Pool halls</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a><a href="/directors/">For directors</a></div>
-  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/gear/">Pool Gear</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/gear/">Pool Gear</a> · <a href="/link-to-us">Link to Us</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.

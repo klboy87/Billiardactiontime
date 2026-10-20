@@ -19,8 +19,12 @@ export const GEAR = [
   { key: 'book', icon: '📘', name: 'A pool instruction book', q: 'pool billiards instruction book', why: 'A good book on aiming, cue ball control and patterns is the cheapest lesson you will ever buy.', guide: '/guides/pool-practice-drills' }
 ];
 const BY = Object.fromEntries(GEAR.map(g => [g.key, g]));
+// eBay Partner Network search link (used cues and cases sell well on eBay). Only built when a campaign id is set.
+const EBAY_USED = new Set(['cue', 'case', 'break', 'jump', 'balls']);
+const ebayHref = (cfg, q) => `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(q)}&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=${cfg.ebayCampid}&customid=bat&toolid=10001&mkevt=1`;
+const ebayLink = (cfg, g, cls = '') => cfg.ebayCampid && EBAY_USED.has(g.key) ? ` <a${cls ? ` class="${cls}"` : ''} href="${esc(ebayHref(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">Used on eBay</a>` : '';
 const href = (cfg, q) => `https://www.amazon.com/s?k=${encodeURIComponent(q)}${cfg.amazonTag ? '&tag=' + encodeURIComponent(cfg.amazonTag) : ''}`;
-const disclosure = cfg => cfg.amazonTag ? '<p class="muted" style="font-size:13px;margin:8px 0 0">As an Amazon Associate we earn from qualifying purchases. It costs you nothing extra and helps keep this site free.</p>' : '';
+const disclosure = cfg => (cfg.amazonTag || cfg.ebayCampid) ? `<p class="muted" style="font-size:13px;margin:8px 0 0">${cfg.amazonTag ? 'As an Amazon Associate we earn from qualifying purchases. ' : ''}${cfg.ebayCampid ? 'We may earn a commission from eBay purchases. ' : ''}It costs you nothing extra and helps keep this site free.</p>` : '';
 
 // Which gear fits which guide or trick shot.
 export const GEAR_FOR = { 'how-to-choose-a-pool-cue': ['cue', 'case', 'tip'], 'pool-cue-care': ['case', 'tip', 'chalk'], 'how-to-break-in-pool': ['break', 'rack'], 'english-in-pool': ['balls', 'chalk'],
@@ -29,14 +33,14 @@ export const GEAR_FOR = { 'how-to-choose-a-pool-cue': ['cue', 'case', 'tip'], 'p
 
 export function gearBox(cfg, slug) {
   const keys = GEAR_FOR[slug]; if (!keys) return '';
-  return `<section class="card gear-box" style="padding:14px 18px;margin-top:16px"><h2 class="seo-h2" style="margin-top:0">🛒 Gear for this</h2><ul class="gear-list">${keys.map(k => BY[k]).map(g => `<li><span aria-hidden="true">${g.icon}</span> <a href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">${esc(g.name)}</a> <span class="muted">· ${esc(g.why.split('. ')[0])}.</span></li>`).join('')}</ul><p style="margin:6px 0 0"><a href="/gear/">Full pool gear guide →</a> · <a href="/gear/gifts-for-pool-players">🎁 Gift ideas for pool players</a>${['pool-table-sizes', 'cutthroat-pool-rules', '8-ball-rules', 'pool-basics-for-beginners'].includes(slug) ? ' · <a href="/gear/home-pool-table">🏠 Buying a home pool table</a>' : ''}${['how-to-choose-a-pool-cue', 'pool-cue-tips', 'pool-cue-care', 'pool-basics-for-beginners', 'pool-cue-weight'].includes(slug) ? ' · <a href="/gear/pool-cue-prices">💲 What a pool cue costs</a>' : ''}</p>${disclosure(cfg)}</section>`;
+  return `<section class="card gear-box" style="padding:14px 18px;margin-top:16px"><h2 class="seo-h2" style="margin-top:0">🛒 Gear for this</h2><ul class="gear-list">${keys.map(k => BY[k]).map(g => `<li><span aria-hidden="true">${g.icon}</span> <a href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">${esc(g.name)}</a>${ebayLink(cfg, g)} <span class="muted">· ${esc(g.why.split('. ')[0])}.</span></li>`).join('')}</ul><p style="margin:6px 0 0"><a href="/gear/">Full pool gear guide →</a> · <a href="/gear/gifts-for-pool-players">🎁 Gift ideas for pool players</a>${['pool-table-sizes', 'cutthroat-pool-rules', '8-ball-rules', 'pool-basics-for-beginners'].includes(slug) ? ' · <a href="/gear/home-pool-table">🏠 Buying a home pool table</a>' : ''}${['how-to-choose-a-pool-cue', 'pool-cue-tips', 'pool-cue-care', 'pool-basics-for-beginners', 'pool-cue-weight'].includes(slug) ? ' · <a href="/gear/pool-cue-prices">💲 What a pool cue costs</a>' : ''}</p>${disclosure(cfg)}</section>`;
 }
 
 export function gearPage(cfg) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Pool Gear</span></nav>
   <div class="pagehead"><h1>Pool Gear Guide: What You Actually Need</h1><p>The gear worth owning when you start playing tournaments, what each one does, and what to look for. Start with a cue, a case and chalk; add the rest as your game grows.</p></div>
   <div class="gear-grid">${GEAR.map((g, i) => `<article class="card gear-card"><span class="gear-ic" aria-hidden="true">${g.icon}</span><h2>${i + 1}. ${esc(g.name)}</h2><p>${esc(g.why)}</p>
-    <p class="gear-cta"><a class="btn btn-gold btn-sm" href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">See prices on Amazon</a> <a href="${g.guide}">Learn more</a></p></article>`).join('')}</div>
+    <p class="gear-cta"><a class="btn btn-gold btn-sm" href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">See prices on Amazon</a>${ebayLink(cfg, g, 'btn btn-out btn-sm')} <a href="${g.guide}">Learn more</a></p></article>`).join('')}</div>
   <section class="sec seo-sec"><h2>Buying guides</h2><div class="guide-next">${BUYING.map(x => `<a href="/gear/${x.slug}"><small>${x.icon} Buying guide</small><b>${esc(x.title)}</b></a>`).join('')}</div></section>
   ${disclosure(cfg)}
   <article class="card guide" style="margin-top:16px"><h2 style="margin-top:0">Buying tips</h2><ul>

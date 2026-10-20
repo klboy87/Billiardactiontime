@@ -43,6 +43,11 @@ export function getConfig(env = process.env) {
     // Google AdSense publisher id ("ca-pub-1234567890123456"). Ads stay off until this is set.
     adsenseClient: /^ca-pub-\d{10,20}$/.test((env.ADSENSE_CLIENT || '').trim()) ? env.ADSENSE_CLIENT.trim() : '',
     // Amazon Associates tracking id (e.g. "yoursite-20"). Gear links work without it but only earn with it.
-    amazonTag: /^[\w-]{3,40}-2[0-9]$/.test((env.AMAZON_TAG || '').trim()) ? env.AMAZON_TAG.trim() : ''
+    amazonTag: /^[\w-]{3,40}-2[0-9]$/.test((env.AMAZON_TAG || '').trim()) ? env.AMAZON_TAG.trim() : '',
+    // eBay Partner Network campaign id (10 digits): used-gear links earn a commission on eBay sales.
+    ebayCampid: /^\d{10}$/.test((env.EBAY_CAMPID || '').trim()) ? env.EBAY_CAMPID.trim() : '',
+    // Optional "support the site" page (Buy Me a Coffee, Ko-fi, PayPal.me) and print-on-demand merch store.
+    supportUrl: /^https:\/\/\S+$/.test((env.SUPPORT_URL || '').trim()) ? env.SUPPORT_URL.trim() : '',
+    merchUrl: /^https:\/\/\S+$/.test((env.MERCH_URL || '').trim()) ? env.MERCH_URL.trim() : ''
   };
 }

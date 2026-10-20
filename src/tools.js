@@ -139,6 +139,7 @@ export function toolPage(cfg, slug) {
 // Landing page for tournament directors and room owners (/directors/): everything free that helps fill a bracket.
 export function directorsPage(cfg) {
   const F = [
+    ['🔗', 'A free badge for your website', 'Add a "Find pool tournaments" badge or link to your site so your players can find events near them.', '/link-to-us', 'Get the badge'],
     ['➕', 'Post your tournament free', 'Takes two minutes. Weekly event? Choose "Repeats every week" and post up to 12 weeks at once.', '/post', 'Post a tournament'],
     ['📷', 'Snap the flyer instead', 'Take a photo of your flyer and the flyer scanner fills in the details for you.', '/scan', 'Scan a flyer'],
     ['📣', 'Ready-made share graphics', 'Every tournament gets its own page plus square, tall and wide graphics for Facebook, Instagram and TikTok.', '/tonight/', 'See examples'],
@@ -165,3 +166,22 @@ export function directorsPage(cfg) {
     description: 'List your pool tournament free and fill your bracket: weekly repeat posting, share graphics, a website schedule widget, calendar feeds, printable brackets, payout and round robin tools.' });
 }
 
+
+// ---- /link-to-us: ready-made badge, text link and widget for pool halls, leagues and clubs (honest backlinks) ----
+export function linkToUsPage(cfg) {
+  const e = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const badge = `<a href="${cfg.publicUrl}/" title="Find pool tournaments near you"><img src="${cfg.publicUrl}/badge.svg" width="240" height="60" alt="Find pool tournaments on Billiard Action Time"></a>`;
+  const text = `<a href="${cfg.publicUrl}/tournaments/">Find pool tournaments near you</a>`;
+  const box = (label, code) => `<label style="display:block;font-weight:700;margin:14px 0 6px">${label}</label><textarea readonly rows="3" style="width:100%;font:13px monospace;padding:8px;border:1px solid var(--line);border-radius:8px" aria-label="${label}">${e(code)}</textarea>`;
+  const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/directors/">For Directors</a> <span>/</span> <span>Link to Us</span></nav>
+  <div class="pagehead"><h1>Link to Billiard Action Time</h1><p>Run a pool hall, league, club or player website? Give your players an easy way to find tournaments near them. Copy any of these into your site. Free, and they never change.</p></div>
+  <section class="card" style="padding:16px 18px"><h2 class="seo-h2" style="margin-top:0">The badge</h2>
+    <p style="margin:6px 0">${badge.replace(cfg.publicUrl + '/badge.svg', '/badge.svg')}</p>${box('Badge code (paste into your website)', badge)}
+    ${box('Or a simple text link', text)}</section>
+  <section class="card" style="padding:16px 18px;margin-top:14px"><h2 class="seo-h2" style="margin-top:0">Your own tournament schedule</h2>
+    <p>Pool halls can show their upcoming tournaments on their own website with a free widget that updates itself. Find your room on the <a href="/pool-halls/">pool halls directory</a>, open its page, and look for <b>"Show this schedule on your website"</b>. You can also print a wall poster of your weekly tournament nights from the same page.</p></section>
+  <section class="card" style="padding:16px 18px;margin-top:14px"><h2 class="seo-h2" style="margin-top:0">Leagues and clubs</h2>
+    <p>Link your state or city page so members always see what is coming up nearby. For example: <a href="/tournaments/texas/">${cfg.publicUrl.replace(/^https?:\/\//, '')}/tournaments/texas/</a>. Every state and most cities have one; find yours on the <a href="/tournaments/">tournaments by state</a> page.</p></section>
+  <p class="muted" style="margin-top:14px">Questions? Email <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a>.</p>`;
+  return layout(cfg, { title: 'Link to Billiard Action Time: Free Badge and Widget for Pool Halls & Leagues | Billiard Action Time', description: 'A free badge, text link and tournament schedule widget for pool halls, leagues and clubs. Help your players find pool tournaments near them.', path: '/link-to-us', body });
+}

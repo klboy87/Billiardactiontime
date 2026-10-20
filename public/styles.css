@@ -668,3 +668,4 @@ table.t tr.noline td{border-bottom:0}
 .gear-card{padding:16px 18px;display:flex;flex-direction:column}.gear-card h2{font-size:19px;margin:6px 0}.gear-card p{margin:0 0 10px}.gear-ic{font-size:30px;line-height:1}
 .gear-cta{margin-top:auto!important;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .sub-form{display:flex;gap:8px;flex-wrap:wrap}.sub-form input{flex:1 1 220px;min-width:0;padding:10px 12px;font-size:16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}
+.support-strip{display:grid;gap:8px;padding:14px 18px;margin:14px 0 0}.support-strip .actbar{margin:0}
