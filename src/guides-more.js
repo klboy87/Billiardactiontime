@@ -1965,5 +1965,74 @@ ${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, 
 <li>Homes.ph (Makati): <a href="https://homes.ph/news/reyes-cup-2026-brings-pools-biggest-names-to-makati-for-an-asia-vs-world-battle" target="_blank" rel="noopener">Reyes Cup 2026 brings pool's biggest names to Makati</a></li>
 <li>Absolute Pool: <a href="https://absolute-pool.com/2026/10/07/reyes-cup-2026-teams-revealed-for-asia-and-rest-of-world-battle/" target="_blank" rel="noopener">teams</a> and <a href="https://absolute-pool.com/2026/10/14/reyes-cup-2026-schedule-live-scores-teams-format-prize-fund-and-how-to-watch/" target="_blank" rel="noopener">schedule, scores and prize fund</a></li>
 </ul>`
+  },
+  {
+    slug: 'shane-van-boening', title: 'Shane Van Boening: The South Dakota Kid\'s Career, Big Wins, Money Matches and Famous Shots',
+    desc: 'The story of Shane Van Boening: growing up in his family\'s pool rooms in Rapid City, the road games he walked away from, five US Open 9-Ball titles, world championships, his Mosconi Cup winning shot, his biggest money matches and how he plays.',
+    body: `
+<p>Ask American pool players who the best of their generation is and most will give the same answer: Shane Van Boening. The quiet kid from Rapid City, South Dakota has won the US Open 9-Ball five times, two world titles, a stack of Derby City Classic crowns, and he has played more Mosconi Cup matches than anyone in history. He got there by practicing more than almost anyone, and by walking away from the road-gambling life that shaped him.</p>
+<h2>Shane Van Boening at a glance</h2>
+<ul>
+<li><b>Born:</b> July 14, 1983, in Rapid City, South Dakota. He lives in Sioux Falls.</li>
+<li><b>Nicknames:</b> "The South Dakota Kid" and "Captain America"</li>
+<li><b>Turned pro:</b> 2005</li>
+<li><b>Biggest titles:</b> WPA World 9-Ball Champion (2022), WPA World 8-Ball Champion (2023), US Open 9-Ball Champion five times (2007, 2012, 2013, 2014, 2016)</li>
+<li><b>Honors:</b> Player of the Year six times, Billiards Digest's Player of the Decade for the 2010s, and the BCA Hall of Fame (2024)</li>
+<li><b>Plays with:</b> Cuetec cues</li>
+</ul>
+<h2>A kid raised in the pool room</h2>
+<p>Van Boening was born into a pool family. His grandfather, Gary Bloomberg, was a trick-shot artist who ran pool halls along Interstate 90. His grandmother Jeanne was a VNEA national champion, his mother Timi was a BCA national champion and his aunt Gari Jo won three VNEA national titles. Shane got his first cue at age two.</p>
+<p>He was also born with a hearing impairment, and growing up, other kids bullied him. "The kids would start throwin' rocks at me. They would put gum in my hair," he told <a href="https://www.cbsnews.com/news/shane-van-boening-professional-pool-60-minutes-transcript-2023-07-26/" target="_blank" rel="noopener">60 Minutes</a> in 2023. When he came home upset, his mother would ask him one question: "Do you wanna go to the pool room?" The pool room became his safe place, and he practiced there for hours. Today he wears hearing aids and can switch them off during a match, which shuts out the crowd.</p>
+<p>He won three VNEA national amateur 8-Ball titles before he ever turned pro.</p>
+<h2>On the road, and why he quit</h2>
+<p>At 18, Van Boening went on the road with his uncle in an RV, looking for money games in pool rooms across the country. It ended in a Tennessee pool room, when an opponent who was losing a big bet threw the cue ball at him and hit him in the chest. "I don't wanna live on the road anymore. It's just too dangerous," he told 60 Minutes. He turned to tournaments instead.</p>
+<p>These days he wants the backroom gambling out of the sport. "It's gotta be a clean sport," he said, arguing that getting rid of it would bring in the big sponsors and TV deals that pool has never had.</p>
+<h2>Breaking through (2006-2007)</h2>
+<p>In 2006, Van Boening earned his International Pool Tour card at a qualifier and picked up a $5,000 bonus for running six racks in a row. In 2007 everything started happening at once: he won the Sands Regency Open, the Predator International 10-Ball Championship and his first <b>US Open 9-Ball Championship</b>, and made his Mosconi Cup debut for Team USA in Las Vegas. He was named Player of the Year for the first time that season.</p>
+<h2>The US Open king</h2>
+<p>The US Open 9-Ball is the biggest event in American pool, and for a decade Van Boening owned it. After his 2007 win he took three straight titles from 2012 to 2014, then a fifth in 2016, tying Earl Strickland's record. He has also won the US Open 10-Ball six times, the US Open 8-Ball, including back-to-back titles in 2024 and 2025, plus US Open titles in One Pocket, Bank Pool and Straight Pool. Few players have won so many events in so many different games.</p>
+<h2>World champion at last</h2>
+<p>For years the world 9-Ball title was the one that got away. He lost the final in 2017 and again in 2018. In April 2022, at the Marshall Arena in Milton Keynes, England, he finally did it, beating Austria's Albin Ouschan <b>13-6</b> in the final. <a href="https://www.skysports.com/more-sports/snooker/news/12243/12587663/world-pool-championship-shane-van-boening-wins-tournament-at-marshall-arena-milton-keynes" target="_blank" rel="noopener">Sky Sports</a> reported he was the first American to win the title since Earl Strickland in 2002.</p>
+<p>A year and a half later he added the <b>WPA World 8-Ball Championship</b> in Klagenfurt, Austria, beating Bosnia's Sanjin Pehlivanovic 10-7 for the $75,000 first prize.</p>
+<h2>Captain America: the Mosconi Cup</h2>
+<p>The Mosconi Cup, Team USA against Team Europe, has been Van Boening's second home. He has played in every one since 2007 and holds the record with 18 appearances, according to the <a href="https://worldnineballtour.com/news/van-boening-the-history-maker/" target="_blank" rel="noopener">World Nineball Tour</a>. The early years were rough. "The eight years in a row that we lost were brutal," he said. Team USA's only win in that stretch came in 2009, and Van Boening made the clinching 9-ball.</p>
+<p>His most famous moment came in 2018 at Alexandra Palace in London. With Europe closing to 10-9, Van Boening faced Alex Kazakis and made a table-length <b>1-9 combination</b> to win the Cup 11-9 for the USA. He called it "the biggest pressure shot of my career." USA won again in 2019.</p>
+<h2>Derby City Classic: still winning</h2>
+<p>The Derby City Classic in southern Indiana is a 10-day marathon of 9-Ball, One Pocket and Banks, with a "Master of the Table" award for the best all-around player. Van Boening has won it three times, most recently in early 2026, when he also won the One Pocket division by beating Roland Garcia 4-2 in the final. <a href="https://www.azbilliards.com/the-final-sunday-a-10-day-marathon-crowns-derby-citys-newest-kings/" target="_blank" rel="noopener">AZBilliards</a> counts ten Derby City titles for him, three behind Efren Reyes's record of thirteen.</p>
+<h2>The big money matches</h2>
+<p>Even after leaving the road, Van Boening became one of the best long-race challenge players in the world. These are the head-to-head matches, often streamed, that players call money matches. Some of the most talked-about:</p>
+<ul>
+<li><b>Efren Reyes, 2009 Derby City Classic:</b> 10-Ball, race to 23. Van Boening won 23-19 in what a DVD listing called the biggest money match of that year's Derby, with $45,000 in the middle (<a href="https://forums.azbilliards.com/threads/tar-new-dvd-efren-reyes-vs-shane-van-boening-ten-ball-race-to-23-for-45k.131846/" target="_blank" rel="noopener">listing</a>).</li>
+<li><b>Francisco "Django" Bustamante, 2009:</b> a few weeks later, Busty beat him 23-19 the same way.</li>
+<li><b>Earl Strickland, 2007:</b> a 100-63 win in a race to 100 in Louisville.</li>
+<li><b>Fedor Gorst, 2024 and 2025:</b> two marathon 10-Ball races to 120 in Louisville. Van Boening won the first 120-116 in August 2024 (<a href="https://forums.azbilliards.com/threads/stats-shane-van-boening-vs-fedor-gorst-10-ball-race-to-120-august-2024.567611/" target="_blank" rel="noopener">stats</a>). Gorst won the rematch 120-78 at Railyard Billiards in June 2025 (<a href="https://forums.azbilliards.com/threads/stats-shane-van-boening-vs-fedor-gorst-10-ball-race-to-120-june-2025.576819/" target="_blank" rel="noopener">stats</a>).</li>
+</ul>
+<p>Fans on the AZBilliards forum keep a <a href="https://forums.azbilliards.com/threads/shane-van-boenings-record-in-10-ball-challenge-matches.572926/" target="_blank" rel="noopener">running list of his 10-Ball challenge matches</a>. It shows wins over Corey Deuel, Mika Immonen, Dennis Orcollo, Jayson Shaw and others in races to 100 or more. These records are compiled by fans, not by an official body, so treat individual scores as unofficial.</p>
+<h2>Famous winning shots and moments</h2>
+<ol>
+<li><b>The Mosconi Cup 1-9 (2018).</b> The table-length combination against Kazakis that won the Cup in London.</li>
+<li><b>The 2009 Mosconi Cup clincher.</b> The 9-ball that gave Team USA its only win of the decade.</li>
+<li><b>The world title, 13-6 (2022).</b> After two losing finals, he pulled away from 6-6 against Ouschan to win the world 9-Ball championship.</li>
+<li><b>Eight break-and-runs in a US Open final (2025).</b> In the US Open 8-Ball final he beat Oliver Szolnoki 11-4. Twelve of the 15 racks were break-and-runs, and eight of them were his (<a href="https://www.azbilliards.com/van-boening-goes-undefeated-to-claim-second-straight-us-open-title/" target="_blank" rel="noopener">AZBilliards</a>).</li>
+<li><b>Six racks in a row for $5,000 (2006).</b> The run at his IPT qualifier that announced him to the pro world.</li>
+</ol>
+<h2>How he plays</h2>
+<p>Van Boening is known for a huge, controlled break and pinpoint cue ball control. He practices up to ten hours a day and told 60 Minutes he hits about half a million balls a year. His simple tip for the break: "Just hit it right below center." On how he sees the game: "I love geometry. It's all about the angles." And when he's playing well: "I'm totally, like, 100% zoned in."</p>
+<p>He's also known for his calm manners at the table, and he doesn't drink. Want to work on your own game the same way? Try our <a href="/guides/how-to-break-in-pool">how to break</a> guide, the <a href="/guides/30-day-pool-training-plan">30-day training plan</a> and <a href="/guides/pool-practice-drills">practice drills</a>.</p>
+<h2>What he likes away from the table</h2>
+<p>When he isn't playing, Van Boening likes to go ice fishing on Pactola Lake in the Black Hills, even in the dead of winter. He says it clears his head. He's also a co-owner of Lucky Billiards in Sioux Falls, where he practices.</p>
+<h2>His legacy</h2>
+<p>Van Boening has won more than 100 professional titles and as of 2023 he topped the AZBilliards career money list with more than $2 million in earnings. Even so, he has said a top pool player "can make only six figures," and when 60 Minutes noted that no pool player had ever made a million dollars, he agreed: "It's never happened." That is why he wants a cleaner, bigger sport for the players who come next. In 2026 he was still at the top of the game, winning the Derby City Master of the Table and playing for the Rest of the World at the <a href="/guides/reyes-cup-2026-results">2026 Reyes Cup</a>.</p>
+<p>Want to see the pros in person? Check the <a href="/guides/major-pool-events-calendar">major pool events calendar</a>, or <a href="/tonight/">find a tournament near you tonight</a> and start your own run.</p>
+<h2>Sources</h2>
+<ul>
+<li>CBS News / 60 Minutes: <a href="https://www.cbsnews.com/news/shane-van-boening-professional-pool-60-minutes-transcript-2023-07-26/" target="_blank" rel="noopener">Shane Van Boening and the changing world of professional pool</a> (2023)</li>
+<li>Wikipedia: <a href="https://en.wikipedia.org/wiki/Shane_Van_Boening" target="_blank" rel="noopener">Shane Van Boening</a></li>
+<li>AZBilliards: <a href="https://www.azbilliards.com/person/shane-van-boening/" target="_blank" rel="noopener">player profile</a>, <a href="https://www.azbilliards.com/van-boening-goes-undefeated-to-claim-second-straight-us-open-title/" target="_blank" rel="noopener">2025 US Open 8-Ball</a>, <a href="https://www.azbilliards.com/?p=225398" target="_blank" rel="noopener">2023 World 8-Ball</a>, <a href="https://www.azbilliards.com/the-final-sunday-a-10-day-marathon-crowns-derby-citys-newest-kings/" target="_blank" rel="noopener">2026 Derby City Classic</a></li>
+<li>World Nineball Tour: <a href="https://worldnineballtour.com/news/van-boening-the-history-maker/" target="_blank" rel="noopener">Van Boening the history maker</a></li>
+<li>Sky Sports: <a href="https://www.skysports.com/more-sports/snooker/news/12243/12587663/world-pool-championship-shane-van-boening-wins-tournament-at-marshall-arena-milton-keynes" target="_blank" rel="noopener">2022 World Pool Championship</a>; Absolute Pool: <a href="https://absolute-pool.com/2022/04/10/van-boening-becomes-world-champion-for-first-time-to-fulfil-destiny/" target="_blank" rel="noopener">Van Boening becomes world champion</a></li>
+<li>Billiards Digest: <a href="https://www.billiardsdigest.com/new_current_issue/feb_19/bb_index.php" target="_blank" rel="noopener">2018 Mosconi Cup</a>; South Dakota Public Broadcasting: <a href="https://www.sdpb.org/blogs/sports-and-leisure/team-usa-van-boening-wins-mosconi-cup" target="_blank" rel="noopener">Team USA, Van Boening win Mosconi Cup</a></li>
+<li>AZBilliards forum (fan-compiled): <a href="https://forums.azbilliards.com/threads/shane-van-boenings-record-in-10-ball-challenge-matches.572926/" target="_blank" rel="noopener">10-Ball challenge match record</a>, <a href="https://forums.azbilliards.com/threads/tar-new-dvd-efren-reyes-vs-shane-van-boening-ten-ball-race-to-23-for-45k.131846/" target="_blank" rel="noopener">Reyes vs. Van Boening race to 23</a>, <a href="https://forums.azbilliards.com/threads/stats-shane-van-boening-vs-fedor-gorst-10-ball-race-to-120-august-2024.567611/" target="_blank" rel="noopener">Gorst match 2024</a>, <a href="https://forums.azbilliards.com/threads/stats-shane-van-boening-vs-fedor-gorst-10-ball-race-to-120-june-2025.576819/" target="_blank" rel="noopener">Gorst rematch 2025</a></li>
+</ul>`
   }
 ];
