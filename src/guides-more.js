@@ -831,6 +831,7 @@ ${table({ balls: [{ x: 6.2, y: 1.3, n: 1 }, { x: 5.96, y: 1.48, n: 'g' }, { x: 3
 </tbody></table></div>
 <h2>Mosconi Cup</h2>
 <p>Pool's version of golf's Ryder Cup: a team of American pros against a team of European pros over four days, in a loud, party-like arena. The 2026 Mosconi Cup is set for <b>November 27–30 at the Caribe Royale in Orlando</b>. You can't enter, but it is the most fun event of the year to watch in person or on TV.</p>
+<p>Its sister event in Asia is the Reyes Cup, Team Asia against the Rest of the World in Manila. See how the <a href="/guides/reyes-cup-2026-results">2026 Reyes Cup</a> played out.</p>
 <h2>Derby City Classic</h2>
 <p>Held every January near Louisville, Kentucky, the Derby City Classic is a ten-day festival of <a href="/guides/bank-pool-rules">bank pool</a>, <a href="/guides/one-pocket">one pocket</a> and <a href="/guides/9-ball-rules">9-ball</a>. Anyone can enter, so amateurs regularly play the biggest names in the game. Just as famous is the action: money games run around the clock. The 2027 event is <b>January 22–31 at Caesars Southern Indiana</b> in Elizabeth, Indiana.</p>
 <h2>League national championships in Las Vegas</h2>
@@ -1879,5 +1880,90 @@ ${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, 
 <h2>How to use what you see</h2>
 <p>Pick one problem, fix it with drills from <a href="/guides/how-to-improve-your-pool-stroke">how to improve your stroke</a>, and film again in a week. Compare side by side. Keep a few clips from your best sessions as a reference for what "good" looks like for you.</p>
 <p>Pair video with a ${amz('training cue ball dots', 'training cue ball')} to see your spin and you have most of what a coach gives you. Then follow the <a href="/guides/30-day-pool-training-plan">30-day training plan</a>.</p>`
+  },
+  {
+    slug: 'reyes-cup-2026-results', title: '2026 Reyes Cup Results: Rest of the World End Asia\'s Reign in Manila',
+    desc: 'Full 2026 Reyes Cup results from the Makati Coliseum: how Team Rest of the World beat Team Asia 11-4 for their first title, day by day, plus the best shots, the biggest moments and MVP Francisco Sanchez Ruiz.',
+    body: `
+<p>For two years, the Reyes Cup belonged to Asia. In 2024 they beat Europe 11-6. In 2025 they crushed the Rest of the World 11-3. So when the third edition came to the Makati Coliseum in Manila on October 15-18, 2026, the home team was chasing a three-peat in front of a loud Filipino crowd.</p>
+<p>It didn't happen. Team Rest of the World came from 2-0 down on the first night, took the lead on Day 2 and never let go, winning <b>11-4</b> for their first Reyes Cup title. Spain's <b>Francisco Sánchez Ruiz</b> sank the winning 9-ball and was named MVP.</p>
+<h2>The 2026 Reyes Cup at a glance</h2>
+<ul>
+<li><b>Final score:</b> Team Rest of the World 11, Team Asia 4</li>
+<li><b>Where:</b> Makati Coliseum, Makati City, Metro Manila, Philippines (October 15-18, 2026)</li>
+<li><b>MVP:</b> Francisco Sánchez Ruiz (Spain)</li>
+<li><b>Format:</b> 9-Ball, race to 5 in every match; first team to 11 points wins. Each night opened with a five-on-five team match, then singles and doubles.</li>
+<li><b>Prize money:</b> $20,000 per player for the winners and $10,000 per player for the runners-up, from a $150,000 total</li>
+<li><b>Team Asia:</b> Carlo Biado (Philippines), Robbie Capito (Hong Kong), Duong Quoc Hoang (Vietnam), Albert Januarta (Indonesia), AJ Manas (Philippines). Captain: Francisco "Django" Bustamante</li>
+<li><b>Team Rest of the World:</b> Joshua Filler (Germany), Shane Van Boening (USA), Francisco Sánchez Ruiz (Spain), Fedor Gorst (USA), Aleksa Pecelj (Serbia). Captain: Ralf Souquet</li>
+</ul>
+<p>The event is named after Efren "Bata" Reyes, the Filipino legend many call the greatest player ever (read more in our <a href="/guides/history-of-pool">history of pool</a>). It was also the first international billiards event of this size at the renovated Makati Coliseum, a smaller arena of about 3,500 seats that puts fans right on top of the action.</p>
+<h2>Day 1: Asia strike first, then the comeback starts (2-2)</h2>
+<p>The night opened exactly how the home crowd wanted. Duong Quoc Hoang broke and ran the very first rack, and Asia won the team match 5-3, closed out when 17-year-old Albert Januarta made a golden break (the 9-ball on the break) to put Asia on the hill and Carlo Biado finished it off with a lucky roll. Biado and Robbie Capito then routed Joshua Filler and Aleksa Pecelj 5-1 with two break-and-runs. Asia led 2-0.</p>
+<p>Then the visitors woke up. Sánchez Ruiz beat Duong 5-1, a match that turned when Duong made a brilliant kick to pocket the 3-ball and then missed the 9. In the last match of the night, the Mosconi Cup pair of Fedor Gorst and Shane Van Boening beat AJ Manas and Januarta 5-1. "We won all the tight racks," Gorst said. Two points each.</p>
+<h2>Day 2: Rest of the World take over (6-3 ROW)</h2>
+<p>Asia led the team match 3-1, and then it all went the other way. Gorst made what the official recap called the shot of the match, a 3-9 combination from ball in hand, and Filler closed it out with a 6-9 combination. Rest of the World led for the first time all week.</p>
+<p>Filler beat Capito 5-3 in singles. Capito made a superb jump shot to escape a snooker late in the match, but Filler locked him up in a safety and cleared the table. Gorst and Pecelj beat Manas and Duong 5-3 in doubles, and the ending hurt: Manas made the 9-ball on the break, which should have been a golden break to keep Asia alive, but the cue ball scratched and the visitors got ball in hand to finish it.</p>
+<p>World champion Carlo Biado stopped the slide. Down 3-1 to Van Boening, he tightened up his safety play, won four straight racks and finished with a calm clearance for a 5-3 win, Asia's only point of the night. Sánchez Ruiz and Filler then edged Capito and Januarta 5-4 in a hill-hill doubles match that ran past midnight, after Capito's jump shot at the 5-ball in the final rack failed to connect.</p>
+<h2>Day 3: One step from history (9-4 ROW)</h2>
+<p>Van Boening won a final tactical battle with Duong to take the team match 5-3. Gorst then dismantled Januarta 5-1 in singles, using ball in hand to land a 4-9 combination along the way. "The tables have completely turned compared to last year," Gorst said.</p>
+<p>The home crowd finally had something to cheer in the doubles. Biado made a 1-9 combination, and Januarta sealed a 5-3 win over Filler and Gorst with another golden break, his second of the week. Then Pecelj played his best match of the event, beating last year's MVP, Manas, 5-1 and running out the final rack in style.</p>
+<h2>Day 4: Rest of the World finish the job (11-4)</h2>
+<p>Needing two points, Rest of the World won the first two matches of the night. Asia led the team match 2-1, but Gorst forced a foul from Manas with a tight safety on the 5-ball, Pecelj won a nervy rack after Duong missed a long 6-ball, and Filler put Rest of the World on the hill with a 7-9 combination.</p>
+<p>The last match was Sánchez Ruiz and Van Boening against Capito and Duong. Asia won the first rack and the crowd got loud, but Duong missed a straightforward 6-ball in the second rack and Asia never got control back. Van Boening made a 4-9 combination, a break-and-run put Rest of the World one rack away, and then Sánchez Ruiz potted the 2-ball off a Capito safety and the team ran out. He sank the 9-ball himself: 5-1 in the match, 11-4 overall, and the Reyes Cup had a new name on it.</p>
+<h2>The 7 best shots and moments of the 2026 Reyes Cup</h2>
+<ol>
+<li><b>The title-winning 2-ball (Sánchez Ruiz, Day 4).</b> With Capito's safety leaving almost nothing, Sánchez Ruiz potted the 2-ball, which <a href="https://www.spin.ph/billiards/sanchez-ruiz-leads-team-rest-of-world-to-first-reyes-cup-title-a2437-20261018" target="_blank" rel="noopener">Spin.ph</a> described as an impressive bank (the official recap called it "a fortunate fluke"). A few balls later he made the 9 to win the Cup.</li>
+<li><b>Gorst's 3-9 combination (Day 2).</b> From ball in hand after a Manas foul, it flipped a 3-1 deficit in the team match and started the run that won the tournament.</li>
+<li><b>Januarta's two golden breaks (Days 1 and 3).</b> The 17-year-old Indonesian put Asia on the hill on opening night and then won a doubles match with a golden break on Day 3. He is the name to watch from this event.</li>
+<li><b>Biado's comeback against Van Boening (Day 2).</b> Down 1-3 to one of the best players in American history, the world champion won four straight racks.</li>
+<li><b>Filler's 7-9 combination (Day 4).</b> It won the team match and put Rest of the World on the hill, one point from the title.</li>
+<li><b>Capito's escape jump (Day 2).</b> Snookered with Filler already on the hill, Capito jumped out cleanly to stay alive. He lost the match, but it was one of the best escapes of the week.</li>
+<li><b>Manas's scratch on a golden break (Day 2).</b> The cruelest moment of the week. Last year's MVP needed a golden break to keep a doubles comeback going, made the ball and lost the cue ball into a pocket too. That ended the match.</li>
+</ol>
+<h2>MVP: Francisco Sánchez Ruiz</h2>
+<p>Sánchez Ruiz was the only Rest of the World player who had played every Reyes Cup, and the first two years in Manila were rough for him. In 2026, after winning the US Open, he won singles, team and doubles points and sank the last ball. "It was so important to come into this week and win this title. The past two years here haven't been great," he said, before giving the credit to the whole team.</p>
+<p>Captain Ralf Souquet said the score looked more one-sided than the matches were: "Even though the scoreline looks like we ran over them, that's not the truth. Most of the games were tight."</p>
+<h2>Every 2026 Reyes Cup match result</h2>
+<p><b>Day 1 (Oct. 15): Asia 2, ROW 2</b></p>
+<ul>
+<li>Team match: Asia 5-3 ROW</li>
+<li>Biado / Capito 5-1 Filler / Pecelj</li>
+<li>Sánchez Ruiz 5-1 Duong</li>
+<li>Gorst / Van Boening 5-1 Manas / Januarta</li>
+</ul>
+<p><b>Day 2 (Oct. 16): ROW 6, Asia 3</b></p>
+<ul>
+<li>Team match: ROW 5-3 Asia</li>
+<li>Filler 5-3 Capito</li>
+<li>Gorst / Pecelj 5-3 Manas / Duong</li>
+<li>Biado 5-3 Van Boening</li>
+<li>Sánchez Ruiz / Filler 5-4 Capito / Januarta</li>
+</ul>
+<p><b>Day 3 (Oct. 17): ROW 9, Asia 4</b></p>
+<ul>
+<li>Team match: ROW 5-3 Asia</li>
+<li>Gorst 5-1 Januarta</li>
+<li>Biado / Januarta 5-3 Filler / Gorst</li>
+<li>Pecelj 5-1 Manas</li>
+</ul>
+<p><b>Day 4 (Oct. 18): ROW 11, Asia 4</b></p>
+<ul>
+<li>Team match: ROW 5-3 Asia</li>
+<li>Sánchez Ruiz / Van Boening 5-1 Capito / Duong</li>
+</ul>
+<h2>What's next</h2>
+<p>Most of these players went straight to the Philippines Open Pool Championship at Gateway Mall in Quezon City (October 20-24). For the rest of the big events, see our <a href="/guides/major-pool-events-calendar">major pool events calendar</a>. Want to play 9-Ball yourself? Brush up on the <a href="/guides/9-ball-rules">9-Ball rules</a> and <a href="/guides/9-ball-strategy">9-Ball strategy</a>, or <a href="/tonight/">find a tournament near you tonight</a>.</p>
+<h2>Sources</h2>
+<p>Match details and quotes come from the official recaps and from coverage by Philippine outlets:</p>
+<ul>
+<li>World Nineball Tour / Matchroom recaps on AZBilliards: <a href="https://www.azbilliards.com/rest-of-the-world-fire-back-to-level-with-asia-after-thrilling-opening-day-2026-roobet-reyes-cup/" target="_blank" rel="noopener">Day 1</a>, <a href="https://www.azbilliards.com/rest-of-the-world-move-within-touching-distance-of-maiden-reyes-cup-title/" target="_blank" rel="noopener">Day 3</a>, <a href="https://www.azbilliards.com/rest-of-the-world-end-asias-reign-to-claim-maiden-reyes-cup-title/" target="_blank" rel="noopener">Final day</a></li>
+<li>Kozoom: <a href="https://tv.kozoom.com/en/all-cue-sports/news/team-row-turn-the-tables-on-asia-as-filler-and-sanchez-ruiz-lead-the-way" target="_blank" rel="noopener">Day 2 recap</a></li>
+<li>Spin.ph (Philippines): <a href="https://www.spin.ph/billiards/biado-s-best-not-enough-as-team-row-takes-control-of-reyes-cup-a2437-20261017" target="_blank" rel="noopener">Biado's best far from enough</a> and <a href="https://www.spin.ph/billiards/sanchez-ruiz-leads-team-rest-of-world-to-first-reyes-cup-title-a2437-20261018" target="_blank" rel="noopener">Sánchez Ruiz leads Team Rest of World to first title</a></li>
+<li>Dugout Philippines: <a href="https://www.dugout.ph/2026/10/dominant-day-2-puts-team-row-ahead-of.html" target="_blank" rel="noopener">Dominant Day 2 puts Team ROW ahead</a></li>
+<li>Explained PH: <a href="https://explained.ph/asia-trails-row-in-bid-for-reyes-cup-three-peat/" target="_blank" rel="noopener">Day 2</a>, <a href="https://explained.ph/team-row-moves-within-2-wins-of-maiden-reyes-cup-title/" target="_blank" rel="noopener">Day 3</a>, <a href="https://explained.ph/row-dethrones-team-asia-for-maiden-reyes-cup-trophy/" target="_blank" rel="noopener">Final</a></li>
+<li>Homes.ph (Makati): <a href="https://homes.ph/news/reyes-cup-2026-brings-pools-biggest-names-to-makati-for-an-asia-vs-world-battle" target="_blank" rel="noopener">Reyes Cup 2026 brings pool's biggest names to Makati</a></li>
+<li>Absolute Pool: <a href="https://absolute-pool.com/2026/10/07/reyes-cup-2026-teams-revealed-for-asia-and-rest-of-world-battle/" target="_blank" rel="noopener">teams</a> and <a href="https://absolute-pool.com/2026/10/14/reyes-cup-2026-schedule-live-scores-teams-format-prize-fund-and-how-to-watch/" target="_blank" rel="noopener">schedule, scores and prize fund</a></li>
+</ul>`
   }
 ];
