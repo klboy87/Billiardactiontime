@@ -2034,5 +2034,379 @@ ${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, 
 <li>Billiards Digest: <a href="https://www.billiardsdigest.com/new_current_issue/feb_19/bb_index.php" target="_blank" rel="noopener">2018 Mosconi Cup</a>; South Dakota Public Broadcasting: <a href="https://www.sdpb.org/blogs/sports-and-leisure/team-usa-van-boening-wins-mosconi-cup" target="_blank" rel="noopener">Team USA, Van Boening win Mosconi Cup</a></li>
 <li>AZBilliards forum (fan-compiled): <a href="https://forums.azbilliards.com/threads/shane-van-boenings-record-in-10-ball-challenge-matches.572926/" target="_blank" rel="noopener">10-Ball challenge match record</a>, <a href="https://forums.azbilliards.com/threads/tar-new-dvd-efren-reyes-vs-shane-van-boening-ten-ball-race-to-23-for-45k.131846/" target="_blank" rel="noopener">Reyes vs. Van Boening race to 23</a>, <a href="https://forums.azbilliards.com/threads/stats-shane-van-boening-vs-fedor-gorst-10-ball-race-to-120-august-2024.567611/" target="_blank" rel="noopener">Gorst match 2024</a>, <a href="https://forums.azbilliards.com/threads/stats-shane-van-boening-vs-fedor-gorst-10-ball-race-to-120-june-2025.576819/" target="_blank" rel="noopener">Gorst rematch 2025</a></li>
 </ul>`
+  },
+  {
+    slug: 'us-open-pool-championship-2026-results', title: '2026 US Open Pool Championship Results: Sánchez Ruiz Wins a Hill-Hill Classic',
+    desc: 'How Francisco Sánchez Ruiz beat Robbie Capito 13-12 in Frisco, Texas to win his second US Open 9-Ball title: the final rack by rack, the upsets, the big shots and the $100,000 payday.',
+    body: `
+<p>The US Open 9-Ball Championship is the biggest title in American pool, and in 2026 it produced the closest possible finish. Francisco Sánchez Ruiz of Spain trailed Robbie Capito 12-10 in a race to 13, came back to force a final rack and ran out to win <b>13-12</b>. It was the first US Open final to go to a deciding rack since Buddy Hall beat Dennis Hatch in 1991.</p>
+<h2>2026 US Open at a glance</h2>
+<ul>
+<li><b>Champion:</b> Francisco Sánchez Ruiz (Spain), his second US Open after 2022</li>
+<li><b>Runner-up:</b> Robbie Capito (Hong Kong)</li>
+<li><b>Final:</b> 13-12, Sunday, August 30, 2026, live on ESPN2</li>
+<li><b>Where:</b> Embassy Suites by Hilton, Frisco, Texas (August 25-30), the event's new home</li>
+<li><b>Field:</b> 256 players from more than 40 countries, including 124 Americans and 16 former champions</li>
+<li><b>Prize fund:</b> $500,000, with $100,000 to the winner and $50,000 to the runner-up</li>
+<li><b>Format:</b> 9-Ball, double elimination down to the last 64, then single elimination</li>
+</ul>
+<h2>The upsets: Yapp, Biado and Van Boening go out</h2>
+<p>The big names fell early. Defending champion and world No. 1 Aloysius Yapp lost in the last 64 to Spain's David Alcaide. World champion Carlo Biado lost in the same round to six-time World Pool Masters champion Ralf Souquet.</p>
+<p>The match everyone was watching came in the last 32. Five-time champion Shane Van Boening, chasing a record sixth title after winning the Florida Open weeks earlier, met 2024 champion Fedor Gorst in a rematch of the 2024 final. Gorst, playing through an illness, won again, 10-7. "I actually said before the match that if I lost, I would be rooting for Shane to get his sixth title," Gorst said. (Read more about Van Boening's career in our <a href="/guides/shane-van-boening">Shane Van Boening story</a>.)</p>
+<h2>Sánchez Ruiz's comeback run</h2>
+<p>Sánchez Ruiz almost didn't make it out of the early rounds. He lost in the second round to Croatian veteran Ivica Putnik and had to fight back through the one-loss side. He won three hill-hill matches on the way to the title, against Finland's Petri Makkonen, Germany's Joshua Filler and Capito in the final.</p>
+<p>The Filler quarterfinal was the first big escape. Filler reached the hill first at 9-7, but a dry break gave Sánchez Ruiz the table, and he ran the last two racks to win 10-9. In the semifinal he beat his friend and countryman Alcaide 10-6. "It's never nice beating your friend, but that's sport," he said.</p>
+<h2>Capito's path to the final</h2>
+<p>Capito was the story of the week. He beat Gorst 10-8 in the quarterfinals, ending Gorst's run of three straight US Open finals and making it six wins in a row over him on the World Nineball Tour. He then took a 7-0 lead over Phoenix Open champion Aleksa Pecelj and won 10-5 to reach the biggest final of his career.</p>
+<h2>The final, rack by rack</h2>
+<p>It swung back and forth all afternoon. Sánchez Ruiz won the opening rack with an escape from a safety battle that potted the 1-ball. The score was tied at 4-4, 5-5 and 7-7. A superb safety on the 7-ball in the 11th rack forced a Capito foul, but a scratch on the break by the Spaniard let Capito win three straight racks and lead 10-8.</p>
+<p>Then came the shot of the match: a clutch <b>3-9 combination</b> by Sánchez Ruiz to make it 10-9. He tied it at 10-10, but Capito reached the hill first at 12-10, one rack from the title. A missed 5-ball by Capito let Sánchez Ruiz back in, and he fought back to 12-12.</p>
+<p>In the deciding rack, Sánchez Ruiz chose to push out instead of shooting a hard shot. Capito took on the 2-ball, missed and left the table open, and Sánchez Ruiz ran out to win, then climbed onto the table to celebrate. "When he was on the hill, I just stayed focused, believed in myself and trusted my game until the very end. I never gave up," he said.</p>
+<h2>Best shots and moments</h2>
+<ol>
+<li><b>The 3-9 combination in the final</b> that started Sánchez Ruiz's comeback from 10-8 down.</li>
+<li><b>The push-out in the last rack.</b> A smart tactical choice under the most pressure in pool. (New to the push-out? See our <a href="/guides/9-ball-rules">9-Ball rules</a>.)</li>
+<li><b>Two racks to finish off Filler</b> after Filler reached the hill first in the quarterfinals.</li>
+<li><b>Capito's 7-0 start against Pecelj</b> in the semifinals.</li>
+<li><b>Gorst beating Van Boening again</b> in a rematch of their 2024 final.</li>
+</ol>
+<h2>What it means</h2>
+<p>Sánchez Ruiz became only the tenth player in the event's 49-year history to win the US Open more than once, and moved up to No. 3 in the world rankings. Like Mika Immonen and Darren Appleton before him, he is a European Mosconi Cup star with two US Open titles. He carried that form to Manila, where he was named MVP of the <a href="/guides/reyes-cup-2026-results">2026 Reyes Cup</a>, beating Capito's Team Asia. He also leads Europe's qualifying list for the <a href="/guides/mosconi-cup-2026-preview">2026 Mosconi Cup</a>.</p>
+<p>Want to play 9-Ball yourself? Learn the <a href="/guides/9-ball-strategy">9-Ball strategy</a> the pros use, or <a href="/tonight/">find a 9-Ball tournament near you tonight</a>.</p>
+<h2>Sources</h2>
+<ul>
+<li>AZBilliards / World Nineball Tour: <a href="https://www.azbilliards.com/event-guide-2026-us-open-pool-championship/" target="_blank" rel="noopener">event guide</a>, <a href="https://www.azbilliards.com/gorst-filler-and-ruiz-hunt-second-crowns-as-final-eight-emerges-2026-us-open-pool-championship/" target="_blank" rel="noopener">final eight report</a>, <a href="https://worldnineballtour.com/news/ruiz-and-capito-set-for-epic-us-open-final-live-on-espn2-2026-us-open-pool-championship/" target="_blank" rel="noopener">semifinals</a>, <a href="https://www.azbilliards.com/sanchez-ruiz-makes-history-with-second-us-open-title-after-epic-hill-hill-thriller/" target="_blank" rel="noopener">final</a></li>
+<li>Absolute Pool: <a href="https://absolute-pool.com/2026/08/31/la-segunda-for-sanchez-ruiz-who-captures-second-us-open-title-following-hill-hill-thriller/" target="_blank" rel="noopener">La segunda for Sánchez Ruiz</a></li>
+<li>Kozoom: <a href="https://tv.kozoom.com/en/all-cue-sports/news/sanchez-ruiz-makes-history-with-second-us-open-title-after-epic-hill-hill-thriller-2026-us-open-pool-championship" target="_blank" rel="noopener">final report</a></li>
+</ul>`
+  },
+  {
+    slug: 'mosconi-cup-2026-preview', title: 'Mosconi Cup 2026 Preview: Dates, Captains, How Teams Are Picked and How to Watch',
+    desc: 'Everything about the 2026 Mosconi Cup in Orlando, November 27-30: Team USA vs. Team Europe, captains Johan Ruijsink and Niels Feijen, how the teams qualify, Europe\'s six-year streak, tickets and how to watch.',
+    body: `
+<p>Pool's biggest team event comes to Florida this fall. The <b>2026 Mosconi Cup</b>, Team USA against Team Europe, runs <b>November 27-30 at the Caribe Royale Resort in Orlando</b>. Europe is going for a seventh straight title. The USA is going for its first win since 2019, on home soil, with the captain who led its last two wins.</p>
+<h2>Mosconi Cup 2026 at a glance</h2>
+<ul>
+<li><b>Dates:</b> Friday-Monday, November 27-30, 2026 (starting the day after Thanksgiving)</li>
+<li><b>Venue:</b> Caribe Royale Resort, Orlando, Florida</li>
+<li><b>Teams:</b> five players each, Team USA vs. Team Europe</li>
+<li><b>Game:</b> 9-Ball, races to 5. Matches are team, doubles and singles, and the first team to 11 points wins.</li>
+<li><b>Captains:</b> Johan Ruijsink (USA) and Niels Feijen (Europe)</li>
+<li><b>Defending champion:</b> Team Europe, 11-3 winners in London in 2025</li>
+<li><b>Watch:</b> live on WNT TV, the World Nineball Tour's streaming service</li>
+</ul>
+<h2>What is the Mosconi Cup?</h2>
+<p>Think of it as pool's Ryder Cup. Since 1994 the best American players have faced the best Europeans every year in a loud, chanting, party-style arena. It is named after Willie Mosconi, the American straight pool legend. Because the matches are short races to 5, one missed ball can swing a whole session, and the crowd lives on every shot.</p>
+<h2>Europe's streak</h2>
+<p>Europe has owned the Cup lately. Its 2025 win, 11-3 at Alexandra Palace in London, was its sixth straight and its 17th overall. That team was Jayson Shaw (playing captain), Joshua Filler, David Alcaide, Moritz Neuhausen and Pijus Labutis, with Neuhausen named MVP. The 2025 USA team was Fedor Gorst, Skyler Woodward (playing captain), Billy Thorpe, Tyler Styer and Shane Van Boening.</p>
+<p>The USA's last wins came in 2018 in London, clinched by Van Boening's famous table-length 1-9 combination, and in 2019 in Las Vegas. Read the full story in our <a href="/guides/shane-van-boening">Shane Van Boening profile</a>.</p>
+<h2>The captains: old friends, now rivals</h2>
+<p><b>Johan Ruijsink (USA)</b> returns to lead the Americans. He captained Team USA to those back-to-back wins in 2018 and 2019 and is known for his tactics and for getting individual players to play as a team.</p>
+<p><b>Niels Feijen (Europe)</b> is one of the greatest Mosconi Cup players ever: eight wins as a player and a record four MVP awards. He debuted as a player in 2001. "My job is to make sure the players are mentally ready for those race-to-five matches and the pressure that comes with representing Europe," he said.</p>
+<p>The two go way back. "I've known Johan since I was 16," Feijen said. "We've worked together and been friends for more than 30 years. We're both incredibly competitive, so going up against each other as captains is going to be intense and fun."</p>
+<h2>How the teams are picked</h2>
+<p>Each team has five players. The <b>top three</b> players from each side in the World Nineball Tour rankings qualify automatically, and each captain picks the <b>last two</b> as wildcards. The qualifying cut-off comes after the Philippines Open (October 20-24, 2026), so the final lineups will be announced after that.</p>
+<p>On the European side, two-time US Open champion Francisco Sánchez Ruiz led the qualifying list after his <a href="/guides/us-open-pool-championship-2026-results">2026 US Open win</a>, and he followed it by winning MVP at the <a href="/guides/reyes-cup-2026-results">2026 Reyes Cup</a>. "It's been a crazy year for European players," Feijen said. "We've got so many heavy hitters." We'll add both lineups here once they're official.</p>
+<h2>Tickets and travel</h2>
+<p>Tickets are sold through the World Nineball Tour, with general admission and VIP packages, and past Mosconi Cups have sold out. Orlando in late November is also a great pool trip, so check the <a href="/tournaments/florida">pool tournaments in Florida</a> while you're there.</p>
+<h2>How to watch</h2>
+<p>Every match streams live on WNT TV. Fans in the stands chant, sing and dress up, and that atmosphere comes through on the stream too. See our guide to <a href="/guides/how-to-watch-pro-pool">how to watch pro pool</a> for more streaming options.</p>
+<h2>What to watch for</h2>
+<ul>
+<li><b>Can the USA end the streak at home?</b> The crowd in Orlando will be loud and American.</li>
+<li><b>Ruijsink vs. Feijen.</b> Two of the smartest minds in the game picking pairings against each other.</li>
+<li><b>The doubles.</b> Pairings decide many Mosconi Cups. In doubles (alternate shot) players have to trust each other's position play. Learn the format in our <a href="/guides/scotch-doubles">scotch doubles guide</a>.</li>
+</ul>
+<p>Can't wait until November? <a href="/this-weekend/">Find a tournament near you this weekend</a>, or check the full <a href="/guides/major-pool-events-calendar">major pool events calendar</a>.</p>
+<h2>Sources</h2>
+<ul>
+<li>AZBilliards / World Nineball Tour: <a href="https://www.azbilliards.com/niels-feijen-returns-to-mosconi-cup-as-team-europe-captain-27-30-november/" target="_blank" rel="noopener">Niels Feijen returns as Team Europe captain</a></li>
+<li>Presidential Billiards: <a href="https://www.presidentialbilliards.com/the-2026-mosconi-cup-your-ultimate-event-guide/" target="_blank" rel="noopener">The 2026 Mosconi Cup: Everything You Need to Know</a></li>
+<li>Wikipedia: <a href="https://en.wikipedia.org/wiki/2025_Mosconi_Cup" target="_blank" rel="noopener">2025 Mosconi Cup</a> and <a href="https://en.wikipedia.org/wiki/Mosconi_Cup" target="_blank" rel="noopener">Mosconi Cup</a></li>
+<li>World Nineball Tour: <a href="https://worldnineballtour.com/news/van-boening-the-history-maker/" target="_blank" rel="noopener">Van Boening the history maker</a></li>
+</ul>`
+  },
+  {
+    slug: 'how-to-watch-pro-pool', title: 'How to Watch Pro Pool: Streams, TV Channels and Live Scores',
+    desc: 'Where to watch professional pool live: WNT TV, ESPN+ and ESPN2, free YouTube tables, live scoring, and tips for watching (and learning from) the pros.',
+    body: `
+<p>Pro pool has never been easier to watch. The biggest 9-Ball events are now on ESPN in the US, and almost every match of the World Nineball Tour streams online. Here is where to find it and how to get the most out of watching.</p>
+<h2>WNT TV (the World Nineball Tour)</h2>
+<p>The World Nineball Tour, run by Matchroom, puts on most of the big pro events: the US Open, the Mosconi Cup, the Reyes Cup, the World Pool Championship and other "Majors." Its own streaming service, <b>WNT TV</b>, shows the most tables and is the one place to see everything. It's a paid subscription.</p>
+<h2>ESPN+ and ESPN2</h2>
+<p>In the US, ESPN now carries the US Open Pool Championship. In 2026 the main table streamed on ESPN+ all week, and the final aired live on ESPN2. Other pro events have also streamed on ESPN+ in the US, so check its schedule.</p>
+<h2>Free streams on YouTube</h2>
+<p>At some events, one or two tables stream free on YouTube. At the 2026 US Open, Table Four was on the Matchroom Pool and talkSPORT YouTube channels. Many regional tours and big amateur events also stream free on YouTube and Facebook. Search the event name plus "live stream."</p>
+<h2>Outside the US</h2>
+<p>Big events are carried by local TV partners: talkSPORT in the UK, Fox Sports in Australia, One Sports in the Philippines and others. WNT TV covers most other countries.</p>
+<h2>Live scores and brackets</h2>
+<p>If you can't watch, follow the bracket. The World Nineball Tour runs live scoring for its events at wntlivescores.com, with every match and draw update.</p>
+<h2>How to learn from watching</h2>
+<ul>
+<li><b>Watch the cue ball, not the object ball.</b> Notice where the pro sends it after each shot and how little it travels.</li>
+<li><b>Count their routine.</b> Most pros take the same number of practice strokes every shot. See our <a href="/guides/pool-pre-shot-routine">pre-shot routine guide</a>.</li>
+<li><b>Study the safeties.</b> Pros play a safety when the run-out isn't there. Our <a href="/guides/safety-play-in-pool">safety play guide</a> explains the main kinds.</li>
+<li><b>Watch the break.</b> Notice where they place the cue ball and how hard they hit. Then try it with our <a href="/guides/how-to-break-in-pool">break guide</a>.</li>
+</ul>
+<p>Catch up on recent events: the <a href="/guides/us-open-pool-championship-2026-results">2026 US Open</a>, the <a href="/guides/reyes-cup-2026-results">2026 Reyes Cup</a> and the <a href="/guides/mosconi-cup-2026-preview">2026 Mosconi Cup preview</a>. A ${amz('tablet stand for bed and desk', 'tablet stand')} next to your home table makes it easy to pause and copy a shot.</p>`
+  },
+  {
+    slug: 'apa-skill-levels-explained', title: 'APA Skill Levels Explained: How They Work and the 23 Rule',
+    desc: 'How APA skill levels work in 8-Ball and 9-Ball, what the 23 rule is, how 9-Ball points are scored, how your level goes up or down, and how it compares to a Fargo rating.',
+    body: `
+<p>If you play in the APA (American Poolplayers Association), your skill level decides how many games you need to win and how your captain builds the lineup. Here is how it works, in plain English.</p>
+<h2>What a skill level is</h2>
+<p>A skill level is the APA's handicap. Better players get a higher number, and that means they have to win more to beat a lower-rated player. The idea is that any two players have a fair chance on any night.</p>
+<ul>
+<li><b>8-Ball skill levels</b> run from 2 to 7.</li>
+<li><b>9-Ball skill levels</b> run from 1 to 9.</li>
+</ul>
+<p>New players start at a default level and move up or down as they play. Your 8-Ball and 9-Ball levels are separate.</p>
+<h2>How 8-Ball matches are scored</h2>
+<p>In APA 8-Ball, each player has a number of games to win, set by both skill levels. A higher-rated player must win more games than a lower-rated one. The race chart is printed in the APA rules and on the scoresheet.</p>
+<h2>How 9-Ball matches are scored</h2>
+<p>APA 9-Ball counts points, not games. Every ball you make is worth 1 point and the 9-ball is worth 2. Each skill level has a points target:</p>
+<ul>
+<li>SL1: 14 points, SL2: 19, SL3: 25</li>
+<li>SL4: 31, SL5: 38, SL6: 46</li>
+<li>SL7: 55, SL8: 65, SL9: 75</li>
+</ul>
+<p>The first player to reach their own target wins the match.</p>
+<h2>The 23 rule</h2>
+<p>Each night, five players from a team play. The skill levels of the five players who play can't add up to more than <b>23</b>. That's why a team can't just play its five best shooters, and why captains plan the order so carefully. The same 23 limit applies in 9-Ball.</p>
+<h2>How your skill level changes</h2>
+<p>The APA updates skill levels from your recent match results, looking mainly at how many innings you take and how much defense you play. The exact formula isn't public. Winning a lot, and winning in fewer innings, pushes your level up. You can't keep a low number by playing badly on purpose either: sandbagging can get a player's level raised or worse.</p>
+<h2>APA skill level vs. Fargo rating</h2>
+<p>A Fargo rating is a separate, open rating system used by many tournaments and other leagues. It's based on every game you win or lose against rated opponents and runs from about 200 to over 800. There's no official conversion between the two. See our <a href="/guides/fargo-ratings-handicaps">Fargo ratings guide</a> and the <a href="/guides/fargo-rating-chart">Fargo rating chart</a>.</p>
+<h2>Tips to move up</h2>
+<ul>
+<li>Practice runouts, not just shotmaking. Our <a href="/guides/8-ball-patterns">8-Ball patterns</a> guide helps.</li>
+<li>Learn to play smart safeties: <a href="/guides/safety-play-in-pool">safety play</a>.</li>
+<li>Play in local tournaments for match practice. <a href="/tonight/">Find one tonight</a>.</li>
+</ul>
+<p>Still deciding on a league? Read <a href="/guides/pool-leagues-explained">pool leagues explained</a>. For practice at home, a ${amz('APA official rules book', 'copy of the official APA rule book')} answers most scoresheet arguments.</p>`
+  },
+  {
+    slug: 'stop-shot-and-stun-shot', title: 'Stop Shot and Stun Shot: How to Stop the Cue Ball Dead',
+    desc: 'How to hit a stop shot so the cue ball stops dead, how stun works on angled shots, the 90-degree rule, common mistakes and drills to master both.',
+    body: `
+<p>The stop shot is the first position shot every player should learn. Hit it right and the cue ball stops dead where the object ball was. Its cousin, the stun shot, controls the cue ball on angled shots. Together they're the base of good position play.</p>
+<h2>How a stop shot works</h2>
+<p>For the cue ball to stop, it must be <b>sliding, not rolling</b>, when it hits the object ball on a straight-in shot. A cue ball hit in the center starts out sliding and then picks up natural roll as it travels. Hit a little below center and it slides farther before it starts to roll.</p>
+<ul>
+<li><b>Short shot:</b> aim at center or just below center with a medium stroke.</li>
+<li><b>Longer shot:</b> aim lower and hit a little firmer, so the backspin wears off just as it reaches the object ball.</li>
+</ul>
+<h2>Step by step</h2>
+<ol>
+<li>Line up a straight-in shot about a foot from the pocket, with the cue ball a foot behind the object ball.</li>
+<li>Aim one tip below center.</li>
+<li>Use a smooth, level stroke and follow through. Don't jab.</li>
+<li>Watch the cue ball. If it rolls forward, hit lower or firmer. If it backs up, hit higher or softer.</li>
+</ol>
+<h2>Stun on angled shots</h2>
+<p>On a cut shot, a cue ball that's sliding at contact (stun) leaves the object ball at a <b>90-degree angle</b>, along what's called the tangent line. That's the "90-degree rule." Add follow and it bends forward from that line; add draw and it bends back. Knowing the tangent line helps you predict where the cue ball goes, and helps you avoid scratches (see <a href="/guides/how-to-stop-scratching">how to stop scratching</a>).</p>
+<h2>Common mistakes</h2>
+<ul>
+<li><b>Lifting up:</b> raising your head or body during the stroke moves the tip off target.</li>
+<li><b>Jabbing:</b> stopping the cue at contact gives you inconsistent spin. Follow through.</li>
+<li><b>Too high on long shots:</b> the cue ball starts rolling and follows the object ball.</li>
+</ul>
+<h2>Drills</h2>
+<ul>
+<li><b>Ladder drill:</b> set up a straight-in shot and stop the cue ball from one diamond away, then two, three and four. Repeat until you can stop it from the full table length.</li>
+<li><b>Stun target:</b> place a coin on the tangent line on a 30-degree cut and try to stun the cue ball over it.</li>
+</ul>
+<p>A ${amz('training cue ball with dots', 'training cue ball with dots')} shows exactly where you hit and how the ball spins. Next step: <a href="/guides/how-to-draw-the-cue-ball">how to draw the cue ball</a> and <a href="/guides/pool-position-play">position play</a>.</p>`
+  },
+  {
+    slug: 'how-to-stop-scratching', title: 'How to Stop Scratching in Pool: Why It Happens and How to Fix It',
+    desc: 'Why you keep scratching in pool and how to stop: the tangent line, straight-in shots, scratching on the break, common scratch shots and how to plan your cue ball path.',
+    body: `
+<p>Nothing loses games like a scratch: you make a great shot and then the cue ball follows it into the pocket. The good news is that most scratches are predictable. Learn where the cue ball wants to go and you can steer it away.</p>
+<h2>Know where the cue ball will go</h2>
+<p>On a cut shot hit with no spin at contact, the cue ball leaves along the <b>tangent line</b>, at 90 degrees to the path of the object ball. Before you shoot, look along that line. If it points at a pocket, you're in scratch danger. Follow bends the path forward, draw bends it back. Our <a href="/guides/stop-shot-and-stun-shot">stop and stun guide</a> explains it with drills.</p>
+<h2>The most common scratches</h2>
+<ul>
+<li><b>Straight-in shot with follow:</b> the cue ball rolls right in after the object ball. Use a stop shot or a little draw instead.</li>
+<li><b>Ball near a corner pocket, cue ball on the same rail:</b> a natural-angle cut sends the cue ball into the side or the other corner. Hit it softer or add draw.</li>
+<li><b>Side pocket cut shots:</b> the tangent line often points at the opposite corner. Check it before you shoot.</li>
+<li><b>Three-rail paths:</b> a cue ball going around the table can find a corner on its way. Use less speed.</li>
+</ul>
+<h2>Scratching on the break</h2>
+<p>If you often scratch on the break, the cue ball is probably hitting the head ball a little off-center and flying into a side or corner pocket. Try:</p>
+<ul>
+<li>Hitting the head ball square, slightly below center, so the cue ball stops near the middle of the table.</li>
+<li>Breaking a bit softer until you control it.</li>
+<li>Moving the cue ball a few inches to the side.</li>
+</ul>
+<p>More tips in <a href="/guides/how-to-break-in-pool">how to break in pool</a>.</p>
+<h2>Speed is the secret</h2>
+<p>Most scratches come from hitting too hard. The softer the shot, the less the cue ball travels and the fewer pockets it can find. Pros play position with the gentlest stroke that gets the job done.</p>
+<h2>The rules on scratches</h2>
+<p>In most tournaments a scratch gives your opponent ball in hand anywhere on the table. In 8-Ball, scratching while you pocket the 8-ball loses the game. Bar rules can differ, so check before you play: see <a href="/guides/bar-rules-vs-tournament-rules">bar rules vs. tournament rules</a> and the <a href="/guides/8-ball-rules">8-Ball rules</a>.</p>
+<h2>Drill: the scratch-proof cut</h2>
+<p>Set up a 30-degree cut on a ball near the corner with the cue ball where the tangent line heads for the side pocket. Make the ball five times: once with stop, once with draw, once with follow, once soft and once firm, and watch how each changes the cue ball path. A ${amz('pool table practice ball set', 'spare set of practice balls')} saves time racking.</p>`
+  },
+  {
+    slug: 'combination-shots', title: 'Combination Shots in Pool: How to Aim and Make Combos',
+    desc: 'How to make combination shots in pool: aiming the first ball to send the second, dead combinations, throw on combos, when to go for them and the rules in 8-Ball and 9-Ball.',
+    body: `
+<p>A combination (combo) is a shot where the cue ball hits one object ball into another, and the second ball goes in. In 9-Ball it's a winning shot when the 9 is the ball that drops. Pros make them look easy. Here's how to aim them and when to go for it.</p>
+<h2>How to aim a combination</h2>
+<ol>
+<li><b>Aim the second ball first.</b> Find the spot on the second ball (the one you want to pocket) that the first ball needs to hit. That's like a normal ghost-ball aim.</li>
+<li><b>Then aim the first ball at that spot.</b> Picture a "ghost" first ball touching the second ball at the right spot, and hit the first ball so it rolls into that position.</li>
+<li><b>Shoot at a medium speed</b> with a center-ball hit, and stay down.</li>
+</ol>
+<p>Combinations magnify your error: a small miss on the first ball becomes a big miss on the second. Keep them short when you can.</p>
+<h2>Dead combinations</h2>
+<p>When two balls are touching or very close and lined up with a pocket, the combo is "dead": almost any hit on the first ball sends the second one in. These are worth knowing at a glance. See our <a href="/trick-shots/dead-combination">dead combination trick shot</a>.</p>
+<h2>Throw on combos</h2>
+<p>When two balls touch, friction pulls the second ball slightly in the direction the first ball is moving. That's called throw. On frozen combos, you can use it to make balls that don't look lined up. Learn it with the <a href="/trick-shots/throw-shot">throw shot</a>.</p>
+<h2>When to go for a combo</h2>
+<ul>
+<li><b>Go for it</b> when the balls are close, the angle is small, and a miss leaves your opponent safe.</li>
+<li><b>Skip it</b> when the balls are far apart, the angle is wide, or a miss hands over the game.</li>
+<li>In 9-Ball, a combo on the 9 with the lowest ball is often the highest-percentage way to win a rack. It won the 2026 US Open: Francisco Sánchez Ruiz's clutch 3-9 combination started his comeback in the final (see the <a href="/guides/us-open-pool-championship-2026-results">2026 US Open recap</a>).</li>
+</ul>
+<h2>Rules</h2>
+<ul>
+<li><b>9-Ball and 10-Ball:</b> you must hit the lowest-numbered ball first. Then any ball that goes in counts. A combo on the 9 wins (in 10-Ball the 10 must be called).</li>
+<li><b>8-Ball:</b> you must hit one of your own group first. Most tournament rules allow combinations with your opponent's balls as long as you hit your own first and call the ball that goes in. See the <a href="/guides/8-ball-rules">8-Ball rules</a>.</li>
+</ul>
+<p>Practice combos with a ${amz('pool ball rack and practice balls', 'set of practice balls')}, starting with frozen balls and moving them apart an inch at a time.</p>`
+  },
+  {
+    slug: 'thin-cut-shots', title: 'How to Make Thin Cut Shots in Pool',
+    desc: 'How to aim and make thin cut shots in pool: aiming at the edge of the ball, the ghost ball, throw, using outside English, speed control and drills.',
+    body: `
+<p>A thin cut is any shot where the cue ball only grazes the object ball and sends it off at a sharp angle. They're scary because there's so little ball to hit, but with the right aim and stroke they become routine.</p>
+<h2>Aim with the ghost ball</h2>
+<p>Picture a "ghost" cue ball touching the object ball at the exact spot that sends it into the pocket: the point on the object ball farthest from the pocket. Now shoot your cue ball to where the ghost ball sits. On a thin cut, the ghost ball is almost beside the object ball, so you're aiming at empty cloth, not at the ball. That feels wrong at first, and it's the most common reason players hit thin cuts too full.</p>
+<p>More aiming methods in <a href="/guides/how-to-aim-in-pool">how to aim in pool</a>, and you can test yourself on the <a href="/play/aim-trainer">aim trainer</a>.</p>
+<h2>Throw: why slow cuts go thick</h2>
+<p>When the balls touch, friction drags the object ball a little in the direction the cue ball is moving. On slow, thin cuts, this <b>throw</b> makes the ball go in a bit thicker than the geometry says, so cut it a touch thinner than you think. On firm shots there's less throw.</p>
+<h2>Outside English helps</h2>
+<p>A little outside spin (the side of the cue ball away from the object ball) cancels out much of the throw. Many pros use a touch of outside English on thin cuts for that reason. Keep it small; too much spin makes the cue ball curve and squirt off line. See <a href="/guides/english-in-pool">English in pool</a>.</p>
+<h2>Speed and stroke</h2>
+<ul>
+<li>Use a smooth medium stroke. Slamming a thin cut adds error.</li>
+<li>Stay down and keep your head still until the ball drops.</li>
+<li>Follow through straight toward the ghost ball, not toward the object ball.</li>
+</ul>
+<h2>Where the cue ball goes</h2>
+<p>On a thin cut the cue ball keeps most of its speed and heads along the tangent line, often across or around the table. Plan for it so you don't scratch (see <a href="/guides/how-to-stop-scratching">how to stop scratching</a>).</p>
+<h2>Drill: the cut ladder</h2>
+<p>Put an object ball one diamond off the end rail, an inch off the long rail, so it goes into the corner pocket along the rail. Shoot it from the middle of the table at a 30-degree angle, then 45, then 60, then 75. Make each angle three times in a row before moving on. A ${amz('pool chalk premium', 'good chalk')} helps: thin cuts with a slick tip often miscue.</p>`
+  },
+  {
+    slug: 'how-to-chalk-a-cue', title: 'How to Chalk a Pool Cue the Right Way (and How Often)',
+    desc: 'How to chalk a pool cue properly, how often to chalk, the difference between regular and premium chalk, mistakes that cause miscues, and keeping chalk off the table.',
+    body: `
+<p>Chalk is what lets your tip grip the cue ball for draw, follow and English. Most miscues come from bad chalking, not bad strokes. Here's how to do it right.</p>
+<h2>How to chalk</h2>
+<ol>
+<li>Hold the cue steady and bring the chalk to the tip, not the tip to the chalk.</li>
+<li><b>Brush</b> the chalk across the tip in short strokes, turning the cue a little as you go, like painting.</li>
+<li>Check the tip: it should have an even, thin coat with no bare spots, especially near the edges.</li>
+</ol>
+<p><b>Don't grind.</b> Twisting the chalk on the tip like a drill digs a hole in the chalk cube, leaves the edges of the tip bare and causes miscues.</p>
+<h2>How often to chalk</h2>
+<p>Chalk before every shot that uses spin, and at least every other shot. Many good players chalk before every shot out of habit. It takes two seconds and prevents the miscue that costs you a game.</p>
+<h2>Regular vs. premium chalk</h2>
+<ul>
+<li><b>Regular chalk</b> (the cubes in every pool room) works fine for most players.</li>
+<li><b>Premium chalk</b> from brands like Kamui, Taom and Predator 1080 is made to hold better and make less mess. Many players find they miscue less and chalk less often with it.</li>
+</ul>
+<p>Try a ${amz('premium pool cue chalk Kamui Taom', 'premium chalk')} if you play a lot, and keep a ${amz('magnetic pool chalk holder', 'magnetic chalk holder')} on your belt so it's always with you.</p>
+<h2>Keep chalk off the table and your hands</h2>
+<ul>
+<li>Set chalk on the rail with the chalk side <b>up</b>, so it doesn't rub off on the cloth.</li>
+<li>Don't chalk over the table; chalk dust wears out cloth. See <a href="/guides/how-to-clean-a-pool-table">how to clean a pool table</a>.</li>
+<li>Wipe chalk off your bridge hand, or wear a <a href="/guides/pool-glove">pool glove</a>.</li>
+</ul>
+<h2>When chalk isn't enough</h2>
+<p>If your tip is shiny and hard, chalk won't stick. Scuff it lightly with a tip tool, or replace it. See our guide to <a href="/guides/pool-cue-tips">pool cue tips</a>.</p>`
+  },
+  {
+    slug: 'carbon-fiber-vs-maple-shaft', title: 'Carbon Fiber vs. Maple Pool Cue Shafts: Which Should You Buy?',
+    desc: 'Carbon fiber vs. maple pool cue shafts compared: deflection, feel, price, care, durability and who each one is best for.',
+    body: `
+<p>Carbon fiber shafts went from rare to everywhere in just a few years, and many pros now play with one. But a good maple shaft is still a great choice. Here is how they compare.</p>
+<h2>What's different</h2>
+<ul>
+<li><b>Maple:</b> the traditional wood shaft, made from hard rock maple. Every shaft feels a little different.</li>
+<li><b>Carbon fiber:</b> a hollow tube of carbon fiber with a foam or composite core. Every one of a model plays the same.</li>
+</ul>
+<h2>Deflection (squirt)</h2>
+<p>When you use side spin, the cue ball pushes off the line of your stroke a little; this is called deflection or squirt. Shafts with less mass at the tip deflect less. Most carbon fiber shafts are <b>low deflection</b>, and so are special low-deflection maple shafts. A standard maple shaft deflects more. Low deflection doesn't make you better by itself, but it makes English more predictable once you're used to it. Learn more in <a href="/guides/english-in-pool">English in pool</a>.</p>
+<h2>Feel</h2>
+<p>Maple has a soft, familiar feedback many players love. Carbon fiber feels a bit stiffer and can be louder on contact. Try both before you buy if you can.</p>
+<h2>Care and durability</h2>
+<ul>
+<li><b>Carbon fiber:</b> doesn't warp, doesn't dent easily and wipes clean with a damp cloth. Great if you play in humid bars or travel.</li>
+<li><b>Maple:</b> can warp with heat and humidity, dents more easily and needs regular cleaning and burnishing. See <a href="/guides/pool-cue-care">pool cue care</a>.</li>
+</ul>
+<h2>Price</h2>
+<p>Carbon fiber shafts usually cost a lot more than a standard maple shaft, often several hundred dollars on their own. Check that a shaft matches your cue's joint before you buy. For overall budgets, see <a href="/gear/pool-cue-prices">how much a pool cue costs</a>.</p>
+<h2>Which is right for you?</h2>
+<ul>
+<li><b>Beginner:</b> a good maple cue is fine. Learn a straight stroke first.</li>
+<li><b>League player who uses a lot of English:</b> try a low-deflection or carbon fiber shaft.</li>
+<li><b>Bar and travel player:</b> carbon fiber's toughness is a big plus.</li>
+</ul>
+<p>Compare options with a ${amz('carbon fiber pool cue shaft', 'carbon fiber shaft')} or a ${amz('low deflection maple pool cue', 'low-deflection maple cue')}, and read <a href="/guides/how-to-choose-a-pool-cue">how to choose a pool cue</a>.</p>`
+  },
+  {
+    slug: 'pool-bridge-types', title: 'Pool Bridges: Open, Closed, Rail and Mechanical Bridges Explained',
+    desc: 'How to make every pool bridge: the open V bridge, closed loop bridge, rail bridge, elevated bridge over a ball, and how to use the mechanical bridge (the rake).',
+    body: `
+<p>Your bridge is the hand that holds the front of the cue. A solid bridge keeps the cue straight; a shaky one ruins good aim. Here are the bridges every player needs and when to use each.</p>
+<h2>Open bridge (V bridge)</h2>
+<p>Lay your hand flat on the cloth, spread your fingers, then pull your thumb up against the side of your index finger to make a V. Rest the cue in the V. Raise or lower the V by cupping your hand to aim higher or lower on the cue ball.</p>
+<ul><li><b>Use it for:</b> most shots, especially for beginners. It's easy to make and lets you see the whole line.</li></ul>
+<h2>Closed bridge (loop bridge)</h2>
+<p>Start like the open bridge, then curl your index finger over the cue to make a loop, with the cue resting against your middle finger and thumb. The loop holds the cue in place.</p>
+<ul><li><b>Use it for:</b> power shots, the break and draw shots, where the cue might otherwise lift out of the bridge.</li></ul>
+<h2>Rail bridge</h2>
+<p>When the cue ball is near or against a rail, put your hand on top of the rail and run the cue along the rail between your index and middle fingers, with your thumb tucked under. If the cue ball is a few inches off the rail, you can also make an open bridge on the rail top.</p>
+<h2>Elevated bridge (over a ball)</h2>
+<p>When a ball is in the way, raise your hand on your fingertips, like a tent, and rest the cue on top of your thumb and index finger. Keep the stroke short and smooth, and expect to hit down on the cue ball a little.</p>
+<h2>Mechanical bridge (the rake)</h2>
+<p>For shots you can't reach, use the bridge stick. Lay its head flat on the table about 6 to 10 inches behind the cue ball and hold its handle down with your bridge hand. Hold your cue with your fingertips at shoulder height and push the stroke forward like a dart. There is no shame in using it; it beats stretching off balance.</p>
+<h2>Bridge tips</h2>
+<ul>
+<li>Bridge length (from bridge to cue ball) of about 6 to 8 inches works for most shots.</li>
+<li>Press the heel of your hand down so the bridge doesn't move.</li>
+<li>If your bridge hand sticks, a <a href="/guides/pool-glove">pool glove</a> helps the cue slide.</li>
+</ul>
+<p>Pair a good bridge with the right grip and stance: see <a href="/guides/how-to-hold-a-pool-cue">how to hold a pool cue</a> and <a href="/guides/pool-stance-posture-stretches">pool posture</a>. A ${amz('pool cue bridge head attachment', 'cue-mounted bridge head')} is handy if your table has no rake.</p>`
+  },
+  {
+    slug: '9-ball-vs-10-ball', title: '9-Ball vs. 10-Ball: The Differences Explained',
+    desc: '9-Ball vs. 10-Ball compared: the rack, the break, call shot rules, what happens when the money ball goes in on the break, push-outs, and which game is harder.',
+    body: `
+<p>9-Ball and 10-Ball are both "rotation" games: you must always hit the lowest-numbered ball first. They look almost the same, but a few rules make them play very differently. Here's what changes.</p>
+<h2>Quick comparison</h2>
+<ul>
+<li><b>Balls:</b> 9-Ball uses balls 1-9; 10-Ball uses 1-10.</li>
+<li><b>Rack:</b> 9-Ball is a diamond with the 1 at the front and the 9 in the middle. 10-Ball is a triangle with the 1 at the front and the 10 in the middle of the third row.</li>
+<li><b>Winning ball:</b> the 9 in 9-Ball, the 10 in 10-Ball.</li>
+<li><b>Calling shots:</b> 9-Ball is usually "slop": any legal shot that makes a ball counts. 10-Ball is call shot: you must call the ball and pocket.</li>
+<li><b>Money ball on the break:</b> in 9-Ball, the 9 on the break wins. In 10-Ball (under WPA rules), the 10 on the break is spotted and does not win.</li>
+</ul>
+<h2>Why 10-Ball is harder</h2>
+<p>With an extra ball and a tighter rack, it's harder to make a ball on the break and harder to run out. Call shot rules take away lucky rolls: if you make a ball you didn't call, your opponent can choose to shoot or give the shot back to you. That's why many pros call 10-Ball the purer test, and why big money matches are often played at 10-Ball (see our <a href="/guides/shane-van-boening">Shane Van Boening story</a>).</p>
+<h2>What's the same</h2>
+<ul>
+<li>You must hit the lowest ball first on every shot.</li>
+<li>After the break, the incoming player may "push out" to a better position, and the opponent chooses who shoots next.</li>
+<li>A scratch or foul gives ball in hand anywhere on the table.</li>
+<li>Three fouls in a row loses the game under WPA rules.</li>
+</ul>
+<h2>Which should you play?</h2>
+<p>9-Ball is faster and more forgiving and is the main game at the big pro events like the <a href="/guides/us-open-pool-championship-2026-results">US Open</a>. 10-Ball rewards control and safeties. Play both: 10-Ball practice makes your 9-Ball better.</p>
+<p>Full rules: <a href="/guides/9-ball-rules">9-Ball rules</a> and <a href="/guides/10-ball-rules">10-Ball rules</a>. Tight racks matter more in 10-Ball, so a ${amz('pool ball rack template magic rack', 'rack template')} is worth having. Ready to play? <a href="/tonight/">Find a 9-Ball or 10-Ball tournament tonight</a>.</p>`
   }
 ];
