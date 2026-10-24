@@ -157,8 +157,8 @@ export function privacyPage(cfg) {
 // ---- shared page chrome ----
 // Shown at the bottom of every server-rendered page: the easiest way to turn a one-time visitor into a regular.
 const ALERT_CTA = `<section class="card seo-cta" style="margin:28px 0 8px;padding:18px 20px">
-  <h2 class="seo-h2" style="margin-top:0">Get the weekend's best tournaments by email</h2>
-  <p class="muted" style="margin:6px 0 12px">One short email a week: the big events this weekend, what's new, and tips. Free, unsubscribe any time.</p>
+  <h2 class="seo-h2" style="margin-top:0">Get a daily pool tip and the best tournaments by email</h2>
+  <p class="muted" style="margin:6px 0 12px">One short email a day: a practice drill or new article, plus tournaments near you. Free, unsubscribe any time.</p>
   <form class="sub-form" data-sub action="/alerts" method="get"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"><button class="btn btn-green" type="submit">Sign Me Up</button></form>
   <p class="sub-msg muted" aria-live="polite" style="margin:8px 0 0;min-height:1.2em"></p>
   <p class="muted" style="margin:4px 0 0;font-size:14px">Want alerts for your area only? <a href="/alerts">Set up tournament alerts</a> · <a href="/this-weekend/">This weekend's tournaments</a></p>
@@ -182,7 +182,7 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 </div></details>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
-<section class="subtop" data-sub-top aria-label="Email signup"><div class="wrap subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get the weekend's best pool tournaments by email. Free.</span></p>
+<section class="subtop" data-sub-top aria-label="Email signup"><div class="wrap subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get a daily pool tip and the best tournaments near you by email. Free.</span></p>
 <form class="sub-form subtop-form" data-sub action="/alerts" method="get"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"><button class="btn btn-green btn-sm" type="submit">Sign up</button></form><p class="sub-msg" aria-live="polite"></p></div></section>
 <main id="main" class="wrap page seo">${body}${ALERT_CTA}${supportStrip(cfg)}</main>
 ${footer(cfg)}</body></html>`;

@@ -206,7 +206,7 @@
           <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><a class="btn btn-gold" href="/tonight/" id="tonightBtn">🌙 Tournaments Tonight</a><a class="btn btn-gold" href="/this-weekend/">🔥 This Weekend →</a></p>
         </div>
       </section>
-      <section class="subtop home-sub" id="homeSub"><div class="subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get the weekend's best pool tournaments by email. Free, one email a week.</span></p>
+      <section class="subtop home-sub" id="homeSub"><div class="subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get a daily pool tip and the best tournaments near you by email. Free, unsubscribe any time.</span></p>
         <form class="sub-form subtop-form" id="homeSubForm"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"><button class="btn btn-green btn-sm" type="submit">Sign up</button></form><p class="sub-msg" id="homeSubMsg" aria-live="polite"></p></div></section>
       <div id="mmSpot"></div>
       <section class="sec tiles">
