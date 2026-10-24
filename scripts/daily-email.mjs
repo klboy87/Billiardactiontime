@@ -44,8 +44,8 @@ const chosen = picks.map(s => bySlug.get(s));
 const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/Detroit' });
 const link = (path, tag) => `${SITE}${path}?utm_source=newsletter&utm_medium=email&utm_content=${tag}`;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const intro = flag('--intro');
-const introText = 'Welcome to the new Billiard Action Time daily email. Every day we send two things worth your time: a new article or a practice drill, plus a quick way to find a tournament near you. Here is what we published this week.';
+const intro = flag('--intro') || !state.log.length; // the very first daily email explains what subscribers will get
+const introText = 'Welcome to the new Billiard Action Time daily email. Every day we send two things worth your time: a new article or a practice drill, plus a quick way to find a tournament near you. Here are today's picks.';
 
 const subject = chosen.length === 1 ? chosen[0].title
   : intro ? `New on Billiard Action Time: ${chosen[0].title.split(':')[0]} and more`
