@@ -16611,6 +16611,304 @@
       "state": "GA",
       "game": "9-Ball",
       "notes": "Source: mrcues2.com. Recurring weekly Monday 8pm"
+    },
+    {
+      "id": "ft-blind-draw-8-ball-scotch-doubles-break-room-sports-bar-grill-2026-11-01",
+      "name": "Blind Draw 8 Ball Scotch Doubles",
+      "date": "2026-11-01",
+      "venue": "Break Room Sports Bar & Grill",
+      "address": "3612 Jefferson Island Road",
+      "city": "New Iberia",
+      "state": "LA",
+      "zip": "70560",
+      "game": "Scotch Doubles",
+      "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "ft-8-ball-tournaments-industrial-tavern-indy-bar-grill-2026-11-01",
+      "name": "8 Ball Tournaments",
+      "date": "2026-11-01",
+      "venue": "Industrial Tavern Indy Bar & Grill",
+      "address": "260 S. Wabash",
+      "city": "Centralia",
+      "state": "IL",
+      "zip": "62801",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "ft-wednesday-night-double-elimination-8-ball-reo-town-clubhouse-2026-11-04",
+      "name": "Wednesday Night Double Elimination 8 Ball",
+      "date": "2026-11-04",
+      "venue": "Reo Town Clubhouse",
+      "city": "Lansing",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-weighted-9-ball-las-vegas-cue-club-2026-11-04",
+      "name": "Wednesday Night Weighted 9 Ball",
+      "date": "2026-11-04",
+      "venue": "Las Vegas Cue Club",
+      "city": "Las Vegas",
+      "state": "NV",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-pool-buckles-lounge-2026-11-04",
+      "name": "Wednesday Night Pool",
+      "date": "2026-11-04",
+      "venue": "Buckles Lounge",
+      "city": "Amarillo",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-8-ball-tommy-t-s-bar-2026-11-04",
+      "name": "Wednesday Night 8 Ball",
+      "date": "2026-11-04",
+      "venue": "Tommy T's Bar",
+      "city": "Canton",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-8-ball-golden-cue-2026-11-04",
+      "name": "Wednesday Night 8 Ball",
+      "date": "2026-11-04",
+      "venue": "Golden Cue",
+      "city": "Albany",
+      "state": "NY",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-pool-roosters-2026-11-04",
+      "name": "Wednesday Night Pool",
+      "date": "2026-11-04",
+      "venue": "Roosters",
+      "city": "Mesa",
+      "state": "AZ",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-9-ball-bourbon-west-2026-11-04",
+      "name": "Wednesday Night 9 Ball",
+      "date": "2026-11-04",
+      "venue": "Bourbon West",
+      "city": "Lindale",
+      "state": "TX",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-9-ball-chandler-s-bourbon-billiards-2026-11-04",
+      "name": "Wednesday Night 9 Ball",
+      "date": "2026-11-04",
+      "venue": "Chandler's Bourbon & Billiards",
+      "city": "Enid",
+      "state": "OK",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-10-ball-massey-shots-bar-grill-2026-11-04",
+      "name": "Wednesday Night 10 Ball",
+      "date": "2026-11-04",
+      "venue": "Massey Shots Bar & Grill",
+      "city": "Plano",
+      "state": "TX",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-billiards-aces-and-eagles-bar-and-arcade-2026-11-04",
+      "name": "Wednesday Billiards",
+      "date": "2026-11-04",
+      "venue": "Aces and Eagles Bar and Arcade",
+      "city": "Washington",
+      "state": "MO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-pool-shy-girls-bar-and-grill-2026-11-04",
+      "name": "Wednesday Night Pool",
+      "date": "2026-11-04",
+      "venue": "Shy Girls Bar and Grill",
+      "city": "Houston",
+      "state": "TX",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-9-ball-tournament-showdown-billiards-2026-11-04",
+      "name": "9 Ball Tournament",
+      "date": "2026-11-04",
+      "venue": "Showdown Billiards",
+      "city": "Parma Heights",
+      "state": "OH",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wicked-wednesdays-the-rack-2026-11-04",
+      "name": "Wicked Wednesdays",
+      "date": "2026-11-04",
+      "venue": "The Rack",
+      "city": "Livonia",
+      "state": "MI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-weekly-wednesday-night-8-ball-tournament-rj-s-bar-and-grill-2026-11-04",
+      "name": "Weekly Wednesday Night 8 Ball Tournament",
+      "date": "2026-11-04",
+      "venue": "RJ's Bar and Grill",
+      "city": "North Fort Myers",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-tournament-coghlan-s-hideout-2026-11-04",
+      "name": "Wednesday Night Tournament",
+      "date": "2026-11-04",
+      "venue": "Coghlan's Hideout",
+      "city": "Bulpitt",
+      "state": "IL",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-3-ball-tournament-kelli-jo-s-sports-bar-2026-11-04",
+      "name": "3 Ball Tournament",
+      "date": "2026-11-04",
+      "venue": "Kelli Jo's Sports Bar",
+      "city": "Ashville",
+      "state": "OH",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-8-ball-tournament-jeffro-s-billiards-2026-11-04",
+      "name": "8-Ball Tournament",
+      "date": "2026-11-04",
+      "venue": "Jeffro's Billiards",
+      "city": "Canton",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-8-ball-tournament-busby-s-bar-and-grill-2026-11-04",
+      "name": "8 Ball Tournament",
+      "date": "2026-11-04",
+      "venue": "Busby's Bar and Grill",
+      "city": "Jackson",
+      "state": "TN",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-8-ball-tournament-sullivan-s-sports-bar-2026-11-04",
+      "name": "Wednesday Night 8 Ball Tournament",
+      "date": "2026-11-04",
+      "venue": "Sullivan's Sports Bar",
+      "city": "Smyrna",
+      "state": "TN",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-9-ball-singles-bola-8-sport-bar-2026-11-04",
+      "name": "9 Ball Singles",
+      "date": "2026-11-04",
+      "venue": "Bola 8 Sport Bar",
+      "city": "Lafayette",
+      "state": "LA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-8-ball-king-s-billiards-2026-11-04",
+      "name": "Wednesday Night 8 Ball",
+      "date": "2026-11-04",
+      "venue": "King's Billiards",
+      "city": "Beebe",
+      "state": "AR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-tournament-u-time-billiards-2026-11-04",
+      "name": "Wednesday Night Tournament",
+      "date": "2026-11-04",
+      "venue": "U-Time Billiards",
+      "city": "Aurora",
+      "state": "CO",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-8-ball-the-sunset-lounge-2026-11-04",
+      "name": "Wednesday Night 8 Ball",
+      "date": "2026-11-04",
+      "venue": "The Sunset Lounge",
+      "city": "Paris",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-rated-9-ball-on-the-hill-billiards-club-bar-and-grill-2026-11-04",
+      "name": "Wednesday Night Rated 9 Ball",
+      "date": "2026-11-04",
+      "venue": "On the Hill Billiards Club Bar and Grill",
+      "city": "Mosinee",
+      "state": "WI",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-handicapped-1-pocket-tournament-mr-cue-s-ii-2026-11-04",
+      "name": "Wednesday Night handicapped 1 Pocket Tournament",
+      "date": "2026-11-04",
+      "venue": "Mr. Cue's II",
+      "city": "Atlanta",
+      "state": "GA",
+      "game": "One Pocket",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-8-ball-he-s-not-here-lounge-2026-11-04",
+      "name": "Wednesday Night 8 Ball",
+      "date": "2026-11-04",
+      "venue": "He's Not Here Lounge",
+      "city": "Sulphur",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-handicapped-9-ball-shooters-billiards-2026-11-04",
+      "name": "Wednesday Night Handicapped 9 Ball",
+      "date": "2026-11-04",
+      "venue": "Shooters Billiards",
+      "city": "Burnsville",
+      "state": "MN",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
+    },
+    {
+      "id": "ft-wednesday-night-laggers-choice-8-9-or-10-ball-dozer-s-grill-2026-11-04",
+      "name": "Wednesday Night Laggers Choice 8, 9, or 10 ball",
+      "date": "2026-11-04",
+      "venue": "Dozer's Grill",
+      "city": "Mesa",
+      "state": "AZ",
+      "notes": "Source: findtourneys.com. Recurring weekly wednesday"
     }
   ]
 }
