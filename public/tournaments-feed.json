@@ -17206,6 +17206,545 @@
       "state": "AR",
       "game": "9-Ball",
       "notes": "Source: findtourneys.com. Recurring weekly thursday"
+    },
+    {
+      "id": "rr-2027-moby-dick-576-under-bar-table-10-ball-championship-griffs-bar-and-billiards-2027-02-06",
+      "name": "2027 Moby Dick 576 & Under Bar Table 10-Ball Championship",
+      "date": "2027-02-06",
+      "venue": "Griffs Bar and Billiards",
+      "address": "3650 S Decatur Blvd Suite 12",
+      "city": "Las Vegas",
+      "state": "NV",
+      "zip": "89103",
+      "game": "10-Ball",
+      "entry": 1000,
+      "notes": "Source: rackradar.com"
+    },
+    {
+      "id": "ft-friday-night-tee-d-up-9-ball-tee-d-up-golf-2026-11-06",
+      "name": "Friday Night Tee'd Up 9-Ball",
+      "date": "2026-11-06",
+      "venue": "Tee'd Up Golf",
+      "city": "Florence",
+      "state": "AL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-620-and-under-fargo-handicapped-10-ball-paradise-tavern-2026-11-06",
+      "name": "Friday Night 620 and Under Fargo Handicapped 10 Ball",
+      "date": "2026-11-06",
+      "venue": "Paradise Tavern",
+      "city": "Lone Tree",
+      "state": "CO",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-showdown-billiards-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Showdown Billiards",
+      "city": "Parma Heights",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-strikeout-lanes-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Strikeout Lanes",
+      "city": "Wellington",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-pool-train-station-event-center-bar-and-billiards-2026-11-06",
+      "name": "Friday Night 8-Ball Pool",
+      "date": "2026-11-06",
+      "venue": "Train Station Event Center Bar and Billiards",
+      "city": "Alexandria",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-fargo-handicapped-9-ball-fat-cats-2026-11-06",
+      "name": "Friday Night Fargo Handicapped 9 Ball",
+      "date": "2026-11-06",
+      "venue": "Fat Cats",
+      "city": "Eustis",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-scotch-doubles-hustler-s-pizza-and-billiards-2026-11-06",
+      "name": "Friday Night Scotch Doubles",
+      "date": "2026-11-06",
+      "venue": "Hustler's Pizza and Billiards",
+      "city": "Mount Morris",
+      "state": "MI",
+      "game": "Scotch Doubles",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-weekly-friday-night-racks-on-the-rocks-2026-11-06",
+      "name": "Friday Night Weekly Friday Night",
+      "date": "2026-11-06",
+      "venue": "Racks on the Rocks",
+      "city": "Peoria",
+      "state": "IL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-scotch-doubles-chip-lucky-cue-billiards-2026-11-06",
+      "name": "Friday Night Scotch Doubles Chip",
+      "date": "2026-11-06",
+      "venue": "Lucky Cue Billiards",
+      "city": "Moorpark",
+      "state": "CA",
+      "game": "Scotch Doubles",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-tourney-10-entry-straight-8-whiskey-and-tequila-2026-11-06",
+      "name": "8-ball tourney $10 entry., straight 8",
+      "date": "2026-11-06",
+      "venue": "Whiskey and Tequila",
+      "city": "Independence",
+      "state": "MO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-tournament-whitehorse-saloon-2026-11-06",
+      "name": "8 Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Whitehorse Saloon",
+      "city": "Grove City",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-casselberrys-patio-bar-and-lounge-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Casselberrys Patio Bar and Lounge",
+      "city": "Casselberry",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-9-ball-round-2-sports-tavern-2026-11-06",
+      "name": "Friday Night 8/9 Ball",
+      "date": "2026-11-06",
+      "venue": "Round 2 Sports Tavern",
+      "city": "Federal Heights",
+      "state": "CO",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-sticks-stones-2026-11-06",
+      "name": "Friday Night 9 Ball",
+      "date": "2026-11-06",
+      "venue": "Sticks & Stones",
+      "city": "Rock Hill",
+      "state": "SC",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-knock-n-boots-saloon-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Knock'n Boots Saloon",
+      "city": "Largo",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-my-bar-and-club-2026-11-06",
+      "name": "Friday Night 9 Ball",
+      "date": "2026-11-06",
+      "venue": "My Bar and Club",
+      "city": "Perry",
+      "state": "GA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-ice-breakers-2026-11-06",
+      "name": "Friday Night 9 Ball",
+      "date": "2026-11-06",
+      "venue": "Ice Breakers",
+      "city": "Youngstown",
+      "state": "OH",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-charlie-s-ice-house-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Charlie's Ice House",
+      "city": "Highlands",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-b-s-trudeau-tavern-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "B's Trudeau Tavern",
+      "city": "Metairie",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-10-ball-bar-kada-sports-grill-2026-11-06",
+      "name": "Friday Night 10 Ball",
+      "date": "2026-11-06",
+      "venue": "Bar Kada Sports Grill",
+      "city": "Missouri City",
+      "state": "TX",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-chip-tournament-stan-s-bar-and-grill-2026-11-06",
+      "name": "8 Ball Chip Tournament",
+      "date": "2026-11-06",
+      "venue": "Stan's Bar and Grill",
+      "city": "Xenia",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-pool-tournament-the-club-house-2026-11-06",
+      "name": "8 Ball Pool Tournament",
+      "date": "2026-11-06",
+      "venue": "The Club House",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-tournament-pharaoh-s-american-grill-billiards-2026-11-06",
+      "name": "Friday Night Tournament",
+      "date": "2026-11-06",
+      "venue": "Pharaoh's American Grill & Billiards",
+      "city": "Longmont",
+      "state": "CO",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-open-mikey-s-place-2026-11-06",
+      "name": "Friday Night 9 Ball Open",
+      "date": "2026-11-06",
+      "venue": "Mikey's Place",
+      "city": "Plant City",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-ladies-friday-night-8-ball-mikey-s-place-2026-11-06",
+      "name": "Ladies Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Mikey's Place",
+      "city": "Plant City",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-tournament-khaos-2026-11-06",
+      "name": "8 Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Khaos",
+      "city": "Winter Springs",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-open-handicapped-9-ball-tournament-livingston-s-billiards-2026-11-06",
+      "name": "Open Handicapped 9-Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Livingston's Billiards",
+      "city": "Bradenton",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-inland-reef-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Inland Reef",
+      "city": "Virginia Beach",
+      "state": "VA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-pool-tournament-southern-billiards-2026-11-06",
+      "name": "8-Ball Pool Tournament",
+      "date": "2026-11-06",
+      "venue": "Southern Billiards",
+      "city": "Cape Coral",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-tournament-coghlan-s-hideout-2026-11-06",
+      "name": "Friday Night 9-Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Coghlan's Hideout",
+      "city": "Bulpitt",
+      "state": "IL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-tournament-shooters-bar-billiards-2026-11-06",
+      "name": "8 Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Shooters Bar & Billiards",
+      "city": "Sterling",
+      "state": "IL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-pool-tournament-scott-s-ii-restaurant-bar-2026-11-06",
+      "name": "Pool Tournament",
+      "date": "2026-11-06",
+      "venue": "Scott's II Restaurant & Bar",
+      "city": "Welcome",
+      "state": "MD",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-weekly-friday-night-tournament-job-billiards-club-2026-11-06",
+      "name": "Weekly Friday Night Tournament",
+      "date": "2026-11-06",
+      "venue": "Job Billiards Club",
+      "city": "Madison",
+      "state": "TN",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-9-ball-tournament-bola-8-sports-bar-2026-11-06",
+      "name": "9-Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Bola 8 Sports Bar",
+      "city": "Lafayette",
+      "state": "LA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-tournament-cactus-racks-2026-11-06",
+      "name": "8 Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Cactus Racks",
+      "city": "Cave Creek",
+      "state": "AZ",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-upl-8-ball-friday-night-chip-tournaments-the-wharf-2026-11-06",
+      "name": "UPL 8-Ball Friday Night Chip Tournaments",
+      "date": "2026-11-06",
+      "venue": "The Wharf",
+      "city": "Garden Grove",
+      "state": "CA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-showdown-the-520-2026-11-06",
+      "name": "8-Ball Showdown",
+      "date": "2026-11-06",
+      "venue": "The 520",
+      "city": "Albany",
+      "state": "OR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-tournament-st-clair-bowl-2026-11-06",
+      "name": "Friday Night 9-Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "St. Clair Bowl",
+      "city": "Fairview Heights",
+      "state": "IL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-pool-table-golf-backstreet-bar-and-grill-2026-11-06",
+      "name": "Pool Table Golf",
+      "date": "2026-11-06",
+      "venue": "Backstreet Bar and Grill",
+      "city": "Hudson",
+      "state": "NH",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-double-diamond-saloon-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Double Diamond Saloon",
+      "city": "New Plymouth",
+      "state": "ID",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-scotch-doubles-8-ball-chip-tournament-breakers-grill-2026-11-06",
+      "name": "Friday Night Scotch Doubles 8 Ball Chip Tournament",
+      "date": "2026-11-06",
+      "venue": "Breakers Grill",
+      "city": "Florence",
+      "state": "KY",
+      "game": "Scotch Doubles",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-gfb-scottish-pub-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "GFB Scottish Pub",
+      "city": "Old Orchard Beach",
+      "state": "ME",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-mr-c-s-2026-11-06",
+      "name": "Friday Night 9 Ball",
+      "date": "2026-11-06",
+      "venue": "Mr. C's",
+      "city": "Slidell",
+      "state": "LA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-weekly-8-ball-tournament-oh-the-hill-billiards-club-bar-and-grill-2026-11-06",
+      "name": "Friday Night Weekly 8 Ball Tournament",
+      "date": "2026-11-06",
+      "venue": "Oh the Hill Billiards Club Bar and Grill",
+      "city": "Mosinee",
+      "state": "WI",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-peterman-s-shamrock-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Peterman's Shamrock",
+      "city": "Saint Joseph",
+      "state": "MO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-open-8-ball-buckeye-billiards-2026-11-06",
+      "name": "Friday Night Open 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Buckeye Billiards",
+      "city": "Mansfield",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-milford-billiards-2026-11-06",
+      "name": "Friday Night 9 Ball",
+      "date": "2026-11-06",
+      "venue": "Milford Billiards",
+      "city": "Milford",
+      "state": "DE",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-the-roadhouse-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "The Roadhouse",
+      "city": "Crosby",
+      "state": "MS",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-half-time-36-bar-and-grill-2026-11-06",
+      "name": "Friday Night 8 Ball",
+      "date": "2026-11-06",
+      "venue": "Half Time 36 Bar and Grill",
+      "city": "Damon",
+      "state": "TX",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-9-ball-scotch-doubles-chip-tournament-midway-2026-11-06",
+      "name": "Friday Night 9 Ball Scotch Doubles Chip Tournament",
+      "date": "2026-11-06",
+      "venue": "Midway",
+      "city": "Oregon City",
+      "state": "OR",
+      "game": "Scotch Doubles",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-8-ball-race-to-2-dozer-s-grill-2026-11-06",
+      "name": "Friday Night 8 Ball Race to 2",
+      "date": "2026-11-06",
+      "venue": "Dozer's Grill",
+      "city": "Mesa",
+      "state": "AZ",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-weekly-handicapped-semi-fast-8-ball-chip-tournament-krome-billiards-2026-11-06",
+      "name": "Friday night weekly handicapped semi fast 8 ball chip tournament",
+      "date": "2026-11-06",
+      "venue": "Krome Billiards",
+      "city": "North Little Rock",
+      "state": "AR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-friday-night-weekly-8-ball-tournament-the-rab-2026-11-06",
+      "name": "Friday night weekly 8 ball tournament",
+      "date": "2026-11-06",
+      "venue": "The RAB",
+      "city": "Conway",
+      "state": "AR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly friday"
     }
   ]
 }
