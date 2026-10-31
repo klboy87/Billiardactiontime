@@ -17745,6 +17745,354 @@
       "state": "AR",
       "game": "8-Ball",
       "notes": "Source: findtourneys.com. Recurring weekly friday"
+    },
+    {
+      "id": "ft-8-ball-pool-tournament-canton-icehouse-2026-11-04",
+      "name": "8 Ball Pool Tournament",
+      "date": "2026-11-04",
+      "venue": "Canton Icehouse",
+      "address": "150 Keith Drive",
+      "city": "Canton",
+      "state": "GA",
+      "zip": "30114",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com"
+    },
+    {
+      "id": "ft-saturday-night-pool-tournament-midtown-pool-club-2026-11-07",
+      "name": "Saturday Night Pool Tournament",
+      "date": "2026-11-07",
+      "venue": "Midtown Pool Club",
+      "city": "Denver",
+      "state": "CO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-afternoon-8-ball-drunken-monkey-2026-11-07",
+      "name": "Saturday Afternoon 8-Ball",
+      "date": "2026-11-07",
+      "venue": "Drunken Monkey",
+      "city": "Cabot",
+      "state": "AR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-8-ball-pool-derby-gahanna-and-taproom-2026-11-07",
+      "name": "Saturday Night 8 Ball Pool",
+      "date": "2026-11-07",
+      "venue": "Derby Gahanna and Taproom",
+      "city": "Gahanna",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-8-ball-back-alley-billiards-2026-11-07",
+      "name": "Saturday Night 8 Ball",
+      "date": "2026-11-07",
+      "venue": "Back Alley Billiards",
+      "city": "Lake Panasoffkee",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-fargo-handicapped-9-ball-shooters-billiards-food-and-brew-house-2026-11-07",
+      "name": "Fargo Handicapped 9 Ball",
+      "date": "2026-11-07",
+      "venue": "Shooters Billiards Food and Brew House",
+      "city": "Port Saint Lucie",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring monthly last saturday"
+    },
+    {
+      "id": "ft-saturday-8-ball-the-throttle-bar-2026-11-07",
+      "name": "Saturday 8 Ball",
+      "date": "2026-11-07",
+      "venue": "The Throttle Bar",
+      "city": "New Lebanon",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-8-ball-racks-2026-11-07",
+      "name": "Saturday Night 8 Ball",
+      "date": "2026-11-07",
+      "venue": "Racks",
+      "city": "Port Charlotte",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-10-ball-diamond-billiards-sports-bar-grill-2026-11-07",
+      "name": "Saturday Night 10 Ball",
+      "date": "2026-11-07",
+      "venue": "Diamond Billiards Sports Bar & Grill",
+      "city": "Cape Coral",
+      "state": "FL",
+      "game": "10-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-rackers-choice-snowbirds-billiards-2026-11-07",
+      "name": "Saturday Night Rackers Choice",
+      "date": "2026-11-07",
+      "venue": "Snowbirds Billiards",
+      "city": "Ocala",
+      "state": "FL",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-bca-pool-tournament-paradise-tavern-2026-11-07",
+      "name": "BCA Pool Tournament",
+      "date": "2026-11-07",
+      "venue": "Paradise Tavern",
+      "city": "Lone Tree",
+      "state": "CO",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-8-ball-mikey-s-place-2026-11-07",
+      "name": "Saturday Night 8 Ball",
+      "date": "2026-11-07",
+      "venue": "Mikey's Place",
+      "city": "Plant City",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-pool-tournaments-rumors-bar-2026-11-07",
+      "name": "Pool Tournaments",
+      "date": "2026-11-07",
+      "venue": "Rumors Bar",
+      "city": "Centralia",
+      "state": "IL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-singles-chip-tournament-las-vegas-cue-club-2026-11-07",
+      "name": "Singles Chip Tournament",
+      "date": "2026-11-07",
+      "venue": "Las Vegas Cue Club",
+      "city": "Las Vegas",
+      "state": "NV",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-8-ball-tournament-naynay-s-famous-door-2026-11-07",
+      "name": "Saturday 8-Ball Tournament",
+      "date": "2026-11-07",
+      "venue": "NayNay's Famous Door",
+      "city": "Aurora",
+      "state": "CO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-8-ball-pool-tournament-limelight-billiards-2026-11-07",
+      "name": "8-Ball Pool Tournament",
+      "date": "2026-11-07",
+      "venue": "Limelight Billiards",
+      "city": "Jacksonville",
+      "state": "NC",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-the-dirty-nine-tournament-mad-hippo-saloon-2026-11-07",
+      "name": "The Dirty Nine Tournament",
+      "date": "2026-11-07",
+      "venue": "Mad Hippo Saloon",
+      "city": "Kissimmee",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-blind-draw-8-ball-doubles-lucky-break-2026-11-07",
+      "name": "Blind Draw 8-Ball Doubles",
+      "date": "2026-11-07",
+      "venue": "Lucky Break",
+      "city": "Marion",
+      "state": "OH",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-8-ball-pool-tournament-rooster-s-eastside-lounge-2026-11-07",
+      "name": "8 Ball Pool Tournament",
+      "date": "2026-11-07",
+      "venue": "Rooster's Eastside Lounge",
+      "city": "Tampa",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-fall-weekly-tournaments-eastside-billiards-2026-11-07",
+      "name": "Fall Weekly Tournaments",
+      "date": "2026-11-07",
+      "venue": "Eastside Billiards",
+      "city": "Grand Rapids",
+      "state": "MI",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-speed-pool-saturdays-the-penalty-box-2026-11-07",
+      "name": "Speed Pool Saturdays",
+      "date": "2026-11-07",
+      "venue": "The Penalty Box",
+      "city": "Lakewood",
+      "state": "WA",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-weekly-saturday-chip-tournament-island-breakers-billiards-2026-11-07",
+      "name": "Weekly Saturday Chip Tournament",
+      "date": "2026-11-07",
+      "venue": "Island Breakers Billiards",
+      "city": "Merritt Island",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-killer-pool-tournament-lucky-shot-billiards-2026-11-07",
+      "name": "Killer Pool Tournament",
+      "date": "2026-11-07",
+      "venue": "Lucky Shot Billiards",
+      "city": "Knoxville",
+      "state": "TN",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-open-9-ball-tournament-waldo-s-sports-pub-billiards-2026-11-07",
+      "name": "Open 9 Ball Tournament",
+      "date": "2026-11-07",
+      "venue": "Waldo's Sports Pub & Billiards",
+      "city": "Daytona Beach",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-8-ball-lightning-fast-chip-tournament-rickochet-billiards-2026-11-07",
+      "name": "8 Ball Lightning Fast Chip Tournament",
+      "date": "2026-11-07",
+      "venue": "Rickochet Billiards",
+      "city": "Prairieville",
+      "state": "LA",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-weekly-saturday-night-9-ball-bc-billiards-2026-11-07",
+      "name": "Weekly Saturday Night 9 Ball",
+      "date": "2026-11-07",
+      "venue": "BC Billiards",
+      "city": "Sebring",
+      "state": "FL",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-bca-9-ball-outlaw-ray-s-sports-bar-grill-2026-11-07",
+      "name": "Saturday Night BCA 9 Ball",
+      "date": "2026-11-07",
+      "venue": "Outlaw Ray's Sports Bar & Grill",
+      "city": "Crosby",
+      "state": "TX",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-9-ball-the-club-house-2026-11-07",
+      "name": "Saturday Night 9 Ball",
+      "date": "2026-11-07",
+      "venue": "The Club House",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-afternoon-8-ball-i-c-billiards-2026-11-07",
+      "name": "Saturday Afternoon 8 Ball",
+      "date": "2026-11-07",
+      "venue": "I.C. Billiards",
+      "city": "Centralia",
+      "state": "MO",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-evening-8-ball-happy-s-2026-11-07",
+      "name": "Saturday Evening 8 Ball",
+      "date": "2026-11-07",
+      "venue": "Happy's",
+      "city": "Tulsa",
+      "state": "OK",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-pool-tournament-break-run-2026-11-07",
+      "name": "Saturday Night Pool Tournament",
+      "date": "2026-11-07",
+      "venue": "Break & Run",
+      "city": "Fort Wayne",
+      "state": "IN",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-8-ball-coyotes-2026-11-07",
+      "name": "Saturday Night 8 Ball",
+      "date": "2026-11-07",
+      "venue": "Coyotes",
+      "city": "Panama City",
+      "state": "FL",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-8-ball-lucky-s-sports-pub-grill-2026-11-07",
+      "name": "Saturday Night 8 Ball",
+      "date": "2026-11-07",
+      "venue": "Lucky's Sports Pub & Grill",
+      "city": "Conway",
+      "state": "SC",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "ft-saturday-night-handicapped-9-ball-danny-k-s-billiards-and-sports-bar-2026-11-07",
+      "name": "Saturday Night Handicapped 9 Ball",
+      "date": "2026-11-07",
+      "venue": "Danny K's Billiards and Sports Bar",
+      "city": "Orange",
+      "state": "CA",
+      "game": "9-Ball",
+      "notes": "Source: findtourneys.com. Recurring weekly saturday"
+    },
+    {
+      "id": "mrcues2-com-9-ball-c-d-tournament-2026-11-13",
+      "name": "9-Ball C & D Tournament",
+      "date": "2026-11-13",
+      "venue": "Mr. Cue's II Billiards",
+      "city": "Atlanta",
+      "state": "GA",
+      "game": "9-Ball",
+      "notes": "Source: mrcues2.com. Recurring weekly Friday 8pm"
     }
   ]
 }
