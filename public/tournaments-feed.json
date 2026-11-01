@@ -18642,6 +18642,16 @@
       "state": "AR",
       "game": "8-Ball",
       "notes": "Source: findtourneys.com. Recurring weekly sunday"
+    },
+    {
+      "id": "ft-100-added-8-ball-aasian-grdens-2026-11-29",
+      "name": "$100 Added 8-Ball",
+      "date": "2026-11-29",
+      "venue": "Aasian Grdens",
+      "city": "Bandon",
+      "state": "OR",
+      "game": "8-Ball",
+      "notes": "Source: findtourneys.com. Recurring monthly last sunday"
     }
   ]
 }
