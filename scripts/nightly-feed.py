@@ -23,6 +23,7 @@ def state_code(s):
 def clean_name(n):
     n = html.unescape(re.sub(r'\s+', ' ', n or '')).strip(' -!.,')
     n = re.sub(r'(?i)\s*every \w+ night\s*@.*$', '', n)
+    n = re.sub(r'(?i)\b(\d+) bal\b', r'\1 Ball', n)  # source typo "8 Bal"
     for _ in range(3):  # collapse repeated phrases ("Friday Night Friday Night 8 Ball")
         n = re.sub(r'(?i)\b((?:\w+ ){1,3})\1', r'\1', n + ' ').strip()
     return n
