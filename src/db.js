@@ -81,6 +81,13 @@ CREATE TABLE IF NOT EXISTS visits (
   PRIMARY KEY (day, visitor, page)
 );
 CREATE INDEX IF NOT EXISTS idx_visits_day ON visits(day);
+-- which articles (/guides/<slug>) each visitor read, one row per (day, visitor, slug); same privacy rules.
+-- Feeds "Most read this week" in the weekly email.
+CREATE TABLE IF NOT EXISTS article_views (
+  day TEXT NOT NULL, visitor TEXT NOT NULL, slug TEXT NOT NULL,
+  PRIMARY KEY (day, visitor, slug)
+);
+CREATE INDEX IF NOT EXISTS idx_article_views_day ON article_views(day);
 -- Staking Board: players offer pieces of their action; backers claim pieces. The site only keeps
 -- the record -- money is held by the named stakeholder and paid between people off the site.
 CREATE TABLE IF NOT EXISTS stakes (
@@ -408,6 +415,19 @@ export function recordVisitsBulk(db, entries) {
     const stmt = db.prepare('INSERT OR IGNORE INTO visits (day, visitor, page, source) VALUES (?,?,?,?)');
     for (const [day, visitor, page, source] of entries) stmt.run(day, visitor, page, source);
   });
+}
+export function recordArticleViewsBulk(db, entries) {
+  if (!entries.length) return;
+  tx(db, () => {
+    const stmt = db.prepare('INSERT OR IGNORE INTO article_views (day, visitor, slug) VALUES (?,?,?)');
+    for (const [day, visitor, slug] of entries) stmt.run(day, visitor, slug);
+  });
+}
+// Articles with the most distinct readers over the last `days` days (today included), most read first.
+export function topArticles(db, { days = 7, limit = 10, todayStr = todayIso() } = {}) {
+  const d = new Date(todayStr + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - (days - 1));
+  return db.prepare('SELECT slug, COUNT(*) readers FROM article_views WHERE day >= ? GROUP BY slug ORDER BY readers DESC, slug LIMIT ?')
+    .all(d.toISOString().slice(0, 10), limit).map(r => ({ slug: r.slug, readers: Number(r.readers) }));
 }
 export function visitBreakdown(db, { days = 30, dailyDays = 14, todayStr = todayIso() } = {}) {
   const daysAgo = n => { const d = new Date(todayStr + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - n); return d.toISOString().slice(0, 10); };

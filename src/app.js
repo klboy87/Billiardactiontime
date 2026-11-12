@@ -142,7 +142,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   const visitorId = (req, day) => sha(clientIp(req) + '|' + day + '|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32);
   let ownHosts = [];
   try { ownHosts = [new URL(cfg.publicUrl).hostname.replace(/^www\./, '')]; } catch {}
-  function trackVisit(req, page) {
+  function trackVisit(req, page, { article } = {}) {
     try {
       if (isBot(req.headers['user-agent'])) return;
       const day = D.todayIso();
@@ -151,8 +151,11 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       let utm = '';
       try { utm = new URL(req.url, 'http://x').searchParams.get('utm_source') || ''; } catch {}
       if (page) recordPage(req, day, visitor, page, { ref: req.headers.referer, utm });
+      if (article && pendingArticles.size < 50_000) pendingArticles.set(day + '|' + visitor + '|' + article, [day, visitor, article]);
     } catch {}
   }
+  // Which article each visitor read (for "Most read this week" in the weekly email).
+  const pendingArticles = new Map();
   // Which page, and where the visitor came from. Batched and flushed with the counts above.
   const pendingPages = new Map();
   function recordPage(req, day, visitor, page, { ref, utm } = {}) {
@@ -161,6 +164,11 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     pendingPages.set(k, [day, visitor, page, classifySource({ ref, utm, ua: req.headers['user-agent'], ownHosts })]);
   }
   function flushPageviews() {
+    if (pendingArticles.size) {
+      const reads = [...pendingArticles.values()];
+      pendingArticles.clear();
+      try { D.recordArticleViewsBulk(db, reads); } catch (e) { log('article view flush failed: ' + (e.message || e)); }
+    }
     if (pendingPages.size) {
       const pages = [...pendingPages.values()];
       pendingPages.clear();
@@ -798,7 +806,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const GAME_OF = { '8-ball-rules': '8-Ball', '9-ball-rules': '9-Ball', '10-ball-rules': '10-Ball', 'one-pocket': 'One Pocket', 'scotch-doubles': 'Scotch Doubles', 'bank-pool-rules': 'Banks', 'straight-pool-rules': 'Straight Pool', '8-ball-patterns': '8-Ball', '9-ball-strategy': '9-Ball', 'bar-rules-vs-tournament-rules': '8-Ball' };
       const out = GR.tagAmazon(cfg, GU.guidePage(cfg, x[1], GR.gearBox(cfg, x[1]) + (GAME_OF[x[1]] ? SEO.upcomingGameHtml(db, GAME_OF[x[1]]) : SEO.tonightCta(db))));
       if (!out) return notFoundPage();
-      trackVisit(req, 'guide');
+      if (m === 'GET') trackVisit(req, 'guide', { article: x[1] }); else trackVisit(req, 'guide');
       return html(200, out);
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/big-tournaments' || p === '/big-tournaments/')) { if (p === '/big-tournaments') return moved('/big-tournaments/'); SEO.ensureFooter(db); trackVisit(req, 'big-page'); return html(200, SEO.bigTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }

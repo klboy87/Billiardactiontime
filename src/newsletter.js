@@ -1,8 +1,8 @@
 // The weekly email, written from the live listings: this weekend's biggest tournaments, the busiest
-// states, and big events coming up. The admin page shows it ready to copy into Gmail (or any email
+// states, the week's most-read articles, and big events coming up. The admin page shows it ready to copy into Gmail (or any email
 // program), so the owner can send it to the subscriber list with one paste.
 import * as SEO from './seo.js';
-import { todayIso, goingTop, featuredIds } from './db.js';
+import { todayIso, goingTop, featuredIds, topArticles } from './db.js';
 import { GUIDES } from './guides.js';
 import { STATE_NAMES } from './normalize.js';
 
@@ -35,8 +35,17 @@ export function buildNewsletter(db, cfg) {
   const fresh = SEO.recentlyAdded(db, 7).filter(t => !shown.has(t.id)).sort((a, b) => weight(b) - weight(a)).slice(0, 5).sort((a, b) => a.date.localeCompare(b.date));
   const range = wk.from === wk.to ? md(wk.from) : `${md(wk.from)}–${md(wk.to)}`;
   // Three guides a week, rotating through the newest first, so every email has something new to read.
-  const wkNo = Math.floor(Date.parse(today + 'T00:00:00Z') / (7 * 864e5)), pool = [...GUIDES].reverse();
-  const reads = [0, 1, 2].map(i => pool[(wkNo * 3 + i) % pool.length]);
+  // Most read this week: the three articles with the most distinct readers in the last 7 days.
+  // Early on (or in a slow week) the empty slots go to the newest articles instead.
+  const bySlug = new Map(GUIDES.map(g => [g.slug, g]));
+  const mostRead = topArticles(db, { days: 7, limit: 20, todayStr: today }).filter(r => bySlug.has(r.slug)).slice(0, 3).map(r => ({ g: bySlug.get(r.slug), readers: r.readers }));
+  for (const g of [...GUIDES.filter(g => g.date).sort((a, b) => b.date.localeCompare(a.date)), ...GUIDES.filter(g => !g.date)]) {
+    if (mostRead.length >= 3) break;
+    if (!mostRead.some(r => r.g.slug === g.slug)) mostRead.push({ g, readers: 0 });
+  }
+  const readersNote = n => n >= 10 ? ` · ${n.toLocaleString('en-US')} readers` : '';
+  const wkNo = Math.floor(Date.parse(today + 'T00:00:00Z') / (7 * 864e5)), pool = [...GUIDES].reverse().filter(g => !mostRead.some(r => r.g.slug === g.slug));
+  const reads = pool.length ? [...new Set([0, 1, 2].map(i => pool[(wkNo * 3 + i) % pool.length]))] : [];
   const top = big[0];
 
   const subject = weekend.length
@@ -64,8 +73,9 @@ export function buildNewsletter(db, cfg) {
     calendar.length ? H('📅 Mark your calendar') + `<ul style="padding-left:20px;margin:0 0 8px">${calendar.map(item).join('')}</ul>` : '',
     popular.length ? H('🔥 Players are going to these') + `<ul style="padding-left:20px;margin:0 0 8px">${popular.map(({ t, n }) => item(t).replace('</span></li>', ` · <b>${n} going</b></span></li>`)).join('')}</ul>` : '',
     fresh.length ? H('🆕 New this week') + `<ul style="padding-left:20px;margin:0 0 8px">${fresh.map(item).join('')}</ul>` + P(A(link('/new/', 'new'), 'See everything added this week →')) : '',
-    H('📖 Worth a read'),
-    `<ul style="padding-left:20px;margin:0 0 8px">${reads.map(g => `<li style="margin:0 0 8px;font:16px/1.45 Arial,Helvetica,sans-serif">${A(link('/guides/' + g.slug, 'read'), g.title)}</li>`).join('')}</ul>`,
+    mostRead.length ? H('🔥 Most read this week') + `<ul style="padding-left:20px;margin:0 0 8px">${mostRead.map(({ g, readers }) => `<li style="margin:0 0 10px;font:16px/1.45 Arial,Helvetica,sans-serif;color:#222">${A(link('/guides/' + g.slug, 'popular'), g.title)}${g.desc ? `<br><span style="color:#555">${esc(g.desc)}${readersNote(readers)}</span>` : ''}</li>`).join('')}</ul>` : '',
+    reads.length ? H('📖 Worth a read') : '',
+    reads.length ? `<ul style="padding-left:20px;margin:0 0 8px">${reads.map(g => `<li style="margin:0 0 8px;font:16px/1.45 Arial,Helvetica,sans-serif">${A(link('/guides/' + g.slug, 'read'), g.title)}</li>`).join('')}</ul>` : '',
     H('🎯 Running a tournament?'),
     P(`Post it free and it can show up in next week's email. It gets its own page and a share graphic for Facebook. ${A(link('/post', 'post'), 'Post a tournament →')}`),
     P(`🎁 Shopping for a pool player? ${A(link('/gear/gifts-for-pool-players', 'gifts'), 'Gift ideas they will actually use →')}`),
@@ -90,7 +100,8 @@ ${body}
     ...(states.length ? ['BUSIEST STATES: ' + states.map(([s, n]) => `${STATE_NAMES[s] || s} (${n})`).join(', '), ''] : []),
     ...(calendar.length ? ['MARK YOUR CALENDAR', ...calendar.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}${price(t) ? ' (' + price(t) + ')' : ''}`), ''] : []),
     ...(fresh.length ? ['NEW THIS WEEK', ...fresh.map(t => `- ${md(t.date)}: ${t.name}, ${t.venue.city}, ${t.venue.state}`), `All new listings: ${link('/new/', 'new')}`, ''] : []),
-    'WORTH A READ', ...reads.map(g => `- ${g.title}: ${link('/guides/' + g.slug, 'read')}`), '',
+    ...(mostRead.length ? ['MOST READ THIS WEEK', ...mostRead.map(({ g }) => `- ${g.title}: ${link('/guides/' + g.slug, 'popular')}`), ''] : []),
+    ...(reads.length ? ['WORTH A READ', ...reads.map(g => `- ${g.title}: ${link('/guides/' + g.slug, 'read')}`), ''] : []),
     `Running a tournament? Post it free: ${link('/post', 'post')}`, '',
     `Own a pool business? Advertise with us: ${link('/advertise', 'advertise')}`, '',
     `Shopping for a pool player? Gift ideas: ${link('/gear/gifts-for-pool-players', 'gifts')}`, '',
