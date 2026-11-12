@@ -2,6 +2,7 @@
 // Plain server-rendered HTML so search engines and ad reviewers read the full text.
 import { layout, shareStrip } from './seo.js';
 import { MORE_GUIDES } from './guides-more.js';
+import { DAILY_ARTICLES } from './daily-articles.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const EMAIL = 'billiardactiontime@gmail.com';
@@ -350,10 +351,14 @@ const BASE_GUIDES = [
   }
 ];
 
-export const GUIDES = [...BASE_GUIDES, ...MORE_GUIDES];
+const FIXED = [...BASE_GUIDES, ...MORE_GUIDES];
+const FIXED_SLUGS = new Set(FIXED.map(g => g.slug));
+const DAILY = DAILY_ARTICLES.filter(a => !FIXED_SLUGS.has(a.slug));
+export const GUIDES = [...DAILY, ...FIXED];
 
 // Section each guide is filed under on /guides/ and shown as a tag on the page.
 export const GUIDE_CATS = [
+  { key: 'news', name: 'Pool news & stories' },
   { key: 'rules', name: 'Game rules' },
   { key: 'players', name: 'For players' },
   { key: 'directors', name: 'For tournament directors' }
@@ -364,8 +369,11 @@ const CAT_OF = {
   'pool-terms-glossary': 'players', 'major-pool-events-calendar': 'players', 'fargo-rating-chart': 'players', 'how-to-aim-in-pool': 'players', 'pool-basics-for-beginners': 'players', 'pool-cue-care': 'players', 'pool-tips': 'players', 'pool-leagues-explained': 'players', 'how-to-read-a-tournament-flyer': 'players', 'bar-pool-etiquette': 'players', 'money-game-spots': 'players', 'english-in-pool': 'players', 'safety-play-in-pool': 'players', '8-ball-patterns': 'players', '9-ball-strategy': 'players', 'pool-tournament-nerves': 'players', 'pool-practice-drills': 'players', 'how-to-choose-a-pool-cue': 'players', 'how-to-break-in-pool': 'players', 'how-to-draw-the-cue-ball': 'players', 'how-to-kick-in-pool': 'players', 'pool-vs-billiards-vs-snooker': 'players', 'pool-rules-questions': 'rules', 'how-to-hold-a-pool-cue': 'players', 'pool-cue-tips': 'players', 'how-to-bank-in-pool': 'players', 'pool-ball-colors-and-numbers': 'players', 'pool-games-to-play': 'rules', 'best-pool-movies': 'players', 'how-to-clean-a-pool-table': 'players', 'how-to-level-a-pool-table': 'players', 'history-of-pool': 'players', 'pool-cue-weight': 'players', 'pool-hustlers': 'players', 'pool-glove': 'players', 'pool-table-cloth': 'players', '30-day-pool-training-plan': 'players', 'how-to-improve-your-pool-stroke': 'players', 'pool-position-play': 'players', 'how-to-practice-pool-alone': 'players', 'pool-pre-shot-routine': 'players', 'common-pool-mistakes': 'players', 'pool-training-aids': 'players', 'bar-table-pool-tips': 'players', 'how-to-teach-someone-pool': 'players', 'dominant-eye-in-pool': 'players', 'pool-stance-posture-stretches': 'players', 'how-to-film-your-pool-stroke': 'players', 'reyes-cup-2026-results': 'players', 'shane-van-boening': 'players', 'us-open-pool-championship-2026-results': 'players', 'mosconi-cup-2026-preview': 'players', 'how-to-watch-pro-pool': 'players', 'apa-skill-levels-explained': 'players', 'stop-shot-and-stun-shot': 'players', 'how-to-stop-scratching': 'players', 'combination-shots': 'players', 'thin-cut-shots': 'players', 'how-to-chalk-a-cue': 'players', 'carbon-fiber-vs-maple-shaft': 'players', 'pool-bridge-types': 'players', '9-ball-vs-10-ball': 'players',
   'how-to-run-a-pool-tournament': 'directors', 'double-elimination-brackets': 'directors', 'pool-tournament-payouts': 'directors', 'calcutta-auction-explained': 'directors', 'chip-tournaments': 'directors', 'tournament-formats': 'directors', 'start-a-weekly-pool-tournament': 'directors'
 };
-export const guideCat = slug => CAT_OF[slug] || 'players';
-const catName = key => (GUIDE_CATS.find(c => c.key === key) || GUIDE_CATS[1]).name;
+const DAILY_CAT = Object.fromEntries(DAILY.map(a => [a.slug, a.cat]));
+export const guideCat = slug => DAILY_CAT[slug] || CAT_OF[slug] || 'players';
+const catName = key => (GUIDE_CATS.find(c => c.key === key) || GUIDE_CATS.find(c => c.key === 'players')).name;
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const niceDate = d => { const [y, m, day] = d.split('-').map(Number); return `${MONTHS[m - 1]} ${day}, ${y}`; };
 const slugify = s => String(s).toLowerCase().replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const readMinutes = html => Math.max(2, Math.round(String(html).replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length / 220));
 
@@ -399,6 +407,7 @@ export function guidesIndexPage(cfg) {
     <li><a href="/guides/pool-practice-drills">7 practice drills</a> and <a href="/guides/english-in-pool">English explained</a></li>
     <li><a href="/guides/first-pool-tournament">Your first tournament</a>, then <a href="/this-weekend/">find one this weekend</a></li>
   </ol></section>
+  ${DAILY.length ? `<section class="card" style="padding:16px 18px;margin:0 0 22px"><h2 style="margin:0 0 10px;font-size:24px">Latest articles</h2><ul class="seo-list" style="list-style:none;padding:0;display:grid;gap:14px">${DAILY.slice(0, 6).map(g => `<li><a href="/guides/${g.slug}"><b>${esc(g.title)}</b></a> <small class="muted">${niceDate(g.date)}</small><br><span class="muted">${esc(g.desc)}</span></li>`).join('')}</ul></section>` : ''}
   <div class="guide-cats">${sections}</div>`;
   return layout(cfg, { title: 'Pool Tournament Guides: Rules, Brackets, Payouts & More | Billiard Action Time', description: 'Free guides for pool players and tournament directors: 8-Ball, 9-Ball and 10-Ball rules, double-elimination brackets, payout charts, Fargo handicaps, practice drills and a pool glossary.', path: '/guides/', body,
     jsonld: [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Pool Tournament Guides', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: `${cfg.publicUrl}/guides/${g.slug}`, name: g.title })) }] });
@@ -415,11 +424,11 @@ export function guidePage(cfg, slug, extraHtml = '') {
   const tocHtml = toc.length >= 3 ? `<nav class="guide-toc" aria-label="On this page"><b>On this page</b><ol>${toc.map(t => `<li><a href="#${t.id}">${esc(t.text)}</a></li>`).join('')}</ol></nav>` : '';
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/guides/">Guides</a> <span>/</span> <span>${esc(g.title)}</span></nav>
   <article class="card guide"><h1>${esc(g.title)}</h1>
-  <p class="guide-meta"><a class="guide-tag" href="/guides/#${cat}" style="text-decoration:none">${catName(cat)}</a><span>${readMinutes(g.body)} min read</span><span>Updated October 2026</span><span>By Billiard Action Time</span></p>
+  <p class="guide-meta"><a class="guide-tag" href="/guides/#${cat}" style="text-decoration:none">${catName(cat)}</a><span>${readMinutes(g.body)} min read</span><span>${g.date ? niceDate(g.date) : 'Updated October 2026'}</span><span>By Billiard Action Time</span></p>
   ${tocHtml}${content}${shareStrip(cfg, `/guides/${g.slug}`, g.title, g.title + ' (free guide)')}${cat === 'rules' ? '<p class="tip" style="margin-top:18px"><b>Test yourself:</b> take the 12-question <a href="/tools/pool-rules-quiz">pool rules quiz</a> and share your score with your league. Settling an argument? See the <a href="/guides/pool-rules-questions">pool rules Q&amp;A</a>.</p>' : ''}</article>
   ${extraHtml}
   <section class="sec seo-sec"><h2>Keep reading</h2><div class="guide-next">${next.map(x => `<a href="/guides/${x.slug}"><small>${catName(guideCat(x.slug))}</small><b>${esc(x.title)}</b></a>`).join('')}</div><p style="margin-top:12px"><a href="/guides/">All ${GUIDES.length} guides →</a> · <a href="/tools/">Free tools →</a></p></section>`;
-  const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, url: `${cfg.publicUrl}/guides/${g.slug}`, articleSection: catName(cat), dateModified: '2026-10-15',
+  const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, url: `${cfg.publicUrl}/guides/${g.slug}`, articleSection: catName(cat), dateModified: g.date || '2026-10-15', ...(g.date ? { datePublished: g.date } : {}),
     publisher: { '@type': 'Organization', name: 'Billiard Action Time', logo: { '@type': 'ImageObject', url: cfg.publicUrl + '/icons/icon-512.png' } }, author: { '@type': 'Organization', name: 'Billiard Action Time' } };
   const bc = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: cfg.publicUrl + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: cfg.publicUrl + '/guides/' }, { '@type': 'ListItem', position: 3, name: g.title, item: `${cfg.publicUrl}/guides/${g.slug}` }] };
