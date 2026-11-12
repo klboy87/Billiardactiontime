@@ -33,6 +33,8 @@ import { sponsorBannerHtml } from './sponsor.js';
 import { appPageFor, fillShell } from './apppages.js';
 import { buildNewsletter } from './newsletter.js';
 import * as GU from './guides.js';
+import * as BL from './blog.js';
+import { activityPayload } from './activity.js';
 import * as TL from './tools.js';
 import * as BR from './brackets.js';
 import * as TS from './trickshots.js';
@@ -547,6 +549,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         const ok = S.setStakeStatus(db, Number(x[1]), x[2] === 'approve' ? 'open' : 'rejected');
         return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Match not found' });
       }
+      if (m === 'GET' && p === '/api/admin/activity') return json(req, res, 200, activityPayload(), { 'Cache-Control': 'no-store' });
       if (m === 'GET' && p === '/api/admin/summary') return json(req, res, 200, D.summary(db));
       if (m === 'GET' && p === '/api/admin/promotions') return json(req, res, 200, { promotions: D.listPromotions(db) }, { 'Cache-Control': 'no-store' });
       if (m === 'POST' && p === '/api/admin/promotions') {
@@ -792,13 +795,21 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
+      return [{ path: '/blog/', pri: '0.8' }, ...BL.POSTS.map(b => ({ path: `/blog/${b.slug}`, lastmod: b.date, pri: '0.7' })), { path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
         { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
     if (m === 'GET' && p === '/ads.txt' && !fs.existsSync(path.join(PUBLIC_DIR, 'ads.txt'))) {  // public/ads.txt wins when present
       const txt = SEO.adsTxt(cfg);
       return txt ? send(req, res, 200, txt, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' }) : json(req, res, 404, { error: 'Not found' });
+    }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/blog' || p === '/blog/')) { if (p === '/blog') return moved('/blog/'); SEO.ensureFooter(db); trackVisit(req, 'guides'); return html(200, BL.blogIndexPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/blog\/([a-z0-9-]{2,80})\/?$/))) {
+      SEO.ensureFooter(db);
+      const out = BL.blogPostPage(cfg, x[1]);
+      if (!out) return notFoundPage();
+      trackVisit(req, 'guides');
+      return html(200, out);
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/guides' || p === '/guides/')) { if (p === '/guides') return moved('/guides/'); SEO.ensureFooter(db); trackVisit(req, 'guides'); return html(200, GU.guidesIndexPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/guides\/([a-z0-9-]{2,80})\/?$/))) {

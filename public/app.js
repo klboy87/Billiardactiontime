@@ -948,7 +948,31 @@
     });
   }
 
-  routes['/admin'] = async () => {
+  // Admin: automation activity log (server enforces admin; see /api/admin/activity)
+  async function adminActivity() {
+    let robots = document.querySelector('meta[name="robots"]');
+    if (!robots) { robots = document.createElement('meta'); robots.name = 'robots'; document.head.appendChild(robots); }
+    robots.content = 'noindex,nofollow';
+    if (!adminToken()) { location.hash = '#/admin'; return; }
+    app.innerHTML = '<div class="loadwrap"><p class="muted">Loading activity…</p></div>';
+    let d;
+    try { d = await api('/api/admin/activity'); }
+    catch { localStorage.removeItem('bat_admin_token'); location.hash = '#/admin'; return; }
+    const tm = iso => new Date(iso).toLocaleTimeString('en-US', { timeZone: 'America/Detroit', hour: 'numeric', minute: '2-digit' });
+    const dayName = day => { const [y, m, dd] = day.split('-').map(Number); return new Date(Date.UTC(y, m - 1, dd, 12)).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }); };
+    const links = e => e.links.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">link ${i + 1}</a>`).join(' · ');
+    const entry = e => `<li style="margin:0 0 10px"><small class="muted">${esc(tm(e.time))} · ${esc(e.type.replace('_', ' '))}${e.routine ? ' · ' + esc(e.routine) : ''}${e.status === 'failed' ? ' · <b style="color:#b00020">FAILED</b>' : ''}</small><br>${esc(e.summary)}${e.links.length ? '<br>' + links(e) : ''}</li>`;
+    const box = (title, list, empty) => `<section class="card" style="padding:14px 18px;margin:0 0 16px"><h2 style="margin:0 0 8px;font-size:20px">${title}</h2>${list.length ? `<ul style="list-style:none;padding:0;margin:0">${list.map(e => `<li style="margin:0 0 10px"><small class="muted">${esc(dayName(e.day))} ${esc(tm(e.time))}</small><br>${esc(e.summary)}${e.links.length ? '<br>' + links(e) : ''}</li>`).join('')}</ul>` : `<p class="muted" style="margin:0">${empty}</p>`}</section>`;
+    app.innerHTML = `
+      <div class="pagehead"><h1>Automation Activity</h1><a class="btn btn-out btn-sm" href="#/admin">← Admin</a></div>
+      ${box('💡 Suggestions for you', d.suggestions, 'No suggestions yet.')}
+      ${box('⚠️ Problems', d.problems, 'No recent problems.')}
+      ${d.days.length ? d.days.map(day => `<section class="card" style="padding:14px 18px;margin:0 0 16px"><h2 style="margin:0;font-size:20px">${esc(dayName(day.day))}</h2><p class="muted" style="margin:4px 0 12px">${esc(day.summary)}</p><ul style="list-style:none;padding:0;margin:0">${day.entries.map(entry).join('')}</ul></section>`).join('') : '<p class="muted">No activity logged yet.</p>'}
+      <p class="muted"><small>Times shown in Detroit time. ${d.total} entries total.</small></p>`;
+  }
+
+  routes['/admin'] = async (params, sub) => {
+    if (sub === 'activity') return adminActivity();
     if (!adminToken()) {
       app.innerHTML = `
         <div class="pagehead"><h1>Admin Login</h1></div>
@@ -1004,7 +1028,7 @@
       <table class="t"><tbody>${barRows(tr.daily.slice().reverse().map(d => ({ ...d, label: dayLabel(d.day) })), 'label', 'visitors')}</tbody></table>`;
     app.innerHTML = `
       <div class="pagehead"><h1>Admin Dashboard</h1>
-        <button class="btn btn-out btn-sm" id="logoutBtn">Log Out</button></div>
+        <span><a class="btn btn-out btn-sm" href="#/admin/activity">Automation Activity</a> <button class="btn btn-out btn-sm" id="logoutBtn">Log Out</button></span></div>
       <h2 style="margin-top:0">Site Visitors</h2>
       <div class="stats">
         <div class="stat"><strong>${pv.daily}</strong><span>Today</span></div>
