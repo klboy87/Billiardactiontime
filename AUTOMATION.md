@@ -42,3 +42,8 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Quick check: `node --check src/blog.js src/activity.js src/app.js`.
 
 ## Learnings
+- (Review 2026-11-13) Windsor.ai and Railway connectors failed to connect this run, so no reach/engagement data yet. These rules are provisional, based on posting history, not metrics.
+- Aim for 2 blog articles/day; only 1 existed after the first day. Pick topics not yet covered; Mosconi Cup (Nov 27-30, Orlando) is already heavily covered in posts, so favour evergreen explainers and tournament-result recaps.
+- Social posts so far: tip, poll, site spotlight, countdown, fun fact, rules article. Keep rotating formats; avoid 3 Mosconi-only posts in a row.
+- Always confirm the image URL returns 200 on the live site before posting to Facebook/Instagram.
+- Next review: fetch Windsor data first and replace these provisional bullets with measured best post types/times.
