@@ -1,6 +1,6 @@
 {
- "lastUpdated": "Nov 15, 2026, 8:10 AM ET",
- "checkedAt": "2026-11-15T14:32:14Z",
+ "lastUpdated": "Nov 15, 2026, 9:20 AM ET",
+ "checkedAt": "2026-11-15T19:16:52Z",
  "items": [
   {
    "title": "Clean past events out of the sitemap",
@@ -12,7 +12,7 @@
   },
   {
    "title": "Free traffic analytics + UTM links",
-   "status": "done"
+   "status": "done (tagged-link list in admin updated to Grok's exact links, Nov 15 PM)"
   },
   {
    "title": "/gear: real product cards + Black Friday block",
@@ -20,6 +20,10 @@
   },
   {
    "title": "Make the RSS feed findable",
+   "status": "done"
+  },
+  {
+   "title": "Short redirect links for social bios (/tt /ig /yt /fb)",
    "status": "done"
   }
  ]
