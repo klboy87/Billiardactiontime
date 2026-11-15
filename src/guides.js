@@ -468,7 +468,7 @@ export function contactPage(cfg) {
   <li><b>Post a tournament:</b> <a href="/post">list it free here</a>, or snap a flyer with the <a href="/scan">flyer scanner</a>.</li>
   <li><b>Fix a listing:</b> open the tournament and tap "Report a problem," or email us the link and the correction.</li>
   <li><b>Run a pool room or a tour?</b> Email us your schedule and we can add your weekly events automatically.</li>
-  <li><b>Advertising and sponsorship:</b> email us to sponsor the site or the weekly email.</li>
+  <li><b>Advertising and sponsorship:</b> email us to sponsor the site.</li>
   <li><b>Get tournament emails:</b> <a href="/alerts">sign up for alerts</a>.</li>
   </ul>
   <p class="muted">To be removed from our email list, reply "unsubscribe" to any email. See our <a href="/privacy">Privacy Policy</a>.</p>

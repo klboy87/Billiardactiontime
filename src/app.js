@@ -224,6 +224,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     const url = new URL(req.url, 'http://x');
     const p = url.pathname, m = req.method;
     let x;
+    // www.billiardactiontime.com -> billiardactiontime.com (one address for visitors and search engines).
+    if (/^www\./i.test(req.headers.host || '') && /^https:\/\/(?!www\.)/.test(cfg.publicUrl)) { res.writeHead(301, { Location: cfg.publicUrl + req.url, 'Cache-Control': 'public, max-age=86400', 'Strict-Transport-Security': 'max-age=31536000' }); return res.end(); }
 
     if (m === 'GET' && p === '/api/health') return json(req, res, 200, { ok: true });
 
