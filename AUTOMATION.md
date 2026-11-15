@@ -45,8 +45,17 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Quick check: `node --check src/blog.js src/activity.js src/app.js`.
 
 ## Learnings
-- (Review 2026-11-13) Windsor.ai and Railway connectors failed to connect this run, so no reach/engagement data yet. These rules are provisional, based on posting history, not metrics.
-- Aim for 2 blog articles/day; only 1 existed after the first day. Pick topics not yet covered; Mosconi Cup (Nov 27-30, Orlando) is already heavily covered in posts, so favour evergreen explainers and tournament-result recaps.
-- Social posts so far: tip, poll, site spotlight, countdown, fun fact, rules article. Keep rotating formats; avoid 3 Mosconi-only posts in a row.
+(Review 2026-11-15, from Facebook Windsor data, Nov 12-14. Reach is tiny overall: median ~5 people per post on Billiard Action Time, ~1 on Billiardaction.)
+- Best reach by far: non-link media/shared posts ("How to rack 8 ball pool" 251 reach, a Chris Melling clip 71). Photos/video beat text-only posts about 10x; add an image to every post when possible.
+- Best text post: the "15 DAYS TO THE MOSCONI CUP" countdown (313 reach on Billiardaction, 4 clicks, the only post with a click-through there) and the "Bar box or 9-foot?" debate (123 reach, 2 clicks).
+- Debate/versus questions ("Bar box or 9-foot?", "Soft or POWER break?") out-reach tips and fun facts (3-9 reach). Use "A or B" hooks.
+- Link clicks so far came from: tournament-finder CTAs, the 8/9/10-ball poll, soft-vs-power break and the countdown. Put one clear link in each post.
+- Worst: pool tips, fun facts, "Tonight/This Weekend" plugs and blog-article promos (0-9 reach, 0 comments). Cut tips and fun facts to at most 1/day.
+- Billiardaction page (849318714932168) gets ~0-1 reach on nearly everything. Do not duplicate text there; post unique content or lower its frequency to 2-3/day.
+- Zero comments and almost zero reactions on all posts: questions at the end are not enough. Ask for a one-word answer ("USA or EUROPE?") and reply to every comment.
+- Posting ~7 posts/day per Page is below the 9 target but more volume is not the problem; quality and media are. Prefer fewer, better posts with images.
+- Best times seen: 17:00-18:00 UTC and 21:00-22:00 UTC; weak: 00:00-04:00 UTC overnight posts.
+- Mosconi Cup content works best as countdown/pick-a-side; run it daily until Nov 30, with the hub page /mosconi-cup as the link. Do not post the same Mosconi stat three times a day.
+- Aim for 2 blog articles/day (6 exist over 3 days). Favour evergreen guides; check the live URL returns 200 before posting.
 - Always confirm the image URL returns 200 on the live site before posting to Facebook/Instagram.
-- Next review: fetch Windsor data first and replace these provisional bullets with measured best post types/times.
+- Owner can post real tournament photos or clips; this is the biggest reach lever (see suggestions).
