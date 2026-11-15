@@ -36,7 +36,7 @@
       btn.disabled = true;
       fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })
         .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Something went wrong'); }); })
-        .then(function () { f.hidden = true; if (msg) msg.textContent = "✓ You're in! Watch for the weekend email."; try { localStorage.setItem('bat_subscribed', '1'); } catch (e) {} })
+        .then(function () { f.hidden = true; if (msg) msg.textContent = "✓ You're in! Watch for the daily email."; try { localStorage.setItem('bat_subscribed', '1'); } catch (e) {} })
         .catch(function (err) { if (msg) msg.textContent = '⚠ ' + err.message; btn.disabled = false; });
     });
   });

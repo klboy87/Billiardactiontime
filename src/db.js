@@ -443,8 +443,14 @@ export function visitBreakdown(db, { days = 30, dailyDays = 14, todayStr = today
   const daily = [];
   for (let i = dailyDays - 1; i >= 0; i--) { const d = daysAgo(i); daily.push({ day: d, visitors: byDay.get(d) || 0 }); }
   const visitors = db.prepare(`SELECT COUNT(*) n FROM (SELECT DISTINCT day, visitor FROM visits WHERE day >= ?)`).get(since).n;
+  // New email signups per day (UTC dates, as stored) and the current list size.
+  const subRows = db.prepare(`SELECT substr(created_at, 1, 10) day, COUNT(*) n FROM subscribers WHERE created_at >= ? GROUP BY day`).all(dailySince);
+  const subByDay = new Map(subRows.map(r => [r.day, Number(r.n)]));
+  const signups = [];
+  for (let i = dailyDays - 1; i >= 0; i--) { const d = daysAgo(i); signups.push({ day: d, signups: subByDay.get(d) || 0 }); }
+  const subscribers = Number(db.prepare('SELECT COUNT(*) n FROM subscribers').get().n);
   return {
-    days, visitors: Number(visitors),
+    days, visitors: Number(visitors), signups, subscribers,
     sources: sources.map(r => ({ source: r.source, visitors: Number(r.visitors) })),
     pages: pages.map(r => ({ page: r.page, views: Number(r.views) })),
     daily

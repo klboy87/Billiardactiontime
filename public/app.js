@@ -203,7 +203,7 @@
           </form>
           <p class="eg">Example: 9-Ball Battle Creek</p>
           <div class="totalstat" id="totalStat"><span class="ic">🎱</span> <span id="totalStatText">Loading tournament count…</span></div>
-          <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><a class="btn btn-gold" href="/tonight/" id="tonightBtn">🌙 Tournaments Tonight</a><a class="btn btn-gold" href="/this-weekend/">🔥 This Weekend →</a></p>
+          <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center">${new Date() < new Date('2026-12-01T08:00:00Z') ? '<a class="btn btn-gold" href="/mosconi-cup-2026">🏆 Mosconi Cup Nov 27–30: Teams &amp; How to Watch</a>' : ''}<a class="btn btn-gold" href="/tonight/" id="tonightBtn">🌙 Tournaments Tonight</a><a class="btn btn-gold" href="/this-weekend/">🔥 This Weekend →</a></p>
         </div>
       </section>
       <section class="subtop home-sub" id="homeSub"><div class="subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get a daily pool tip and the best tournaments near you by email. Free, unsubscribe any time.</span></p>
@@ -1025,7 +1025,12 @@
       ${tr.pages.length ? `<table class="t"><thead><tr><th>Page</th><th></th><th style="text-align:right">Views</th></tr></thead><tbody>${barRows(tr.pages, 'label', 'views')}</tbody></table>`
         : '<p class="muted">No page views recorded yet.</p>'}
       <h2>Visitors Per Day <span class="muted" style="font-size:.7em;font-weight:400">last ${tr.daily.length} days</span></h2>
-      <table class="t"><tbody>${barRows(tr.daily.slice().reverse().map(d => ({ ...d, label: dayLabel(d.day) })), 'label', 'visitors')}</tbody></table>`;
+      <table class="t"><tbody>${barRows(tr.daily.slice().reverse().map(d => ({ ...d, label: dayLabel(d.day) })), 'label', 'visitors')}</tbody></table>
+      ${tr.signups ? `<h2>Email Signups Per Day <span class="muted" style="font-size:.7em;font-weight:400">last ${tr.signups.length} days · ${tr.subscribers} on the list</span></h2>
+      <table class="t"><tbody>${barRows(tr.signups.slice().reverse().map(d => ({ ...d, label: dayLabel(d.day) })), 'label', 'signups')}</tbody></table>` : ''}
+      <h2>Tagged Links for Social Posts</h2>
+      <p class="muted" style="font-size:.85em">Use these when you post a link, so the visits show up under the right source above (add the tag to any page, e.g. <code>/tonight/?utm_source=facebook&amp;utm_medium=social</code>).</p>
+      <table class="t"><tbody>${['facebook', 'instagram', 'tiktok', 'youtube', 'newsletter'].map(src => { const u = `https://billiardactiontime.com/?utm_source=${src}&utm_medium=${src === 'newsletter' ? 'email' : 'social'}`; return `<tr><td>${esc(src[0].toUpperCase() + src.slice(1))}</td><td><code style="word-break:break-all">${esc(u)}</code></td></tr>`; }).join('')}</tbody></table>`;
     app.innerHTML = `
       <div class="pagehead"><h1>Admin Dashboard</h1>
         <span><a class="btn btn-out btn-sm" href="#/admin/activity">Automation Activity</a> <button class="btn btn-out btn-sm" id="logoutBtn">Log Out</button></span></div>

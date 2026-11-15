@@ -192,6 +192,8 @@ const ALERT_CTA = `<section class="card seo-cta" style="margin:28px 0 8px;paddin
   <p class="sub-msg muted" aria-live="polite" style="margin:8px 0 0;min-height:1.2em"></p>
   <p class="muted" style="margin:4px 0 0;font-size:14px">Want alerts for your area only? <a href="/alerts">Set up tournament alerts</a> · <a href="/this-weekend/">This weekend's tournaments</a></p>
 </section>`;
+// Mosconi Cup 2026 hub link in the nav until the event ends (see mosconi.js).
+const promoNav = cls => D.todayIso() < '2026-12-01' ? `<a${cls ? ` class="${cls}"` : ''} href="/mosconi-cup-2026">🏆 Mosconi Cup</a>` : '';
 export function layout(cfg, { title, description, path, body, jsonld = [], noindex = false, ogImage, scripts = [] }) {
   const url = cfg.publicUrl + path;
   const ld = jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('');
@@ -206,10 +208,10 @@ ${FONT_LINKS}<link rel="stylesheet" href="/styles.css"><link rel="alternate" typ
 <body><a class="skip-link" href="#main">Skip to content</a><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <details class="mnav"><summary aria-label="Menu">☰</summary><div class="mnav-panel">
 <form action="/search" method="get" role="search" class="mnav-search"><input type="search" name="q" placeholder="Search city, room, game…" aria-label="Search tournaments"><button type="submit">Search</button></form>
-<a href="/tonight/">🌙 Tonight</a><a href="/this-weekend/">🔥 This Weekend</a><a href="/near">📍 Near Me</a><a href="/tournaments/">🗺️ By State</a><a href="/pool-halls/">🏠 Pool Halls</a><a href="/big-tournaments/">🏆 Big Events</a><a href="/new/">🆕 Just Added</a><a href="/calendar">📅 Calendar</a>
+${promoNav()}<a href="/tonight/">🌙 Tonight</a><a href="/this-weekend/">🔥 This Weekend</a><a href="/near">📍 Near Me</a><a href="/tournaments/">🗺️ By State</a><a href="/pool-halls/">🏠 Pool Halls</a><a href="/big-tournaments/">🏆 Big Events</a><a href="/new/">🆕 Just Added</a><a href="/calendar">📅 Calendar</a>
 <a href="/guides/">📖 Guides</a><a href="/blog/">📰 Blog</a><a href="/trick-shots/">✨ Trick Shots</a><a href="/play/">🎮 Games</a><a href="/gear/">🛒 Pool Gear</a>${cfg.merchUrl ? `<a href="${esc(cfg.merchUrl)}" target="_blank" rel="noopener">👕 Merch</a>` : ''}<a href="/tools/">🧰 Tools</a><a href="/money-matches/">💰 Money Matches</a><a href="/alerts">🔔 Alerts</a><a href="/directors/">🎯 For Directors</a><a class="mnav-cta" href="/post">➕ Post a Tournament</a>
 ${socialLinksHtml('social-links mnav-social')}</div></details>
-<nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/blog/">Blog</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
+<nav class="nav seo-nav">${promoNav()}<a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/blog/">Blog</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
 <section class="subtop" data-sub-top aria-label="Email signup"><div class="wrap subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get a daily pool tip and the best tournaments near you by email. Free.</span></p>
 <form class="sub-form subtop-form" data-sub action="/alerts" method="get"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"><button class="btn btn-green btn-sm" type="submit">Sign up</button></form><p class="sub-msg" aria-live="polite"></p></div></section>
@@ -238,7 +240,7 @@ function buildFooter(db) {
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
     <div><h4>Learn &amp; Play</h4><a href="/gear/">Pool gear guide</a><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/pool-halls/">Pool halls</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a><a href="/directors/">For directors</a></div>
-  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/gear/">Pool Gear</a> · <a href="/link-to-us">Link to Us</a> · <a href="/advertise">Advertise</a> · <a href="/contact">Contact</a> · <a href="/terms">Terms</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/gear/">Pool Gear</a> · <a href="/link-to-us">Link to Us</a> · <a href="/advertise">Advertise</a> · <a href="/contact">Contact</a> · <a href="/terms">Terms</a> · <a href="/privacy">Privacy Policy</a> · <a href="/feed.xml">RSS</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.
@@ -363,7 +365,7 @@ export function tournamentPage(db, cfg, t) {
     ${(() => {
       const series = seriesOf(db, t), nextUp = series.filter(x => x.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
       const weekly = series.length >= 1 ? `<span class="chip" style="margin:0 0 8px;display:inline-block">🔁 Runs every ${WEEKDAYS[(new Date(t.date + 'T00:00:00Z').getUTCDay() + 6) % 7]}</span>` : '';
-      if (ended) return nextUp ? `<div class="seo-ended" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center"><span>This date has passed, but it runs again.</span><a class="btn btn-green" href="${tournamentPath(db, nextUp)}">Next one: ${esc(shortDate(nextUp.date))} →</a></div>${weekly}` : '<p class="seo-ended">This tournament has already been played. See upcoming tournaments below.</p>';
+      if (ended) return nextUp ? `<div class="seo-ended" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center"><span>This date has passed, but it runs again.</span><a class="btn btn-green" href="${tournamentPath(db, nextUp)}">Next one: ${esc(shortDate(nextUp.date))} →</a></div>${weekly}` : `<div class="seo-ended" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center"><span>This event has ended.</span><a class="btn btn-green" href="${facetPath({ state: v.state, city: v.city })}">Upcoming in ${esc(v.city)} →</a><a class="btn btn-out" href="${facetPath({ state: v.state })}">All ${esc(STATE_NAMES[v.state] || v.state)} tournaments</a></div>`;
       return weekly;
     })()}
     <h1 class="dtitle">${esc(t.name)}</h1>
@@ -400,7 +402,7 @@ export function tournamentPage(db, cfg, t) {
     <a class="chip" href="${facetPath({ state: v.state, city: v.city })}">${esc(v.city)} tournaments</a>
     ${g && gameSlug(t.game) ? `<a class="chip" href="${facetPath({ state: v.state, city: v.city, game: t.game })}">${esc(g)} in ${esc(v.city)}</a><a class="chip" href="${facetPath({ game: t.game })}">${esc(g)} tournaments nationwide</a>` : ''}
   </div></section>`;
-  return layout(cfg, { title, description, path, body, jsonld: [eventLd(cfg, db, t), bc.ld], ogImage: `${cfg.publicUrl}/t/${t.id}/og.png`, noindex: isThinListing(t), scripts: ['/going.js'] });
+  return layout(cfg, { title, description, path, body, jsonld: [eventLd(cfg, db, t), bc.ld], ogImage: `${cfg.publicUrl}/t/${t.id}/og.png`, noindex: isThinListing(t) || t.date < new Date(Date.parse(today + 'T00:00:00Z') - 30 * 864e5).toISOString().slice(0, 10), scripts: ['/going.js'] });
 }
 
 function shareBox(cfg, db, t, g) {
@@ -651,7 +653,6 @@ export function venuePage(db, cfg, venueId) {
 // ---- sitemap ----
 export function sitemapXml(db, cfg, extra = []) {
   const ix = index(db), today = todayIso();
-  const cutoff = new Date(Date.now() - 90 * 86_400_000).toISOString().slice(0, 10);
   const up = ix.all.filter(t => t.date >= today);
   const urls = new Map();
   const add = (path, lastmod, pri) => { if (!urls.has(path)) urls.set(path, { lastmod, pri }); };
@@ -664,7 +665,8 @@ export function sitemapXml(db, cfg, extra = []) {
     if (g) { facets.add(JSON.stringify({ game: g })); facets.add(JSON.stringify({ state: s, game: g })); if (c) facets.add(JSON.stringify({ state: s, city: c, game: g })); }
   }
   for (const f of facets) { const o = JSON.parse(f); add(facetPath(o), today, o.city ? '0.6' : o.state ? '0.8' : '0.8'); }
-  for (const t of ix.all) if (t.date >= cutoff && !isThinListing(t)) add(tournamentPath(db, t), (t.updatedAt || today).slice(0, 10), t.date >= today ? '0.7' : '0.3');
+  // Only events that haven't happened yet; past dates stay reachable by link but leave the sitemap.
+  for (const t of up) if (!isThinListing(t)) add(tournamentPath(db, t), (t.updatedAt || today).slice(0, 10), '0.7');
   for (const id of new Set(up.map(t => ix.primaryVenue.get(t.venue.id) ?? t.venue.id))) add(`/venue/${id}`, today, '0.5');
   const wk = weekendRange(today);
   add('/this-weekend/', today, '0.9');
@@ -796,7 +798,7 @@ export function homeIntroHtml(db) {
   const f = buildFooter(db).links;
   return `<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
   <p>Billiard Action Time lists <b>${plural(up.length, 'upcoming pool tournament')}</b> in ${plural(states, 'state')}: weekly 8-Ball and 9-Ball nights, added-money opens, One Pocket and Scotch Doubles events, with dates, pool halls and entry fees. Listings update every day.</p>
-  <div class="actbar"><a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-gold" href="/big-tournaments/">Big Events</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/guides/">Guides</a></div>
+  <div class="actbar">${promoNav('btn btn-gold')}<a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-gold" href="/big-tournaments/">Big Events</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/guides/">Guides</a></div>
   <p class="muted" style="margin-top:12px">Popular: ${f.states.slice(0, 8).map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join(' · ')}</p></section>`;
 }
 

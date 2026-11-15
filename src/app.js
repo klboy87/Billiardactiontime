@@ -22,6 +22,7 @@ function cachedCard(key, make) {
   if (cardCache.size > 120) cardCache.delete(cardCache.keys().next().value);
   return png;
 }
+import { mosconiPage, MOSCONI_PATH } from './mosconi.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
 import * as A from './auctions.js';
@@ -212,7 +213,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   function shellHtml(page) {
     let body = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html'), 'utf8')
       .replace('<!--SPONSOR-->', sponsorBannerHtml()).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg))
-      .replace('<!--FONTS-->', FONT_LINKS).replace('<!--SOCIAL-->', socialLinksHtml());
+      .replace('<!--FONTS-->', FONT_LINKS).replace('<!--SOCIAL-->', socialLinksHtml())
+      .replace('<!--PROMO_NAV-->', D.todayIso() < '2026-12-01' ? '<a href="/mosconi-cup-2026">🏆 Mosconi Cup</a>' : '');
     try { SEO.ensureFooter(db); body = body.replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db)); } catch (e) { log('seo links failed: ' + e.message); }
     let homeIntro = '';
     let homeDesc = '';
@@ -716,6 +718,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return html(200, out, { 'Cache-Control': 'public, max-age=1800' });
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/new' || p === '/new/')) { if (p === '/new') return moved('/new/'); SEO.ensureFooter(db); trackVisit(req, 'new-page'); return html(200, SEO.newTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }
+    if ((m === 'GET' || m === 'HEAD') && (p === MOSCONI_PATH || p === MOSCONI_PATH + '/' || p === '/mosconi-cup' || p === '/mosconi-cup/')) { if (p !== MOSCONI_PATH) return moved(MOSCONI_PATH); SEO.ensureFooter(db); trackVisit(req, 'mosconi'); return html(200, mosconiPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/rss.xml' || p === '/rss' || p === '/feed' || p === '/feed/')) return moved('/feed.xml');
     if ((m === 'GET' || m === 'HEAD') && p === '/feed.xml') return send(req, res, 200, SEO.rssFeed(db, cfg), { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=1800' });
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tonight(?:\/([a-z-]{2,40}))?(\/)?$/))) {
       if (!x[2]) return moved(`/tonight/${x[1] ? x[1] + '/' : ''}`);
@@ -817,7 +821,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/blog/', pri: '0.8' }, ...BL.POSTS.map(b => ({ path: `/blog/${b.slug}`, lastmod: b.date, pri: '0.7' })), { path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' }, { path: '/terms', pri: '0.3' },
+      return [{ path: MOSCONI_PATH, pri: '0.9' }, { path: '/blog/', pri: '0.8' }, ...BL.POSTS.map(b => ({ path: `/blog/${b.slug}`, lastmod: b.date, pri: '0.7' })), { path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' }, { path: '/terms', pri: '0.3' },
         { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });

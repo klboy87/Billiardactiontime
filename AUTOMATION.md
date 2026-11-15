@@ -27,6 +27,9 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Live URL: `https://billiardactiontime.com/blog/<slug>`; index: `https://billiardactiontime.com/blog/` (newest first). Ads are AdSense auto ads added by the shared page layout; nothing to do per article.
 - Separate from this, `content/articles/*.json` are the daily *guide* articles shown under `/guides/` (fields `slug,title,desc,date,cat,body,faq`).
 
+## Mosconi Cup 2026 hub
+- `/mosconi-cup-2026` is built by `src/mosconi.js`. Fill in daily results (Nov 27-30) in `content/mosconi-2026.json`: `{"days":[{"date":"2026-11-27","score":"USA 3 - 2 Europe","summary":"Plain-text recap"}]}`, then push. The nav/home links switch off on Dec 1 by themselves.
+
 ## Activity log
 - File: `automation/activity-log.jsonl` — one JSON object per line, append only:
 ```json

@@ -36,9 +36,21 @@ export function gearBox(cfg, slug) {
   return `<section class="card gear-box" style="padding:14px 18px;margin-top:16px"><h2 class="seo-h2" style="margin-top:0">🛒 Gear for this</h2><ul class="gear-list">${keys.map(k => BY[k]).map(g => `<li><span aria-hidden="true">${g.icon}</span> <a href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">${esc(g.name)}</a>${ebayLink(cfg, g)} <span class="muted">· ${esc(g.why.split('. ')[0])}.</span></li>`).join('')}</ul><p style="margin:6px 0 0"><a href="/gear/">Full pool gear guide →</a> · <a href="/gear/gifts-for-pool-players">🎁 Gift ideas for pool players</a>${['pool-table-sizes', 'cutthroat-pool-rules', '8-ball-rules', 'pool-basics-for-beginners'].includes(slug) ? ' · <a href="/gear/home-pool-table">🏠 Buying a home pool table</a>' : ''}${['how-to-choose-a-pool-cue', 'pool-cue-tips', 'pool-cue-care', 'pool-basics-for-beginners', 'pool-cue-weight'].includes(slug) ? ' · <a href="/gear/pool-cue-prices">💲 What a pool cue costs</a>' : ''}</p>${disclosure(cfg)}</section>`;
 }
 
+// Black Friday falls on day one of the Mosconi Cup (Nov 27, 2026). Shown at the top of /gear/ until Dec 1.
+// No prices: Amazon's rules don't allow hard-coded prices, and deals change by the hour.
+const BF_PICKS = ['case', 'glove', 'chalk', 'balls', 'break'];
+function blackFridayBox(cfg, today = new Date().toISOString().slice(0, 10)) {
+  if (today > '2026-12-01') return '';
+  return `<section class="card" style="padding:16px 20px;margin:0 0 16px;border:2px solid #c9a227"><h2 class="seo-h2" style="margin-top:0">🔥 Black Friday &amp; Mosconi Cup weekend gear deals (Nov 27–Dec 1)</h2>
+  <p class="muted" style="margin:6px 0 10px">Black Friday lands on day one of the <a href="/mosconi-cup-2026">Mosconi Cup</a>. These are the upgrades tournament players use most, and the ones most often on sale this weekend. Prices change fast, so check the current price before you buy.</p>
+  <ul class="gear-list">${BF_PICKS.map(k => BY[k]).map(g => `<li style="margin:8px 0"><span aria-hidden="true">${g.icon}</span> <b>${esc(g.name)}</b> <span class="muted">· ${esc(g.why.split('. ')[0])}.</span> <a class="btn btn-gold btn-sm" href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">Check price on Amazon</a></li>`).join('')}</ul>
+  <p style="margin:8px 0 0">Buying for someone else? See <a href="/gear/gifts-for-pool-players">15 gifts pool players actually use</a>.</p></section>`;
+}
+
 export function gearPage(cfg) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Pool Gear</span></nav>
   <div class="pagehead"><h1>Pool Gear Guide: What You Actually Need</h1><p>The gear worth owning when you start playing tournaments, what each one does, and what to look for. Start with a cue, a case and chalk; add the rest as your game grows.</p></div>
+  ${blackFridayBox(cfg)}
   <div class="gear-grid">${GEAR.map((g, i) => `<article class="card gear-card"><span class="gear-ic" aria-hidden="true">${g.icon}</span><h2>${i + 1}. ${esc(g.name)}</h2><p>${esc(g.why)}</p>
     <p class="gear-cta"><a class="btn btn-gold btn-sm" href="${esc(href(cfg, g.q))}" target="_blank" rel="sponsored nofollow noopener">See prices on Amazon</a>${ebayLink(cfg, g, 'btn btn-out btn-sm')} <a href="${g.guide}">Learn more</a></p></article>`).join('')}</div>
   <section class="sec seo-sec"><h2>Buying guides</h2><div class="guide-next">${BUYING.map(x => `<a href="/gear/${x.slug}"><small>${x.icon} Buying guide</small><b>${esc(x.title)}</b></a>`).join('')}</div></section>
