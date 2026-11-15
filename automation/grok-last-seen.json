@@ -1,0 +1,26 @@
+{
+ "lastUpdated": "Nov 15, 2026, 8:10 AM ET",
+ "checkedAt": "2026-11-15T14:32:14Z",
+ "items": [
+  {
+   "title": "Clean past events out of the sitemap",
+   "status": "done"
+  },
+  {
+   "title": "Mosconi Cup 2026 hub page",
+   "status": "done"
+  },
+  {
+   "title": "Free traffic analytics + UTM links",
+   "status": "done"
+  },
+  {
+   "title": "/gear: real product cards + Black Friday block",
+   "status": "partial: Black Friday block done; specific ASIN product links skipped (needs owner's product picks)"
+  },
+  {
+   "title": "Make the RSS feed findable",
+   "status": "done"
+  }
+ ]
+}
