@@ -153,6 +153,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   const visitorId = (req, day) => sha(clientIp(req) + '|' + day + '|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32);
   let ownHosts = [];
   try { ownHosts = [new URL(cfg.publicUrl).hostname.replace(/^www\./, '')]; } catch {}
+  const SHORT_LINKS = { tt: ['tiktok', 'bio'], ig: ['instagram', 'bio'], yt: ['youtube', 'channel'], fb: ['facebook', 'post'] };
   function trackVisit(req, page, { article } = {}) {
     try {
       if (isBot(req.headers['user-agent'])) return;
@@ -719,6 +720,14 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/new' || p === '/new/')) { if (p === '/new') return moved('/new/'); SEO.ensureFooter(db); trackVisit(req, 'new-page'); return html(200, SEO.newTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }
     if ((m === 'GET' || m === 'HEAD') && (p === MOSCONI_PATH || p === MOSCONI_PATH + '/' || p === '/mosconi-cup' || p === '/mosconi-cup/')) { if (p !== MOSCONI_PATH) return moved(MOSCONI_PATH); SEO.ensureFooter(db); trackVisit(req, 'mosconi'); return html(200, mosconiPage(cfg)); }
+    // Short links for social bios (TikTok bios are plain text, 80 chars). 302 so the targets can change later.
+    // Until Dec 1 they land on the Mosconi Cup hub; the landing page counts the visit with its utm tags.
+    if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/(tt|ig|yt|fb)\/?$/))) {
+      const [src, campaign] = SHORT_LINKS[x[1]];
+      const promo = D.todayIso() < '2026-12-01';
+      res.writeHead(302, { Location: `${promo ? MOSCONI_PATH : '/'}?utm_source=${src}&utm_medium=social&utm_campaign=${promo ? 'mosconi2026' : campaign}`, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+      return res.end();
+    }
     if ((m === 'GET' || m === 'HEAD') && (p === '/rss.xml' || p === '/rss' || p === '/feed' || p === '/feed/')) return moved('/feed.xml');
     if ((m === 'GET' || m === 'HEAD') && p === '/feed.xml') return send(req, res, 200, SEO.rssFeed(db, cfg), { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=1800' });
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tonight(?:\/([a-z-]{2,40}))?(\/)?$/))) {
