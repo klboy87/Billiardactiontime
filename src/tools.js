@@ -157,7 +157,7 @@ export function directorsPage(cfg) {
     <div class="actbar" style="margin-top:12px"><a class="btn btn-green" href="/post">➕ Post a Tournament Free</a><a class="btn btn-out" href="/guides/start-a-weekly-pool-tournament">How to start a weekly tournament</a></div></div>
   <div class="ts-grid">${F.map(([ic, t, d, href, cta]) => `<div class="ts-card" style="gap:6px"><span style="font-size:32px;line-height:1">${ic}</span><b>${t}</b><span class="muted">${d}</span><a href="${href}" style="margin-top:auto;font-weight:700">${cta} →</a></div>`).join('')}</div>
   <article class="card guide" style="margin-top:18px"><h2 style="margin-top:0">Why list here</h2>
-  <ul><li><b>Players find you by night and by place.</b> Your event shows on its own page, on your city and state pages, on <a href="/tonight/">Tonight</a> and <a href="/this-weekend/">This Weekend</a>, and in the weekly email.</li>
+  <ul><li><b>Players find you by night and by place.</b> Your event shows on its own page, on your city and state pages, on <a href="/tonight/">Tonight</a> and <a href="/this-weekend/">This Weekend</a>, and in the daily email.</li>
   <li><b>Weekly events are easy.</b> Post once for up to 12 weeks. Each date gets its own page, and past dates point players to the next one.</li>
   <li><b>It's free.</b> No listing fees, no commission on entries.</li></ul>
   <p>Questions or a listing that needs fixing? Email <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a>.</p>

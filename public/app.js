@@ -879,7 +879,7 @@
     app.innerHTML = `
       <div class="nl-band">
         <h1>Get Tournament Alerts</h1>
-        <p>Get an email when new tournaments are posted near you.</p>
+        <p>One short email a day: a pool tip or new article, plus the best tournaments near you. Free, unsubscribe any time.</p>
         <form class="nl-form" id="nlForm">
           <input name="email" type="email" required placeholder="you@example.com">
           <button class="btn btn-blue" type="submit">Subscribe</button>

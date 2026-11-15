@@ -31,6 +31,7 @@ import * as MM from './moneymatches.js';
 import * as MP from './moneypages.js';
 import { sponsorBannerHtml } from './sponsor.js';
 import { appPageFor, fillShell } from './apppages.js';
+import { FONT_LINKS, socialLinksHtml } from './social.js';
 import { buildNewsletter } from './newsletter.js';
 import * as GU from './guides.js';
 import * as BL from './blog.js';
@@ -47,8 +48,14 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=
 // (inline scripts remain blocked).
 const ADS = 'https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://www.googletagservices.com https://adservice.google.com https://www.google.com https://*.gstatic.com https://*.adtrafficquality.google https://fundingchoicesmessages.google.com';
 const CSP = `default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-eval' ${ADS}; frame-src ${ADS} https://*.google.com; connect-src 'self' ${ADS} https://*.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`;
-const SECURITY = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'X-Frame-Options': 'DENY', 'Content-Security-Policy': CSP };
+const SECURITY = { 'Strict-Transport-Security': 'max-age=31536000', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'X-Frame-Options': 'DENY', 'Content-Security-Policy': CSP };
 
+// Fingerprinted CSS/JS: every HTML page links /styles.css, /app.js, ... as /styles.css?v=<content hash>, and
+// those versioned URLs are cached for a year. A deploy changes the hash, so visitors always get the new file.
+const ASSET_V = new Map();
+for (const f of fs.readdirSync(PUBLIC_DIR)) if (/\.(css|js)$/.test(f) && f !== 'sw.js') ASSET_V.set(f, crypto.createHash('sha256').update(fs.readFileSync(path.join(PUBLIC_DIR, f))).digest('hex').slice(0, 10));
+const ASSET_RE = new RegExp(`((?:href|src)=")/(${[...ASSET_V.keys()].map(f => f.replace(/\./g, '\\.')).join('|')})"`, 'g');
+export const versionAssets = html => ASSET_V.size ? html.replace(ASSET_RE, (_, a, f) => `${a}/${f}?v=${ASSET_V.get(f)}"`) : html;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sha = s => crypto.createHash('sha256').update(String(s)).digest();
 function tokenOk(req, expected) {
@@ -70,8 +77,9 @@ async function readJson(req, limit = 3_000_000) {
 }
 
 function send(req, res, status, body, headers = {}) {
-  const buf = Buffer.isBuffer(body) ? body : Buffer.from(body);
   const h = { ...SECURITY, ...headers };
+  if (/^text\/html/.test(h['Content-Type'] || '')) body = versionAssets(Buffer.isBuffer(body) ? body.toString('utf8') : String(body));
+  const buf = Buffer.isBuffer(body) ? body : Buffer.from(body);
   for (const k of Object.keys(h)) if (h[k] == null) delete h[k];   // a route can drop a default header (embeds drop X-Frame-Options)
   if (buf.length > 1024 && /gzip/.test(req.headers['accept-encoding'] || '') && /json|text|javascript|svg|xml/.test(h['Content-Type'] || '')) {
     res.writeHead(status, { ...h, 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' });
@@ -190,14 +198,26 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     return r;
   }
 
+  // Home page description from the live listings, e.g. "Find 1,240 upcoming pool tournaments in 41 states and 304 pool halls...".
+  let homeDescCache = null;
+  function homeDescription() {
+    if (homeDescCache && Date.now() - homeDescCache.at < 600_000) return homeDescCache.text;
+    const up = SEO.listedTournaments(db).filter(t => t.date >= D.todayIso());
+    const states = new Set(up.map(t => t.venue.state)).size, halls = SEO.hallCount(db), n = x => x.toLocaleString('en-US');
+    const text = up.length ? `Find ${n(up.length)} upcoming pool and billiards tournaments in ${n(states)} states and ${n(halls)} pool halls. Browse by state and city, see what's on tonight and get a free daily email.` : '';
+    homeDescCache = { at: Date.now(), text };
+    return text;
+  }
   // The app shell (index.html) for the home page (page = null) or one app section, see apppages.js.
   function shellHtml(page) {
     let body = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html'), 'utf8')
-      .replace('<!--SPONSOR-->', sponsorBannerHtml()).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg));
+      .replace('<!--SPONSOR-->', sponsorBannerHtml()).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg))
+      .replace('<!--FONTS-->', FONT_LINKS).replace('<!--SOCIAL-->', socialLinksHtml());
     try { SEO.ensureFooter(db); body = body.replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db)); } catch (e) { log('seo links failed: ' + e.message); }
     let homeIntro = '';
-    if (!page) try { homeIntro = SEO.homeIntroHtml(db); } catch (e) { log('home intro failed: ' + e.message); }
-    return fillShell(body, cfg, page, { homeIntro });
+    let homeDesc = '';
+    if (!page) try { homeIntro = SEO.homeIntroHtml(db); homeDesc = homeDescription(); } catch (e) { log('home intro failed: ' + e.message); }
+    return fillShell(body, cfg, page, { homeIntro, homeDesc });
   }
 
   async function route(req, res) {
@@ -680,7 +700,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && p === '/advertise') {
       SEO.ensureFooter(db); trackVisit(req, 'advertise');
       const all = SEO.listedTournaments(db), up = all.filter(t => t.date >= D.todayIso());
-      const stats = { listings: all.length, upcoming: up.length, states: new Set(up.map(t => t.venue.state)).size, rooms: new Set(up.map(t => t.venue.id)).size, guides: GU.GUIDES.length };
+      const stats = { listings: all.length, upcoming: up.length, states: new Set(up.map(t => t.venue.state)).size, rooms: SEO.hallCount(db), guides: GU.GUIDES.length };
       return html(200, TL.advertisePage(cfg, stats));
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/directors' || p === '/directors/')) { if (p === '/directors') return moved('/directors/'); SEO.ensureFooter(db); trackVisit(req, 'directors'); return html(200, TL.directorsPage(cfg)); }
@@ -795,7 +815,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: '/blog/', pri: '0.8' }, ...BL.POSTS.map(b => ({ path: `/blog/${b.slug}`, lastmod: b.date, pri: '0.7' })), { path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' },
+      return [{ path: '/blog/', pri: '0.8' }, ...BL.POSTS.map(b => ({ path: `/blog/${b.slug}`, lastmod: b.date, pri: '0.7' })), { path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' }, { path: '/terms', pri: '0.3' },
         { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
@@ -854,6 +874,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/about' || p === '/about/')) { SEO.ensureFooter(db); trackVisit(req, 'about'); return html(200, GU.aboutPage(cfg)); }
     if ((m === 'GET' || m === 'HEAD') && (p === '/contact' || p === '/contact/')) { SEO.ensureFooter(db); trackVisit(req, 'contact'); return html(200, GU.contactPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === '/terms' || p === '/terms/')) { SEO.ensureFooter(db); trackVisit(req, 'terms'); return html(200, SEO.termsPage(cfg)); }
     if (m === 'GET' && (p === '/privacy' || p === '/privacy/')) { SEO.ensureFooter(db); return send(req, res, 200, SEO.privacyPage(cfg), { 'Content-Type': 'text/html; charset=utf-8' }); }
     // Lets Chrome prefetch our pages from Google results through its privacy proxy, so clicks open faster.
     if (m === 'GET' && p === '/.well-known/traffic-advice') return send(req, res, 200, JSON.stringify([{ user_agent: 'prefetch-proxy', google_prefetch_proxy_eap: { fraction: 1.0 } }]), { 'Content-Type': 'application/trafficadvice+json', 'Cache-Control': 'public, max-age=86400' });
@@ -876,9 +897,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
         let body = fs.readFileSync(file);
         // Crawlable links to the state/city/game pages, so search engines can find them from the home page.
         if (rel === 'index.html') body = Buffer.from(shellHtml(null));
-        return send(req, res, 200, body, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
+        const versioned = ASSET_V.has(rel) && new URL(req.url, 'http://x').searchParams.get('v') === ASSET_V.get(rel);
+        return send(req, res, 200, body, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : versioned ? 'public, max-age=31536000, immutable' : 'public, max-age=300' });
       }
     }
+    // Pages get the branded "Page not found" page; API calls and files keep a plain answer.
+    if ((m === 'GET' || m === 'HEAD') && !p.startsWith('/api/') && !/\.[a-z0-9]{2,5}$/i.test(p)) return notFoundPage();
     return json(req, res, 404, { error: 'Not found' });
   }
 

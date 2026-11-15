@@ -2,6 +2,7 @@
 // under "#/..." links, which search engines treat as one page. The server now answers these paths with
 // the app shell plus a page-specific title, description, canonical link and a plain-HTML heading, so each
 // section can be found in search and shared on its own.
+import { SAME_AS } from './social.js';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 export const SITE_TITLE = 'Billiard Action Time — Find Pool Tournaments Near You';
@@ -20,8 +21,8 @@ export const APP_PAGES = {
   auctions: { title: 'Free Online Calcutta Auction for Pool Tournaments', h1: 'Calcutta auctions', desc: 'Run a pool tournament Calcutta online for free: live bidding from phones, automatic pot and payout math, shareable auction room.' },
   post: { title: 'Post a Pool Tournament for Free', h1: 'Post a pool tournament', desc: 'List your pool tournament for free. It gets its own page, shows up in state and city listings and is easy to share on Facebook.' },
   scan: { title: 'Tournament Flyer Scanner – Post a Pool Tournament From a Flyer', h1: 'Flyer scanner', desc: 'Snap a photo of a pool tournament flyer and we fill in the details for you. Post it in seconds.' },
-  alerts: { title: 'Pool Tournament Alerts by Email', h1: 'Get tournament alerts', desc: 'Get an email when new pool tournaments are posted near you.' },
-  newsletter: { title: 'Billiard Action Time Newsletter', h1: 'Newsletter', desc: 'Weekly pool tournament roundup: the biggest upcoming events, added-money tournaments and money matches.' },
+  alerts: { title: 'Pool Tournament Alerts by Email', h1: 'Get tournament alerts', desc: 'One short email a day: a pool tip or new article, plus the best tournaments near you. Free, unsubscribe any time.' },
+  newsletter: { title: 'Billiard Action Time Daily Email', h1: 'Daily email', desc: 'One short email a day: a pool tip or new article, plus the best tournaments near you. Free, unsubscribe any time.' },
   scout: { title: 'Tournament Scout', h1: 'Tournament scout', desc: 'Scout upcoming pool tournaments by field size, entry fee and added money.', noindex: true },
   account: { title: 'My Account', h1: 'My account', desc: SITE_DESC, noindex: true },
   claim: { title: 'Claim a Tournament', h1: 'Claim a tournament', desc: 'Run this tournament? Claim it to edit the details.', noindex: true },
@@ -35,15 +36,15 @@ export function appPageFor(pathname) {
 
 // Fills the app shell (index.html) for one page: title, description, canonical, structured data and
 // a plain-HTML heading + intro inside <main> that the app replaces once it loads.
-export function fillShell(html, cfg, page, { homeIntro = '' } = {}) {
+export function fillShell(html, cfg, page, { homeIntro = '', homeDesc = '' } = {}) {
   const url = cfg.publicUrl + (page ? `/${page.key}` : '/');
   const title = page ? `${page.title} | Billiard Action Time` : SITE_TITLE;
-  const desc = page ? page.desc : SITE_DESC;
+  const desc = page ? page.desc : (homeDesc || SITE_DESC);
   const ld = page ? '' : `<script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org', '@graph': [
       { '@type': 'WebSite', '@id': cfg.publicUrl + '/#website', url: cfg.publicUrl + '/', name: 'Billiard Action Time',
         potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: cfg.publicUrl + '/search?q={search_term_string}' }, 'query-input': 'required name=search_term_string' } },
-      { '@type': 'Organization', '@id': cfg.publicUrl + '/#org', name: 'Billiard Action Time', url: cfg.publicUrl + '/', logo: cfg.publicUrl + '/icons/icon-512.png', email: 'billiardactiontime@gmail.com' }
+      { '@type': 'Organization', '@id': cfg.publicUrl + '/#org', name: 'Billiard Action Time', url: cfg.publicUrl + '/', logo: cfg.publicUrl + '/icons/icon-512.png', email: 'billiardactiontime@gmail.com', sameAs: SAME_AS }
     ] }).replace(/</g, '\\u003c')}</script>`;
   const head = `<link rel="canonical" href="${esc(url)}">${page?.noindex ? '<meta name="robots" content="noindex,follow">' : ''}<meta property="og:url" content="${esc(url)}">${ld}`;
   const intro = page

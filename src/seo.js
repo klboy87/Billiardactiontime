@@ -1,6 +1,7 @@
 // Search-engine pages: a real, crawlable URL for every tournament, plus landing pages for
 // every state, city and game (and each combination) that has tournaments. Everything here is
 // plain server-rendered HTML so Google can read it without running the site's JavaScript app.
+import { FONT_LINKS, socialLinksHtml } from './social.js';
 import * as D from './db.js';
 import { sponsorBannerHtml } from './sponsor.js';
 import { STATE_NAMES, slugify } from './normalize.js';
@@ -134,6 +135,34 @@ export const adsTxt = cfg => cfg.adsenseClient
   ? `google.com, ${cfg.adsenseClient.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`
   : null;
 
+export function termsPage(cfg) {
+  const body = `<h1>Terms of Use</h1>
+<p class="muted">Last updated: November 2026</p>
+<p>Billiard Action Time ("we", "us") runs billiardactiontime.com, a free directory of pool tournaments, pool halls, money matches, staking listings and Calcutta auctions. By using the site you agree to these terms. They are written in plain English; if anything is unclear, email us.</p>
+<h2>What we are, and what we are not</h2>
+<p>We are a listing and information site. We do not run tournaments, hold or move money, take bets, act as a bank or escrow, or guarantee any player, event, director or venue. Every agreement you make with someone you found here is between you and them.</p>
+<h2>Tournament and venue listings</h2>
+<ul><li>Many listings come from pool rooms, directors, other public sources and visitors. Dates, entry fees, added money and start times change. Always confirm with the venue or director before you travel.</li>
+<li>If you post a tournament, it must be a real event and you must have the right to share its details and flyer. Do not post anything false, misleading or that you have no permission to publish.</li>
+<li>We may edit, merge, hide or remove any listing at any time, for example duplicates, past events or incorrect details.</li>
+<li>Run an event that is listed wrong? Use "Claim This Tournament" or "Report a Problem" on its page, or email us.</li></ul>
+<h2>Money matches</h2>
+<p>Money match pages are for announcing and following matches between players. We do not hold stakes, collect or pay out money, or decide results. Players and organizers are responsible for their own arrangements and for following the laws where they live and play.</p>
+<h2>Staking board</h2>
+<p>The staking board lets players list pieces of their action and lets backers find them. Any deal you make is a private agreement between you and the other person. We do not check anyone's identity, record or ability to pay, and we cannot settle disputes or recover money. Only back people you know or can verify, and never send more than you can afford to lose.</p>
+<h2>Calcutta auctions</h2>
+<p>Our Calcutta tool is free software that helps a tournament host run an auction: it records bids and does the pot and payout math. The host is responsible for running the auction, collecting and paying out money, and making sure a Calcutta is legal where it is held. Calcutta and gambling laws differ by state and city; check before you run or join one. We do not handle any of the money.</p>
+<h2>Age and local laws</h2>
+<p>You must be at least 18 (or the age of majority where you live) to post or take part in money matches, staking or Calcuttas. You are responsible for following all laws that apply to you, including gambling laws.</p>
+<h2>Your posts and conduct</h2>
+<p>You keep ownership of what you post, and you let us show it on the site and in our emails and social posts that promote it. Do not post anything illegal, threatening, hateful, spam or anyone else's private information. We may remove posts or block users who break these rules.</p>
+<h2>No warranty</h2>
+<p>The site is provided "as is". We work to keep it accurate, but we make no promises that listings are complete, current or error-free, and we are not liable for losses from using the site, from events listed on it or from deals made with people you found here, to the extent the law allows.</p>
+<h2>Changes and contact</h2>
+<p>We may update these terms; the date above shows the latest version. Questions, removal requests or reports: <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a>. See also our <a href="/privacy">Privacy Policy</a>.</p>`;
+  return layout(cfg, { title: 'Terms of Use | Billiard Action Time', description: 'Plain-English terms for using Billiard Action Time: tournament listings, money matches, the staking board and Calcutta auctions.', path: '/terms', body });
+}
+
 export function privacyPage(cfg) {
   const body = `<h1>Privacy Policy</h1>
 <p class="muted">Last updated: October 2026</p>
@@ -170,16 +199,16 @@ export function layout(cfg, { title, description, path, body, jsonld = [], noind
 <title>${esc(title)}</title><meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${esc(url)}">${noindex ? '<meta name="robots" content="noindex,follow">' : ''}
 <meta property="og:type" content="website"><meta property="og:site_name" content="Billiard Action Time"><meta property="og:title" content="${esc(title)}">
-<meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
-<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:image" content="${esc(ogImage || cfg.publicUrl + '/og.png')}">
+<meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(ogImage || cfg.publicUrl + '/og.jpg')}">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:image" content="${esc(ogImage || cfg.publicUrl + '/og.jpg')}">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#144b2e"><meta name="google-site-verification" content="F6vvC84HY3rKsPU5LJiV4iqizZZBLCG8Rnp3LbGS8NQ">
-<link rel="stylesheet" href="/styles.css"><link rel="alternate" type="application/rss+xml" title="New pool tournaments" href="/feed.xml">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
+${FONT_LINKS}<link rel="stylesheet" href="/styles.css"><link rel="alternate" type="application/rss+xml" title="New pool tournaments" href="/feed.xml">${ld}<script src="/share.js" defer></script>${scripts.map(src => `<script src="${esc(src)}" defer></script>`).join('')}${adsHead(cfg)}</head>
 <body><a class="skip-link" href="#main">Skip to content</a><header class="hdr"><div class="wrap hdr-in"><a class="logo" href="/"><span>Billiard <em>Action</em> Time</span></a>
 <details class="mnav"><summary aria-label="Menu">☰</summary><div class="mnav-panel">
 <form action="/search" method="get" role="search" class="mnav-search"><input type="search" name="q" placeholder="Search city, room, game…" aria-label="Search tournaments"><button type="submit">Search</button></form>
 <a href="/tonight/">🌙 Tonight</a><a href="/this-weekend/">🔥 This Weekend</a><a href="/near">📍 Near Me</a><a href="/tournaments/">🗺️ By State</a><a href="/pool-halls/">🏠 Pool Halls</a><a href="/big-tournaments/">🏆 Big Events</a><a href="/new/">🆕 Just Added</a><a href="/calendar">📅 Calendar</a>
 <a href="/guides/">📖 Guides</a><a href="/blog/">📰 Blog</a><a href="/trick-shots/">✨ Trick Shots</a><a href="/play/">🎮 Games</a><a href="/gear/">🛒 Pool Gear</a>${cfg.merchUrl ? `<a href="${esc(cfg.merchUrl)}" target="_blank" rel="noopener">👕 Merch</a>` : ''}<a href="/tools/">🧰 Tools</a><a href="/money-matches/">💰 Money Matches</a><a href="/alerts">🔔 Alerts</a><a href="/directors/">🎯 For Directors</a><a class="mnav-cta" href="/post">➕ Post a Tournament</a>
-</div></details>
+${socialLinksHtml('social-links mnav-social')}</div></details>
 <nav class="nav seo-nav"><a href="/tournaments/">Tournaments</a><a href="/tonight/">Tonight</a><a href="/this-weekend/">This Weekend</a><a href="/big-tournaments/">Big Events</a><a href="/guides/">Guides</a><a href="/blog/">Blog</a><a href="/trick-shots/">Trick Shots</a><a href="/play/">Games</a><a href="/tools/">Tools</a><a href="/money-matches/">Money Matches</a><a href="/calendar">Calendar</a><a href="/stakes">Staking Board</a><a href="/auctions">Calcutta</a><a class="cta" href="/post">Post a Tournament</a></nav></div></header>
 ${sponsorBannerHtml()}
 <section class="subtop" data-sub-top aria-label="Email signup"><div class="wrap subtop-in"><p class="subtop-txt"><b>📬 Never miss a tournament.</b> <span>Get a daily pool tip and the best tournaments near you by email. Free.</span></p>
@@ -204,12 +233,12 @@ function buildFooter(db) {
   const games = count(t => gameSlug(t.game) && t.game);
   const cityName = k => { const t = up.find(x => cityKey(x.venue.state, x.venue.city) === k); return t ? `${t.venue.city}, ${t.venue.state}` : k; };
   footCache = { at: Date.now(), html: `<footer class="ftr"><div class="wrap ftr-in seo-ftr">
-    <div><a class="logo on-dark" href="/"><span>Billiard <em>Action</em> Time</span></a><p class="muted">Pool &amp; billiards tournaments across the USA.</p><a href="/tournaments/">All tournaments by state</a></div>
+    <div><a class="logo on-dark" href="/"><span>Billiard <em>Action</em> Time</span></a><p class="muted">Pool &amp; billiards tournaments across the USA.</p><a href="/tournaments/">All tournaments by state</a><h4 style="margin-top:14px">Follow Us</h4>${socialLinksHtml()}</div>
     <div><h4>By Game</h4>${games.map(([g]) => `<a href="${facetPath({ game: g })}">${esc(g)} tournaments</a>`).join('')}</div>
     <div><h4>Top States</h4>${states.map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join('')}</div>
     <div><h4>Top Cities</h4>${cities.map(([k]) => { const [s, c] = k.split('|'); return `<a href="/tournaments/${stateSlug(s)}/${c}">${esc(cityName(k))}</a>`; }).join('')}</div>
     <div><h4>Learn &amp; Play</h4><a href="/gear/">Pool gear guide</a><a href="/tonight/">Tonight</a><a href="/new/">Just added</a><a href="/pool-halls/">Pool halls</a><a href="/this-weekend/">This weekend</a><a href="/big-tournaments/">Big tournaments</a><a href="/guides/">Pool guides</a><a href="/trick-shots/">Trick shots</a><a href="/play/aim-trainer">Aim trainer game</a><a href="/guides/pool-practice-drills">Practice drills</a><a href="/tools/brackets/">Printable brackets</a><a href="/tools/payout-calculator">Payout calculator</a><a href="/tools/round-robin-generator">Round robin generator</a><a href="/tools/pool-rules-quiz">Pool rules quiz</a><a href="/post">Post a tournament</a><a href="/directors/">For directors</a></div>
-  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/gear/">Pool Gear</a> · <a href="/link-to-us">Link to Us</a> · <a href="/advertise">Advertise</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
+  </div><p class="muted wrap ftr-links" style="padding-bottom:20px">© ${new Date().getFullYear()} Billiard Action Time · <a href="/about">About</a> · <a href="/guides/">Guides</a> · <a href="/guides/pool-terms-glossary">Glossary</a> · <a href="/trick-shots/">Trick Shots</a> · <a href="/play/">Games</a> · <a href="/tools/">Tools</a> · <a href="/tools/brackets/">Printable Brackets</a> · <a href="/gear/">Pool Gear</a> · <a href="/link-to-us">Link to Us</a> · <a href="/advertise">Advertise</a> · <a href="/contact">Contact</a> · <a href="/terms">Terms</a> · <a href="/privacy">Privacy Policy</a> · <a href="mailto:billiardactiontime@gmail.com">billiardactiontime@gmail.com</a></p></footer>`, links: { states, cities, games, cityName } };
   return footCache;
 }
 // Crawlable links injected into the app's home page (index.html) so search engines find these pages.
@@ -794,7 +823,7 @@ export function bigTournamentsPage(db, cfg) {
   ${featuredBox(db, list)}
   ${list.length ? eventRows(db, list) : ''}
   <section class="card" style="margin-top:16px;padding:14px 18px"><h2 class="seo-h2" style="margin-top:0">Running a big event?</h2>
-    <p class="muted" style="margin:6px 0">List it free and it shows up here, on its state page and in our weekly email. <a href="/post">Post a tournament →</a> Planning payouts? Try the <a href="/tools/payout-calculator">payout calculator</a>.</p><p class="muted" style="margin:6px 0">Planning a trip? See the <a href="/guides/major-pool-events-calendar">major pool events of the season</a>: Derby City Classic, league nationals in Las Vegas, Super Billiards Expo and more.</p></section>`;
+    <p class="muted" style="margin:6px 0">List it free and it shows up here, on its state page and in our daily email. <a href="/post">Post a tournament →</a> Planning payouts? Try the <a href="/tools/payout-calculator">payout calculator</a>.</p><p class="muted" style="margin:6px 0">Planning a trip? See the <a href="/guides/major-pool-events-calendar">major pool events of the season</a>: Derby City Classic, league nationals in Las Vegas, Super Billiards Expo and more.</p></section>`;
   const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: list.length,
     itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
   return layout(cfg, { title: `${h1} (Next 60 Days) | Billiard Action Time`, description: `${plural(list.length, 'bigger pool tournament')} coming up across the US: added-money events, opens, championships and tour stops, with dates, rooms and entry fees. Updated daily.`,
@@ -987,6 +1016,8 @@ function roomNights(r) {
   for (const t of r.events) { const d = new Date(t.date + 'T00:00:00Z').getUTCDay(); n.set(d, (n.get(d) || 0) + 1); }
   return [1, 2, 3, 4, 5, 6, 0].filter(d => (n.get(d) || 0) >= 2).map(d => DAYS_SHORT[d]);
 }
+// One venue count for the whole site (pool halls page, advertise page, home page description).
+export const hallCount = db => [...hallsByState(db).values()].reduce((a, l) => a + l.length, 0);
 export const hallsPath = st => st ? `/pool-halls/${stateSlug(st)}/` : '/pool-halls/';
 export function poolHallsIndexPage(db, cfg) {
   const byState = hallsByState(db), total = [...byState.values()].reduce((a, l) => a + l.length, 0);
