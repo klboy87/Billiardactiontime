@@ -1,0 +1,66 @@
+{
+  "note": "Upcoming pro pool events for /pro-events. Edit and push to update. Dates checked against each organizer's own site on 2026-11-16. Events drop off the page the day after 'end'.",
+  "events": [
+    {
+      "name": "Mosconi Cup 2026",
+      "start": "2026-11-27",
+      "end": "2026-11-30",
+      "startTime": "13:00",
+      "venue": "Caribe Royale Resort",
+      "city": "Orlando, FL, USA",
+      "format": "Team USA vs. Team Europe, 9-ball team event. Matches are races to 5; first team to 11 points wins.",
+      "watch": "ESPN+ and WNT TV",
+      "watchUrl": "https://wnt.tv",
+      "link": "/mosconi-cup-2026",
+      "source": "https://worldnineballtour.com/events/mosconi-cup/",
+      "organizer": "Matchroom / World Nineball Tour"
+    },
+    {
+      "name": "Mezz Sevilla Open",
+      "start": "2026-12-05",
+      "end": "2026-12-07",
+      "venue": "X-United Billiard Club",
+      "city": "Seville, Spain",
+      "format": "128-player 9-ball: double elimination, then single elimination from the last 64. Races to 9, winner breaks.",
+      "watch": "WNT TV",
+      "watchUrl": "https://wnt.tv",
+      "source": "https://worldnineballtour.com/events/mezz-sevilla-open/",
+      "organizer": "World Nineball Tour"
+    },
+    {
+      "name": "WPBA DR Pool/Jacoby Tour Championship",
+      "start": "2026-12-09",
+      "end": "2026-12-13",
+      "venue": "Central Wisconsin Convention & Expo Center",
+      "city": "Rothschild, WI, USA",
+      "format": "Season-ending event of the Women's Professional Billiard Association tour.",
+      "watch": "Check the WPBA's Facebook page for stream details",
+      "watchUrl": "https://www.facebook.com/WPBAbilliards",
+      "source": "https://wpba.com/wpba-2026-events-and-results/event-one-akbk2-xdw4f-ff26g-w3kp4-cs6g8",
+      "organizer": "WPBA"
+    },
+    {
+      "name": "Ultimate Pool Pro Series Grand Finals",
+      "start": "2026-12-11",
+      "end": "2026-12-13",
+      "venue": "Robin Park Leisure Centre",
+      "city": "Wigan, England",
+      "format": "Grand Final weekend of the UK's Ultimate Pool Pro Series (8-ball / blackball).",
+      "watch": "ultimatepool.tv and Ultimate Pool's YouTube, Facebook and TikTok",
+      "watchUrl": "https://ultimatepool.tv",
+      "source": "https://ultimatepoolgroup.com/tournaments/pro-series-2026",
+      "organizer": "Ultimate Pool Group"
+    },
+    {
+      "name": "Pro Billiard Series Jacksonville (Women's World 9-Ball Championship)",
+      "start": "2026-12-14",
+      "end": "2026-12-20",
+      "venue": "Hyatt Regency Jacksonville Riverfront",
+      "city": "Jacksonville, FL, USA",
+      "format": "Season finale of the Predator Pro Billiard Series, hosting the Women's World 9-Ball Championship.",
+      "watch": "Free on Pro Billiard TV (YouTube)",
+      "source": "https://probilliardseries.com/event/2026-jacksonville/",
+      "organizer": "Predator Pro Billiard Series"
+    }
+  ]
+}

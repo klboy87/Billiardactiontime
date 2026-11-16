@@ -22,7 +22,8 @@ function cachedCard(key, make) {
   if (cardCache.size > 120) cardCache.delete(cardCache.keys().next().value);
   return png;
 }
-import { mosconiPage, MOSCONI_PATH } from './mosconi.js';
+import { mosconiPage, mosconiIcs, MOSCONI_PATH } from './mosconi.js';
+import { proEventsPage, PRO_EVENTS_PATH } from './proevents.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
 import * as A from './auctions.js';
@@ -160,9 +161,9 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const day = D.todayIso();
       const visitor = visitorId(req, day);
       pendingViews.set(day + '|' + visitor, [day, visitor]);
-      let utm = '';
-      try { utm = new URL(req.url, 'http://x').searchParams.get('utm_source') || ''; } catch {}
-      if (page) recordPage(req, day, visitor, page, { ref: req.headers.referer, utm });
+      let utm = '', campaign = '';
+      try { const q = new URL(req.url, 'http://x').searchParams; utm = q.get('utm_source') || ''; campaign = q.get('utm_campaign') || ''; } catch {}
+      if (page) recordPage(req, day, visitor, page, { ref: req.headers.referer, utm, campaign });
       if (article && pendingArticles.size < 50_000) pendingArticles.set(day + '|' + visitor + '|' + article, [day, visitor, article]);
     } catch {}
   }
@@ -170,12 +171,32 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   const pendingArticles = new Map();
   // Which page, and where the visitor came from. Batched and flushed with the counts above.
   const pendingPages = new Map();
-  function recordPage(req, day, visitor, page, { ref, utm } = {}) {
+  // utm_campaign per visitor (e.g. mosconi2026 vs bio), so the admin can compare short links and posts.
+  const pendingCampaigns = new Map();
+  const cleanCampaign = c => String(c || '').toLowerCase().replace(/[^a-z0-9_.-]/g, '').slice(0, 40);
+  function recordPage(req, day, visitor, page, { ref, utm, campaign } = {}) {
     const k = day + '|' + visitor + '|' + page;
+    const source = classifySource({ ref, utm, ua: req.headers['user-agent'], ownHosts });
+    const camp = cleanCampaign(campaign);
+    if (camp && pendingCampaigns.size < 50_000) pendingCampaigns.set(day + '|' + visitor + '|' + camp, [day, visitor, camp, source]);
     if (pendingPages.has(k) || pendingPages.size >= 50_000) return;
-    pendingPages.set(k, [day, visitor, page, classifySource({ ref, utm, ua: req.headers['user-agent'], ownHosts })]);
+    pendingPages.set(k, [day, visitor, page, source]);
+  }
+  // Campaign a visitor arrived with today (not yet flushed, else stored), used to credit email signups.
+  function visitorCampaign(req) {
+    try {
+      const day = D.todayIso(), visitor = visitorId(req, day);
+      let found = null;
+      for (const [d, v, c] of pendingCampaigns.values()) if (d === day && v === visitor) found = c;
+      return found || D.campaignForVisitor(db, day, visitor);
+    } catch { return null; }
   }
   function flushPageviews() {
+    if (pendingCampaigns.size) {
+      const camps = [...pendingCampaigns.values()];
+      pendingCampaigns.clear();
+      try { D.recordCampaignsBulk(db, camps); } catch (e) { log('campaign flush failed: ' + (e.message || e)); }
+    }
     if (pendingArticles.size) {
       const reads = [...pendingArticles.values()];
       pendingArticles.clear();
@@ -242,7 +263,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (page && !isBot(req.headers['user-agent'])) {
         const day = D.todayIso(), visitor = visitorId(req, day);
         pendingViews.set(day + '|' + visitor, [day, visitor]);
-        recordPage(req, day, visitor, page, { ref: typeof b.ref === 'string' ? b.ref.slice(0, 500) : '', utm: typeof b.utm === 'string' ? b.utm : '' });
+        recordPage(req, day, visitor, page, { ref: typeof b.ref === 'string' ? b.ref.slice(0, 500) : '', utm: typeof b.utm === 'string' ? b.utm : '', campaign: typeof b.campaign === 'string' ? b.campaign : '' });
       }
       return send(req, res, 204, '');
     }
@@ -271,7 +292,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (p === '/api/subscribe') {
         const email = clean(b.email).toLowerCase();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) return json(req, res, 400, { error: 'Enter a valid email address' });
-        D.addSubscriber(db, email);
+        D.addSubscriber(db, email, isBot(req.headers['user-agent']) ? null : visitorCampaign(req));
         return json(req, res, 200, { ok: true });
       }
       const tid = Number(b.tournamentId);
@@ -719,6 +740,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       return html(200, out, { 'Cache-Control': 'public, max-age=1800' });
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/new' || p === '/new/')) { if (p === '/new') return moved('/new/'); SEO.ensureFooter(db); trackVisit(req, 'new-page'); return html(200, SEO.newTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }
+    if ((m === 'GET' || m === 'HEAD') && p === MOSCONI_PATH + '/calendar.ics') return send(req, res, 200, mosconiIcs(), { 'Content-Type': 'text/calendar; charset=utf-8', 'Content-Disposition': 'attachment; filename="mosconi-cup-2026.ics"', 'Cache-Control': 'public, max-age=3600', 'X-Robots-Tag': 'noindex' });
+    if ((m === 'GET' || m === 'HEAD') && (p === PRO_EVENTS_PATH || p === PRO_EVENTS_PATH + '/')) { if (p !== PRO_EVENTS_PATH) return moved(PRO_EVENTS_PATH); SEO.ensureFooter(db); trackVisit(req, 'pro-events'); return html(200, proEventsPage(cfg), { 'Cache-Control': 'public, max-age=600' }); }
     if ((m === 'GET' || m === 'HEAD') && (p === MOSCONI_PATH || p === MOSCONI_PATH + '/' || p === '/mosconi-cup' || p === '/mosconi-cup/')) { if (p !== MOSCONI_PATH) return moved(MOSCONI_PATH); SEO.ensureFooter(db); trackVisit(req, 'mosconi'); return html(200, mosconiPage(cfg)); }
     // Short links for social bios (TikTok bios are plain text, 80 chars). 302 so the targets can change later.
     // Until Dec 1 they land on the Mosconi Cup hub; the landing page counts the visit with its utm tags.
@@ -830,8 +853,8 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if (m === 'GET' && p === '/sitemap.xml') return send(req, res, 200, SEO.sitemapXml(db, cfg, (() => {
       const { upcoming, results } = MM.listPublic(db), all = [...upcoming, ...results];
       const players = new Set(all.flatMap(mm => [MM.playerSlug(mm.player1), MM.playerSlug(mm.player2)]).filter(Boolean));
-      return [{ path: MOSCONI_PATH, pri: '0.9' }, { path: '/blog/', pri: '0.8' }, ...BL.POSTS.map(b => ({ path: `/blog/${b.slug}`, lastmod: b.date, pri: '0.7' })), { path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' }, { path: '/terms', pri: '0.3' },
-        { path: '/money-matches/', pri: '0.8' }, ...all.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: mm.upcoming ? '0.7' : '0.4' })),
+       return [{ path: MOSCONI_PATH, pri: '0.9' }, { path: PRO_EVENTS_PATH, pri: '0.8' }, { path: '/blog/', pri: '0.8' }, ...BL.POSTS.map(b => ({ path: `/blog/${b.slug}`, lastmod: b.date, pri: '0.7' })), { path: '/guides/', pri: '0.8' }, ...GU.GUIDES.map(g => ({ path: `/guides/${g.slug}`, pri: '0.7' })), { path: '/tools/', pri: '0.8' }, ...TL.TOOLS.map(t => ({ path: `/tools/${t.slug}`, pri: '0.8' })), { path: '/tools/brackets/', pri: '0.8' }, { path: '/directors/', pri: '0.8' }, { path: '/link-to-us', pri: '0.5' }, { path: '/advertise', pri: '0.5' }, { path: '/gear/', pri: '0.7' }, ...GR.BUYING.map(b => ({ path: `/gear/${b.slug}`, pri: '0.7' })), { path: '/trick-shots/', pri: '0.8' }, ...TS.SHOTS.map(t => ({ path: `/trick-shots/${t.slug}`, pri: '0.7' })), { path: '/play/', pri: '0.6' }, { path: '/play/aim-trainer', pri: '0.8' }, { path: '/play/bank-trainer', pri: '0.7' }, { path: '/play/kick-trainer', pri: '0.7' }, { path: '/play/lag-challenge', pri: '0.7' }, { path: '/play/which-game', pri: '0.6' }, { path: '/play/practice-log', pri: '0.6' }, ...BR.BRACKET_SIZES.map(n => ({ path: `/tools/brackets/${n}`, pri: '0.7' })), { path: '/about', pri: '0.5' }, { path: '/contact', pri: '0.4' }, { path: '/terms', pri: '0.3' },
+        { path: '/money-matches/', pri: '0.8' }, ...upcoming.map(mm => ({ path: mm.path, lastmod: mm.updatedAt.slice(0, 10), pri: '0.7' })),   // past matches stay off the sitemap (same rule as tournaments)
         ...[...players].map(s => ({ path: `/money-matches/player/${s}`, pri: '0.4' }))];
     })()), { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
     if (m === 'GET' && p === '/ads.txt' && !fs.existsSync(path.join(PUBLIC_DIR, 'ads.txt'))) {  // public/ads.txt wins when present

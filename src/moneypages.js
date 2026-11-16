@@ -4,6 +4,7 @@
 //   /money-matches/player/<slug>    every match a player has been in
 import { layout, linkContacts } from './seo.js';
 import { slugify } from './normalize.js';
+import { todayLocal } from './moneymatches.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = n => '$' + Number(n).toLocaleString('en-US');
@@ -45,7 +46,12 @@ export function matchPage(cfg, m, { tally, comments, stakes }) {
   const shareText = `${title}: ${mmGame(m)}${m.race ? `, race to ${m.race}` : ''}${m.stakes ? `, ${m.stakes} on the line` : ''}. ${shortDate(m.date)} in ${m.city}, ${m.state}.`;
   const u = encodeURIComponent(url), tx = encodeURIComponent(shareText);
   const img = `/money-match/${m.id}/card`;
+  // Past matches: "ended" banner pointing to upcoming matches; noindex once the match is more than 30 days old.
+  const today = todayLocal(), past = m.date < today;
+  const cutoff = new Date(Date.parse(today + 'T00:00:00Z') - 30 * 864e5).toISOString().slice(0, 10);
+  const ended = past ? `<div class="seo-ended" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 12px"><span>${m.winner ? 'This match has been played. Final result below.' : 'This match has ended.'}</span><a class="btn btn-green" href="/money-matches/">Upcoming money matches →</a><a class="btn btn-out" href="/#/money/new">Post a Money Match</a></div>` : '';
   const body = `<div class="crumbs"><a href="/money-matches/">Money Matches</a> / ${esc(title)}</div>
+  ${ended}
   <div class="mm-hero">${poster(m, 'mm-hero-img')}</div>
   <section class="card mm-tape" data-mm="${m.id}" data-date="${esc(m.date)}" data-time="${esc(m.time || '')}" data-done="${m.winner ? 1 : 0}">
     <h1 class="mm-h1">${esc(mmGame(m))} Money Match</h1>
@@ -111,7 +117,7 @@ export function matchPage(cfg, m, { tally, comments, stakes }) {
     competitor: [{ '@type': 'Person', name: m.player1 }, { '@type': 'Person', name: m.player2 }],
     location: { '@type': 'Place', name: m.room || `${m.city}, ${m.state}`, address: { '@type': 'PostalAddress', ...(m.address ? { streetAddress: m.address } : {}), addressLocality: m.city, addressRegion: m.state, addressCountry: 'US' } },
     url, ...(m.flyerUrl ? { image: cfg.publicUrl + m.flyerUrl } : {}), description }];
-  return layout(cfg, { title: `${title} | ${mmGame(m)} Money Match, ${m.city}, ${m.state}`, description, path: m.path, body, jsonld, ogImage: `${cfg.publicUrl}${img}-og.png` })
+  return layout(cfg, { title: `${title} | ${mmGame(m)} Money Match, ${m.city}, ${m.state}`, description, path: m.path, body, jsonld, ogImage: `${cfg.publicUrl}${img}-og.png`, noindex: m.date < cutoff })
     .replace('<script src="/share.js" defer></script>', '<script src="/share.js" defer></script><script src="/moneymatch.js" defer></script>');
 }
 

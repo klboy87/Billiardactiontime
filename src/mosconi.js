@@ -19,9 +19,27 @@ const EUROPE = ['Francisco Sánchez Ruiz', 'Joshua Filler', 'Aleksa Pecelj', 'Da
 const DAYS = [['2026-11-27', 'Friday, Nov 27', 'Day 1'], ['2026-11-28', 'Saturday, Nov 28', 'Day 2'], ['2026-11-29', 'Sunday, Nov 29', 'Day 3'], ['2026-11-30', 'Monday, Nov 30', 'Day 4 (final day)']];
 const SOURCE = 'https://www.azbilliards.com/mosconi-cup-teams-are-confirmed-europe-chase-seven-as-usa-bid-for-home-glory-live-on-espn-27-30-november/';
 
+function readJson() { try { return JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf8')) || {}; } catch { return {}; } }
+// Order of play: set "orderOfPlay" (plain text) in content/mosconi-2026.json when Matchroom publishes it.
+const orderOfPlay = () => { const o = readJson().orderOfPlay; return typeof o === 'string' && o.trim() ? o.trim() : ''; };
+
+// "Add to calendar" file: the four 1 PM ET sessions plus the Thursday fan press conference.
+// Times in UTC (ET is UTC-5 in late November). End times are approximate.
+export function mosconiIcs(now = new Date()) {
+  const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const ev = (uid, start, end, summary, desc) => ['BEGIN:VEVENT', `UID:${uid}@billiardactiontime.com`, `DTSTAMP:${stamp}`, `DTSTART:${start}`, `DTEND:${end}`,
+    `SUMMARY:${summary}`, `DESCRIPTION:${desc.replace(/,/g, '\\,')}`, 'LOCATION:Caribe Royale Resort\\, Orlando\\, FL', 'URL:https://billiardactiontime.com/mosconi-cup-2026', 'END:VEVENT'];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Billiard Action Time//Mosconi Cup 2026//EN', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:Mosconi Cup 2026',
+    ...ev('mosconi2026-press', '20261126T200000Z', '20261126T210000Z', 'Mosconi Cup 2026 fan press conference', 'Open to fans at the Caribe Royale. Teams USA and Europe meet the press the day before play starts.'),
+    ...DAYS.flatMap(([d, label, n]) => ev(`mosconi2026-${d}`, `${d.replace(/-/g, '')}T180000Z`, `${d.replace(/-/g, '')}T230000Z`, `Mosconi Cup 2026: ${n}`,
+      `USA vs Europe. Play starts 1:00 PM ET (6 PM GMT). Watch live on ESPN+ and WNT TV. Results: https://billiardactiontime.com/mosconi-cup-2026`)),
+    'END:VCALENDAR'];
+  return lines.join('\r\n') + '\r\n';
+}
+
 function results() {
   try {
-    const j = JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf8'));
+    const j = readJson();
     return new Map((Array.isArray(j.days) ? j.days : []).filter(d => d && /^\d{4}-\d{2}-\d{2}$/.test(d.date || '')).map(d => [d.date, d]));
   } catch { return new Map(); }
 }
@@ -44,30 +62,34 @@ export function mosconiPage(cfg) {
     <p class="lead-muted"><b>November 27–30, 2026</b> at the <b>Caribe Royale Resort, Orlando, Florida</b>. Pool's version of the Ryder Cup: five American pros against five European pros over four days. Europe are the defending champions.</p>
     <table class="t"><tbody>
       <tr><th>Dates</th><td>Friday, Nov 27 – Monday, Nov 30, 2026</td></tr>
+      <tr><th>Start time</th><td><b>Play starts 1:00 PM ET each day</b> (6 PM GMT), Friday to Monday</td></tr>
+      <tr><th>Order of play</th><td>${orderOfPlay() ? esc(orderOfPlay()) : 'Not announced yet. We will post it here when Matchroom publishes it.'}</td></tr>
       <tr><th>Venue</th><td>Caribe Royale Resort, Orlando, FL</td></tr>
       <tr><th>Watch (US)</th><td>Live on ESPN+ and WNT TV. Other countries: broadcasters to be announced.</td></tr>
       <tr><th>Tickets</th><td>On sale at <a href="https://worldnineballtour.com" rel="noopener nofollow" target="_blank">worldnineballtour.com</a></td></tr>
       <tr><th>Press conference</th><td>Thursday, Nov 26, 3–4 PM ET at the Caribe Royale (open to fans)</td></tr>
     </tbody></table>
+    <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="${MOSCONI_PATH}/calendar.ics" rel="nofollow" download>📅 Add to calendar (all 4 days + press conference)</a><a class="btn btn-out" href="/pro-events">More pro events &amp; where to watch</a></div>
   </article>
   ${signup}
   <section class="sec seo-sec"><h2>The teams</h2><div style="display:flex;flex-wrap:wrap;gap:12px">${team('Team USA', 'Johan Ruijsink', USA)}${team('Team Europe', 'Niels Feijen', EUROPE)}</div>
     <p class="muted" style="font-size:13px">Source: <a href="${SOURCE}" rel="noopener nofollow" target="_blank">Mosconi Cup teams confirmed (Matchroom, Nov 15, 2026)</a>.</p></section>
   <section class="sec seo-sec"><h2>Daily results</h2><table class="t"><tbody>${dayRows}</tbody></table></section>
   <section class="sec seo-sec"><h2>How to watch in the US</h2>
-    <p>Every session streams live on <b>ESPN+</b> and <b>WNT TV</b> (the World Nineball Tour's streaming service). Each match is a race to 5 racks worth one point, and the first team to 11 points wins the Cup.</p></section>
+    <p><b>Play starts at 1:00 PM ET (6 PM GMT) on each of the four days, Friday Nov 27 to Monday Nov 30.</b> Every session streams live on <b>ESPN+</b> and <b>WNT TV</b> (the World Nineball Tour's streaming service). Each match is a race to 5 racks worth one point, and the first team to 11 points wins the Cup.</p></section>
   <section class="sec seo-sec"><h2>Read before the first break</h2><ul class="seo-list">
     <li><a href="/blog/how-the-mosconi-cup-works-format-explained">How the Mosconi Cup works: the format explained</a></li>
     <li><a href="/blog/nine-ball-rules-explained-before-mosconi-cup">9-Ball rules explained before the Mosconi Cup</a></li>
     <li><a href="/guides/pool-news-chua-filler-mosconi-countdown-november-2026">Pool news: Chua wins at home, Filler takes $100K, Mosconi countdown</a></li>
     <li><a href="/guides/mosconi-cup-2026-preview">Mosconi Cup 2026 preview: captains, qualifying and Europe's streak</a></li>
     <li><a href="/guides/major-pool-events-calendar">Major pool events 2026–2027 calendar</a></li>
+    <li><a href="/pro-events">Pro pool events after the Mosconi Cup, and where to watch them</a></li>
   </ul></section>
   <section class="sec seo-sec"><h2>Inspired to play?</h2><p>Find a 9-Ball tournament near you: <a href="/tonight/">tonight</a>, <a href="/this-weekend/">this weekend</a>, or <a href="/tournaments/florida">in Florida</a>. Black Friday is day one of the Cup, so the <a href="/gear/">pool gear guide</a> has our picks if you're shopping.</p></section>
   ${shareStrip(cfg, MOSCONI_PATH, 'Mosconi Cup 2026: teams, dates, how to watch', 'Team USA vs. Team Europe, Nov 27–30 in Orlando.')}`;
   const ld = { '@context': 'https://schema.org', '@type': 'SportsEvent', name: 'Mosconi Cup 2026', sport: 'Pool (cue sports)',
     description: 'Team USA vs. Team Europe nine-ball team event, November 27–30, 2026, at the Caribe Royale Resort in Orlando, Florida.',
-    url: cfg.publicUrl + MOSCONI_PATH, startDate: '2026-11-27', endDate: '2026-11-30',
+    url: cfg.publicUrl + MOSCONI_PATH, startDate: '2026-11-27T13:00:00-05:00', endDate: '2026-11-30T18:00:00-05:00',
     eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
     image: [cfg.publicUrl + '/og.jpg'],
     location: { '@type': 'Place', name: 'Caribe Royale Resort', address: { '@type': 'PostalAddress', addressLocality: 'Orlando', addressRegion: 'FL', addressCountry: 'US' } },

@@ -1028,6 +1028,10 @@
       <table class="t"><tbody>${barRows(tr.daily.slice().reverse().map(d => ({ ...d, label: dayLabel(d.day) })), 'label', 'visitors')}</tbody></table>
       ${tr.signups ? `<h2>Email Signups Per Day <span class="muted" style="font-size:.7em;font-weight:400">last ${tr.signups.length} days · ${tr.subscribers} on the list</span></h2>
       <table class="t"><tbody>${barRows(tr.signups.slice().reverse().map(d => ({ ...d, label: dayLabel(d.day) })), 'label', 'signups')}</tbody></table>` : ''}
+      <h2>Campaigns <span class="muted" style="font-size:.7em;font-weight:400">last ${tr.days || 30} days, by utm_campaign</span></h2>
+      ${(tr.campaigns || []).length ? `<table class="t"><thead><tr><th>Campaign</th><th>Sources</th><th style="text-align:right">Visitors</th><th style="text-align:right">Signups</th></tr></thead><tbody>${tr.campaigns.map(c => `<tr><td><b>${esc(c.campaign)}</b></td><td class="muted">${esc(c.sources || '')}</td><td style="text-align:right">${c.visitors}</td><td style="text-align:right">${c.signups}</td></tr>`).join('')}</tbody></table>
+      <p class="muted" style="font-size:.85em">A signup counts for a campaign when the person arrived on a tagged link the same day.</p>`
+        : '<p class="muted">No tagged visits yet. Visits from the short links (/tt, /ig, /yt, /fb) and tagged links below show up here.</p>'}
       <h2>Tagged Links for Social Posts</h2>
       <p class="muted" style="font-size:.85em">Use these when you post a link, so the visits show up under the right source above (add the tag to any page, e.g. <code>/tonight/?utm_source=facebook&amp;utm_medium=social</code>).</p>
       <table class="t"><tbody>${[['Instagram bio', 'instagram', 'social', 'bio'], ['Instagram stories', 'instagram', 'story', 'stories'], ['TikTok bio', 'tiktok', 'social', 'bio'], ['YouTube channel', 'youtube', 'social', 'channel'], ['YouTube descriptions', 'youtube', 'social', 'description'], ['Facebook posts', 'facebook', 'social', 'post'], ['Newsletter', 'newsletter', 'email', 'newsletter']].map(([label, src, med, camp]) => { const u = `https://billiardactiontime.com/?utm_source=${src}&utm_medium=${med}&utm_campaign=${camp}`; return `<tr><td>${esc(label)}</td><td><code style="word-break:break-all">${esc(u)}</code></td></tr>`; }).join('')}</tbody></table>
@@ -2741,14 +2745,16 @@
   // own browsing doesn't count. Never blocks or breaks the page if it fails.
   const landing = (() => {
     const fromSearch = new URLSearchParams(location.search).get('utm_source');
-    const fromHash = new URLSearchParams((location.hash.split('?')[1]) || '').get('utm_source');
-    return { ref: document.referrer || '', utm: fromSearch || fromHash || '' };
+    const hashQ = new URLSearchParams((location.hash.split('?')[1]) || '');
+    const fromHash = hashQ.get('utm_source');
+    const campaign = new URLSearchParams(location.search).get('utm_campaign') || hashQ.get('utm_campaign') || '';
+    return { ref: document.referrer || '', utm: fromSearch || fromHash || '', campaign };
   })();
   function trackPage(pathPart) {
     if (adminToken() || pathPart.startsWith('/admin')) return;
     try {
       fetch('/api/track', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page: pathPart, ref: landing.ref, utm: landing.utm }) }).catch(() => {});
+        body: JSON.stringify({ page: pathPart, ref: landing.ref, utm: landing.utm, campaign: landing.campaign }) }).catch(() => {});
     } catch { /* ignore */ }
   }
 

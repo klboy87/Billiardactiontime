@@ -81,6 +81,11 @@ CREATE TABLE IF NOT EXISTS visits (
   PRIMARY KEY (day, visitor, page)
 );
 CREATE INDEX IF NOT EXISTS idx_visits_day ON visits(day);
+-- utm_campaign tag a visitor arrived with (e.g. mosconi2026, bio), one row per (day, visitor, campaign); same privacy rules.
+CREATE TABLE IF NOT EXISTS campaign_visits (
+  day TEXT NOT NULL, visitor TEXT NOT NULL, campaign TEXT NOT NULL, source TEXT NOT NULL,
+  PRIMARY KEY (day, visitor, campaign)
+);
 -- which articles (/guides/<slug>) each visitor read, one row per (day, visitor, slug); same privacy rules.
 -- Feeds "Most read this week" in the weekly email.
 CREATE TABLE IF NOT EXISTS article_views (
@@ -179,7 +184,8 @@ export function openDb(file) {
     'ALTER TABLE match_posts ADD COLUMN prev_status TEXT',                       // Match Finder archive
     'ALTER TABLE match_posts ADD COLUMN archived_by TEXT', 'ALTER TABLE match_posts ADD COLUMN archived_at TEXT',
     'ALTER TABLE match_comments ADD COLUMN contact TEXT',
-    'ALTER TABLE stakes ADD COLUMN money_match_id INTEGER']) {       // Staking Board post linked to a money match
+    'ALTER TABLE stakes ADD COLUMN money_match_id INTEGER',          // Staking Board post linked to a money match
+    'ALTER TABLE subscribers ADD COLUMN campaign TEXT']) {            // utm_campaign the subscriber arrived with that day
     try { db.exec(sql); } catch { /* already there */ }
   }
   db.exec("UPDATE match_posts SET prev_status=COALESCE(prev_status,'open'), status='archived', archived_by=COALESCE(archived_by,'admin') WHERE status='removed'");
@@ -375,8 +381,8 @@ export function listSubscribers(db) {
 export function removeSubscriber(db, email) {
   return db.prepare('DELETE FROM subscribers WHERE email = ?').run(String(email || '').trim().toLowerCase()).changes > 0;
 }
-export function addSubscriber(db, email) {
-  db.prepare('INSERT OR IGNORE INTO subscribers (email) VALUES (?)').run(email);
+export function addSubscriber(db, email, campaign = null) {
+  db.prepare('INSERT OR IGNORE INTO subscribers (email, campaign) VALUES (?,?)').run(email, campaign || null);
 }
 export function resolveItem(db, table, id) {
   if (!['claims', 'reports'].includes(table)) return false;
@@ -416,6 +422,17 @@ export function recordVisitsBulk(db, entries) {
     for (const [day, visitor, page, source] of entries) stmt.run(day, visitor, page, source);
   });
 }
+export function recordCampaignsBulk(db, entries) {
+  if (!entries.length) return;
+  tx(db, () => {
+    const stmt = db.prepare('INSERT OR IGNORE INTO campaign_visits (day, visitor, campaign, source) VALUES (?,?,?,?)');
+    for (const [day, visitor, campaign, source] of entries) stmt.run(day, visitor, campaign, source);
+  });
+}
+// The most recent campaign this (daily, hashed) visitor arrived with today, or null.
+export function campaignForVisitor(db, day, visitor) {
+  return db.prepare('SELECT campaign FROM campaign_visits WHERE day = ? AND visitor = ? ORDER BY rowid DESC LIMIT 1').get(day, visitor)?.campaign || null;
+}
 export function recordArticleViewsBulk(db, entries) {
   if (!entries.length) return;
   tx(db, () => {
@@ -449,8 +466,14 @@ export function visitBreakdown(db, { days = 30, dailyDays = 14, todayStr = today
   const signups = [];
   for (let i = dailyDays - 1; i >= 0; i--) { const d = daysAgo(i); signups.push({ day: d, signups: subByDay.get(d) || 0 }); }
   const subscribers = Number(db.prepare('SELECT COUNT(*) n FROM subscribers').get().n);
+  // Visitors and email signups per utm_campaign (e.g. mosconi2026 vs bio), with the sources each came from.
+  const campRows = db.prepare(`SELECT campaign, COUNT(DISTINCT day || '|' || visitor) visitors, GROUP_CONCAT(DISTINCT source) sources FROM campaign_visits WHERE day >= ? GROUP BY campaign`).all(since);
+  const campSubs = new Map(db.prepare(`SELECT campaign, COUNT(*) n FROM subscribers WHERE campaign IS NOT NULL AND created_at >= ? GROUP BY campaign`).all(since).map(r => [r.campaign, Number(r.n)]));
+  const campaigns = campRows.map(r => ({ campaign: r.campaign, visitors: Number(r.visitors), signups: campSubs.get(r.campaign) || 0, sources: String(r.sources || '').split(',').filter(Boolean).sort().join(', ') }));
+  for (const [campaign, n] of campSubs) if (!campaigns.some(c => c.campaign === campaign)) campaigns.push({ campaign, visitors: 0, signups: n, sources: '' });
+  campaigns.sort((a, b) => b.visitors - a.visitors || b.signups - a.signups || a.campaign.localeCompare(b.campaign));
   return {
-    days, visitors: Number(visitors), signups, subscribers,
+    days, visitors: Number(visitors), signups, subscribers, campaigns: campaigns.slice(0, 25),
     sources: sources.map(r => ({ source: r.source, visitors: Number(r.visitors) })),
     pages: pages.map(r => ({ page: r.page, views: Number(r.views) })),
     daily
