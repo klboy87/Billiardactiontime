@@ -1,30 +1,26 @@
 {
- "lastUpdated": "Nov 15, 2026, 9:20 AM ET",
- "checkedAt": "2026-11-15T19:16:52Z",
+ "lastUpdated": "Nov 15, 2026, 6:10 PM ET",
+ "checkedAt": "2026-11-16T02:24:54Z",
  "items": [
   {
-   "title": "Clean past events out of the sitemap",
+   "title": "Mosconi Cup hub: start times + add-to-calendar",
    "status": "done"
   },
   {
-   "title": "Mosconi Cup 2026 hub page",
+   "title": "Pro events / Where to watch page",
+   "status": "done (/pro-events)"
+  },
+  {
+   "title": "Sitemap: past money-match pages",
    "status": "done"
   },
   {
-   "title": "Free traffic analytics + UTM links",
-   "status": "done (tagged-link list in admin updated to Grok's exact links, Nov 15 PM)"
-  },
-  {
-   "title": "/gear: real product cards + Black Friday block",
-   "status": "partial: Black Friday block done; specific ASIN product links skipped (needs owner's product picks)"
-  },
-  {
-   "title": "Make the RSS feed findable",
+   "title": "Admin: break out utm_campaign",
    "status": "done"
   },
   {
-   "title": "Short redirect links for social bios (/tt /ig /yt /fb)",
-   "status": "done"
+   "title": "/gear specific products (needs owner)",
+   "status": "skipped: needs owner's product picks/ASINs"
   }
  ]
 }
