@@ -49,7 +49,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=
 // Google AdSense needs its script hosts, ad frames and reporting endpoints; everything else stays same-origin
 // (inline scripts remain blocked).
 const ADS = 'https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://www.googletagservices.com https://adservice.google.com https://www.google.com https://*.gstatic.com https://*.adtrafficquality.google https://fundingchoicesmessages.google.com';
-const CSP = `default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-eval' ${ADS}; frame-src ${ADS} https://*.google.com; connect-src 'self' ${ADS} https://*.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`;
+const CSP = `default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-eval' ${ADS}; frame-src ${ADS} https://*.google.com https://www.youtube-nocookie.com; connect-src 'self' ${ADS} https://*.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`;
 const SECURITY = { 'Strict-Transport-Security': 'max-age=31536000', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'X-Frame-Options': 'DENY', 'Content-Security-Policy': CSP };
 
 // Fingerprinted CSS/JS: every HTML page links /styles.css, /app.js, ... as /styles.css?v=<content hash>, and
@@ -749,6 +749,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       const [src, campaign] = SHORT_LINKS[x[1]];
       const promo = D.todayIso() < '2026-12-01';
       res.writeHead(302, { Location: `${promo ? MOSCONI_PATH : '/'}?utm_source=${src}&utm_medium=social&utm_campaign=${promo ? 'mosconi2026' : campaign}`, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+      return res.end();
+    }
+    // Outbound "Subscribe on YouTube" buttons: count the click, then send to the channel's subscribe prompt.
+    if ((m === 'GET' || m === 'HEAD') && (p === '/youtube' || p === '/youtube/')) {
+      if (m === 'GET') trackVisit(req, 'out-youtube');
+      res.writeHead(302, { Location: 'https://www.youtube.com/@Billiardactiontime?sub_confirmation=1', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
       return res.end();
     }
     if ((m === 'GET' || m === 'HEAD') && (p === '/rss.xml' || p === '/rss' || p === '/feed' || p === '/feed/')) return moved('/feed.xml');

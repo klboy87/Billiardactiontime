@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layout, shareStrip } from './seo.js';
 import * as D from './db.js';
+import { youtubeCtaHtml } from './social.js';
 
 const FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'pro-events.json');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -56,6 +57,7 @@ export function proEventsPage(cfg) {
   <p class="lead-muted">The next big professional pool events, with dates, venues, formats and where each one streams. Updated as organizers confirm details.</p>
   ${list.length ? list.map(card).join('') : '<p class="muted">No upcoming pro events listed right now. Check back soon.</p>'}
   ${signup}
+  ${youtubeCtaHtml('Pro match recaps and highlights from the big events.')}
   <section class="sec seo-sec"><h2>More big pool events</h2><p>Want to play, not just watch? See the <a href="/big-tournaments/">biggest added-money tournaments</a> coming up across the US, what's on <a href="/this-weekend/">this weekend</a>, and the <a href="/guides/major-pool-events-calendar">major pool events calendar</a>.</p></section>
   ${shareStrip(cfg, PRO_EVENTS_PATH, 'Pro pool events: schedule and where to watch', 'Upcoming pro pool events with dates, venues and streams.')}`;
   const tz = '-05:00';

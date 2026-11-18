@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layout, shareStrip } from './seo.js';
 import * as D from './db.js';
+import { youtubeCtaHtml, youtubeEmbedHtml } from './social.js';
 
 const RESULTS_FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'mosconi-2026.json');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -21,6 +22,8 @@ const SOURCE = 'https://www.azbilliards.com/mosconi-cup-teams-are-confirmed-euro
 
 function readJson() { try { return JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf8')) || {}; } catch { return {}; } }
 // Order of play: set "orderOfPlay" (plain text) in content/mosconi-2026.json when Matchroom publishes it.
+// Optional "youtubeId" (our channel only) + "youtubeTitle"/"youtubeCredit" in content/mosconi-2026.json shows a click-to-load video.
+const mosconiVideo = () => { const j = readJson(); return youtubeEmbedHtml(j.youtubeId, j.youtubeTitle || 'Mosconi Cup 2026', j.youtubeCredit || ''); };
 const orderOfPlay = () => { const o = readJson().orderOfPlay; return typeof o === 'string' && o.trim() ? o.trim() : ''; };
 
 // "Add to calendar" file: the four 1 PM ET sessions plus the Thursday fan press conference.
@@ -71,7 +74,9 @@ export function mosconiPage(cfg) {
     </tbody></table>
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="${MOSCONI_PATH}/calendar.ics" rel="nofollow" download>📅 Add to calendar (all 4 days + press conference)</a><a class="btn btn-out" href="/pro-events">More pro events &amp; where to watch</a></div>
   </article>
+  ${mosconiVideo()}
   ${signup}
+  ${youtubeCtaHtml('Mosconi Cup previews, highlights and pro match recaps.')}
   <section class="sec seo-sec"><h2>The teams</h2><div style="display:flex;flex-wrap:wrap;gap:12px">${team('Team USA', 'Johan Ruijsink', USA)}${team('Team Europe', 'Niels Feijen', EUROPE)}</div>
     <p class="muted" style="font-size:13px">Source: <a href="${SOURCE}" rel="noopener nofollow" target="_blank">Mosconi Cup teams confirmed (Matchroom, Nov 15, 2026)</a>.</p></section>
   <section class="sec seo-sec"><h2>Daily results</h2><table class="t"><tbody>${dayRows}</tbody></table></section>
