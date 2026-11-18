@@ -17,6 +17,38 @@ export const mosconiPromoOn = (today = D.todayIso()) => today < '2026-12-01';
 
 const USA = ['Shane Van Boening', 'Tyler Styer', 'Fedor Gorst', 'Justin Bergman', 'Skyler Woodward'];
 const EUROPE = ['Francisco Sánchez Ruiz', 'Joshua Filler', 'Aleksa Pecelj', 'David Alcaide', 'Jayson Shaw'];
+// Short bios (from the official team announcement and our Nov 17 research). Plain text.
+const USA_BIOS = [
+  ['Johan Ruijsink', 'Captain (non-playing). The Dutch coach behind the USA\'s last two wins, in 2018 and 2019, is back in charge.'],
+  ['Shane Van Boening', 'A record 20th straight Mosconi Cup, and the first American to qualify this year. The iron man of the event.'],
+  ['Tyler Styer', 'Two-time Mosconi Cup winner, a steady hand in doubles and team matches.'],
+  ['Fedor Gorst', 'Former World Champion and world No. 1. Won the 2026 Reyes Cup and was runner-up to Carlo Biado in the 2025 world final (15-13).'],
+  ['Justin Bergman', 'Part of the 2019 winning team and back after seven years. He was named for 2020 but missed it with COVID.'],
+  ['Skyler Woodward', 'Two-time MVP (2018, 2019). Playing captain in 2024 and 2025, now back to just playing.']
+];
+const EUROPE_BIOS = [
+  ['Niels Feijen', 'Captain (non-playing). A Dutch veteran of many Mosconi Cups as a player, now leading Europe from the chair.'],
+  ['Francisco Sánchez Ruiz', 'Reigning US Open champion and 2026 Reyes Cup MVP. The first European to qualify this year.'],
+  ['Joshua Filler', 'Six-time Mosconi Cup champion. Won the 2026 UK Open and the Reyes Cup.'],
+  ['Aleksa Pecelj', 'Breakthrough 2026 with titles at the Phoenix Open and the Reyes Cup.'],
+  ['David Alcaide', 'Multiple Cup winner, with World Pool Masters, European Open and Philippines Open titles.'],
+  ['Jayson Shaw', 'Multiple Cup winner and two-time MVP. Captained Europe to wins in 2024 and 2025 as a player.']
+];
+const HISTORY = [['2025', 'Europe 11-3', 'Alexandra Palace, London'], ['2024', 'Europe 11-6', 'Caribe Royale, Orlando (this year\'s venue)'], ['2023', 'Europe 11-3', ''], ['2022', 'Europe 11-7', ''], ['2021', 'Europe 11-6', ''], ['2020', 'Europe 11-3', ''], ['2019', 'USA 11-8', 'Las Vegas (the USA\'s last win)']];
+const MATCHUPS = [
+  ['Shane Van Boening vs. Joshua Filler', 'The 20-time American against the six-time champion. If these two meet in singles, it could swing a session.'],
+  ['Fedor Gorst vs. Francisco Sánchez Ruiz', 'Reyes Cup teammates a month ago, now on opposite sides. Two of the best players in the world right now.'],
+  ['Skyler Woodward vs. Jayson Shaw', 'Two-time MVP against two-time MVP. Both just handed back the captain\'s job and can focus on playing.']
+];
+const STORYLINES = [
+  'Seven straight, or does the streak end? Europe have won six in a row; the USA haven\'t won since 2019 and now play at home.',
+  'Teammates turned rivals: Gorst (USA) and Sánchez Ruiz, Filler and Pecelj (Europe) won the 2026 Reyes Cup together a month ago.',
+  'The Ruijsink effect: the captain behind the 2018 and 2019 US wins is back.',
+  'Shane\'s 20th: nobody has played in more Mosconi Cups in a row.',
+  'Bergman\'s comeback after seven years away, and Woodward going from captain back to player.',
+  'Shaw and Filler, Europe\'s closers, against a loud American crowd over Thanksgiving weekend.',
+  'Where\'s Neuhausen? Last year\'s unbeaten rookie MVP, Moritz Neuhausen, did not make the 2026 team.'
+];
 const DAYS = [['2026-11-27', 'Friday, Nov 27', 'Day 1'], ['2026-11-28', 'Saturday, Nov 28', 'Day 2'], ['2026-11-29', 'Sunday, Nov 29', 'Day 3'], ['2026-11-30', 'Monday, Nov 30', 'Day 4 (final day)']];
 const SOURCE = 'https://www.azbilliards.com/mosconi-cup-teams-are-confirmed-europe-chase-seven-as-usa-bid-for-home-glory-live-on-espn-27-30-november/';
 
@@ -53,7 +85,7 @@ export function mosconiPage(cfg) {
     <h2 class="seo-h2" style="margin-top:0">📬 Get Mosconi Cup recaps by email</h2>
     <p class="muted" style="margin:6px 0 12px">Sign up for our free daily email. During the Mosconi Cup (Nov 27–30) it carries a short recap of each day's matches, plus pool tips and tournaments near you. Unsubscribe any time.</p>
     <form class="sub-form" data-sub action="/alerts" method="get"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"><button class="btn btn-green" type="submit">Send Me the Recaps</button></form><p class="sub-msg" aria-live="polite"></p></section>`;
-  const team = (name, captain, players) => `<div class="card" style="flex:1;min-width:240px;padding:14px 18px"><h3 style="margin:0 0 6px">${esc(name)}</h3><p class="muted" style="margin:0 0 6px">Captain: ${esc(captain)} (non-playing)</p><ul class="seo-list" style="margin:0">${players.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>`;
+  const team = (name, bios) => `<div class="card" style="flex:1;min-width:260px;padding:14px 18px"><h3 style="margin:0 0 6px">${esc(name)}</h3><ul class="seo-list" style="margin:0">${bios.map(([n, b]) => `<li><b>${esc(n)}</b>: ${esc(b)}</li>`).join('')}</ul></div>`;
   const dayRows = DAYS.map(([d, label, n]) => {
     const r = res.get(d);
     const body = r ? `${r.score ? `<b>${esc(r.score)}</b>` : ''}${r.summary ? `<br>${esc(r.summary)}` : ''}` : (d < today ? 'Results coming soon.' : 'Results will be posted here after play ends.');
@@ -77,12 +109,19 @@ export function mosconiPage(cfg) {
   ${mosconiVideo()}
   ${signup}
   ${youtubeCtaHtml('Mosconi Cup previews, highlights and pro match recaps.')}
-  <section class="sec seo-sec"><h2>The teams</h2><div style="display:flex;flex-wrap:wrap;gap:12px">${team('Team USA', 'Johan Ruijsink', USA)}${team('Team Europe', 'Niels Feijen', EUROPE)}</div>
+  <section class="sec seo-sec"><h2>The teams</h2><div style="display:flex;flex-wrap:wrap;gap:12px">${team('Team USA', USA_BIOS)}${team('Team Europe', EUROPE_BIOS)}</div>
     <p class="muted" style="font-size:13px">Source: <a href="${SOURCE}" rel="noopener nofollow" target="_blank">Mosconi Cup teams confirmed (Matchroom, Nov 15, 2026)</a>.</p></section>
+  <section class="sec seo-sec"><h2>Key matchups to watch</h2><p class="muted">The order of play isn't out yet, so these are the matches we'd most like to see.</p><ul class="seo-list">${MATCHUPS.map(([m, w]) => `<li><b>${esc(m)}</b>: ${esc(w)}</li>`).join('')}</ul></section>
+  <section class="sec seo-sec"><h2>Storylines</h2><ul class="seo-list">${STORYLINES.map(t => `<li>${esc(t)}</li>`).join('')}</ul></section>
+  <section class="sec seo-sec"><h2>Mosconi Cup history: Europe's six-year streak</h2>
+    <p>Europe have won the last six Mosconi Cups (2020 to 2025) and lead the all-time series. The USA last won in 2019 in Las Vegas, 11-8, under this year's captain Johan Ruijsink. In 2024 the Cup was played at this same venue, the Caribe Royale in Orlando, and Europe won 11-6.</p>
+    <table class="t"><thead><tr><th>Year</th><th>Winner and score</th><th>Note</th></tr></thead><tbody>${HISTORY.map(([y, w, n]) => `<tr><td>${y}</td><td>${esc(w)}</td><td>${esc(n)}</td></tr>`).join('')}</tbody></table>
+    <p class="muted" style="font-size:13px">2025 MVP: Moritz Neuhausen (Europe), unbeaten as a rookie.</p></section>
   <section class="sec seo-sec"><h2>Daily results</h2><table class="t"><tbody>${dayRows}</tbody></table></section>
   <section class="sec seo-sec"><h2>How to watch in the US</h2>
     <p><b>Play starts at 1:00 PM ET (6 PM GMT) on each of the four days, Friday Nov 27 to Monday Nov 30.</b> Every session streams live on <b>ESPN+</b> and <b>WNT TV</b> (the World Nineball Tour's streaming service). Each match is a race to 5 racks worth one point, and the first team to 11 points wins the Cup.</p></section>
   <section class="sec seo-sec"><h2>Read before the first break</h2><ul class="seo-list">
+    <li><a href="/blog/mosconi-cup-2026-teams-usa-vs-europe-lineups">Mosconi Cup 2026 teams: meet the USA and Europe lineups</a></li>
     <li><a href="/blog/how-the-mosconi-cup-works-format-explained">How the Mosconi Cup works: the format explained</a></li>
     <li><a href="/blog/nine-ball-rules-explained-before-mosconi-cup">9-Ball rules explained before the Mosconi Cup</a></li>
     <li><a href="/guides/pool-news-chua-filler-mosconi-countdown-november-2026">Pool news: Chua wins at home, Filler takes $100K, Mosconi countdown</a></li>

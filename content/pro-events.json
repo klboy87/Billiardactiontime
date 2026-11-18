@@ -1,6 +1,43 @@
 {
-  "note": "Upcoming pro pool events for /pro-events. Edit and push to update. Dates checked against each organizer's own site on 2026-11-16. Events drop off the page the day after 'end'.",
+  "note": "Upcoming pro pool events for /pro-events. Edit and push to update. Calendar Nov 2026 - Feb 2027 from the social team's research (Nov 17), confirmed items only; organizer sites checked 2026-11-16/17. Events drop off the day after 'end' (or after 'keepUntil' if set, e.g. to show a result). 'result' shows a Result row. 'tbc' is the separate 'To be confirmed' list.",
   "events": [
+    {
+      "name": "Universal Bangkok Open",
+      "start": "2026-11-17",
+      "end": "2026-11-21",
+      "venue": "S1 Pool Hall & Sport Bar",
+      "city": "Bangkok, Thailand",
+      "format": "9-ball, World Nineball Tour ranking event.",
+      "watch": "WNT TV (Bangkok is 12 hours ahead, so play runs overnight ET)",
+      "watchUrl": "https://wnt.tv",
+      "source": "https://worldnineballtour.com/schedule/",
+      "organizer": "Matchroom / World Nineball Tour"
+    },
+    {
+      "name": "Ultimate Pool All Ireland: Irish Open",
+      "start": "2026-11-19",
+      "end": "2026-11-22",
+      "venue": "To be announced",
+      "city": "Ireland",
+      "format": "UK 8-ball (blackball).",
+      "watch": "Ultimate Pool's channels",
+      "watchUrl": "https://ultimatepool.tv",
+      "source": "https://ultimatepoolgroup.com/calendar",
+      "organizer": "Ultimate Pool Group"
+    },
+    {
+      "name": "Mosconi Cup press conference (open to fans)",
+      "start": "2026-11-26",
+      "end": "2026-11-26",
+      "startTime": "15:00",
+      "venue": "Palms III, Caribe Royale Resort",
+      "city": "Orlando, FL, USA",
+      "format": "Thanksgiving Day, 3-4 PM ET (doors 2:30 PM). Team USA and Team Europe face to face the day before play starts.",
+      "watch": "In person; follow World Nineball Tour's social channels",
+      "link": "/mosconi-cup-2026",
+      "source": "https://worldnineballtour.com/news/planning-your-mosconi-cup-trip-to-orlando/",
+      "organizer": "Matchroom / World Nineball Tour"
+    },
     {
       "name": "Mosconi Cup 2026",
       "start": "2026-11-27",
@@ -8,8 +45,8 @@
       "startTime": "13:00",
       "venue": "Caribe Royale Resort",
       "city": "Orlando, FL, USA",
-      "format": "Team USA vs. Team Europe, 9-ball team event. Matches are races to 5; first team to 11 points wins.",
-      "watch": "ESPN+ and WNT TV",
+      "format": "33rd edition. Team USA vs. Team Europe, 5 v 5 nine-ball: singles, doubles and team matches. Each match is a race to 5 for one point; first team to 11 wins.",
+      "watch": "ESPN+ (ESPN App) and WNT TV in the US. Other countries: to be announced",
       "watchUrl": "https://wnt.tv",
       "link": "/mosconi-cup-2026",
       "source": "https://worldnineballtour.com/events/mosconi-cup/",
@@ -21,8 +58,8 @@
       "end": "2026-12-07",
       "venue": "X-United Billiard Club",
       "city": "Seville, Spain",
-      "format": "128-player 9-ball: double elimination, then single elimination from the last 64. Races to 9, winner breaks.",
-      "watch": "WNT TV",
+      "format": "128-player 9-ball, $58,000: double elimination, then single elimination from the last 64. Races to 9, winner breaks. Last World Nineball Tour ranking stop of 2026.",
+      "watch": "WNT TV (Spain is 6 hours ahead, so morning to afternoon ET)",
       "watchUrl": "https://wnt.tv",
       "source": "https://worldnineballtour.com/events/mezz-sevilla-open/",
       "organizer": "World Nineball Tour"
@@ -40,7 +77,19 @@
       "organizer": "WPBA"
     },
     {
-      "name": "Ultimate Pool Pro Series Grand Finals",
+      "name": "99 DavidLoman x CPBA Titan Championship",
+      "start": "2026-12-10",
+      "end": "2026-12-13",
+      "venue": "99 Billiards Club",
+      "city": "Hanoi, Vietnam",
+      "format": "9-ball, $40,400, World Nineball Tour ranking event.",
+      "watch": "WNT TV (Hanoi is 12 hours ahead, so play runs overnight ET)",
+      "watchUrl": "https://wnt.tv",
+      "source": "https://worldnineballtour.com/events/99-davidloman-x-cpba-titan-championship-2026/",
+      "organizer": "Matchroom / World Nineball Tour"
+    },
+    {
+      "name": "Ultimate Pool Pro Series Grand Finals (Events 7 & 8)",
       "start": "2026-12-11",
       "end": "2026-12-13",
       "venue": "Robin Park Leisure Centre",
@@ -48,7 +97,7 @@
       "format": "Grand Final weekend of the UK's Ultimate Pool Pro Series (8-ball / blackball).",
       "watch": "ultimatepool.tv and Ultimate Pool's YouTube, Facebook and TikTok",
       "watchUrl": "https://ultimatepool.tv",
-      "source": "https://ultimatepoolgroup.com/tournaments/pro-series-2026",
+      "source": "https://ultimatepoolgroup.com/calendar",
       "organizer": "Ultimate Pool Group"
     },
     {
@@ -61,6 +110,82 @@
       "watch": "Free on Pro Billiard TV (YouTube)",
       "source": "https://probilliardseries.com/event/2026-jacksonville/",
       "organizer": "Predator Pro Billiard Series"
+    },
+    {
+      "name": "Chinese Taipei Open",
+      "start": "2027-01-06",
+      "end": "2027-01-10",
+      "venue": "Songshan Cultural and Creative Park",
+      "city": "Taipei, Taiwan",
+      "format": "128-player 9-ball: double elimination to the last 64, then knockout. World Nineball Tour ranking event.",
+      "watch": "WNT TV (Taipei is 13 hours ahead, so play runs overnight ET)",
+      "watchUrl": "https://wnt.tv",
+      "source": "https://worldnineballtour.com/events/2027-chinese-taipei-open/",
+      "organizer": "Matchroom + Fullcan Sports"
+    },
+    {
+      "name": "World Pool Masters 2027",
+      "start": "2027-01-12",
+      "end": "2027-01-14",
+      "venue": "Songshan Cultural and Creative Park",
+      "city": "Taipei, Taiwan",
+      "format": "Invitational 9-ball, 20 players, straight knockout, $125,000. First event in a two-table arena.",
+      "watch": "WNT TV (both tables live)",
+      "watchUrl": "https://wnt.tv",
+      "source": "https://worldnineballtour.com/events/world-pool-masters/world-pool-masters-2027/",
+      "organizer": "Matchroom / World Nineball Tour"
+    },
+    {
+      "name": "Turning Stone Classic XLIII 9-Ball Open",
+      "start": "2027-01-13",
+      "end": "2027-01-16",
+      "venue": "Turning Stone Resort Casino",
+      "city": "Verona, NY, USA",
+      "format": "9-ball open, $25,000 added, $250 entry.",
+      "watch": "Stream not announced yet (past editions streamed free with live scoring on AZBilliards)",
+      "source": "http://www.joss9balltour.com/schedule1.htm",
+      "organizer": "Joss Northeast 9-Ball Tour"
+    },
+    {
+      "name": "World Grand Prix (first edition)",
+      "start": "2027-01-18",
+      "end": "2027-01-20",
+      "venue": "Fira Barcelona Gran Via (with ICE Barcelona)",
+      "city": "Barcelona, Spain",
+      "format": "World Nineball Tour Major: 9-ball, 64 players, single elimination on 8 tables, $100,000.",
+      "watch": "To be announced (Barcelona is 6 hours ahead of ET)",
+      "source": "https://worldnineballtour.com/events/2027-world-grand-prix/",
+      "organizer": "Matchroom + WorldGaming"
+    },
+    {
+      "name": "Derby City Classic",
+      "start": "2027-01-22",
+      "end": "2027-01-31",
+      "startTime": "10:00",
+      "venue": "Caesars Southern Indiana",
+      "city": "Elizabeth, IN, USA",
+      "format": "9-Ball Bank from Jan 22, One-Pocket from Jan 24, and 9-Ball (WPA Players Championship, race to 8, $90,000 added) from Jan 27.",
+      "watch": "Stream not announced yet for 2027",
+      "source": "https://www.derbycityclassic.com/",
+      "organizer": "Diamond Billiard Products"
+    },
+    {
+      "name": "Premier League Pool 2027",
+      "start": "2027-02-16",
+      "end": "2027-02-21",
+      "venue": "Classic Billiards",
+      "city": "Lauderhill (Miami area), FL, USA",
+      "format": "Invitational 9-ball: 16 elite players, league format, short races. Field to be announced.",
+      "watch": "To be announced",
+      "source": "https://matchroompool.com/events/2027-premier-league-pool/",
+      "organizer": "Matchroom"
     }
+  ],
+  "tbc": [
+    { "name": "WPBA Iron City Invitational V", "when": "Jan 15-18, 2027 (listed)", "where": "Birmingham, AL", "note": "Only on the AZBilliards calendar so far; not yet on the WPBA's own site." },
+    { "name": "WPBA Classic Billiards Players Championship", "when": "Feb 12-15, 2027 (listed)", "where": "Lauderhill, FL", "note": "Only on the AZBilliards calendar so far; not yet on the WPBA's own site." },
+    { "name": "Ultimate Pool Masters 2027", "when": "Early January 2027", "where": "UK", "note": "Not on Ultimate Pool's official calendar yet." },
+    { "name": "Mosconi Cup order of play and broadcasters outside the US", "when": "Nov 27-30, 2026", "where": "Orlando, FL", "note": "Not published yet. US viewers: ESPN+ and WNT TV." },
+    { "name": "Predator Pro Billiard Series Las Vegas", "when": "Feb 24 - Mar 6, 2027 (listed)", "where": "Las Vegas, NV", "note": "Listed by a tour aggregator; waiting for the Pro Billiard Series' own site." }
   ]
 }
