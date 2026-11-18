@@ -1,18 +1,12 @@
 {
- "lastUpdated": "Nov 18, 2026, 8:15 AM ET",
- "checkedAt": "2026-11-18T14:20:00Z",
+ "lastUpdated": "Nov 18, 2026, 9:15 AM ET",
+ "checkedAt": "2026-11-18T19:20:00Z",
  "items": [
-  {
-   "title": "Add YouTube channel everywhere (footer, sameAs, Subscribe buttons)",
-   "status": "done (buttons via /youtube, not /yt)"
-  },
-  {
-   "title": "Allow YouTube embeds + youtubeId field",
-   "status": "done (feature); Efren/Strickland IDs held for a matching post; Shorts strip skipped"
-  },
-  {
-   "title": "/gear specific products (needs owner)",
-   "status": "skipped: needs owner's product picks/ASINs"
-  }
+  {"title": "Add YouTube channel everywhere (footer, sameAs, Subscribe buttons)", "status": "done Nov 18 AM (buttons via /youtube, not /yt)"},
+  {"title": "Allow YouTube embeds + youtubeId field (+ video IDs, Shorts)", "status": "done (feature); Efren/Strickland IDs held for a matching post; optional Shorts strip skipped"},
+  {"title": "/gear specific products (needs owner)", "status": "skipped: needs owner's product picks/ASINs"},
+  {"title": "4a Mosconi + pro calendar: full calendar on /pro-events", "status": "done Nov 18 PM (15 events + To be confirmed list); Bangkok result due after Nov 21 (use 'result' + 'keepUntil' fields)"},
+  {"title": "4b Team bios, matchups, storylines, history on hub", "status": "done Nov 18 PM"},
+  {"title": "4c-4e Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap", "status": "not due yet"}
  ]
 }
