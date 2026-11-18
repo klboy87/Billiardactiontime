@@ -1,22 +1,14 @@
 {
- "lastUpdated": "Nov 15, 2026, 6:10 PM ET",
- "checkedAt": "2026-11-18T02:06:39Z",
+ "lastUpdated": "Nov 18, 2026, 8:15 AM ET",
+ "checkedAt": "2026-11-18T14:20:00Z",
  "items": [
   {
-   "title": "Mosconi Cup hub: start times + add-to-calendar",
-   "status": "done"
+   "title": "Add YouTube channel everywhere (footer, sameAs, Subscribe buttons)",
+   "status": "done (buttons via /youtube, not /yt)"
   },
   {
-   "title": "Pro events / Where to watch page",
-   "status": "done (/pro-events)"
-  },
-  {
-   "title": "Sitemap: past money-match pages",
-   "status": "done"
-  },
-  {
-   "title": "Admin: break out utm_campaign",
-   "status": "done"
+   "title": "Allow YouTube embeds + youtubeId field",
+   "status": "done (feature); Efren/Strickland IDs held for a matching post; Shorts strip skipped"
   },
   {
    "title": "/gear specific products (needs owner)",
