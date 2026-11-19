@@ -30,6 +30,13 @@ export function youtubeEmbedHtml(id, title = '', credit = '') {
   return `<figure class="yt-embed" style="margin:16px 0"><div style="position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000"><iframe src="${src}" srcdoc="${escA(doc)}" title="${escA(title || 'YouTube video')}" loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>${credit ? `<figcaption class="muted" style="font-size:13px;margin-top:4px">${escA(credit)}</figcaption>` : ''}</figure>`;
 }
 
+// Featured long-form video shown near the top of /blog/ (our own channel's upload; click-to-load).
+export const FEATURED_VIDEO = { id: 'Vo_qtjqsDpI', title: "Efren Reyes vs Mike Dechaine: Lucky or Genius? The Booth Can't Decide" };
+export function featuredVideoHtml(v = FEATURED_VIDEO) {
+  if (!v || !validYoutubeId(v.id)) return '';
+  return `<section class="card yt-featured" style="margin:18px 0;padding:14px 18px"><h2 style="margin:0 0 4px;font-size:1.2rem">▶ Featured video: ${escA(v.title)}</h2>${youtubeEmbedHtml(v.id, v.title)}<p style="margin:0"><a href="${YOUTUBE_OUT}" target="_blank" rel="noopener"><b>More on our YouTube channel →</b></a></p></section>`;
+}
+
 // "Latest Shorts" strip: click-to-load vertical facades (same approach as youtubeEmbedHtml, nothing loads
 // from YouTube until a click). Our own channel's Shorts only, newest first. "after" (ISO UTC) hides a Short
 // until it is public.

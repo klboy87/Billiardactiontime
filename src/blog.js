@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layout, shareStrip } from './seo.js';
-import { youtubeCtaHtml, youtubeEmbedHtml, youtubeShortsHtml, validYoutubeId } from './social.js';
+import { youtubeCtaHtml, youtubeEmbedHtml, youtubeShortsHtml, validYoutubeId, featuredVideoHtml } from './social.js';
 
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'blog');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -38,7 +38,7 @@ export const POSTS = load();
 export function blogIndexPage(cfg) {
   const list = POSTS.length ? `<ul class="seo-list" style="list-style:none;padding:0;display:grid;gap:18px">${POSTS.map(p => `<li class="card" style="padding:14px 18px">${p.image ? `<img src="${esc(p.image)}" alt="" loading="lazy" style="max-width:100%;border-radius:8px;margin-bottom:8px">` : ''}<a href="/blog/${p.slug}"><b style="font-size:20px">${esc(p.title)}</b></a><br><small class="muted">${niceDate(p.date)}</small><br><span class="muted">${esc(p.description)}</span></li>`).join('')}</ul>` : '<p class="muted">No posts yet. Check back soon.</p>';
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <span>Blog</span></nav>
-  <div class="pagehead"><h1>Pool News &amp; Blog</h1><p>Pool news, tournament recaps and stories from Billiard Action Time. Newest first.</p></div>${list}
+  <div class="pagehead"><h1>Pool News &amp; Blog</h1><p>Pool news, tournament recaps and stories from Billiard Action Time. Newest first.</p></div>${featuredVideoHtml()}${list}
   <p style="margin-top:18px"><a href="/guides/">Pool guides →</a> · <a href="/this-weekend/">Tournaments this weekend →</a></p>`;
   return layout(cfg, { title: 'Pool News & Blog | Billiard Action Time', description: 'Pool news, tournament recaps and stories from Billiard Action Time.', path: '/blog/', body,
     jsonld: [{ '@context': 'https://schema.org', '@type': 'Blog', name: 'Billiard Action Time Blog', url: `${cfg.publicUrl}/blog/`, blogPost: POSTS.slice(0, 20).map(p => ({ '@type': 'BlogPosting', headline: p.title, url: `${cfg.publicUrl}/blog/${p.slug}`, datePublished: p.date })) }] });
