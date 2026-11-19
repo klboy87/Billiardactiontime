@@ -1,11 +1,11 @@
 {
- "lastUpdated": "Nov 18, 2026, 6:15 PM ET",
- "checkedAt": "2026-11-19T02:20:00Z",
+ "lastUpdated": "Nov 19, 2026, 8:20 AM ET",
+ "checkedAt": "2026-11-19T14:22:00Z",
  "items": [
   {"title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap; Bangkok result after Nov 21", "status": "not due yet"},
-  {"title": "2 How-to-watch FAQ + time-zone table on /mosconi-cup-2026", "status": "done Nov 19 (commit 5463235, FAQPage schema, #order-of-play anchor)"},
-  {"title": "3 Latest Shorts strip (home + blog posts)", "status": "done Nov 19; dvmThoJc2rY auto-shows after 2026-11-19T17:00Z (SHORTS list in src/social.js)"},
-  {"title": "4 Railway skipped auto-deploys", "status": "checked: dashboard watchPatterns skip even src commits; owner must clear them; manual redeploy works"},
+  {"title": "2 Check Where to watch links on /pro-events (wnt.tv, Joss Tour link)", "status": "done Nov 19 (commit fbb0612): 6 links -> https://www.wnttv.com/ (used by worldnineballtour.com); Joss link kept, recheck next time"},
+  {"title": "3 Pick the winner box on /mosconi-cup-2026", "status": "done Nov 19 (commit fbb0612): picks table mosconi_picks, emails tagged campaign mosconi-pick, bar at 20 picks, closes 2026-11-27T18:00Z"},
+  {"title": "4 Railway watch paths", "status": "owner action; still skipping (fbb0612 skipped, redeployed by hand)"},
   {"title": "5 /gear specific products", "status": "skipped: needs owner's product picks/ASINs"},
   {"title": "6 Held videos", "status": "held as instructed"}
  ]
