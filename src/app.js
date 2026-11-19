@@ -33,7 +33,7 @@ import * as MM from './moneymatches.js';
 import * as MP from './moneypages.js';
 import { sponsorBannerHtml } from './sponsor.js';
 import { appPageFor, fillShell } from './apppages.js';
-import { FONT_LINKS, socialLinksHtml } from './social.js';
+import { FONT_LINKS, socialLinksHtml, youtubeShortsHtml } from './social.js';
 import { buildNewsletter } from './newsletter.js';
 import * as GU from './guides.js';
 import * as BL from './blog.js';
@@ -241,6 +241,10 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     let homeIntro = '';
     let homeDesc = '';
     if (!page) try { homeIntro = SEO.homeIntroHtml(db); homeDesc = homeDescription(); } catch (e) { log('home intro failed: ' + e.message); }
+    // "Latest Shorts" strip below the home page's tournament list (home only; the app hides it on other views).
+    let shorts = '';
+    if (!page) try { const h = youtubeShortsHtml(); shorts = h ? `<div class="wrap" id="homeShorts">${h}</div>` : ''; } catch (e) { log('shorts strip failed: ' + e.message); }
+    body = body.replace('<!--SHORTS-->', shorts);
     return fillShell(body, cfg, page, { homeIntro, homeDesc });
   }
 

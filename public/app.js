@@ -2762,6 +2762,8 @@
     const { pathPart, params, segs } = parseHash();
     window.scrollTo(0, 0);
     trackPage(pathPart);
+    const shorts = document.getElementById('homeShorts');
+    if (shorts) shorts.hidden = !(segs.length === 0 || pathPart === '/');
     // exact match first
     if (routes[pathPart]) return routes[pathPart](params);
     // /prefix/:id style

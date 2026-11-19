@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layout, shareStrip } from './seo.js';
-import { youtubeCtaHtml, youtubeEmbedHtml, validYoutubeId } from './social.js';
+import { youtubeCtaHtml, youtubeEmbedHtml, youtubeShortsHtml, validYoutubeId } from './social.js';
 
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'blog');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -53,7 +53,7 @@ export function blogPostPage(cfg, slug) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/blog/">Blog</a> <span>/</span> <span>${esc(p.title)}</span></nav>
   <article class="card guide"><h1>${esc(p.title)}</h1>
   <p class="guide-meta"><span>${niceDate(p.date)}</span><span>By Billiard Action Time</span></p>
-  ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.title)}" style="max-width:100%;border-radius:8px;margin:0 0 14px">` : ''}${p.body}${p.youtubeId ? youtubeEmbedHtml(p.youtubeId, p.youtubeTitle, p.youtubeCredit) : ''}${src}${youtubeCtaHtml()}${shareStrip(cfg, `/blog/${p.slug}`, p.title, p.title)}</article>
+  ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.title)}" style="max-width:100%;border-radius:8px;margin:0 0 14px">` : ''}${p.body}${p.youtubeId ? youtubeEmbedHtml(p.youtubeId, p.youtubeTitle, p.youtubeCredit) : ''}${src}${youtubeShortsHtml()}${youtubeCtaHtml()}${shareStrip(cfg, `/blog/${p.slug}`, p.title, p.title)}</article>
   ${others.length ? `<section class="sec seo-sec"><h2>More from the blog</h2><div class="guide-next">${others.map(x => `<a href="/blog/${x.slug}"><small>${niceDate(x.date)}</small><b>${esc(x.title)}</b></a>`).join('')}</div><p style="margin-top:12px"><a href="/blog/">All posts →</a></p></section>` : ''}`;
   const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.title, description: p.description, url, datePublished: p.date, dateModified: p.date, ...(p.image ? { image: p.image } : {}),
     publisher: { '@type': 'Organization', name: 'Billiard Action Time', logo: { '@type': 'ImageObject', url: cfg.publicUrl + '/icons/icon-512.png' } }, author: { '@type': 'Organization', name: 'Billiard Action Time' } };

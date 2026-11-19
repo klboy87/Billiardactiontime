@@ -29,3 +29,25 @@ export function youtubeEmbedHtml(id, title = '', credit = '') {
   const doc = `<style>*{margin:0;padding:0}html,body{height:100%;overflow:hidden;background:#000}a{display:block;height:100%;position:relative}img{width:100%;height:100%;object-fit:cover}span{position:absolute;inset:0;margin:auto;width:68px;height:48px;border-radius:12px;background:rgba(200,0,0,.9);color:#fff;font:28px/48px sans-serif;text-align:center}</style><a href="${src}" title="Play: ${escA(title)}"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${escA(title)}"><span>▶</span></a>`;
   return `<figure class="yt-embed" style="margin:16px 0"><div style="position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000"><iframe src="${src}" srcdoc="${escA(doc)}" title="${escA(title || 'YouTube video')}" loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>${credit ? `<figcaption class="muted" style="font-size:13px;margin-top:4px">${escA(credit)}</figcaption>` : ''}</figure>`;
 }
+
+// "Latest Shorts" strip: click-to-load vertical facades (same approach as youtubeEmbedHtml, nothing loads
+// from YouTube until a click). Our own channel's Shorts only, newest first. "after" (ISO UTC) hides a Short
+// until it is public.
+export const SHORTS = [
+  { id: 'dvmThoJc2rY', after: '2026-11-19T17:00:00Z' },
+  { id: 'dhZK3qHdPRo' }, { id: '7A2xb9BhCCc' }, { id: 'TNU1jhBxPM4' }, { id: 'cu_NtTqX_pY' }
+];
+export function latestShorts(now = new Date(), max = 5) {
+  return SHORTS.filter(s => validYoutubeId(s.id) && (!s.after || now >= new Date(s.after))).slice(0, max).map(s => s.id);
+}
+function shortFacade(id) {
+  const src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+  const doc = `<style>*{margin:0;padding:0}html,body{height:100%;overflow:hidden;background:#000}a{display:block;height:100%;position:relative}img{width:100%;height:100%;object-fit:cover}span{position:absolute;inset:0;margin:auto;width:56px;height:40px;border-radius:10px;background:rgba(200,0,0,.9);color:#fff;font:22px/40px sans-serif;text-align:center}</style><a href="${src}" title="Play this Short"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="Billiard Action Time Short"><span>▶</span></a>`;
+  return `<div style="flex:0 0 150px;scroll-snap-align:start"><div style="position:relative;padding-top:177.78%;border-radius:10px;overflow:hidden;background:#000"><iframe src="${src}" srcdoc="${escA(doc)}" title="Billiard Action Time Short" loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div></div>`;
+}
+export function youtubeShortsHtml(now = new Date(), attrs = '') {
+  const ids = latestShorts(now);
+  if (!ids.length) return '';
+  return `<section class="card yt-shorts" ${attrs} style="margin:18px 0;padding:14px 18px"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2 style="margin:0;font-size:1.2rem">▶ Latest Shorts</h2><a href="${YOUTUBE_OUT}" target="_blank" rel="noopener"><b>See all videos →</b></a></div>
+    <div style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 0 4px">${ids.map(shortFacade).join('')}</div></section>`;
+}

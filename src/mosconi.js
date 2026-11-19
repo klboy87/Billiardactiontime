@@ -52,6 +52,21 @@ const STORYLINES = [
 const DAYS = [['2026-11-27', 'Friday, Nov 27', 'Day 1'], ['2026-11-28', 'Saturday, Nov 28', 'Day 2'], ['2026-11-29', 'Sunday, Nov 29', 'Day 3'], ['2026-11-30', 'Monday, Nov 30', 'Day 4 (final day)']];
 const SOURCE = 'https://www.azbilliards.com/mosconi-cup-teams-are-confirmed-europe-chase-seven-as-usa-bid-for-home-glory-live-on-espn-27-30-november/';
 
+// Start times (late November: ET = UTC-5, CET = UTC+1).
+const START_TIMES = [['Eastern (ET)', '1:00 PM'], ['Central (CT)', '12:00 PM'], ['Pacific (PT)', '10:00 AM'], ['UK (GMT)', '6:00 PM'], ['Central Europe (CET)', '7:00 PM']];
+// FAQ shown on the hub and as FAQPage structured data: [question, plain-text answer, optional HTML answer].
+export function mosconiFaq(orderOut = false) {
+  return [
+    ['What time does the Mosconi Cup start?', 'Play starts at 1:00 PM ET (10:00 AM PT, 6:00 PM GMT) every day from Friday, November 27 to Monday, November 30, 2026.'],
+    ['How can I watch the Mosconi Cup in the US?', 'Every session streams live on ESPN+ (in the ESPN App on phones and connected TVs) and on WNT TV, the World Nineball Tour streaming service. Broadcasters for other countries have not been announced yet.'],
+    ['What is the Mosconi Cup format?', 'Five players from the USA face five from Europe in nine-ball singles, doubles and team matches. Each match is a race to 5 racks worth one point, and the first team to 11 points wins the Cup.'],
+    ['When did Team USA last win the Mosconi Cup?', 'Team USA last won in 2019 in Las Vegas, 11-8, under captain Johan Ruijsink, who leads the team again in 2026. Europe have won every Cup since.'],
+    orderOut
+      ? ['Is the Mosconi Cup 2026 order of play out?', 'Yes. The order of play is listed at the top of this page.', 'Yes. See the <a href="#order-of-play">order of play</a> at the top of this page.']
+      : ['Is the Mosconi Cup 2026 order of play out?', 'Not yet. We will add it to this page as soon as Matchroom publishes it.', 'Not yet. We will add it to the <a href="#order-of-play">order of play row</a> at the top of this page as soon as Matchroom publishes it.']
+  ];
+}
+
 function readJson() { try { return JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf8')) || {}; } catch { return {}; } }
 // Order of play: set "orderOfPlay" (plain text) in content/mosconi-2026.json when Matchroom publishes it.
 // Optional "youtubeId" (our channel only) + "youtubeTitle"/"youtubeCredit" in content/mosconi-2026.json shows a click-to-load video.
@@ -91,6 +106,10 @@ export function mosconiPage(cfg) {
     const body = r ? `${r.score ? `<b>${esc(r.score)}</b>` : ''}${r.summary ? `<br>${esc(r.summary)}` : ''}` : (d < today ? 'Results coming soon.' : 'Results will be posted here after play ends.');
     return `<tr><th>${esc(n)}<br><span class="muted" style="font-weight:400">${esc(label)}</span></th><td>${body}</td></tr>`;
   }).join('');
+  const faq = mosconiFaq(!!orderOfPlay());
+  const faqHtml = `<section class="sec seo-sec" id="how-to-watch"><h2>How to watch the Mosconi Cup 2026: quick answers</h2>
+    <table class="t" style="max-width:520px"><caption class="muted" style="text-align:left;padding-bottom:6px">Daily start time, Fri Nov 27 – Mon Nov 30</caption><thead><tr><th>Time zone</th><th>Play starts</th></tr></thead><tbody>${START_TIMES.map(([z, t]) => `<tr><td>${esc(z)}</td><td><b>${esc(t)}</b></td></tr>`).join('')}</tbody></table>
+    ${faq.map(([q, a, html]) => `<h3 style="margin:16px 0 4px;font-size:1.05rem">${esc(q)}</h3><p style="margin:0">${html || esc(a)}</p>`).join('')}</section>`;
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/big-tournaments/">Big Events</a> <span>/</span> <span>Mosconi Cup 2026</span></nav>
   <article class="card">
     <h1 class="dtitle">Mosconi Cup 2026: Team USA vs. Team Europe</h1>
@@ -98,7 +117,7 @@ export function mosconiPage(cfg) {
     <table class="t"><tbody>
       <tr><th>Dates</th><td>Friday, Nov 27 – Monday, Nov 30, 2026</td></tr>
       <tr><th>Start time</th><td><b>Play starts 1:00 PM ET each day</b> (6 PM GMT), Friday to Monday</td></tr>
-      <tr><th>Order of play</th><td>${orderOfPlay() ? esc(orderOfPlay()) : 'Not announced yet. We will post it here when Matchroom publishes it.'}</td></tr>
+      <tr id="order-of-play"><th>Order of play</th><td>${orderOfPlay() ? esc(orderOfPlay()) : 'Not announced yet. We will post it here when Matchroom publishes it.'}</td></tr>
       <tr><th>Venue</th><td>Caribe Royale Resort, Orlando, FL</td></tr>
       <tr><th>Watch (US)</th><td>Live on ESPN+ and WNT TV. Other countries: broadcasters to be announced.</td></tr>
       <tr><th>Tickets</th><td>On sale at <a href="https://worldnineballtour.com" rel="noopener nofollow" target="_blank">worldnineballtour.com</a></td></tr>
@@ -106,6 +125,7 @@ export function mosconiPage(cfg) {
     </tbody></table>
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="${MOSCONI_PATH}/calendar.ics" rel="nofollow" download>📅 Add to calendar (all 4 days + press conference)</a><a class="btn btn-out" href="/pro-events">More pro events &amp; where to watch</a></div>
   </article>
+  ${faqHtml}
   ${mosconiVideo()}
   ${signup}
   ${youtubeCtaHtml('Mosconi Cup previews, highlights and pro match recaps.')}
@@ -144,5 +164,5 @@ export function mosconiPage(cfg) {
     ] };
   return layout(cfg, { title: 'Mosconi Cup 2026: Teams, Dates, How to Watch & Daily Results | Billiard Action Time',
     description: 'Mosconi Cup 2026, Nov 27–30 at the Caribe Royale in Orlando: Team USA and Team Europe line-ups, how to watch on ESPN+ and WNT TV, and daily results.',
-    path: MOSCONI_PATH, body, jsonld: [ld] });
+    path: MOSCONI_PATH, body, jsonld: [ld, { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }] });
 }
