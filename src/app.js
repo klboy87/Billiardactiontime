@@ -22,7 +22,7 @@ function cachedCard(key, make) {
   if (cardCache.size > 120) cardCache.delete(cardCache.keys().next().value);
   return png;
 }
-import { mosconiPage, mosconiIcs, MOSCONI_PATH } from './mosconi.js';
+import { mosconiPage, mosconiIcs, MOSCONI_PATH, picksOpen, pickBarHtml } from './mosconi.js';
 import { proEventsPage, PRO_EVENTS_PATH } from './proevents.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
@@ -290,6 +290,22 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       catch (e) { return json(req, res, 502, { error: e.message }); }
     }
 
+    // Mosconi Cup "Pick the winner" (one pick per visitor; optional email joins the list tagged mosconi-pick).
+    if (m === 'POST' && p === '/api/mosconi-pick') {
+      if (!picksOpen()) return json(req, res, 403, { error: 'Picks are closed. Play has started!' });
+      if (limitedBy(joinHits, clientIp(req) + ':pick', 10, 3_600_000)) return json(req, res, 429, { error: 'Too many tries. Try again later.' });
+      const b = (await readJson(req)) || {};
+      const team = b.team === 'europe' || b.team === 'usa' ? b.team : null;
+      if (!team) return json(req, res, 400, { error: 'Pick Europe or USA' });
+      const loser = Number(b.loser);
+      const score = Number.isInteger(loser) && loser >= 0 && loser <= 10 ? `11-${loser}` : null;
+      const email = clean(b.email).toLowerCase();
+      if (email && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200)) return json(req, res, 400, { error: 'Check your email address (or leave it blank)' });
+      if (isBot(req.headers['user-agent'])) return json(req, res, 200, { ok: true, bar: '' });
+      D.addMosconiPick(db, sha(clientIp(req) + '|mosconi-pick|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32), team, score);
+      if (email) D.addSubscriber(db, email, 'mosconi-pick');
+      return json(req, res, 200, { ok: true, subscribed: !!email, bar: pickBarHtml(D.mosconiPickStats(db)) });
+    }
     if (m === 'POST' && (p === '/api/claims' || p === '/api/reports' || p === '/api/subscribe')) {
       if (limited(clientIp(req) + ':form')) return json(req, res, 429, { error: 'Too many requests. Try again later.' });
       const b = (await readJson(req)) || {};
@@ -746,7 +762,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     if ((m === 'GET' || m === 'HEAD') && (p === '/new' || p === '/new/')) { if (p === '/new') return moved('/new/'); SEO.ensureFooter(db); trackVisit(req, 'new-page'); return html(200, SEO.newTournamentsPage(db, cfg), { 'Cache-Control': 'public, max-age=600' }); }
     if ((m === 'GET' || m === 'HEAD') && p === MOSCONI_PATH + '/calendar.ics') return send(req, res, 200, mosconiIcs(), { 'Content-Type': 'text/calendar; charset=utf-8', 'Content-Disposition': 'attachment; filename="mosconi-cup-2026.ics"', 'Cache-Control': 'public, max-age=3600', 'X-Robots-Tag': 'noindex' });
     if ((m === 'GET' || m === 'HEAD') && (p === PRO_EVENTS_PATH || p === PRO_EVENTS_PATH + '/')) { if (p !== PRO_EVENTS_PATH) return moved(PRO_EVENTS_PATH); SEO.ensureFooter(db); trackVisit(req, 'pro-events'); return html(200, proEventsPage(cfg), { 'Cache-Control': 'public, max-age=600' }); }
-    if ((m === 'GET' || m === 'HEAD') && (p === MOSCONI_PATH || p === MOSCONI_PATH + '/' || p === '/mosconi-cup' || p === '/mosconi-cup/')) { if (p !== MOSCONI_PATH) return moved(MOSCONI_PATH); SEO.ensureFooter(db); trackVisit(req, 'mosconi'); return html(200, mosconiPage(cfg)); }
+    if ((m === 'GET' || m === 'HEAD') && (p === MOSCONI_PATH || p === MOSCONI_PATH + '/' || p === '/mosconi-cup' || p === '/mosconi-cup/')) { if (p !== MOSCONI_PATH) return moved(MOSCONI_PATH); SEO.ensureFooter(db); trackVisit(req, 'mosconi'); return html(200, mosconiPage(cfg, db)); }
     // Short links for social bios (TikTok bios are plain text, 80 chars). 302 so the targets can change later.
     // Until Dec 1 they land on the Mosconi Cup hub; the landing page counts the visit with its utm tags.
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/(tt|ig|yt|fb)\/?$/))) {

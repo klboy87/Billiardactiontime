@@ -67,6 +67,36 @@ export function mosconiFaq(orderOut = false) {
   ];
 }
 
+// "Pick the winner" box: picks close when play starts (1 PM ET, Nov 27); the % bar shows once there are enough picks.
+export const PICKS_CLOSE_MS = Date.UTC(2026, 10, 27, 18, 0, 0);
+export const PICKS_MIN_FOR_BAR = 20;
+export const picksOpen = (now = Date.now()) => now < PICKS_CLOSE_MS;
+export function pickBarHtml(stats) {
+  if (!stats || stats.total < PICKS_MIN_FOR_BAR) return '';
+  const eu = Math.round(stats.europe * 100 / stats.total), us = 100 - eu;
+  return `<div class="pick-bar" aria-label="Fan picks"><p style="margin:0 0 6px"><b>${eu}% pick Europe</b> · <b>${us}% pick USA</b> <span class="muted">(${stats.total} picks)</span></p>
+    <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:#ddd"><span style="width:${eu}%;background:#1f4fa3"></span><span style="width:${us}%;background:#b22234"></span></div></div>`;
+}
+function pickBoxHtml(stats, now = Date.now()) {
+  const bar = pickBarHtml(stats);
+  if (!picksOpen(now)) return `<section class="card seo-cta" id="pick-the-winner" style="margin:18px 0;padding:20px"><h2 class="seo-h2" style="margin-top:0">🏆 Fan picks</h2>
+    <p class="muted" style="margin:6px 0 12px">Picks closed when play started on Friday, Nov 27.</p>${bar}</section>`;
+  const opts = [...Array(11).keys()].map(i => `<option value="${i}"${i === 7 ? ' selected' : ''}>11–${i}</option>`).join('');
+  return `<section class="card seo-cta" id="pick-the-winner" style="margin:18px 0;padding:20px;border:2px solid #1f4fa3">
+    <h2 class="seo-h2" style="margin-top:0">🏆 Pick the winner</h2>
+    <p class="muted" style="margin:6px 0 12px">Who takes the Mosconi Cup 2026, and by how much? Just for fun, no prizes. Picks close when play starts, 1 PM ET on Friday, Nov 27.</p>
+    <form class="pick-form" data-pick action="#pick-the-winner" method="get">
+      <fieldset style="border:0;padding:0;margin:0 0 10px"><legend style="font-weight:700;margin-bottom:6px">Winner</legend>
+        <label style="margin-right:16px"><input type="radio" name="team" value="europe" required> Europe</label>
+        <label><input type="radio" name="team" value="usa"> USA</label></fieldset>
+      <label style="display:block;margin-bottom:10px"><b>Final score</b> (winner first) <select name="loser" aria-label="Final score">${opts}</select></label>
+      <label style="display:block;margin-bottom:10px"><b>Email</b> <span class="muted">(optional, to get the daily results)</span><br><input type="email" name="email" placeholder="you@email.com" autocomplete="email" style="max-width:320px;width:100%"></label>
+      <button class="btn btn-blue" type="submit">Submit my pick</button></form>
+    <p class="pick-msg" aria-live="polite" style="margin:10px 0 0"></p>
+    <div data-pick-bar>${bar}</div>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">One pick per visitor; you can change it until picks close. An email you add joins our free daily email (unsubscribe any time, see our <a href="/privacy">privacy policy</a>).</p></section>`;
+}
+
 function readJson() { try { return JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf8')) || {}; } catch { return {}; } }
 // Order of play: set "orderOfPlay" (plain text) in content/mosconi-2026.json when Matchroom publishes it.
 // Optional "youtubeId" (our channel only) + "youtubeTitle"/"youtubeCredit" in content/mosconi-2026.json shows a click-to-load video.
@@ -94,7 +124,7 @@ function results() {
   } catch { return new Map(); }
 }
 
-export function mosconiPage(cfg) {
+export function mosconiPage(cfg, db = null) {
   const today = D.todayIso(), res = results();
   const signup = `<section class="card seo-cta" style="margin:18px 0;padding:20px;border:2px solid #c9a227">
     <h2 class="seo-h2" style="margin-top:0">📬 Get Mosconi Cup recaps by email</h2>
@@ -126,6 +156,7 @@ export function mosconiPage(cfg) {
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="${MOSCONI_PATH}/calendar.ics" rel="nofollow" download>📅 Add to calendar (all 4 days + press conference)</a><a class="btn btn-out" href="/pro-events">More pro events &amp; where to watch</a></div>
   </article>
   ${faqHtml}
+  ${pickBoxHtml(db ? D.mosconiPickStats(db) : null)}
   ${mosconiVideo()}
   ${signup}
   ${youtubeCtaHtml('Mosconi Cup previews, highlights and pro match recaps.')}

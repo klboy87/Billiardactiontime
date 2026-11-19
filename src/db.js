@@ -67,6 +67,11 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE TABLE IF NOT EXISTS subscribers (
   id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+-- Mosconi Cup 2026 "Pick the winner": one pick per visitor (salted hash, never a raw IP); email is kept in subscribers.
+CREATE TABLE IF NOT EXISTS mosconi_picks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, visitor TEXT NOT NULL UNIQUE, team TEXT NOT NULL, score TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 -- one row per (day, visitor) so re-visits the same day don't inflate the count;
 -- visitor is a salted hash, never a raw IP, so nothing identifying is stored.
 CREATE TABLE IF NOT EXISTS pageviews (
@@ -383,6 +388,17 @@ export function removeSubscriber(db, email) {
 }
 export function addSubscriber(db, email, campaign = null) {
   db.prepare('INSERT OR IGNORE INTO subscribers (email, campaign) VALUES (?,?)').run(email, campaign || null);
+}
+// Mosconi Cup "Pick the winner": a visitor can change their pick until picks close.
+export function addMosconiPick(db, visitor, team, score = null) {
+  db.prepare(`INSERT INTO mosconi_picks (visitor, team, score) VALUES (?,?,?)
+    ON CONFLICT(visitor) DO UPDATE SET team=excluded.team, score=excluded.score, created_at=datetime('now')`).run(visitor, team, score || null);
+}
+export function mosconiPickStats(db) {
+  const rows = db.prepare('SELECT team, COUNT(*) n FROM mosconi_picks GROUP BY team').all();
+  const by = Object.fromEntries(rows.map(r => [r.team, Number(r.n)]));
+  const europe = by.europe || 0, usa = by.usa || 0;
+  return { total: europe + usa, europe, usa };
 }
 export function resolveItem(db, table, id) {
   if (!['claims', 'reports'].includes(table)) return false;

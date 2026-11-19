@@ -41,3 +41,28 @@
     });
   });
 })();
+
+/* Mosconi Cup "Pick the winner" box (/mosconi-cup-2026). */
+(function () {
+  var f = document.querySelector('form[data-pick]');
+  if (!f || !window.fetch) return;
+  var box = f.parentNode, msg = box.querySelector('.pick-msg'), bar = box.querySelector('[data-pick-bar]');
+  f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var team = f.querySelector('input[name="team"]:checked'), btn = f.querySelector('button');
+    if (!team) { if (msg) msg.textContent = '⚠ Pick Europe or USA'; return; }
+    var email = f.querySelector('input[name="email"]').value.trim();
+    btn.disabled = true;
+    fetch('/api/mosconi-pick', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: team.value, loser: f.querySelector('select[name="loser"]').value, email: email }) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Something went wrong'); return j; }); })
+      .then(function (j) {
+        var who = team.value === 'usa' ? 'USA' : 'Europe', l = f.querySelector('select[name="loser"]').value;
+        f.hidden = true;
+        if (msg) msg.textContent = '✓ Pick saved: ' + who + ' 11–' + l + '.' + (j.subscribed ? " You'll get the daily results by email." : ' Check back here for the daily results.');
+        if (bar && j.bar) bar.innerHTML = j.bar;
+        if (j.subscribed) { try { localStorage.setItem('bat_subscribed', '1'); } catch (e) {} }
+      })
+      .catch(function (err) { if (msg) msg.textContent = '⚠ ' + err.message; btn.disabled = false; });
+  });
+})();
