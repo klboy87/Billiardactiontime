@@ -2,6 +2,7 @@ import { loadEnvFile, getConfig } from './src/config.js';
 import { openDb } from './src/db.js';
 import { createApp } from './src/app.js';
 import { applyDataFixes } from './src/datafixes.js';
+import { makeListLogger } from './src/maillist.js';
 
 loadEnvFile();
 const cfg = getConfig();
@@ -32,3 +33,6 @@ else console.log('Flyer reading is OFF -- set ANTHROPIC_API_KEY in .env to turn 
 // Announce new pages to search engines (IndexNow) a few minutes after start, then every 6 hours.
 setTimeout(() => server.indexNow().catch(e => console.error('IndexNow error', e.message)), 180_000).unref();
 setInterval(() => server.indexNow().catch(e => console.error('IndexNow error', e.message)), 6 * 3600_000).unref();
+// Once a day (6:25-6:35 AM Detroit) log the subscriber list for the morning email task, see src/maillist.js.
+const logMailList = makeListLogger(db, line => console.log(line));
+setInterval(() => { try { logMailList(); } catch (e) { console.error('mail list error', e.message); } }, 120_000).unref();
