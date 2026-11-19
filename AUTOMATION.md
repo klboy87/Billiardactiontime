@@ -45,19 +45,18 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Quick check: `node --check src/blog.js src/activity.js src/app.js`.
 
 ## Learnings
-(Review 2026-11-17, Facebook Windsor data Nov 12-16. Page 101659817843047 = Billiard Action Time; 849318714932168 = Billiardaction.)
-- HUGE: short pool video clips (Efren Reyes bank-shot reels, posted as video) reached ~110,000 and ~105,000 people, 2,300+ link clicks and 24 comments each, vs 5-15 reach for our usual text/graphic posts. Video is 1000x better. Everything else is noise by comparison.
-- Post at least 2 credited video clips/reels per day on Billiard Action Time (viral trick shots, bank shots, Mosconi Cup moments). Use only CC-licensed or properly credited footage, short caption, "Luck or skill?" style hook, credit the source in the caption.
-- Best captions on the viral clips: a one-line amazement hook plus a yes/no question ("Would you even try this shot?", "Luck or genius?"). Keep it under 2 lines.
-- Plain photo/shared-image posts (e.g. "How to rack 8 ball pool", Chris Melling clip) got 160-330 reach; hand-drawn graphics with long text get 5-15. Prefer real video, then real photos, then graphics.
-- Our own text+graphic posts: median reach ~6-10 on Billiard Action Time, ~0-1 on Billiardaction. They almost never get reactions or comments.
-- Best text-only post: the Mosconi countdown on Billiardaction (313 reach) and "Bar box or 9-foot?" (127). Everything else under 35.
-- Worst: pool tips, fun facts, "Tonight/This Weekend" plugs, article shares (0-13 reach, 0 clicks). Cut these to at most 1-2 per day total.
-- Link clicks come mostly from video posts (one viral reel gave 2,300 clicks). Put the site link in the first comment or caption of video posts to convert viral reach into visitors.
-- Billiardaction posts are shown to ~0 people; do not duplicate everything there. Post only the video clips and 1-2 best items per day.
-- Questions asking for a one-word answer produced no extra comments on our own posts; comments only came on viral video. Spend effort on video, not on question wording.
-- Best times seen: 17:00-18:00 UTC and 21:00-22:00 UTC for text; the viral reels went out 00:20-02:30 UTC (US evening). Weak: 04:00-12:00 UTC.
-- Mosconi Cup (Nov 27-30) is the main event: post video highlights and daily results, link the hub /mosconi-cup-2026. One countdown per day max.
-- Aim for 2 blog articles/day (4 in the last 2 days). Favour evergreen beginner guides; confirm the live URL returns 200 before sharing.
-- Railway sometimes marks a push as SKIPPED (the first deploy of the bridge article was skipped and needed a manual redeploy). After pushing an article, poll the live URL and redeploy through the Railway connector if it is not 200 within ~3 minutes. Log-only commits being SKIPPED is normal.
+(Review 2026-11-19. Facebook data Nov 17-18 via Windsor; Windsor lags ~1 day. Page 101659817843047 = Billiard Action Time; 849318714932168 = Billiardaction.)
+- Earlier review (Nov 12-16): short credited pool video reels (Efren bank shots) reached 105,000-110,000 people and 2,300+ link clicks each. Nothing we make comes close.
+- Nov 17-18: no new viral video. Best posts were Efren Reyes match commentary text (363 reach, 3 comments) and two "Day 3: 7 down, one left... YES or NO?" challenge posts (241-263 reach). Everything else was 4-49.
+- Story/challenge hooks with a yes/no ask beat tips, facts and plugs by 20-50x on reach. Use 1 per day on Billiard Action Time.
+- Name-driven posts about a real pro (Efren Reyes) get the most text reach and comments. Lead with a famous name plus a result.
+- Our hand-drawn graphics posts get 4-11 reach and 0 reactions. Article shares get 5-10 reach, 0 clicks. Keep article shares to one Page (Billiard Action Time) plus Instagram.
+- Billiardaction gets 0-1 reach on every post. Stop mirroring posts there; post only video clips and the single best item per day.
+- Mosconi countdown posts did badly this week (4-10 reach). Do not post daily countdowns; save Mosconi posts for results/highlights Nov 27-30.
+- Posting 10+ times/day on Billiard Action Time on Nov 18 diluted reach. 4-6 quality posts/day is enough; skip tips and fun facts entirely.
+- Still the top priority: credited video clips (CC-licensed or properly credited) with a one-line amazement hook plus a question, link in first comment.
+- Best times seen: 01:00-03:00 UTC (US evening) for challenge/video posts; 17:00-18:00 UTC for text. Weak: 04:00-12:00 UTC.
+- Mosconi Cup Nov 27-30: post daily result recaps and update content/mosconi-2026.json each day; link /mosconi-cup-2026.
+- Aim for 2 blog articles/day (only 3 published Nov 18-19 so far). Favour evergreen beginner guides; confirm the live URL returns 200 before sharing.
+- Railway watch patterns skip some pushes (including code commits). After pushing an article, poll the live URL and redeploy via the Railway connector if not 200 in ~3 minutes. Log-only commits being SKIPPED is normal.
 - Always confirm image URLs return 200 on the live site before posting to Facebook/Instagram.
