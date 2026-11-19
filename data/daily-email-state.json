@@ -98,11 +98,11 @@
     "kiss-shot",
     "perfect-lag",
     "hanger-speed-run",
-    "nine-ball-billiard"
+    "nine-ball-billiard",
+    "pool-news-chua-filler-mosconi-countdown-november-2026",
+    "willie-mosconi-526-ball-run"
   ],
   "queue": [
-    "reyes-cup-2026-results",
-    "us-open-pool-championship-2026-results",
     "mosconi-cup-2026-preview",
     "shane-van-boening",
     "how-to-watch-pro-pool",
@@ -114,8 +114,21 @@
     "thin-cut-shots",
     "carbon-fiber-vs-maple-shaft",
     "pool-bridge-types",
-    "how-to-chalk-a-cue"
+    "how-to-chalk-a-cue",
+    "pool-news-chua-filler-mosconi-countdown-november-2026",
+    "willie-mosconi-526-ball-run"
   ],
-  "sent": [],
-  "log": []
+  "sent": [
+    "reyes-cup-2026-results",
+    "us-open-pool-championship-2026-results"
+  ],
+  "log": [
+    {
+      "date": "2026-11-19",
+      "picks": [
+        "reyes-cup-2026-results",
+        "us-open-pool-championship-2026-results"
+      ]
+    }
+  ]
 }
