@@ -1,12 +1,12 @@
 {
- "lastUpdated": "Nov 18, 2026, 9:15 AM ET",
- "checkedAt": "2026-11-18T19:20:00Z",
+ "lastUpdated": "Nov 18, 2026, 6:15 PM ET",
+ "checkedAt": "2026-11-19T02:20:00Z",
  "items": [
-  {"title": "Add YouTube channel everywhere (footer, sameAs, Subscribe buttons)", "status": "done Nov 18 AM (buttons via /youtube, not /yt)"},
-  {"title": "Allow YouTube embeds + youtubeId field (+ video IDs, Shorts)", "status": "done (feature); Efren/Strickland IDs held for a matching post; optional Shorts strip skipped"},
-  {"title": "/gear specific products (needs owner)", "status": "skipped: needs owner's product picks/ASINs"},
-  {"title": "4a Mosconi + pro calendar: full calendar on /pro-events", "status": "done Nov 18 PM (15 events + To be confirmed list); Bangkok result due after Nov 21 (use 'result' + 'keepUntil' fields)"},
-  {"title": "4b Team bios, matchups, storylines, history on hub", "status": "done Nov 18 PM"},
-  {"title": "4c-4e Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap", "status": "not due yet"}
+  {"title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap; Bangkok result after Nov 21", "status": "not due yet"},
+  {"title": "2 How-to-watch FAQ + time-zone table on /mosconi-cup-2026", "status": "done Nov 19 (commit 5463235, FAQPage schema, #order-of-play anchor)"},
+  {"title": "3 Latest Shorts strip (home + blog posts)", "status": "done Nov 19; dvmThoJc2rY auto-shows after 2026-11-19T17:00Z (SHORTS list in src/social.js)"},
+  {"title": "4 Railway skipped auto-deploys", "status": "checked: dashboard watchPatterns skip even src commits; owner must clear them; manual redeploy works"},
+  {"title": "5 /gear specific products", "status": "skipped: needs owner's product picks/ASINs"},
+  {"title": "6 Held videos", "status": "held as instructed"}
  ]
 }
