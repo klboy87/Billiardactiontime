@@ -2,6 +2,7 @@
 // Plain server-rendered HTML so search engines and ad reviewers read the full text.
 import { layout, shareStrip } from './seo.js';
 import { MORE_GUIDES } from './guides-more.js';
+import { mosconiPickCardHtml } from './social.js';
 import { DAILY_ARTICLES } from './daily-articles.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -424,11 +425,11 @@ export function guidePage(cfg, slug, extraHtml = '') {
   const tocHtml = toc.length >= 3 ? `<nav class="guide-toc" aria-label="On this page"><b>On this page</b><ol>${toc.map(t => `<li><a href="#${t.id}">${esc(t.text)}</a></li>`).join('')}</ol></nav>` : '';
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/guides/">Guides</a> <span>/</span> <span>${esc(g.title)}</span></nav>
   <article class="card guide"><h1>${esc(g.title)}</h1>
-  <p class="guide-meta"><a class="guide-tag" href="/guides/#${cat}" style="text-decoration:none">${catName(cat)}</a><span>${readMinutes(g.body)} min read</span><span>${g.date ? niceDate(g.date) : 'Updated October 2026'}</span><span>By Billiard Action Time</span></p>
-  ${tocHtml}${content}${shareStrip(cfg, `/guides/${g.slug}`, g.title, g.title + ' (free guide)')}${cat === 'rules' ? '<p class="tip" style="margin-top:18px"><b>Test yourself:</b> take the 12-question <a href="/tools/pool-rules-quiz">pool rules quiz</a> and share your score with your league. Settling an argument? See the <a href="/guides/pool-rules-questions">pool rules Q&amp;A</a>.</p>' : ''}</article>
+  <p class="guide-meta"><a class="guide-tag" href="/guides/#${cat}" style="text-decoration:none">${catName(cat)}</a><span>${readMinutes(g.body)} min read</span><span>${g.modified ? 'Updated ' + niceDate(g.modified) : g.date ? niceDate(g.date) : 'Updated October 2026'}</span><span>By Billiard Action Time</span></p>
+  ${g.slug === 'mosconi-cup-2026-preview' ? mosconiPickCardHtml() : ''}${tocHtml}${content}${shareStrip(cfg, `/guides/${g.slug}`, g.title, g.title + ' (free guide)')}${cat === 'rules' ? '<p class="tip" style="margin-top:18px"><b>Test yourself:</b> take the 12-question <a href="/tools/pool-rules-quiz">pool rules quiz</a> and share your score with your league. Settling an argument? See the <a href="/guides/pool-rules-questions">pool rules Q&amp;A</a>.</p>' : ''}</article>
   ${extraHtml}
   <section class="sec seo-sec"><h2>Keep reading</h2><div class="guide-next">${next.map(x => `<a href="/guides/${x.slug}"><small>${catName(guideCat(x.slug))}</small><b>${esc(x.title)}</b></a>`).join('')}</div><p style="margin-top:12px"><a href="/guides/">All ${GUIDES.length} guides →</a> · <a href="/tools/">Free tools →</a></p></section>`;
-  const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, url: `${cfg.publicUrl}/guides/${g.slug}`, articleSection: catName(cat), dateModified: g.date || '2026-10-15', ...(g.date ? { datePublished: g.date } : {}),
+  const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, url: `${cfg.publicUrl}/guides/${g.slug}`, articleSection: catName(cat), dateModified: g.modified || g.date || '2026-10-15', ...(g.date ? { datePublished: g.date } : {}),
     publisher: { '@type': 'Organization', name: 'Billiard Action Time', logo: { '@type': 'ImageObject', url: cfg.publicUrl + '/icons/icon-512.png' } }, author: { '@type': 'Organization', name: 'Billiard Action Time' } };
   const bc = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: cfg.publicUrl + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: cfg.publicUrl + '/guides/' }, { '@type': 'ListItem', position: 3, name: g.title, item: `${cfg.publicUrl}/guides/${g.slug}` }] };

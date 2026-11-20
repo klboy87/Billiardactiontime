@@ -1997,6 +1997,7 @@ ${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, 
 <h2>Captain America: the Mosconi Cup</h2>
 <p>The Mosconi Cup, Team USA against Team Europe, has been Van Boening's second home. He has played in every one since 2007 and holds the record with 18 appearances, according to the <a href="https://worldnineballtour.com/news/van-boening-the-history-maker/" target="_blank" rel="noopener">World Nineball Tour</a>. The early years were rough. "The eight years in a row that we lost were brutal," he said. Team USA's only win in that stretch came in 2009, and Van Boening made the clinching 9-ball.</p>
 <p>His most famous moment came in 2018 at Alexandra Palace in London. With Europe closing to 10-9, Van Boening faced Alex Kazakis and made a table-length <b>1-9 combination</b> to win the Cup 11-9 for the USA. He called it "the biggest pressure shot of my career." USA won again in 2019.</p>
+<p>He's on Team USA again for the <b>2026 Mosconi Cup</b> in Orlando, November 27-30, and was the first American to qualify. Follow every session on our <a href="/mosconi-cup-2026">Mosconi Cup 2026 hub</a> (how to watch, schedule and daily results), or see the <a href="/blog/mosconi-cup-2026-teams-usa-vs-europe-lineups">full USA and Europe lineups</a>.</p>
 <h2>Derby City Classic: still winning</h2>
 <p>The Derby City Classic in southern Indiana is a 10-day marathon of 9-Ball, One Pocket and Banks, with a "Master of the Table" award for the best all-around player. Van Boening has won it three times, most recently in early 2026, when he also won the One Pocket division by beating Roland Garcia 4-2 in the final. <a href="https://www.azbilliards.com/the-final-sunday-a-10-day-marathon-crowns-derby-citys-newest-kings/" target="_blank" rel="noopener">AZBilliards</a> counts ten Derby City titles for him, three behind Efren Reyes's record of thirteen.</p>
 <h2>The big money matches</h2>
@@ -2081,20 +2082,21 @@ ${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, 
 </ul>`
   },
   {
-    slug: 'mosconi-cup-2026-preview', title: 'Mosconi Cup 2026 Preview: Dates, Captains, How Teams Are Picked and How to Watch',
+    slug: 'mosconi-cup-2026-preview', modified: '2026-11-20', title: 'Mosconi Cup 2026 Preview: Dates, Captains, How Teams Are Picked and How to Watch',
     desc: 'Everything about the 2026 Mosconi Cup in Orlando, November 27-30: Team USA vs. Team Europe, captains Johan Ruijsink and Niels Feijen, how the teams qualify, Europe\'s six-year streak, tickets and how to watch.',
     body: `
 <p>Pool's biggest team event comes to Florida this fall. The <b>2026 Mosconi Cup</b>, Team USA against Team Europe, runs <b>November 27-30 at the Caribe Royale Resort in Orlando</b>. Europe is going for a seventh straight title. The USA is going for its first win since 2019, on home soil, with the captain who led its last two wins.</p>
 <h2>Mosconi Cup 2026 at a glance</h2>
 <ul>
-<li><b>Dates:</b> Friday-Monday, November 27-30, 2026 (starting the day after Thanksgiving)</li>
+<li><b>Dates:</b> Friday-Monday, November 27-30, 2026 (starting the day after Thanksgiving). Play starts 1:00 PM ET each day, Nov 27-30.</li>
 <li><b>Venue:</b> Caribe Royale Resort, Orlando, Florida</li>
 <li><b>Teams:</b> five players each, Team USA vs. Team Europe</li>
 <li><b>Game:</b> 9-Ball, races to 5. Matches are team, doubles and singles, and the first team to 11 points wins.</li>
 <li><b>Captains:</b> Johan Ruijsink (USA) and Niels Feijen (Europe)</li>
 <li><b>Defending champion:</b> Team Europe, 11-3 winners in London in 2025</li>
-<li><b>Watch:</b> live on WNT TV, the World Nineball Tour's streaming service</li>
+<li><b>Watch:</b> live on ESPN+ and WNT TV in the US; other countries TBA</li>
 </ul>
+<p>For live daily results, start times in your time zone and the order of play, see our <a href="/mosconi-cup-2026">Mosconi Cup 2026 hub</a>.</p>
 <h2>What is the Mosconi Cup?</h2>
 <p>Think of it as pool's Ryder Cup. Since 1994 the best American players have faced the best Europeans every year in a loud, chanting, party-style arena. It is named after Willie Mosconi, the American straight pool legend. Because the matches are short races to 5, one missed ball can swing a whole session, and the crowd lives on every shot.</p>
 <h2>Europe's streak</h2>
@@ -2105,12 +2107,18 @@ ${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, 
 <p><b>Niels Feijen (Europe)</b> is one of the greatest Mosconi Cup players ever: eight wins as a player and a record four MVP awards. He debuted as a player in 2001. "My job is to make sure the players are mentally ready for those race-to-five matches and the pressure that comes with representing Europe," he said.</p>
 <p>The two go way back. "I've known Johan since I was 16," Feijen said. "We've worked together and been friends for more than 30 years. We're both incredibly competitive, so going up against each other as captains is going to be intense and fun."</p>
 <h2>How the teams are picked</h2>
-<p>Each team has five players. The <b>top three</b> players from each side in the World Nineball Tour rankings qualify automatically, and each captain picks the <b>last two</b> as wildcards. The qualifying cut-off comes after the Philippines Open (October 20-24, 2026), so the final lineups will be announced after that.</p>
-<p>On the European side, two-time US Open champion Francisco Sánchez Ruiz led the qualifying list after his <a href="/guides/us-open-pool-championship-2026-results">2026 US Open win</a>, and he followed it by winning MVP at the <a href="/guides/reyes-cup-2026-results">2026 Reyes Cup</a>. "It's been a crazy year for European players," Feijen said. "We've got so many heavy hitters." We'll add both lineups here once they're official.</p>
+<p>Each team has five players. The <b>top three</b> players from each side in the World Nineball Tour rankings qualify automatically, and each captain picks the <b>last two</b> as wildcards. The qualifying cut-off came after the Philippines Open (October 20-24, 2026), and both lineups are now confirmed.</p>
+<p>On the European side, two-time US Open champion Francisco Sánchez Ruiz led the qualifying list after his <a href="/guides/us-open-pool-championship-2026-results">2026 US Open win</a>, and he followed it by winning MVP at the <a href="/guides/reyes-cup-2026-results">2026 Reyes Cup</a>. "It's been a crazy year for European players," Feijen said. "We've got so many heavy hitters." </p>
+<h2>The 2026 lineups</h2>
+<ul>
+<li><b>Team USA</b> (captain Johan Ruijsink): Shane Van Boening, Tyler Styer, Fedor Gorst, Justin Bergman, Skyler Woodward</li>
+<li><b>Team Europe</b> (captain Niels Feijen): Francisco Sánchez Ruiz, Joshua Filler, Aleksa Pecelj, David Alcaide, Jayson Shaw</li>
+</ul>
+<p>Who each player is and what to watch for: <a href="/blog/mosconi-cup-2026-teams-usa-vs-europe-lineups">Mosconi Cup 2026 teams: meet the USA and Europe lineups</a>.</p>
 <h2>Tickets and travel</h2>
 <p>Tickets are sold through the World Nineball Tour, with general admission and VIP packages, and past Mosconi Cups have sold out. Orlando in late November is also a great pool trip, so check the <a href="/tournaments/florida">pool tournaments in Florida</a> while you're there.</p>
 <h2>How to watch</h2>
-<p>Every match streams live on WNT TV. Fans in the stands chant, sing and dress up, and that atmosphere comes through on the stream too. See our guide to <a href="/guides/how-to-watch-pro-pool">how to watch pro pool</a> for more streaming options.</p>
+<p>In the US, every session streams live on <b>ESPN+</b> and <b>WNT TV</b>, the World Nineball Tour's streaming service. Broadcasters for other countries have not been announced yet. Play starts at <b>1:00 PM ET</b> each day, Nov 27-30. Fans in the stands chant, sing and dress up, and that atmosphere comes through on the stream too. See our guide to <a href="/guides/how-to-watch-pro-pool">how to watch pro pool</a> for more streaming options.</p>
 <h2>What to watch for</h2>
 <ul>
 <li><b>Can the USA end the streak at home?</b> The crowd in Orlando will be loud and American.</li>
