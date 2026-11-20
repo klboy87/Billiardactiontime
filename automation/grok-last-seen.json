@@ -1,14 +1,34 @@
 {
- "lastUpdated": "Nov 19, 2026, 12:45 PM ET",
- "checkedAt": "2026-11-19T19:21:00Z",
+ "lastUpdated": "Nov 19, 2026, 6:00 PM ET",
+ "checkedAt": "2026-11-20T02:18:25Z",
  "items": [
-  {"title": "0 FlexOffers fo-verify tag", "status": "done Nov 19 earlier (commit 4165dac/274e21a, live per 15:09Z comment)"},
-  {"title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap; Bangkok result after Nov 21", "status": "not due yet"},
-  {"title": "2 Where to watch links on /pro-events", "status": "done Nov 19 (fbb0612); Joss link kept"},
-  {"title": "3 Pick the winner box", "status": "done Nov 19 (fbb0612)"},
-  {"title": "4 Railway watch paths", "status": "owner action; c2ba60c skipped again, redeployed by hand"},
-  {"title": "5 /gear specific products", "status": "skipped: needs owner's product picks/ASINs"},
-  {"title": "6 Long-form embed Vo_qtjqsDpI", "status": "done Nov 19 (commit c2ba60c): featured click-to-load video at top of /blog/ (no matching Efren post); redeploy c6a95357 SUCCESS"},
-  {"title": "7 Held videos", "status": "held as instructed; Short dvmThoJc2rY is time-gated to show after 17:00Z and is in the strip on the current build"}
+  {
+   "title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap; Bangkok result after Nov 21",
+   "status": "not due yet"
+  },
+  {
+   "title": "2 Send social traffic to Pick the winner (bio links, home card, teams post card)",
+   "status": "done Nov 20 (9bb2b6d), redeploy 2618d492 SUCCESS, live"
+  },
+  {
+   "title": "3 Joss Tour source link broken",
+   "status": "done Nov 20 (9bb2b6d): link dropped, event text kept"
+  },
+  {
+   "title": "4 Railway watch paths",
+   "status": "owner action; 9bb2b6d skipped again, redeployed by hand"
+  },
+  {
+   "title": "5 /gear specific products + Black Friday",
+   "status": "skipped: needs owner's product picks/ASINs and FlexOffers approval"
+  },
+  {
+   "title": "6a Long-form to37QPkQJgk",
+   "status": "done Nov 20 (9bb2b6d): second featured video on /blog/ (no matching Efren post)"
+  },
+  {
+   "title": "6 Held videos",
+   "status": "held as instructed"
+  }
  ]
 }
