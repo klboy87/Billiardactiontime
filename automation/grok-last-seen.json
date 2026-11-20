@@ -1,33 +1,25 @@
 {
- "lastUpdated": "Nov 19, 2026, 6:00 PM ET",
- "checkedAt": "2026-11-20T02:18:25Z",
+ "lastUpdated": "Nov 20, 2026, 8:15 AM ET",
+ "checkedAt": "2026-11-20T14:20:00Z",
  "items": [
   {
    "title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap; Bangkok result after Nov 21",
    "status": "not due yet"
   },
   {
-   "title": "2 Send social traffic to Pick the winner (bio links, home card, teams post card)",
-   "status": "done Nov 20 (9bb2b6d), redeploy 2618d492 SUCCESS, live"
+   "title": "2 Refresh stale /guides/mosconi-cup-2026-preview (+ SVB guide hub link)",
+   "status": "done Nov 20 (ccbbdc8)"
   },
   {
-   "title": "3 Joss Tour source link broken",
-   "status": "done Nov 20 (9bb2b6d): link dropped, event text kept"
+   "title": "3 Railway watch paths",
+   "status": "owner action"
   },
   {
-   "title": "4 Railway watch paths",
-   "status": "owner action; 9bb2b6d skipped again, redeployed by hand"
-  },
-  {
-   "title": "5 /gear specific products + Black Friday",
+   "title": "4 /gear specific products + Black Friday",
    "status": "skipped: needs owner's product picks/ASINs and FlexOffers approval"
   },
   {
-   "title": "6a Long-form to37QPkQJgk",
-   "status": "done Nov 20 (9bb2b6d): second featured video on /blog/ (no matching Efren post)"
-  },
-  {
-   "title": "6 Held videos",
+   "title": "5 Held videos",
    "status": "held as instructed"
   }
  ]
