@@ -1,7 +1,7 @@
 // Search-engine pages: a real, crawlable URL for every tournament, plus landing pages for
 // every state, city and game (and each combination) that has tournaments. Everything here is
 // plain server-rendered HTML so Google can read it without running the site's JavaScript app.
-import { FONT_LINKS, socialLinksHtml } from './social.js';
+import { FONT_LINKS, socialLinksHtml, mosconiPickCardHtml } from './social.js';
 import * as D from './db.js';
 import { sponsorBannerHtml } from './sponsor.js';
 import { STATE_NAMES, slugify } from './normalize.js';
@@ -796,7 +796,7 @@ export function homeIntroHtml(db) {
   const weekend = up.filter(t => t.date >= wk.from && t.date <= wk.to).length;
   const states = new Set(up.map(t => t.venue.state)).size;
   const f = buildFooter(db).links;
-  return `<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
+  return `${mosconiPickCardHtml()}<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
   <p>Billiard Action Time lists <b>${plural(up.length, 'upcoming pool tournament')}</b> in ${plural(states, 'state')}: weekly 8-Ball and 9-Ball nights, added-money opens, One Pocket and Scotch Doubles events, with dates, pool halls and entry fees. Listings update every day.</p>
   <div class="actbar">${promoNav('btn btn-gold')}<a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-gold" href="/big-tournaments/">Big Events</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/guides/">Guides</a></div>
   <p class="muted" style="margin-top:12px">Popular: ${f.states.slice(0, 8).map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join(' · ')}</p></section>`;

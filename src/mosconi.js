@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layout, shareStrip } from './seo.js';
 import * as D from './db.js';
-import { youtubeCtaHtml, youtubeEmbedHtml } from './social.js';
+import { youtubeCtaHtml, youtubeEmbedHtml, MOSCONI_PICKS_CLOSE_MS } from './social.js';
 
 const RESULTS_FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'mosconi-2026.json');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -68,7 +68,7 @@ export function mosconiFaq(orderOut = false) {
 }
 
 // "Pick the winner" box: picks close when play starts (1 PM ET, Nov 27); the % bar shows once there are enough picks.
-export const PICKS_CLOSE_MS = Date.UTC(2026, 10, 27, 18, 0, 0);
+export const PICKS_CLOSE_MS = MOSCONI_PICKS_CLOSE_MS;
 export const PICKS_MIN_FOR_BAR = 20;
 export const picksOpen = (now = Date.now()) => now < PICKS_CLOSE_MS;
 export function pickBarHtml(stats) {

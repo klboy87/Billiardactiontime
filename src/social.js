@@ -31,10 +31,27 @@ export function youtubeEmbedHtml(id, title = '', credit = '') {
 }
 
 // Featured long-form video shown near the top of /blog/ (our own channel's upload; click-to-load).
-export const FEATURED_VIDEO = { id: 'Vo_qtjqsDpI', title: "Efren Reyes vs Mike Dechaine: Lucky or Genius? The Booth Can't Decide" };
-export function featuredVideoHtml(v = FEATURED_VIDEO) {
-  if (!v || !validYoutubeId(v.id)) return '';
-  return `<section class="card yt-featured" style="margin:18px 0;padding:14px 18px"><h2 style="margin:0 0 4px;font-size:1.2rem">▶ Featured video: ${escA(v.title)}</h2>${youtubeEmbedHtml(v.id, v.title)}<p style="margin:0"><a href="${YOUTUBE_OUT}" target="_blank" rel="noopener"><b>More on our YouTube channel →</b></a></p></section>`;
+export const FEATURED_VIDEOS = [
+  { id: 'to37QPkQJgk', title: 'Efren Reyes vs Lukas Fracasso-Verner: The Foul Nobody Saw' },
+  { id: 'Vo_qtjqsDpI', title: "Efren Reyes vs Mike Dechaine: Lucky or Genius? The Booth Can't Decide" }
+];
+export const FEATURED_VIDEO = FEATURED_VIDEOS[0];
+export function featuredVideoHtml(list = FEATURED_VIDEOS) {
+  const vids = (Array.isArray(list) ? list : [list]).filter(v => v && validYoutubeId(v.id));
+  if (!vids.length) return '';
+  const one = v => `<div style="flex:1 1 280px;min-width:0"><h3 style="margin:0 0 2px;font-size:1rem">${escA(v.title)}</h3>${youtubeEmbedHtml(v.id, v.title)}</div>`;
+  return `<section class="card yt-featured" style="margin:18px 0;padding:14px 18px"><h2 style="margin:0 0 6px;font-size:1.2rem">▶ Featured ${vids.length > 1 ? 'videos' : 'video'}</h2><div style="display:flex;flex-wrap:wrap;gap:0 18px">${vids.map(one).join('')}</div><p style="margin:0"><a href="${YOUTUBE_OUT}" target="_blank" rel="noopener"><b>More on our YouTube channel →</b></a></p></section>`;
+}
+
+// Mosconi Cup "Pick the winner" link card (home page, Mosconi blog posts). Picks close 1 PM ET Nov 27;
+// after that it links to the fan-picks result until Dec 1, then disappears.
+export const MOSCONI_PICKS_CLOSE_MS = Date.UTC(2026, 10, 27, 18, 0, 0);
+const MOSCONI_PROMO_END_MS = Date.UTC(2026, 11, 1, 5, 0, 0);
+export function mosconiPickCardHtml(now = Date.now()) {
+  if (now >= MOSCONI_PROMO_END_MS) return '';
+  const open = now < MOSCONI_PICKS_CLOSE_MS;
+  const text = open ? '🏆 Pick the Mosconi Cup winner: Europe or USA? →' : '🏆 See how fans picked the Mosconi Cup →';
+  return `<p class="card mosconi-pick-card" style="margin:12px 0;padding:10px 14px;border:2px solid #1f4fa3;font-weight:700"><a href="/mosconi-cup-2026#pick-the-winner">${text}</a></p>`;
 }
 
 // "Latest Shorts" strip: click-to-load vertical facades (same approach as youtubeEmbedHtml, nothing loads

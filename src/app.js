@@ -767,8 +767,9 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
     // Until Dec 1 they land on the Mosconi Cup hub; the landing page counts the visit with its utm tags.
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/(tt|ig|yt|fb)\/?$/))) {
       const [src, campaign] = SHORT_LINKS[x[1]];
-      const promo = D.todayIso() < '2026-12-01';
-      res.writeHead(302, { Location: `${promo ? MOSCONI_PATH : '/'}?utm_source=${src}&utm_medium=social&utm_campaign=${promo ? 'mosconi2026' : campaign}`, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+      const promo = D.todayIso() < '2026-12-01', pick = picksOpen();
+      // While fan picks are open (until 1 PM ET Nov 27), send bio traffic straight to the Pick the winner box.
+      res.writeHead(302, { Location: `${promo ? MOSCONI_PATH : '/'}?utm_source=${src}&utm_medium=social&utm_campaign=${pick ? 'mosconi-pick' : promo ? 'mosconi2026' : campaign}${pick ? '#pick-the-winner' : ''}`, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
       return res.end();
     }
     // Outbound "Subscribe on YouTube" buttons: count the click, then send to the channel's subscribe prompt.

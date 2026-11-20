@@ -192,7 +192,7 @@
   const routes = {};
 
   routes['/'] = async () => {
-    app.innerHTML = `
+    app.innerHTML = `${Date.now() < Date.UTC(2026, 10, 27, 18) ? '<p class="card mosconi-pick-card" style="margin:12px 0;padding:10px 14px;border:2px solid #1f4fa3;font-weight:700"><a href="/mosconi-cup-2026#pick-the-winner">🏆 Pick the Mosconi Cup winner: Europe or USA? →</a></p>' : ''}
       <section class="hero">
         <div class="hero-in">
           <h1>Find your next pool tournament</h1>
