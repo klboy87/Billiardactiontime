@@ -103,8 +103,6 @@
     "willie-mosconi-526-ball-run"
   ],
   "queue": [
-    "mosconi-cup-2026-preview",
-    "shane-van-boening",
     "how-to-watch-pro-pool",
     "stop-shot-and-stun-shot",
     "apa-skill-levels-explained",
@@ -120,7 +118,9 @@
   ],
   "sent": [
     "reyes-cup-2026-results",
-    "us-open-pool-championship-2026-results"
+    "us-open-pool-championship-2026-results",
+    "mosconi-cup-2026-preview",
+    "shane-van-boening"
   ],
   "log": [
     {
@@ -128,6 +128,13 @@
       "picks": [
         "reyes-cup-2026-results",
         "us-open-pool-championship-2026-results"
+      ]
+    },
+    {
+      "date": "2026-11-20",
+      "picks": [
+        "mosconi-cup-2026-preview",
+        "shane-van-boening"
       ]
     }
   ]
