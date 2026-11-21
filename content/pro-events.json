@@ -11,7 +11,27 @@
       "watch": "WNT TV (Bangkok is 12 hours ahead, so play runs overnight ET)",
       "watchUrl": "https://www.wnttv.com/",
       "source": "https://worldnineballtour.com/schedule/",
-      "organizer": "Matchroom / World Nineball Tour"
+      "organizer": "Matchroom / World Nineball Tour",
+      "result": "Champion: Genesis Ouano, who beat Wu Kun Lin 13-12 in the final (race to 13).",
+      "resultNote": "Semi-finals: Wu Kun Lin 11-8 Andri Januarta; Genesis Ouano 11-10 Jaycee Cordova Garcia. Prize fund: $63,000.",
+      "resultSource": {
+        "title": "NCue (official CuePlay bracket)",
+        "url": "https://ncuemedia.com/bangkok-open"
+      },
+      "resultLink": "/blog/bangkok-open-2026-results-genesis-ouano-wins",
+      "keepUntil": "2026-11-25",
+      "videos": [
+        {
+          "id": "Iwo7oHWldDc",
+          "title": "Yapp and Biado Out: How the Bangkok Open Bracket Collapsed"
+        },
+        {
+          "id": "etBJ-rzFpj0",
+          "title": "Quarter-final recap: Januarta 11-10 Nalaunan (archive footage)",
+          "credit": "Footage: The Sharkstream, CC BY",
+          "creditUrl": "https://www.youtube.com/watch?v=rDfBPCPuOLE"
+        }
+      ]
     },
     {
       "name": "Ultimate Pool All Ireland: Irish Open",
@@ -182,10 +202,35 @@
     }
   ],
   "tbc": [
-    { "name": "WPBA Iron City Invitational V", "when": "Jan 15-18, 2027 (listed)", "where": "Birmingham, AL", "note": "Only on the AZBilliards calendar so far; not yet on the WPBA's own site." },
-    { "name": "WPBA Classic Billiards Players Championship", "when": "Feb 12-15, 2027 (listed)", "where": "Lauderhill, FL", "note": "Only on the AZBilliards calendar so far; not yet on the WPBA's own site." },
-    { "name": "Ultimate Pool Masters 2027", "when": "Early January 2027", "where": "UK", "note": "Not on Ultimate Pool's official calendar yet." },
-    { "name": "Mosconi Cup order of play and broadcasters outside the US", "when": "Nov 27-30, 2026", "where": "Orlando, FL", "note": "Not published yet. US viewers: ESPN+ and WNT TV." },
-    { "name": "Predator Pro Billiard Series Las Vegas", "when": "Feb 24 - Mar 6, 2027 (listed)", "where": "Las Vegas, NV", "note": "Listed by a tour aggregator; waiting for the Pro Billiard Series' own site." }
+    {
+      "name": "WPBA Iron City Invitational V",
+      "when": "Jan 15-18, 2027 (listed)",
+      "where": "Birmingham, AL",
+      "note": "Only on the AZBilliards calendar so far; not yet on the WPBA's own site."
+    },
+    {
+      "name": "WPBA Classic Billiards Players Championship",
+      "when": "Feb 12-15, 2027 (listed)",
+      "where": "Lauderhill, FL",
+      "note": "Only on the AZBilliards calendar so far; not yet on the WPBA's own site."
+    },
+    {
+      "name": "Ultimate Pool Masters 2027",
+      "when": "Early January 2027",
+      "where": "UK",
+      "note": "Not on Ultimate Pool's official calendar yet."
+    },
+    {
+      "name": "Mosconi Cup order of play and broadcasters outside the US",
+      "when": "Nov 27-30, 2026",
+      "where": "Orlando, FL",
+      "note": "Not published yet. US viewers: ESPN+ and WNT TV."
+    },
+    {
+      "name": "Predator Pro Billiard Series Las Vegas",
+      "when": "Feb 24 - Mar 6, 2027 (listed)",
+      "where": "Las Vegas, NV",
+      "note": "Listed by a tour aggregator; waiting for the Pro Billiard Series' own site."
+    }
   ]
 }

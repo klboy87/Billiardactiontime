@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layout, shareStrip } from './seo.js';
 import * as D from './db.js';
-import { youtubeCtaHtml } from './social.js';
+import { youtubeCtaHtml, youtubeEmbedHtml } from './social.js';
 
 const FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'pro-events.json');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -42,6 +42,14 @@ function dateRange(e) {
 }
 const fmtTime = t => { const [h, m] = t.split(':').map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`; };
 
+// Optional per-event videos (our own channel's uploads only): { id, title, credit, creditUrl }.
+function videoHtml(v) {
+  const emb = v && youtubeEmbedHtml(v.id, v.title);
+  if (!emb) return '';
+  const credit = v.credit ? `<p class="muted" style="font-size:13px;margin:-10px 0 8px">${srcUrl(v.creditUrl) ? `<a href="${esc(v.creditUrl)}" rel="noopener nofollow" target="_blank">${esc(v.credit)}</a>` : esc(v.credit)}</p>` : '';
+  return `<div style="margin-top:10px"><h3 style="margin:0 0 2px;font-size:1rem">${esc(v.title || '')}</h3>${emb}${credit}</div>`;
+}
+
 export function proEventsPage(cfg) {
   const today = D.todayIso(), list = proEvents(today);
   const card = e => {
@@ -55,8 +63,9 @@ export function proEventsPage(cfg) {
         <tr><th>Venue</th><td>${esc(e.venue || '')}${e.city ? `, ${esc(e.city)}` : ''}</td></tr>
         ${e.format ? `<tr><th>Format</th><td>${esc(e.format)}</td></tr>` : ''}
         <tr><th>Where to watch</th><td>${watch}</td></tr>
-        ${e.result ? `<tr><th>Result</th><td><b>${esc(e.result)}</b></td></tr>` : ''}
+        ${e.result ? `<tr><th>Result</th><td><b>${esc(e.result)}</b>${e.resultNote ? `<br><span class="muted">${esc(e.resultNote)}</span>` : ''}${srcUrl(e.resultSource?.url) ? `<br><span class="muted" style="font-size:13px">Result source: <a href="${esc(e.resultSource.url)}" rel="noopener nofollow" target="_blank">${esc(e.resultSource.title || 'source')}</a></span>` : ''}${safeUrl(e.resultLink) ? `<br><a href="${esc(e.resultLink)}"><b>Read the full results →</b></a>` : ''}</td></tr>` : ''}
       </tbody></table>
+      ${(Array.isArray(e.videos) ? e.videos : []).map(videoHtml).join('')}
       ${srcUrl(e.source) ? `<p class="muted" style="font-size:13px;margin:6px 0 0">Source: <a href="${esc(e.source)}" rel="noopener nofollow" target="_blank">${esc(e.organizer || 'organizer')}</a>. Dates can change; check before you travel.</p>` : ''}
     </section>`;
   };
