@@ -788,6 +788,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       res.writeHead(302, { Location: `${promo ? MOSCONI_PATH : '/'}?utm_source=${src}&utm_medium=social&utm_campaign=${pick ? 'mosconi-pick' : promo ? 'mosconi2026' : campaign}${pick ? '#pick-the-winner' : ''}`, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
       return res.end();
     }
+    // billiardactiontime.com/watch for social posts and Stories: the Mosconi Cup watch-party list (until Dec 1).
+    if ((m === 'GET' || m === 'HEAD') && (p === '/watch' || p === '/watch/')) {
+      const promo = D.todayIso() < '2026-12-01';
+      res.writeHead(302, { Location: `${promo ? MOSCONI_PATH : '/'}?utm_source=social&utm_medium=social&utm_campaign=mosconi-watch${promo ? '#watch-parties' : ''}`, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+      return res.end();
+    }
     // Outbound "Subscribe on YouTube" buttons: count the click, then send to the channel's subscribe prompt.
     if ((m === 'GET' || m === 'HEAD') && (p === '/youtube' || p === '/youtube/')) {
       if (m === 'GET') trackVisit(req, 'out-youtube');
