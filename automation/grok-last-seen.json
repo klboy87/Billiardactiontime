@@ -1,18 +1,22 @@
 {
- "lastUpdated": "Nov 20, 2026, 7:50 PM ET",
- "checkedAt": "2026-11-21T02:25:00Z",
+ "lastUpdated": "Nov 21, 2026, 8:45 AM ET",
+ "checkedAt": "2026-11-21T14:25:00Z",
  "items": [
   {
-   "title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap; Bangkok result after Nov 21 (Short etBJ-rzFpj0 to embed with it)",
+   "title": "1 Bangkok Open result + Short etBJ-rzFpj0",
+   "status": "not done: could not confirm result on WNT/CuePlay this run"
+  },
+  {
+   "title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap",
    "status": "not due yet"
   },
   {
-   "title": "2 Held video AGQB477mlic on bank shots post",
-   "status": "done Nov 20 (32762fc)"
+   "title": "2 Home page tournament count",
+   "status": "done Nov 21: live count OK; redeployed skipped daily import"
   },
   {
-   "title": "3 Mosconi Cup watch parties list",
-   "status": "done Nov 20 (32762fc)"
+   "title": "3 /watch short link",
+   "status": "done Nov 21 (c82c221)"
   },
   {
    "title": "4 Railway watch paths",
@@ -23,8 +27,8 @@
    "status": "skipped: needs owner's product picks/ASINs and FlexOffers approval"
   },
   {
-   "title": "6 Held videos",
-   "status": "held as instructed"
+   "title": "6 Held videos (+ comment: vkUgsGcMB18 now, P-UH1DYWNUY after Nov 22 noon ET)",
+   "status": "held; waiting for Grok to place them"
   }
  ]
 }
