@@ -72,6 +72,11 @@ CREATE TABLE IF NOT EXISTS mosconi_picks (
   id INTEGER PRIMARY KEY AUTOINCREMENT, visitor TEXT NOT NULL UNIQUE, team TEXT NOT NULL, score TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+-- Mosconi Cup 2026 watch parties submitted by halls/bars. Nothing is public until the owner approves it (status 'approved').
+CREATE TABLE IF NOT EXISTS watch_parties (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, hall TEXT NOT NULL, city TEXT NOT NULL, state TEXT NOT NULL, days TEXT NOT NULL,
+  link TEXT, email TEXT, status TEXT NOT NULL DEFAULT 'new', created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 -- one row per (day, visitor) so re-visits the same day don't inflate the count;
 -- visitor is a salted hash, never a raw IP, so nothing identifying is stored.
 CREATE TABLE IF NOT EXISTS pageviews (
@@ -399,6 +404,19 @@ export function mosconiPickStats(db) {
   const by = Object.fromEntries(rows.map(r => [r.team, Number(r.n)]));
   const europe = by.europe || 0, usa = by.usa || 0;
   return { total: europe + usa, europe, usa };
+}
+// Mosconi Cup watch parties: halls submit, the owner approves (or hides) in the admin dashboard.
+export function addWatchParty(db, { hall, city, state, days, link = null, email = null }) {
+  return Number(db.prepare('INSERT INTO watch_parties (hall, city, state, days, link, email) VALUES (?,?,?,?,?,?)').run(hall, city, state, days, link || null, email || null).lastInsertRowid);
+}
+export function listWatchParties(db, status = null) {
+  const cols = 'id, hall, city, state, days, link, email, status, created_at AS createdAt';
+  return status ? db.prepare(`SELECT ${cols} FROM watch_parties WHERE status=? ORDER BY state, city, hall`).all(status)
+    : db.prepare(`SELECT ${cols} FROM watch_parties ORDER BY id DESC`).all();
+}
+export function setWatchPartyStatus(db, id, status) {
+  if (!['new', 'approved', 'hidden'].includes(status)) return false;
+  return db.prepare('UPDATE watch_parties SET status=? WHERE id=?').run(status, Number(id)).changes > 0;
 }
 export function resolveItem(db, table, id) {
   if (!['claims', 'reports'].includes(table)) return false;

@@ -69,6 +69,7 @@ export function proEventsPage(cfg) {
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/big-tournaments/">Big Events</a> <span>/</span> <span>Pro Events</span></nav>
   <h1 class="dtitle">Pro Pool Calendar: Schedule and Where to Watch</h1>
   <p class="lead-muted">Every big professional pool event from now through February 2027, with dates, venues, formats and where each one streams. All times ET. Updated as organizers confirm details.</p>
+  ${today < '2026-12-01' ? '<p class="card" style="margin:12px 0;padding:10px 14px;border:2px solid #c9a227;font-weight:700"><a href="/mosconi-cup-2026#watch-parties">📺 Mosconi Cup watch parties: find one near you, or list your hall or bar →</a></p>' : ''}
   ${list.length ? list.map(card).join('') : '<p class="muted">No upcoming pro events listed right now. Check back soon.</p>'}
   ${tbcHtml}
   ${signup}

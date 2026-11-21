@@ -97,6 +97,50 @@ function pickBoxHtml(stats, now = Date.now()) {
     <p class="muted" style="font-size:12px;margin:8px 0 0">One pick per visitor; you can change it until picks close. An email you add joins our free daily email (unsubscribe any time, see our <a href="/privacy">privacy policy</a>).</p></section>`;
 }
 
+// "Watch parties": halls/bars showing the Cup submit here (saved, never auto-published); only rows the
+// owner approves in the admin dashboard are listed. The form closes when the event ends.
+export const WATCH_DAYS = [['fri', 'Fri Nov 27'], ['sat', 'Sat Nov 28'], ['sun', 'Sun Nov 29'], ['mon', 'Mon Nov 30']];
+const WATCH_CLOSE_MS = Date.UTC(2026, 11, 1, 5, 0, 0);
+export const watchPartyOpen = (now = Date.now()) => now < WATCH_CLOSE_MS;
+const oneLine = (v, max) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
+// Validates a submission. Returns { error } or { value: {hall, city, state, days, link, email, subscribe} }.
+export function cleanWatchParty(b = {}) {
+  const hall = oneLine(b.hall, 100), city = oneLine(b.city, 60), state = oneLine(b.state, 30);
+  if (!hall || !city || !state) return { error: 'Add the hall name, city and state' };
+  const picked = new Set((Array.isArray(b.days) ? b.days : String(b.days || '').split(',')).map(d => String(d).trim().toLowerCase()));
+  const days = WATCH_DAYS.filter(([k]) => picked.has(k)).map(([, label]) => label).join(', ');
+  if (!days) return { error: 'Pick at least one day' };
+  let link = oneLine(b.link, 300);
+  if (link) {
+    if (!/^https?:\/\//i.test(link)) link = 'https://' + link;
+    try { const u = new URL(link); if (!/^https?:$/.test(u.protocol) || !u.hostname.includes('.')) throw 0; link = u.href; } catch { return { error: 'Check the link (or leave it blank)' }; }
+  }
+  const email = oneLine(b.email, 200).toLowerCase();
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Check your email address (or leave it blank)' };
+  return { value: { hall, city, state, days, link: link || null, email: email || null, subscribe: !!email && (b.subscribe === true || b.subscribe === 'on' || b.subscribe === '1') } };
+}
+function watchPartiesHtml(approved = [], now = Date.now()) {
+  const list = approved.length
+    ? `<ul class="seo-list">${approved.map(w => `<li><b>${w.link ? `<a href="${esc(w.link)}" rel="noopener nofollow ugc" target="_blank">${esc(w.hall)}</a>` : esc(w.hall)}</b>, ${esc(w.city)}, ${esc(w.state)} <span class="muted">(${esc(w.days)})</span></li>`).join('')}</ul>`
+    : '<p class="muted">No watch parties listed yet. Is your hall or bar showing it? Add it below.</p>';
+  const days = WATCH_DAYS.map(([k, label]) => `<label style="margin-right:12px;white-space:nowrap"><input type="checkbox" name="days" value="${k}"> ${label}</label>`).join('');
+  const form = !watchPartyOpen(now) ? '' : `<div class="card seo-cta" id="watch-party" style="margin:14px 0 0;padding:18px;border:2px solid #c9a227">
+    <h3 style="margin:0">📺 Hosting a Mosconi Cup watch party?</h3>
+    <p class="muted" style="margin:6px 0 12px">Pool halls and bars showing the Cup: tell us and we'll list you here for fans nearby. Free. We check every listing before it goes up.</p>
+    <form class="wp-form" data-watch-party action="#watch-party" method="get" style="display:grid;gap:8px;max-width:420px">
+      <input name="hall" required maxlength="100" placeholder="Hall or bar name" aria-label="Hall or bar name">
+      <div style="display:flex;gap:8px"><input name="city" required maxlength="60" placeholder="City" aria-label="City" style="flex:2;min-width:0"><input name="state" required maxlength="30" placeholder="State" aria-label="State" style="flex:1;min-width:0"></div>
+      <fieldset style="border:0;padding:0;margin:0"><legend style="font-weight:700;margin-bottom:4px">Which days?</legend>${days}</fieldset>
+      <input name="link" maxlength="300" placeholder="Website or Facebook page (optional)" aria-label="Website or Facebook page">
+      <input name="email" type="email" maxlength="200" placeholder="Your email (optional)" aria-label="Your email" autocomplete="email">
+      <label style="font-size:14px"><input type="checkbox" name="subscribe" value="1"> Also send me the free daily email (Mosconi recaps, tournaments near me)</label>
+      <button class="btn btn-green" type="submit">Submit my watch party</button></form>
+    <p class="wp-msg" aria-live="polite" style="margin:10px 0 0"></p>
+    <p class="muted" style="font-size:12px;margin:6px 0 0">Your email is never shown on the site. See our <a href="/privacy">privacy policy</a>.</p></div>`;
+  return `<section class="sec seo-sec" id="watch-parties"><h2>Mosconi Cup watch parties</h2>
+    <p>Want to watch with a crowd? These pool halls and bars told us they're showing the Mosconi Cup (play starts 1 PM ET each day). Call ahead to confirm.</p>${list}${form}</section>`;
+}
+
 function readJson() { try { return JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf8')) || {}; } catch { return {}; } }
 // Order of play: set "orderOfPlay" (plain text) in content/mosconi-2026.json when Matchroom publishes it.
 // Optional "youtubeId" (our channel only) + "youtubeTitle"/"youtubeCredit" in content/mosconi-2026.json shows a click-to-load video.
@@ -171,6 +215,7 @@ export function mosconiPage(cfg, db = null) {
   <section class="sec seo-sec"><h2>Daily results</h2><table class="t"><tbody>${dayRows}</tbody></table></section>
   <section class="sec seo-sec"><h2>How to watch in the US</h2>
     <p><b>Play starts at 1:00 PM ET (6 PM GMT) on each of the four days, Friday Nov 27 to Monday Nov 30.</b> Every session streams live on <b>ESPN+</b> and <b>WNT TV</b> (the World Nineball Tour's streaming service). Each match is a race to 5 racks worth one point, and the first team to 11 points wins the Cup.</p></section>
+  ${watchPartiesHtml(db ? D.listWatchParties(db, 'approved') : [])}
   <section class="sec seo-sec"><h2>Read before the first break</h2><ul class="seo-list">
     <li><a href="/blog/mosconi-cup-2026-teams-usa-vs-europe-lineups">Mosconi Cup 2026 teams: meet the USA and Europe lineups</a></li>
     <li><a href="/blog/how-the-mosconi-cup-works-format-explained">How the Mosconi Cup works: the format explained</a></li>

@@ -66,3 +66,27 @@
       .catch(function (err) { if (msg) msg.textContent = '⚠ ' + err.message; btn.disabled = false; });
   });
 })();
+
+/* Mosconi Cup "Hosting a watch party?" box (/mosconi-cup-2026). */
+(function () {
+  var f = document.querySelector('form[data-watch-party]');
+  if (!f || !window.fetch) return;
+  var msg = f.parentNode.querySelector('.wp-msg');
+  f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var days = Array.prototype.map.call(f.querySelectorAll('input[name="days"]:checked'), function (c) { return c.value; });
+    if (!days.length) { if (msg) msg.textContent = '⚠ Pick at least one day'; return; }
+    var v = function (n) { return f.querySelector('[name="' + n + '"]').value.trim(); }, btn = f.querySelector('button');
+    var sub = f.querySelector('input[name="subscribe"]').checked;
+    if (sub && !v('email')) { if (msg) msg.textContent = '⚠ Add your email to get the daily email'; return; }
+    btn.disabled = true;
+    fetch('/api/watch-party', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hall: v('hall'), city: v('city'), state: v('state'), days: days, link: v('link'), email: v('email'), subscribe: sub }) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Something went wrong'); return j; }); })
+      .then(function (j) {
+        f.hidden = true;
+        if (msg) msg.textContent = "✓ Thanks! We'll check your watch party and add it to this page soon." + (j.subscribed ? " You're also on the daily email." : '');
+      })
+      .catch(function (err) { if (msg) msg.textContent = '⚠ ' + err.message; btn.disabled = false; });
+  });
+})();

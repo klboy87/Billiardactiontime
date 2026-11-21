@@ -22,7 +22,7 @@ function cachedCard(key, make) {
   if (cardCache.size > 120) cardCache.delete(cardCache.keys().next().value);
   return png;
 }
-import { mosconiPage, mosconiIcs, MOSCONI_PATH, picksOpen, pickBarHtml } from './mosconi.js';
+import { mosconiPage, mosconiIcs, MOSCONI_PATH, picksOpen, pickBarHtml, cleanWatchParty, watchPartyOpen } from './mosconi.js';
 import { proEventsPage, PRO_EVENTS_PATH } from './proevents.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
@@ -305,6 +305,17 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       D.addMosconiPick(db, sha(clientIp(req) + '|mosconi-pick|' + (cfg.adminToken || 'bat-salt')).toString('hex').slice(0, 32), team, score);
       if (email) D.addSubscriber(db, email, 'mosconi-pick');
       return json(req, res, 200, { ok: true, subscribed: !!email, bar: pickBarHtml(D.mosconiPickStats(db)) });
+    }
+    // Mosconi Cup watch party submissions: saved for the owner to approve, never shown until approved.
+    if (m === 'POST' && p === '/api/watch-party') {
+      if (!watchPartyOpen()) return json(req, res, 403, { error: 'Watch party listings are closed for this year.' });
+      if (limitedBy(joinHits, clientIp(req) + ':watch', 5, 3_600_000)) return json(req, res, 429, { error: 'Too many tries. Try again later.' });
+      const r = cleanWatchParty((await readJson(req)) || {});
+      if (r.error) return json(req, res, 400, { error: r.error });
+      if (isBot(req.headers['user-agent'])) return json(req, res, 201, { ok: true });
+      D.addWatchParty(db, r.value);
+      if (r.value.subscribe) D.addSubscriber(db, r.value.email, 'watch-party');
+      return json(req, res, 201, { ok: true, subscribed: r.value.subscribe });
     }
     if (m === 'POST' && (p === '/api/claims' || p === '/api/reports' || p === '/api/subscribe')) {
       if (limited(clientIp(req) + ':form')) return json(req, res, 429, { error: 'Too many requests. Try again later.' });
@@ -632,6 +643,11 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (m === 'POST' && p === '/api/admin/promotions/remove') {
         const b = (await readJson(req, 500)) || {}; D.removePromotion(db, Number(b.id)); SEO.invalidate();
         return json(req, res, 200, { ok: true });
+      }
+      if (m === 'GET' && p === '/api/admin/watch-parties') return json(req, res, 200, { parties: D.listWatchParties(db) }, { 'Cache-Control': 'no-store' });
+      if (m === 'POST' && (x = p.match(/^\/api\/admin\/watch-parties\/(\d+)\/(approve|hide)$/))) {
+        const ok = D.setWatchPartyStatus(db, x[1], x[2] === 'approve' ? 'approved' : 'hidden');
+        return json(req, res, ok ? 200 : 404, ok ? { ok: true } : { error: 'Not found' });
       }
       if (m === 'GET' && p === '/api/admin/going') return json(req, res, 200, { top: D.goingTop(db) }, { 'Cache-Control': 'no-store' });
       if (m === 'GET' && p === '/api/admin/pageviews') {

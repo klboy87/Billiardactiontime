@@ -998,6 +998,7 @@
     try { pending = (await api('/api/admin/pending')).tournaments; } catch { pending = []; }
     let goingTop = []; try { goingTop = (await api('/api/admin/going')).top; } catch {}
     let promos = []; try { promos = (await api('/api/admin/promotions')).promotions; } catch {}
+    let wps = []; try { wps = (await api('/api/admin/watch-parties')).parties; } catch {}
     let pendingStakes;
     try { pendingStakes = (await api('/api/admin/stakes/pending')).stakes; } catch { pendingStakes = []; }
     let stakeAdmin;
@@ -1082,6 +1083,9 @@
         <p id="promoMsg" class="muted" style="min-height:1.2em;margin:8px 0"></p>
         ${promos.length ? `<table class="t"><tbody>${promos.map(x => `<tr><td>${x.until >= todayLocal() ? '⭐' : '<span class="muted">ended</span>'}</td><td>${x.name ? `<a href="#/t/${x.id}">${esc(x.name)}</a>` : '#' + x.id}<br><small class="muted">${x.date ? esc(fmtDate(x.date)) + ' · ' : ''}${esc([x.venue, x.city, x.state].filter(Boolean).join(', '))}${x.note ? ' · ' + esc(x.note) : ''} · until ${esc(x.until)}</small></td><td><button class="btn btn-out btn-sm promo-off" data-id="${x.id}">Remove</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted" style="margin:0">No featured listings yet.</p>'}
       </div>
+      ${wps.length ? `<h2>📺 Mosconi Watch Parties (${wps.filter(w => w.status === 'new').length} new)</h2>
+      <div class="card" style="padding:8px 14px;margin-bottom:16px"><p class="muted" style="margin:4px 0 8px;font-size:14px">Halls that want to be listed on the Mosconi Cup page. Nothing shows until you tap Approve.</p>
+        <table class="t"><tbody>${wps.map(w => `<tr><td><b>${esc(w.hall)}</b>, ${esc(w.city)}, ${esc(w.state)}<br><small class="muted">${esc(w.days)}${w.link ? ' · <a href="' + esc(w.link) + '" target="_blank" rel="noopener nofollow">link</a>' : ''}${w.email ? ' · ' + esc(w.email) : ''} · ${w.status === 'approved' ? '✅ listed' : w.status === 'hidden' ? 'hidden' : '🆕 new'}</small></td><td style="white-space:nowrap">${w.status !== 'approved' ? `<button class="btn btn-blue btn-sm wp-act" data-id="${w.id}" data-act="approve">Approve</button>` : ''} ${w.status !== 'hidden' ? `<button class="btn btn-out btn-sm wp-act" data-id="${w.id}" data-act="hide">Hide</button>` : ''}</td></tr>`).join('')}</tbody></table></div>` : ''}
       <h2>Most Players Going (${goingTop.length})</h2>
       ${goingTop.length ? `<div class="card" style="padding:8px 14px;margin-bottom:16px"><table class="t"><tbody>${goingTop.map(g => `<tr><td style="width:1%;white-space:nowrap"><b>👍 ${g.n}</b></td><td><a href="#/t/${g.id}">${esc(g.name)}</a><br><small class="muted">${esc(fmtDate(g.date))} · ${esc(g.venue)}, ${esc(g.city)}, ${esc(g.state)}</small></td></tr>`).join('')}</tbody></table><p class="muted" style="font-size:13px;margin:6px 0">Good candidates to feature in the newsletter and Facebook posts.</p></div>` : '<p class="muted">No one has tapped "I\'m going" on an upcoming tournament yet.</p>'}
       <h2>Needs Review (${pending.length})</h2>
@@ -1172,6 +1176,10 @@
         setTimeout(render, 1500);
       } catch (err) { out.textContent = '⚠ ' + err.message; }
     });
+    document.querySelectorAll('.wp-act').forEach(b => b.addEventListener('click', async () => {
+      b.disabled = true;
+      try { await api(`/api/admin/watch-parties/${Number(b.dataset.id)}/${b.dataset.act === 'approve' ? 'approve' : 'hide'}`, { method: 'POST', body: {} }); render(); } catch (err) { alert(err.message); b.disabled = false; }
+    }));
     document.querySelectorAll('.promo-off').forEach(b => b.addEventListener('click', async () => {
       if (!confirm('Remove Featured from this listing?')) return;
       try { await api('/api/admin/promotions/remove', { method: 'POST', body: { id: Number(b.dataset.id) } }); render(); } catch (err) { alert(err.message); }

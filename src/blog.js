@@ -6,8 +6,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layout, shareStrip } from './seo.js';
-import { youtubeCtaHtml, youtubeEmbedHtml, youtubeShortsHtml, validYoutubeId, featuredVideoHtml, mosconiPickCardHtml } from './social.js';
+import { YOUTUBE_OUT, youtubeCtaHtml, youtubeEmbedHtml, youtubeShortsHtml, validYoutubeId, featuredVideoHtml, mosconiPickCardHtml } from './social.js';
 
+const VIDEO_MARK = '<!--youtube-->';
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'blog');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -49,11 +50,16 @@ export function blogPostPage(cfg, slug) {
   if (!p) return null;
   const url = `${cfg.publicUrl}/blog/${p.slug}`;
   const others = POSTS.filter(x => x.slug !== slug).slice(0, 4);
+  // "<!--youtube-->" in the body places the video there (with a See all videos link); otherwise it goes after the body.
+  const inline = !!p.youtubeId && p.body.includes(VIDEO_MARK);
+  const video = !p.youtubeId ? '' : inline
+    ? `<section class="yt-inline" style="margin:18px 0"><h3 style="margin:0 0 4px">${esc(p.youtubeTitle)}</h3>${youtubeEmbedHtml(p.youtubeId, p.youtubeTitle, p.youtubeCredit)}<p style="margin:4px 0 0"><a href="${YOUTUBE_OUT}" target="_blank" rel="noopener"><b>See all videos →</b></a></p></section>`
+    : youtubeEmbedHtml(p.youtubeId, p.youtubeTitle, p.youtubeCredit);
   const src = p.sources.length ? `<h2>Sources</h2><ul>${p.sources.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title)}</a></li>`).join('')}</ul>` : '';
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/blog/">Blog</a> <span>/</span> <span>${esc(p.title)}</span></nav>
   <article class="card guide"><h1>${esc(p.title)}</h1>
   <p class="guide-meta"><span>${niceDate(p.date)}</span><span>By Billiard Action Time</span></p>
-  ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.title)}" style="max-width:100%;border-radius:8px;margin:0 0 14px">` : ''}${p.body}${p.slug === 'mosconi-cup-2026-teams-usa-vs-europe-lineups' ? mosconiPickCardHtml() : ''}${p.youtubeId ? youtubeEmbedHtml(p.youtubeId, p.youtubeTitle, p.youtubeCredit) : ''}${src}${youtubeShortsHtml()}${youtubeCtaHtml()}${shareStrip(cfg, `/blog/${p.slug}`, p.title, p.title)}</article>
+  ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.title)}" style="max-width:100%;border-radius:8px;margin:0 0 14px">` : ''}${inline ? p.body.replace(VIDEO_MARK, () => video) : p.body.replace(VIDEO_MARK, '')}${p.slug === 'mosconi-cup-2026-teams-usa-vs-europe-lineups' ? mosconiPickCardHtml() : ''}${inline ? '' : video}${src}${youtubeShortsHtml()}${youtubeCtaHtml()}${shareStrip(cfg, `/blog/${p.slug}`, p.title, p.title)}</article>
   ${others.length ? `<section class="sec seo-sec"><h2>More from the blog</h2><div class="guide-next">${others.map(x => `<a href="/blog/${x.slug}"><small>${niceDate(x.date)}</small><b>${esc(x.title)}</b></a>`).join('')}</div><p style="margin-top:12px"><a href="/blog/">All posts →</a></p></section>` : ''}`;
   const ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.title, description: p.description, url, datePublished: p.date, dateModified: p.date, ...(p.image ? { image: p.image } : {}),
     publisher: { '@type': 'Organization', name: 'Billiard Action Time', logo: { '@type': 'ImageObject', url: cfg.publicUrl + '/icons/icon-512.png' } }, author: { '@type': 'Organization', name: 'Billiard Action Time' } };
