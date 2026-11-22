@@ -166,7 +166,7 @@ export function mosconiIcs(now = new Date()) {
   const ev = (uid, start, end, summary, desc) => ['BEGIN:VEVENT', `UID:${uid}@billiardactiontime.com`, `DTSTAMP:${stamp}`, `DTSTART:${start}`, `DTEND:${end}`,
     `SUMMARY:${summary}`, `DESCRIPTION:${desc.replace(/,/g, '\\,')}`, 'LOCATION:Caribe Royale Resort\\, Orlando\\, FL', 'URL:https://billiardactiontime.com/mosconi-cup-2026', 'END:VEVENT'];
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Billiard Action Time//Mosconi Cup 2026//EN', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:Mosconi Cup 2026',
-    ...ev('mosconi2026-press', '20261126T200000Z', '20261126T210000Z', 'Mosconi Cup 2026 fan press conference', 'Open to fans at the Caribe Royale. Teams USA and Europe meet the press the day before play starts.'),
+    ...ev('mosconi2026-press', '20261126T200000Z', '20261126T210000Z', 'Mosconi Cup 2026 fan press conference', 'Open to fans in Palms III at the Caribe Royale (doors 2:30 PM ET). Teams USA and Europe meet the press the day before play starts.'),
     ...DAYS.flatMap(([d, label, n]) => ev(`mosconi2026-${d}`, `${d.replace(/-/g, '')}T180000Z`, `${d.replace(/-/g, '')}T230000Z`, `Mosconi Cup 2026: ${n}`,
       `USA vs Europe. Play starts 1:00 PM ET (6 PM GMT). Watch live on ESPN+ and WNT TV. Results: https://billiardactiontime.com/mosconi-cup-2026`)),
     'END:VCALENDAR'];
@@ -229,7 +229,7 @@ export function mosconiPage(cfg, db = null) {
       <tr><th>Venue</th><td>Caribe Royale Resort, Orlando, FL</td></tr>
       <tr><th>Watch (US)</th><td>Live on ESPN+ and WNT TV. Other countries: broadcasters to be announced.</td></tr>
       <tr><th>Tickets</th><td>On sale at <a href="https://worldnineballtour.com" rel="noopener nofollow" target="_blank">worldnineballtour.com</a></td></tr>
-      <tr><th>Press conference</th><td>Thursday, Nov 26, 3–4 PM ET at the Caribe Royale (open to fans)</td></tr>
+      <tr><th>Press conference</th><td>Thursday, Nov 26 (Thanksgiving), 3–4 PM ET (doors 2:30 PM), Palms III at the Caribe Royale (open to fans)</td></tr>
     </tbody></table>
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="${MOSCONI_PATH}/calendar.ics" rel="nofollow" download>📅 Add to calendar (all 4 days + press conference)</a><a class="btn btn-out" href="/pro-events">More pro events &amp; where to watch</a></div>
   </article>

@@ -1,14 +1,10 @@
 {
  "lastUpdated": "Nov 22, 2026, 8:45 AM ET",
- "checkedAt": "2026-11-22T14:18:09Z",
+ "checkedAt": "2026-11-22T19:20:00Z",
  "items": [
   {
    "title": "1 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
    "status": "not due yet"
-  },
-  {
-   "title": "2 Timed videos 45Z_6EjCMHQ (after 9 AM ET Nov 22), P-UH1DYWNUY (after 12 PM ET Nov 22)",
-   "status": "held: public status not confirmed this run"
   },
   {
    "title": "3 Thanksgiving weekend page /tournaments/thanksgiving-weekend",
@@ -35,8 +31,20 @@
    "status": "done Nov 22 (904fa74)"
   },
   {
-   "title": "Comment 13:33Z: RW5avV0QgLE (2 PM ET), sXyE1xyDQyo (7 PM ET), JIKtq1Xjnp0 (9:30 PM ET)",
-   "status": "held until public"
+   "title": "2 Timed videos 45Z_6EjCMHQ, P-UH1DYWNUY",
+   "status": "held: public status could not be checked (YouTube blocked this run)"
+  },
+  {
+   "title": "Comment 13:33Z: RW5avV0QgLE, sXyE1xyDQyo, JIKtq1Xjnp0",
+   "status": "held: public status could not be checked"
+  },
+  {
+   "title": "Comment 14:37Z: press conference time on hub",
+   "status": "done Nov 22 PM: added Thanksgiving, doors 2:30 PM, Palms III; kept 3-4 PM start (matches /pro-events source note)"
+  },
+  {
+   "title": "Comment 14:37Z: Woodward/Shaw vice-captains",
+   "status": "no change: no dated 2026 source confirmed"
   }
  ]
 }
