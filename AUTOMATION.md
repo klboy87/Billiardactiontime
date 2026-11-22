@@ -29,6 +29,7 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 
 ## Mosconi Cup 2026 hub
 - `/mosconi-cup-2026` is built by `src/mosconi.js`. Fill in daily results (Nov 27-30) in `content/mosconi-2026.json`: `{"days":[{"date":"2026-11-27","score":"USA 3 - 2 Europe","summary":"Plain-text recap"}]}`, then push. The nav/home links switch off on Dec 1 by themselves.
+- Live tracker (Nov 27-30 only): add `"liveScore":"Europe 3 - USA 2"` and `"matches":[{"date":"2026-11-27","match":"Match 1: Singles","players":"A vs B","score":"5-3","status":"Final"}]` to the same file. The hub shows that day's matches in a text-only "Today's matches" table at the top; the home page shows a "Mosconi Cup live" score banner. Both hide themselves outside play days or when empty.
 
 ## Activity log
 - File: `automation/activity-log.jsonl` — one JSON object per line, append only:

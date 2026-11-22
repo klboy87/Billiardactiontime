@@ -1,34 +1,38 @@
 {
- "lastUpdated": "Nov 21, 2026, 8:45 AM ET",
- "checkedAt": "2026-11-21T19:15:44Z",
+ "lastUpdated": "Nov 21, 2026, 7:45 PM ET",
+ "checkedAt": "2026-11-22T02:10:32Z",
  "items": [
   {
-   "title": "1 Bangkok Open result + Short etBJ-rzFpj0",
-   "status": "done Nov 21 (9545070): result + 2 videos on /pro-events, results blog post"
-  },
-  {
-   "title": "1c-1e Mosconi rechecks (Nov 24/26), daily results (Nov 27-30), Dec 1 recap",
+   "title": "1 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
    "status": "not due yet"
   },
   {
-   "title": "2 Home page tournament count",
-   "status": "done Nov 21: live count OK; redeployed skipped daily import"
+   "title": "2 New videos: vkUgsGcMB18, HZvK6-Qp-j0 (+ comment LcfBuB4x7ZE)",
+   "status": "done Nov 21 (3ae0cd9)"
   },
   {
-   "title": "3 /watch short link",
-   "status": "done Nov 21 (c82c221)"
+   "title": "2 Timed videos 45Z_6EjCMHQ (after 9 AM ET Nov 22), P-UH1DYWNUY (after 12 PM ET Nov 22)",
+   "status": "held until public"
   },
   {
-   "title": "4 Railway watch paths",
+   "title": "3 Straight pool link from Mosconi hub",
+   "status": "done Nov 21 (3ae0cd9)"
+  },
+  {
+   "title": "4 Live match tracker + home banner",
+   "status": "done Nov 21 (3ae0cd9): fill liveScore + matches in content/mosconi-2026.json during play"
+  },
+  {
+   "title": "5 Railway watch paths",
    "status": "owner action"
   },
   {
-   "title": "5 /gear specific products + Black Friday",
-   "status": "skipped: needs owner's product picks/ASINs and FlexOffers approval"
+   "title": "6 /gear products + Black Friday",
+   "status": "skipped: needs owner's product picks"
   },
   {
-   "title": "6 Held videos (+ comment: vkUgsGcMB18 now, P-UH1DYWNUY after Nov 22 noon ET)",
-   "status": "held; waiting for Grok to place them"
+   "title": "7 Held videos CVAxby8h7IA, hub youtubeId",
+   "status": "held"
   }
  ]
 }
