@@ -103,8 +103,6 @@
     "willie-mosconi-526-ball-run"
   ],
   "queue": [
-    "apa-skill-levels-explained",
-    "how-to-stop-scratching",
     "combination-shots",
     "9-ball-vs-10-ball",
     "thin-cut-shots",
@@ -120,7 +118,9 @@
     "mosconi-cup-2026-preview",
     "shane-van-boening",
     "how-to-watch-pro-pool",
-    "stop-shot-and-stun-shot"
+    "stop-shot-and-stun-shot",
+    "apa-skill-levels-explained",
+    "how-to-stop-scratching"
   ],
   "log": [
     {
@@ -142,6 +142,13 @@
       "picks": [
         "how-to-watch-pro-pool",
         "stop-shot-and-stun-shot"
+      ]
+    },
+    {
+      "date": "2026-11-22",
+      "picks": [
+        "apa-skill-levels-explained",
+        "how-to-stop-scratching"
       ]
     }
   ]
