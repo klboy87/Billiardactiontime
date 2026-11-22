@@ -61,6 +61,7 @@ export function mosconiFaq(orderOut = false) {
     ['How can I watch the Mosconi Cup in the US?', 'Every session streams live on ESPN+ (in the ESPN App on phones and connected TVs) and on WNT TV, the World Nineball Tour streaming service. Broadcasters for other countries have not been announced yet.'],
     ['What is the Mosconi Cup format?', 'Five players from the USA face five from Europe in nine-ball singles, doubles and team matches. Each match is a race to 5 racks worth one point, and the first team to 11 points wins the Cup.'],
     ['When did Team USA last win the Mosconi Cup?', 'Team USA last won in 2019 in Las Vegas, 11-8, under captain Johan Ruijsink, who leads the team again in 2026. Europe have won every Cup since.'],
+    ['Why is it called the Mosconi Cup?', 'It is named after Willie Mosconi, the American straight pool legend. Our straight pool (14.1) rules guide explains the game he made famous.', 'It is named after Willie Mosconi, the American straight pool legend. <a href="/blog/straight-pool-14-1-rules-explained-for-beginners">Straight pool rules explained →</a>'],
     orderOut
       ? ['Is the Mosconi Cup 2026 order of play out?', 'Yes. The order of play is listed at the top of this page.', 'Yes. See the <a href="#order-of-play">order of play</a> at the top of this page.']
       : ['Is the Mosconi Cup 2026 order of play out?', 'Not yet. We will add it to this page as soon as Matchroom publishes it.', 'Not yet. We will add it to the <a href="#order-of-play">order of play row</a> at the top of this page as soon as Matchroom publishes it.']
@@ -161,6 +162,27 @@ export function mosconiIcs(now = new Date()) {
   return lines.join('\r\n') + '\r\n';
 }
 
+// Live tracker (Nov 27-30): optional "liveScore" (e.g. "Europe 3 - USA 2") and "matches"
+// ([{ "date": "2026-11-27", "match": "Match 1: Singles", "players": "A vs B", "score": "5-3", "status": "Final" }])
+// in content/mosconi-2026.json. Text only. The table shows the current day's matches at the top of the hub;
+// the score banner shows on the home page during the four days of play.
+const PLAY_FIRST = '2026-11-27', PLAY_LAST = '2026-11-30';
+const liveScore = () => { const s = readJson().liveScore; return typeof s === 'string' && s.trim() ? s.trim() : ''; };
+export function liveTrackerHtml(today = D.todayIso(), j = readJson()) {
+  const all = (Array.isArray(j.matches) ? j.matches : []).filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.date || '') && x.match);
+  if (today < PLAY_FIRST || today > PLAY_LAST || !all.length) return '';
+  const rows = all.filter(x => x.date === today);
+  if (!rows.length) return '';
+  const score = typeof j.liveScore === 'string' ? j.liveScore.trim() : '';
+  return `<section class="card" id="live" style="margin:0 0 14px;padding:14px 18px;border:2px solid #c4302b"><h2 style="margin:0 0 6px;font-size:1.2rem">🔴 Today's matches${score ? `: ${esc(score)}` : ''}</h2>
+    <table class="t"><thead><tr><th>Match</th><th>Players</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows.map(x => `<tr><td>${esc(x.match)}</td><td>${esc(x.players || '')}</td><td><b>${esc(x.score || '–')}</b></td><td>${esc(x.status || '')}</td></tr>`).join('')}</tbody></table>
+    <p class="muted" style="margin:6px 0 0;font-size:13px">Updated after each match. Watch live on ESPN+ and WNT TV.</p></section>`;
+}
+export function mosconiLiveBannerHtml(today = D.todayIso(), score = liveScore()) {
+  if (today < PLAY_FIRST || today > PLAY_LAST || !score) return '';
+  return `<div class="wrap"><p class="card" style="margin:12px 0 0;padding:10px 14px;border:2px solid #c4302b;font-weight:700"><a href="${MOSCONI_PATH}#live">🔴 Mosconi Cup live: ${esc(score)} →</a></p></div>`;
+}
+
 function results() {
   try {
     const j = readJson();
@@ -185,6 +207,7 @@ export function mosconiPage(cfg, db = null) {
     <table class="t" style="max-width:520px"><caption class="muted" style="text-align:left;padding-bottom:6px">Daily start time, Fri Nov 27 – Mon Nov 30</caption><thead><tr><th>Time zone</th><th>Play starts</th></tr></thead><tbody>${START_TIMES.map(([z, t]) => `<tr><td>${esc(z)}</td><td><b>${esc(t)}</b></td></tr>`).join('')}</tbody></table>
     ${faq.map(([q, a, html]) => `<h3 style="margin:16px 0 4px;font-size:1.05rem">${esc(q)}</h3><p style="margin:0">${html || esc(a)}</p>`).join('')}</section>`;
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/big-tournaments/">Big Events</a> <span>/</span> <span>Mosconi Cup 2026</span></nav>
+  ${liveTrackerHtml(today)}
   <article class="card">
     <h1 class="dtitle">Mosconi Cup 2026: Team USA vs. Team Europe</h1>
     <p class="lead-muted"><b>November 27–30, 2026</b> at the <b>Caribe Royale Resort, Orlando, Florida</b>. Pool's version of the Ryder Cup: five American pros against five European pros over four days. Europe are the defending champions.</p>
@@ -220,6 +243,7 @@ export function mosconiPage(cfg, db = null) {
     <li><a href="/blog/mosconi-cup-2026-teams-usa-vs-europe-lineups">Mosconi Cup 2026 teams: meet the USA and Europe lineups</a></li>
     <li><a href="/blog/how-the-mosconi-cup-works-format-explained">How the Mosconi Cup works: the format explained</a></li>
     <li><a href="/blog/nine-ball-rules-explained-before-mosconi-cup">9-Ball rules explained before the Mosconi Cup</a></li>
+    <li><a href="/blog/straight-pool-14-1-rules-explained-for-beginners">Straight pool (14.1) rules explained: the game Willie Mosconi made famous</a></li>
     <li><a href="/guides/pool-news-chua-filler-mosconi-countdown-november-2026">Pool news: Chua wins at home, Filler takes $100K, Mosconi countdown</a></li>
     <li><a href="/guides/mosconi-cup-2026-preview">Mosconi Cup 2026 preview: captains, qualifying and Europe's streak</a></li>
     <li><a href="/guides/major-pool-events-calendar">Major pool events 2026–2027 calendar</a></li>

@@ -33,6 +33,7 @@ export function youtubeEmbedHtml(id, title = '', credit = '') {
 // Featured long-form video shown near the top of /blog/ (our own channel's upload; click-to-load).
 export const FEATURED_VIDEOS = [
   { id: 'to37QPkQJgk', title: 'Efren Reyes vs Lukas Fracasso-Verner: The Foul Nobody Saw' },
+  { id: 'vkUgsGcMB18', title: "Efren Reyes' Big Cut: The Cue Ball Just Dies" },
   { id: 'Vo_qtjqsDpI', title: "Efren Reyes vs Mike Dechaine: Lucky or Genius? The Booth Can't Decide" }
 ];
 export const FEATURED_VIDEO = FEATURED_VIDEOS[0];
@@ -58,6 +59,7 @@ export function mosconiPickCardHtml(now = Date.now()) {
 // from YouTube until a click). Our own channel's Shorts only, newest first. "after" (ISO UTC) hides a Short
 // until it is public.
 export const SHORTS = [
+  { id: 'LcfBuB4x7ZE' }, { id: 'HZvK6-Qp-j0' },
   { id: 'dvmThoJc2rY', after: '2026-11-19T17:00:00Z' },
   { id: 'dhZK3qHdPRo' }, { id: '7A2xb9BhCCc' }, { id: 'TNU1jhBxPM4' }, { id: 'cu_NtTqX_pY' }
 ];

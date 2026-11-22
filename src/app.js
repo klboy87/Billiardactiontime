@@ -22,7 +22,7 @@ function cachedCard(key, make) {
   if (cardCache.size > 120) cardCache.delete(cardCache.keys().next().value);
   return png;
 }
-import { mosconiPage, mosconiIcs, MOSCONI_PATH, picksOpen, pickBarHtml, cleanWatchParty, watchPartyOpen } from './mosconi.js';
+import { mosconiPage, mosconiIcs, mosconiLiveBannerHtml, MOSCONI_PATH, picksOpen, pickBarHtml, cleanWatchParty, watchPartyOpen } from './mosconi.js';
 import { proEventsPage, PRO_EVENTS_PATH } from './proevents.js';
 import { isBot, pageFromHash, classifySource, PAGES } from './traffic.js';
 import * as S from './stakes.js';
@@ -234,7 +234,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
   // The app shell (index.html) for the home page (page = null) or one app section, see apppages.js.
   function shellHtml(page) {
     let body = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html'), 'utf8')
-      .replace('<!--SPONSOR-->', sponsorBannerHtml()).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg))
+      .replace('<!--SPONSOR-->', sponsorBannerHtml() + (page ? '' : mosconiLiveBannerHtml())).replace('<!--ADS_HEAD-->', SEO.adsHead(cfg))
       .replace('<!--FONTS-->', FONT_LINKS).replace('<!--SOCIAL-->', socialLinksHtml())
       .replace('<!--PROMO_NAV-->', D.todayIso() < '2026-12-01' ? '<a href="/mosconi-cup-2026">🏆 Mosconi Cup</a>' : '');
     try { SEO.ensureFooter(db); body = body.replace('<!--SEO_LINKS-->', SEO.homeLinksHtml(db)); } catch (e) { log('seo links failed: ' + e.message); }
