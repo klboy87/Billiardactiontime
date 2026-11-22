@@ -1,30 +1,26 @@
 {
- "lastUpdated": "Nov 21, 2026, 7:45 PM ET",
- "checkedAt": "2026-11-22T02:10:32Z",
+ "lastUpdated": "Nov 22, 2026, 8:45 AM ET",
+ "checkedAt": "2026-11-22T14:18:09Z",
  "items": [
   {
    "title": "1 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
    "status": "not due yet"
   },
   {
-   "title": "2 New videos: vkUgsGcMB18, HZvK6-Qp-j0 (+ comment LcfBuB4x7ZE)",
-   "status": "done Nov 21 (3ae0cd9)"
-  },
-  {
    "title": "2 Timed videos 45Z_6EjCMHQ (after 9 AM ET Nov 22), P-UH1DYWNUY (after 12 PM ET Nov 22)",
-   "status": "held until public"
+   "status": "held: public status not confirmed this run"
   },
   {
-   "title": "3 Straight pool link from Mosconi hub",
-   "status": "done Nov 21 (3ae0cd9)"
+   "title": "3 Thanksgiving weekend page /tournaments/thanksgiving-weekend",
+   "status": "done Nov 22 (904fa74)"
   },
   {
-   "title": "4 Live match tracker + home banner",
-   "status": "done Nov 21 (3ae0cd9): fill liveScore + matches in content/mosconi-2026.json during play"
+   "title": "4 Mosconi results by email box (source=mosconi)",
+   "status": "done Nov 22 (904fa74); daily email lead noted in AUTOMATION.md"
   },
   {
    "title": "5 Railway watch paths",
-   "status": "owner action"
+   "status": "owner action; morning pushes SKIPPED"
   },
   {
    "title": "6 /gear products + Black Friday",
@@ -33,6 +29,14 @@
   {
    "title": "7 Held videos CVAxby8h7IA, hub youtubeId",
    "status": "held"
+  },
+  {
+   "title": "Comment 13:33Z: alL-G3ZpGR0 featured",
+   "status": "done Nov 22 (904fa74)"
+  },
+  {
+   "title": "Comment 13:33Z: RW5avV0QgLE (2 PM ET), sXyE1xyDQyo (7 PM ET), JIKtq1Xjnp0 (9:30 PM ET)",
+   "status": "held until public"
   }
  ]
 }
