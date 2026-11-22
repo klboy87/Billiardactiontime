@@ -34,9 +34,9 @@
       e.preventDefault();
       var msg = f.parentNode.querySelector('.sub-msg'), btn = f.querySelector('button'), email = f.querySelector('input').value;
       btn.disabled = true;
-      fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })
+      fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(f.getAttribute('data-source') ? { email: email, source: f.getAttribute('data-source') } : { email: email }) })
         .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Something went wrong'); }); })
-        .then(function () { f.hidden = true; if (msg) msg.textContent = "✓ You're in! Watch for the daily email."; try { localStorage.setItem('bat_subscribed', '1'); } catch (e) {} })
+        .then(function () { f.hidden = true; if (msg) msg.textContent = f.getAttribute('data-source') === 'mosconi' ? "✓ You're in! Each day's Mosconi Cup result will be in your morning email." : "✓ You're in! Watch for the daily email."; try { localStorage.setItem('bat_subscribed', '1'); } catch (e) {} })
         .catch(function (err) { if (msg) msg.textContent = '⚠ ' + err.message; btn.disabled = false; });
     });
   });

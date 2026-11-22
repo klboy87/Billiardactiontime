@@ -323,7 +323,7 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (p === '/api/subscribe') {
         const email = clean(b.email).toLowerCase();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) return json(req, res, 400, { error: 'Enter a valid email address' });
-        D.addSubscriber(db, email, isBot(req.headers['user-agent']) ? null : visitorCampaign(req));
+        D.addSubscriber(db, email, isBot(req.headers['user-agent']) ? null : b.source === 'mosconi' ? 'mosconi' : visitorCampaign(req));
         return json(req, res, 200, { ok: true });
       }
       const tid = Number(b.tournamentId);
@@ -826,6 +826,12 @@ export function createApp(db, cfg, { fetchFn = fetch, log = () => {} } = {}) {
       if (canon !== '/tournament/' + x[1]) return moved(canon);
       trackVisit(req, 'tournament-page');
       return html(200, SEO.tournamentPage(db, cfg, t));
+    }
+    if ((m === 'GET' || m === 'HEAD') && (p === SEO.THANKSGIVING_PATH || p === SEO.THANKSGIVING_PATH + '/')) {
+      if (p !== SEO.THANKSGIVING_PATH) return moved(SEO.THANKSGIVING_PATH);
+      SEO.ensureFooter(db);
+      trackVisit(req, 'thanksgiving-page');
+      return html(200, SEO.thanksgivingPage(db, cfg), { 'Cache-Control': 'public, max-age=600' });
     }
     if ((m === 'GET' || m === 'HEAD') && (x = p.match(/^\/tournaments(\/.*)?$/))) {
       if (p === '/tournaments') return moved('/tournaments/');

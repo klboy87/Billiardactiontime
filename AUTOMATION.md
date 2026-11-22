@@ -31,6 +31,11 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - `/mosconi-cup-2026` is built by `src/mosconi.js`. Fill in daily results (Nov 27-30) in `content/mosconi-2026.json`: `{"days":[{"date":"2026-11-27","score":"USA 3 - 2 Europe","summary":"Plain-text recap"}]}`, then push. The nav/home links switch off on Dec 1 by themselves.
 - Live tracker (Nov 27-30 only): add `"liveScore":"Europe 3 - USA 2"` and `"matches":[{"date":"2026-11-27","match":"Match 1: Singles","players":"A vs B","score":"5-3","status":"Final"}]` to the same file. The hub shows that day's matches in a text-only "Today's matches" table at the top; the home page shows a "Mosconi Cup live" score banner. Both hide themselves outside play days or when empty.
 
+- Results by email: the hub has a "Get each day's Mosconi Cup result by email" box (shown until Nov 30). Signups join the normal daily list with campaign `mosconi` (see the admin Campaigns table). **Daily email task, Nov 28-Dec 1:** put the previous day's Mosconi score and one-line recap (from `content/mosconi-2026.json`) at the very top of the email, with a link to `/mosconi-cup-2026`.
+
+## Thanksgiving weekend page (Nov 2026)
+- `/tournaments/thanksgiving-weekend` (built by `thanksgivingPage` in `src/seo.js`) lists events dated Nov 26-29 grouped by state. Linked from home and /tonight Nov 23-29 only; in the sitemap until Nov 29; noindex afterwards. Nothing to update by hand.
+
 ## Activity log
 - File: `automation/activity-log.jsonl` — one JSON object per line, append only:
 ```json

@@ -32,6 +32,7 @@ export function youtubeEmbedHtml(id, title = '', credit = '') {
 
 // Featured long-form video shown near the top of /blog/ (our own channel's upload; click-to-load).
 export const FEATURED_VIDEOS = [
+  { id: 'alL-G3ZpGR0', title: 'Mike Dechaine Came for Efren Reyes: The Legend vs The Hustler' },
   { id: 'to37QPkQJgk', title: 'Efren Reyes vs Lukas Fracasso-Verner: The Foul Nobody Saw' },
   { id: 'vkUgsGcMB18', title: "Efren Reyes' Big Cut: The Cue Ball Just Dies" },
   { id: 'Vo_qtjqsDpI', title: "Efren Reyes vs Mike Dechaine: Lucky or Genius? The Booth Can't Decide" }

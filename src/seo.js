@@ -675,6 +675,7 @@ export function sitemapXml(db, cfg, extra = []) {
   const week = new Date(Date.parse(today + 'T00:00:00Z') + 7 * 864e5).toISOString().slice(0, 10);
   for (const st of new Set(up.filter(t => t.date <= week).map(t => t.venue.state))) if (STATE_NAMES[st]) add(tonightPath(st), today, '0.6');
   add('/big-tournaments/', today, '0.9');
+  if (today <= TG.to) add(THANKSGIVING_PATH, today, '0.8');
   for (const st of new Set(up.filter(t => t.date >= wk.from && t.date <= wk.to).map(t => t.venue.state))) if (STATE_NAMES[st]) add(weekendPath(st), today, '0.7');
   for (const e of extra) add(e.path, e.lastmod || today, e.pri || '0.6');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...urls].map(([p, u]) =>
@@ -788,6 +789,46 @@ export function weekendPage(db, cfg, stateSlugPart) {
   return layout(cfg, { title, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: !list.length && !soon.length, scripts: ['/near-sort.js'], ogImage: listCardUrl(cfg, 'weekend', state) });
 }
 
+// ---- /tournaments/thanksgiving-weekend: one-off holiday list (Nov 26-29, 2026), grouped by state ----
+export const THANKSGIVING_PATH = '/tournaments/thanksgiving-weekend';
+const TG = { from: '2026-11-26', to: '2026-11-29' };
+// Promo links on home and /tonight run Nov 23-29; the page itself stays reachable afterwards (noindex once past).
+export const thanksgivingPromoOn = (today = todayIso()) => today >= '2026-11-23' && today <= TG.to;
+export function thanksgivingLinkHtml(today = todayIso()) {
+  return thanksgivingPromoOn(today) ? `<p class="card tg-card" style="margin:12px 0;padding:10px 14px;border:2px solid #b8860b;font-weight:700"><a href="${THANKSGIVING_PATH}">🦃 Pool tournaments Thanksgiving weekend (Nov 26-29) →</a></p>` : '';
+}
+export function thanksgivingPage(db, cfg) {
+  const ix = index(db), today = todayIso();
+  const past = today > TG.to;
+  const list = ix.all.filter(t => t.date >= TG.from && t.date <= TG.to && t.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date) || String(a.time || '99').localeCompare(String(b.time || '99')));
+  const byState = new Map();
+  for (const t of list) { if (!byState.has(t.venue.state)) byState.set(t.venue.state, []); byState.get(t.venue.state).push(t); }
+  const states = [...byState].sort((a, b) => (STATE_NAMES[a[0]] || a[0]).localeCompare(STATE_NAMES[b[0]] || b[0]));
+  const h1 = 'Pool Tournaments Thanksgiving Weekend 2026 (Nov 26-29)';
+  const path = THANKSGIVING_PATH, url = cfg.publicUrl + path;
+  const intro = past
+    ? 'Thanksgiving weekend 2026 is over. See what is on <a href="/tonight/">tonight</a> or <a href="/this-weekend/">this weekend</a>.'
+    : list.length
+      ? `<b>${plural(list.length, 'pool tournament')}</b> in ${plural(states.length, 'state')} over Thanksgiving weekend, Thursday Nov 26 to Sunday Nov 29, grouped by state. Holiday hours change, so call the room to confirm before you go.`
+      : 'No tournaments are listed for Thanksgiving weekend yet. New events are added every day. Running one? <a href="/post">Post it free</a>.';
+  const bc = crumbs(cfg, [{ name: 'Tournaments', path: '/tournaments/' }, { name: 'Thanksgiving Weekend', path }]);
+  const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: list.length,
+    itemListElement: list.slice(0, 100).map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: cfg.publicUrl + tournamentPath(db, t), name: t.name })) };
+  const body = `${bc.html}
+  <div class="pagehead"><h1>${esc(h1)}</h1><p>${intro}</p>
+    <p class="muted" style="margin:8px 0 0">📬 Want the best events near you every morning? Use the free email signup at the top of this page.</p>
+    <div class="actbar" style="margin-top:12px"><button type="button" class="btn btn-gold" data-near-sort hidden>📍 Sort by Distance</button><a class="btn btn-gold" href="/tonight/">Tonight</a><a class="btn btn-blue" href="/this-weekend/">This Weekend</a><a class="btn btn-out" href="/tournaments/">Browse by State</a></div></div>
+  ${!past && today < '2026-12-01' ? '<p class="card" style="margin:12px 0;padding:10px 14px;font-weight:700"><a href="/mosconi-cup-2026#watch-parties">🏆 Watching the Mosconi Cup (Nov 27-30)? Find a watch party →</a></p>' : ''}
+  ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>Jump to a state</h2><div class="chips">${states.map(([s, l]) => `<a class="chip" href="#st-${esc(String(s).toLowerCase())}">${esc(STATE_NAMES[s] || s)} (${l.length})</a>`).join('')}</div></section>` : ''}
+  ${featuredBox(db, list)}
+  ${states.map(([s, l]) => `<section class="sec seo-sec" id="st-${esc(String(s).toLowerCase())}"><h2>${esc(STATE_NAMES[s] || s)} (${l.length})</h2>${eventRows(db, l, { showCity: true })}</section>`).join('')}`;
+  const description = list.length
+    ? `${plural(list.length, 'pool tournament')} over Thanksgiving weekend 2026 (Nov 26-29), by state: pool halls, start times and entry fees.`
+    : 'Pool tournaments over Thanksgiving weekend 2026 (Nov 26-29), by state. Updated daily.';
+  return layout(cfg, { title: `${h1} | Billiard Action Time`, description, path, body, jsonld: [bc.ld, ...(list.length ? [itemList] : [])], noindex: past || !list.length, scripts: ['/near-sort.js'] });
+}
+
 // Plain-HTML heading and intro for the home page. The app replaces it once it loads; search engines
 // and link previews read it as-is.
 export function homeIntroHtml(db) {
@@ -796,7 +837,7 @@ export function homeIntroHtml(db) {
   const weekend = up.filter(t => t.date >= wk.from && t.date <= wk.to).length;
   const states = new Set(up.map(t => t.venue.state)).size;
   const f = buildFooter(db).links;
-  return `${mosconiPickCardHtml()}<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
+  return `${mosconiPickCardHtml()}${thanksgivingLinkHtml(today)}<section class="pagehead"><h1>Find Pool Tournaments Near You</h1>
   <p>Billiard Action Time lists <b>${plural(up.length, 'upcoming pool tournament')}</b> in ${plural(states, 'state')}: weekly 8-Ball and 9-Ball nights, added-money opens, One Pocket and Scotch Doubles events, with dates, pool halls and entry fees. Listings update every day.</p>
   <div class="actbar">${promoNav('btn btn-gold')}<a class="btn btn-gold" href="/this-weekend/">This Weekend (${weekend})</a><a class="btn btn-gold" href="/big-tournaments/">Big Events</a><a class="btn btn-blue" href="/tournaments/">Browse by State</a><a class="btn btn-out" href="/calendar">Calendar</a><a class="btn btn-out" href="/alerts">Get Alerts</a><a class="btn btn-out" href="/guides/">Guides</a></div>
   <p class="muted" style="margin-top:12px">Popular: ${f.states.slice(0, 8).map(([s]) => `<a href="${facetPath({ state: s })}">${esc(STATE_NAMES[s] || s)}</a>`).join(' · ')}</p></section>`;
@@ -931,7 +972,7 @@ export function tonightPage(db, cfg, stateSlugPart) {
   ${states.length ? `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by state</h2><div class="chips">${states.map(([s, n]) => `<a class="chip" href="${tonightPath(s)}">${esc(STATE_NAMES[s] || s)} (${n})</a>`).join('')}</div></section>` : ''}
   ${state && list.length > 3 ? (() => { const m = new Map(); for (const t of list) m.set(t.venue.city, (m.get(t.venue.city) || 0) + 1);
     return `<section class="sec seo-sec" style="padding-top:0"><h2>Tonight by city</h2><div class="chips">${[...m].sort((a, b) => b[1] - a[1]).map(([c, n]) => `<a class="chip" href="${facetPath({ state, city: c })}">${esc(c)} (${n})</a>`).join('')}</div></section>`; })() : ''}
-  ${featuredBox(db, [...list, ...next])}${giftLine()}
+  ${thanksgivingLinkHtml(today)}${featuredBox(db, [...list, ...next])}${giftLine()}
   ${list.length ? eventRows(db, list.slice(0, 400), { showCity: true }) : ''}
   ${next.length ? `<section class="sec seo-sec"><h2>Tomorrow${esc(where)} (${esc(shortDate(tomorrow))})</h2>${eventRows(db, next.slice(0, list.length ? 25 : 200), { showCity: true })}${list.length && next.length > 25 ? `<p class="muted">And ${next.length - 25} more tomorrow.</p>` : ''}</section>` : ''}
   <section class="card share-box" data-share-url="${esc(url)}" data-share-title="${esc(h1)}" data-share-text="${esc(shareText)}">

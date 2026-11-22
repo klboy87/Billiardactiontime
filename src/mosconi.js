@@ -78,6 +78,17 @@ export function pickBarHtml(stats) {
   return `<div class="pick-bar" aria-label="Fan picks"><p style="margin:0 0 6px"><b>${eu}% pick Europe</b> · <b>${us}% pick USA</b> <span class="muted">(${stats.total} picks)</span></p>
     <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:#ddd"><span style="width:${eu}%;background:#1f4fa3"></span><span style="width:${us}%;background:#b22234"></span></div></div>`;
 }
+// "Get each day's result by email" box next to Pick the winner. Joins the normal daily email list, tagged
+// campaign "mosconi" so signups from here can be compared with other signups. Hidden after the final day (Nov 30).
+const MOSCONI_EMAIL_END_MS = Date.UTC(2026, 11, 1, 5, 0, 0);
+export function mosconiEmailBoxHtml(now = Date.now()) {
+  if (now >= MOSCONI_EMAIL_END_MS) return '';
+  return `<section class="card seo-cta" id="results-by-email" style="margin:18px 0;padding:16px 20px">
+    <h2 class="seo-h2" style="margin-top:0">📬 Get each day's Mosconi Cup result by email</h2>
+    <p class="muted" style="margin:6px 0 10px">One email each morning, Nov 28 to Dec 1, with the day's score at the top. It's our free daily pool email; unsubscribe any time.</p>
+    <form class="sub-form" data-sub data-source="mosconi" action="/alerts" method="get"><input type="email" name="email" required placeholder="you@email.com" aria-label="Your email" autocomplete="email"> <button class="btn btn-blue btn-sm" type="submit">Send me the results</button></form>
+    <p class="sub-msg" aria-live="polite"></p></section>`;
+}
 function pickBoxHtml(stats, now = Date.now()) {
   const bar = pickBarHtml(stats);
   if (!picksOpen(now)) return `<section class="card seo-cta" id="pick-the-winner" style="margin:18px 0;padding:20px"><h2 class="seo-h2" style="margin-top:0">🏆 Fan picks</h2>
@@ -223,7 +234,7 @@ export function mosconiPage(cfg, db = null) {
     <div class="actbar" style="margin-top:12px"><a class="btn btn-blue" href="${MOSCONI_PATH}/calendar.ics" rel="nofollow" download>📅 Add to calendar (all 4 days + press conference)</a><a class="btn btn-out" href="/pro-events">More pro events &amp; where to watch</a></div>
   </article>
   ${faqHtml}
-  ${pickBoxHtml(db ? D.mosconiPickStats(db) : null)}
+  ${pickBoxHtml(db ? D.mosconiPickStats(db) : null)}${mosconiEmailBoxHtml()}
   ${mosconiVideo()}
   ${signup}
   ${youtubeCtaHtml('Mosconi Cup previews, highlights and pro match recaps.')}
