@@ -51,7 +51,7 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Quick check: `node --check src/blog.js src/activity.js src/app.js`.
 
 ## Learnings
-(Review 2026-11-21. Facebook data Nov 14-20 via Windsor, 84 posts; Windsor lags ~1 day. Page 101659817843047 = Billiard Action Time; 849318714932168 = Billiardaction.)
+(Review 2026-11-23. Facebook data Nov 16-22 via Windsor, 69 posts; earlier Nov 14-20 review agrees; Windsor lags ~1 day. Page 101659817843047 = Billiard Action Time; 849318714932168 = Billiardaction.)
 - Only video/reel-style posts about Efren Reyes break out: three posts reached 299,000-329,000 people (52-88 comments) and one 112,000 (24 comments). Their captions were 1 short line, no hashtags, no link ("Efren Reyes is just a goat for this amazing shot"). Nothing else comes close.
 - Credited video clips (The Sharkstream, CC BY) with a famous pro name plus "luck or genius?" / "would you fire this?" reached 500-1,400 each, 20-100x any other post type. Make 1-2 per day on Billiard Action Time; link goes in the first comment.
 - Famous names carry reach: Efren Reyes, Joshua Filler, Jayson Shaw, Earl Strickland. Lead with the name plus a surprising result.
@@ -60,7 +60,12 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Article shares reach 8-16 people and almost never get a click. Share each article once, on Billiard Action Time + Instagram only. Articles still matter for search, not for Facebook.
 - Fun facts, tips, tournament-finder plugs, weekend YES/NO and hand-drawn graphics: 5-22 reach, 0 reactions. Stop posting tips and fun facts.
 - Billiardaction gets 0-2 reach per post. Do not post there except credited video clips.
-- Reactions are ~0 on everything; comments only appear on video/Efren content. Optimise for video-style posts and comments, not link clicks.
+- Nov 16-22 top posts: Efren one-liners 336K and 302K reach (Nov 16, Nov 20, both ~01:00-03:00 UTC); "Where's Efren Reyes going this time?" 7.4K (short, curiosity gap). Credited Sharkstream clips with a named pro: 400-1,450 reach each; Jayson Shaw/Earl Strickland 1,450 best, Filler carom 1,279. Clips of Efren/Shaw/Filler beat Gorst/SVB tricks (570-760).
+- Short captions (under ~12 words, no hashtags, no link) on Efren reposts drove 100x the reach of long captions. Test short curiosity-gap captions on credited clips too.
+- Article shares and Mosconi/fun-fact text posts stay at 8-20 reach, 0 clicks. Mosconi long roster posts reached 49-130 only. Keep to one article share per article.
+- Stop posting to Billiardaction: 0-1 reach on every post this week (22 posts).
+- Reactions are 0 almost everywhere; comments only on Efren/Shaw/Filler video. Use comment-bait questions only on video.
+- (older) Reactions are ~0 on everything; comments only appear on video/Efren content. Optimise for video-style posts and comments, not link clicks.
 - Best times seen: 00:00-03:00 UTC (US evening) for video; 17:00-18:00 UTC for text. Weak: 04:00-12:00 UTC.
 - Post 3-5 times a day total (1-2 video clips + 1 Mosconi item + article share), not 10+.
 - Mosconi Cup Nov 27-30: post daily result recaps and update content/mosconi-2026.json each day; link /mosconi-cup-2026. Highlights video of the matches is the best chance for another 100K+ post.
