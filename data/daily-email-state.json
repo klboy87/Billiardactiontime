@@ -103,8 +103,6 @@
     "willie-mosconi-526-ball-run"
   ],
   "queue": [
-    "combination-shots",
-    "9-ball-vs-10-ball",
     "thin-cut-shots",
     "carbon-fiber-vs-maple-shaft",
     "pool-bridge-types",
@@ -120,7 +118,9 @@
     "how-to-watch-pro-pool",
     "stop-shot-and-stun-shot",
     "apa-skill-levels-explained",
-    "how-to-stop-scratching"
+    "how-to-stop-scratching",
+    "combination-shots",
+    "9-ball-vs-10-ball"
   ],
   "log": [
     {
@@ -149,6 +149,13 @@
       "picks": [
         "apa-skill-levels-explained",
         "how-to-stop-scratching"
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "picks": [
+        "combination-shots",
+        "9-ball-vs-10-ball"
       ]
     }
   ]
