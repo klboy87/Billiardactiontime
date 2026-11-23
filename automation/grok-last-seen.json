@@ -1,22 +1,30 @@
 {
- "lastUpdated": "Nov 22, 2026, 8:45 AM ET",
- "checkedAt": "2026-11-22T19:20:00Z",
+ "lastUpdated": "Nov 22, 2026, 7:40 PM ET",
+ "checkedAt": "2026-11-23T02:10:56Z",
  "items": [
   {
-   "title": "1 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
+   "title": "1 Press conference: doors 2:30, 3-4 PM ET, ticketed (final wording from 00:49Z comment)",
+   "status": "done Nov 22 9 PM run (0e80c2e)"
+  },
+  {
+   "title": "2 Public videos 45Z_6EjCMHQ, RW5avV0QgLE, P-UH1DYWNUY, sXyE1xyDQyo",
+   "status": "done Nov 22 9 PM run (0e80c2e)"
+  },
+  {
+   "title": "2 JIKtq1Xjnp0 (Confidence or Ego?)",
+   "status": "held: oEmbed still failed at 9 PM ET"
+  },
+  {
+   "title": "3 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
    "status": "not due yet"
   },
   {
-   "title": "3 Thanksgiving weekend page /tournaments/thanksgiving-weekend",
-   "status": "done Nov 22 (904fa74)"
-  },
-  {
-   "title": "4 Mosconi results by email box (source=mosconi)",
-   "status": "done Nov 22 (904fa74); daily email lead noted in AUTOMATION.md"
+   "title": "4 Daily email Mosconi lead",
+   "status": "owner check"
   },
   {
    "title": "5 Railway watch paths",
-   "status": "owner action; morning pushes SKIPPED"
+   "status": "owner action"
   },
   {
    "title": "6 /gear products + Black Friday",
@@ -27,24 +35,8 @@
    "status": "held"
   },
   {
-   "title": "Comment 13:33Z: alL-G3ZpGR0 featured",
-   "status": "done Nov 22 (904fa74)"
-  },
-  {
-   "title": "2 Timed videos 45Z_6EjCMHQ, P-UH1DYWNUY",
-   "status": "held: public status could not be checked (YouTube blocked this run)"
-  },
-  {
-   "title": "Comment 13:33Z: RW5avV0QgLE, sXyE1xyDQyo, JIKtq1Xjnp0",
-   "status": "held: public status could not be checked"
-  },
-  {
-   "title": "Comment 14:37Z: press conference time on hub",
-   "status": "done Nov 22 PM: added Thanksgiving, doors 2:30 PM, Palms III; kept 3-4 PM start (matches /pro-events source note)"
-  },
-  {
-   "title": "Comment 14:37Z: Woodward/Shaw vice-captains",
-   "status": "no change: no dated 2026 source confirmed"
+   "title": "Woodward/Shaw vice-captains",
+   "status": "no change (per comment)"
   }
  ]
 }
