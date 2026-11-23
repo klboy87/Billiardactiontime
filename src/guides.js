@@ -2,7 +2,7 @@
 // Plain server-rendered HTML so search engines and ad reviewers read the full text.
 import { layout, shareStrip } from './seo.js';
 import { MORE_GUIDES } from './guides-more.js';
-import { mosconiPickCardHtml } from './social.js';
+import { mosconiPickCardHtml, inlineVideosHtml } from './social.js';
 import { DAILY_ARTICLES } from './daily-articles.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -418,7 +418,8 @@ export function guidePage(cfg, slug, extraHtml = '') {
   const g = GUIDES.find(x => x.slug === slug);
   if (!g) return null;
   const cat = guideCat(g.slug);
-  const { body: content, toc } = prepareBody(g.body);
+  const { body: rawContent, toc } = prepareBody(g.body);
+  const content = inlineVideosHtml(rawContent);
   const same = GUIDES.filter(x => x.slug !== slug && guideCat(x.slug) === cat);
   const other = GUIDES.filter(x => x.slug !== slug && guideCat(x.slug) !== cat);
   const next = [...same.slice(0, 3), ...other.slice(0, Math.max(1, 4 - same.slice(0, 3).length))].slice(0, 4);

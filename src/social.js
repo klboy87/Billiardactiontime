@@ -30,6 +30,16 @@ export function youtubeEmbedHtml(id, title = '', credit = '') {
   return `<figure class="yt-embed" style="margin:16px 0"><div style="position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000"><iframe src="${src}" srcdoc="${escA(doc)}" title="${escA(title || 'YouTube video')}" loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>${credit ? `<figcaption class="muted" style="font-size:13px;margin-top:4px">${escA(credit)}</figcaption>` : ''}</figure>`;
 }
 
+// Extra inline videos in a blog/guide body: "<!--yt:VIDEOID|Title|Credit-->" (credit optional) becomes a
+// click-to-load embed. Invalid IDs are dropped silently.
+export function inlineVideosHtml(html = '') {
+  return String(html).replace(/<!--yt:([^|>]+?)(?:\|([^|>]*?))?(?:\|([^>]*?))?-->/g, (m, id, title = '', credit = '') => {
+    const t = String(title).trim();
+    const v = youtubeEmbedHtml(String(id).trim(), t, String(credit).trim());
+    return v ? `<section class="yt-inline" style="margin:18px 0">${t ? `<h3 style="margin:0 0 4px">${escA(t)}</h3>` : ''}${v}</section>` : '';
+  });
+}
+
 // Featured long-form video shown near the top of /blog/ (our own channel's upload; click-to-load).
 export const FEATURED_VIDEOS = [
   { id: 'alL-G3ZpGR0', title: 'Mike Dechaine Came for Efren Reyes: The Legend vs The Hustler' },
@@ -60,6 +70,7 @@ export function mosconiPickCardHtml(now = Date.now()) {
 // from YouTube until a click). Our own channel's Shorts only, newest first. "after" (ISO UTC) hides a Short
 // until it is public.
 export const SHORTS = [
+  { id: 'P-UH1DYWNUY' },
   { id: 'LcfBuB4x7ZE' }, { id: 'HZvK6-Qp-j0' },
   { id: 'dvmThoJc2rY', after: '2026-11-19T17:00:00Z' },
   { id: 'dhZK3qHdPRo' }, { id: '7A2xb9BhCCc' }, { id: 'TNU1jhBxPM4' }, { id: 'cu_NtTqX_pY' }

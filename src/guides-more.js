@@ -2241,6 +2241,7 @@ ${table({ balls: [{ x: 6.2, y: 1.2, n: 1 }, { x: 3.8, y: 2.3, n: 2 }, { x: 4.6, 
 <li><b>Side pocket cut shots:</b> the tangent line often points at the opposite corner. Check it before you shoot.</li>
 <li><b>Three-rail paths:</b> a cue ball going around the table can find a corner on its way. Use less speed.</li>
 </ul>
+<!--yt:45Z_6EjCMHQ|Watch: why you scratched (3 cue ball rules)-->
 <h2>Scratching on the break</h2>
 <p>If you often scratch on the break, the cue ball is probably hitting the head ball a little off-center and flying into a side or corner pocket. Try:</p>
 <ul>
