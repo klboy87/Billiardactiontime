@@ -1,41 +1,49 @@
 {
- "lastUpdated": "Nov 23, 2026, 7:45 PM ET",
- "checkedAt": "2026-11-24T02:10:00Z",
+ "lastUpdated": "Nov 24, 2026, 8:45 AM ET",
+ "checkedAt": "2026-11-24T14:20:00Z",
  "items": [
   {
    "title": "1 ESPN2 Sunday + international broadcasters on Mosconi pages",
-   "status": "new Nov 23 PM; waiting for owner's go (trial ended Nov 22)"
+   "status": "waiting for owner's go (trial ended Nov 22); needed before Nov 27"
   },
   {
    "title": "2 Mosconi hub as 'live scores' page + /live short link",
+   "status": "waiting for owner's go; needed before Nov 27"
+  },
+  {
+   "title": "3 Embed long-form video WnYQ5wsvvS8 (/blog featured + /pro-events)",
+   "status": "new Nov 24 AM; waiting for owner's go"
+  },
+  {
+   "title": "4 Add public Short JIKtq1Xjnp0 (home strip + etiquette post)",
    "status": "waiting for owner's go"
   },
   {
-   "title": "3 Add now-public Short JIKtq1Xjnp0 (home strip + etiquette post)",
+   "title": "5 Link league + bracket posts into tournament funnel",
    "status": "waiting for owner's go"
   },
   {
-   "title": "4 Link league + bracket posts into tournament funnel",
-   "status": "new Nov 23 PM; waiting for owner's go"
+   "title": "6 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
+   "status": "owner said go Nov 18; first recheck due tonight Nov 24"
   },
   {
-   "title": "5 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
-   "status": "not due yet (first recheck Nov 24)"
+   "title": "7 Confirm Instagram stop",
+   "status": "done Nov 24: AUTOMATION.md stop rule added; 3 scheduled tasks still require Instagram and need owner change"
   },
   {
-   "title": "6 Daily email Mosconi lead",
+   "title": "8 Daily email Mosconi lead",
    "status": "owner check"
   },
   {
-   "title": "7 Railway watch paths",
+   "title": "9 Railway watch paths",
    "status": "owner action"
   },
   {
-   "title": "8 /gear products + Black Friday",
+   "title": "10 /gear products + Black Friday",
    "status": "needs owner's product picks"
   },
   {
-   "title": "9 Held videos CVAxby8h7IA, hub youtubeId",
+   "title": "11 Held videos CVAxby8h7IA, hub youtubeId",
    "status": "held"
   }
  ]

@@ -2,6 +2,11 @@
 
 Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (>=22.13), no framework, no build step.
 
+## STOP: no Instagram posts (owner instruction, Nov 23, 2026, 9:57 PM ET)
+- **Do not post anything to Instagram** (@timetoenjoynow, account 17841417500359155): no image posts, no Reels, no stories, through Windsor.ai or any other way. This overrides any task prompt that says Instagram posting is required. Skip the Instagram step and say "Instagram skipped (owner stop)" in your log line.
+- Everything else continues: site work, blog articles, Facebook (Billiard Action Time Page), YouTube Shorts delivered to the owner.
+- Replying to comments on existing Instagram posts is not posting; it may continue unless the owner says otherwise.
+
 ## Deploy
 - Deploy branch: **`main`**. Railway (Nixpacks, `railway.json`) auto-deploys every push to `main`. Start: `node server.js`, healthcheck `/api/health`.
 - Workflow: `git pull --rebase origin main`, commit, `git push origin main`.
@@ -57,7 +62,7 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Famous names carry reach: Efren Reyes, Joshua Filler, Jayson Shaw, Earl Strickland. Lead with the name plus a surprising result.
 - "Day N: 7 down, one left... YES or NO?" challenge posts reached 400-420 (video). Repeat in series form, one per day at most.
 - Long Mosconi Team USA / Europe roster text posts reached 45-118 (best of the non-video text). Short Mosconi "who wins?" polls and countdowns reached 4-11. Do not post countdowns.
-- Article shares reach 8-16 people and almost never get a click. Share each article once, on Billiard Action Time + Instagram only. Articles still matter for search, not for Facebook.
+- Article shares reach 8-16 people and almost never get a click. Share each article once, on the Billiard Action Time Facebook Page only (no Instagram, owner stop Nov 23). Articles still matter for search, not for Facebook.
 - Fun facts, tips, tournament-finder plugs, weekend YES/NO and hand-drawn graphics: 5-22 reach, 0 reactions. Stop posting tips and fun facts.
 - Billiardaction gets 0-2 reach per post. Do not post there except credited video clips.
 - Nov 16-22 top posts: Efren one-liners 336K and 302K reach (Nov 16, Nov 20, both ~01:00-03:00 UTC); "Where's Efren Reyes going this time?" 7.4K (short, curiosity gap). Credited Sharkstream clips with a named pro: 400-1,450 reach each; Jayson Shaw/Earl Strickland 1,450 best, Filler carom 1,279. Clips of Efren/Shaw/Filler beat Gorst/SVB tricks (570-760).
