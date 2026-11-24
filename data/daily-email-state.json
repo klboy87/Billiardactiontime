@@ -103,8 +103,6 @@
     "willie-mosconi-526-ball-run"
   ],
   "queue": [
-    "thin-cut-shots",
-    "carbon-fiber-vs-maple-shaft",
     "pool-bridge-types",
     "how-to-chalk-a-cue",
     "pool-news-chua-filler-mosconi-countdown-november-2026",
@@ -120,7 +118,9 @@
     "apa-skill-levels-explained",
     "how-to-stop-scratching",
     "combination-shots",
-    "9-ball-vs-10-ball"
+    "9-ball-vs-10-ball",
+    "thin-cut-shots",
+    "carbon-fiber-vs-maple-shaft"
   ],
   "log": [
     {
@@ -156,6 +156,13 @@
       "picks": [
         "combination-shots",
         "9-ball-vs-10-ball"
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "picks": [
+        "thin-cut-shots",
+        "carbon-fiber-vs-maple-shaft"
       ]
     }
   ]
