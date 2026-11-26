@@ -102,10 +102,7 @@
     "pool-news-chua-filler-mosconi-countdown-november-2026",
     "willie-mosconi-526-ball-run"
   ],
-  "queue": [
-    "pool-news-chua-filler-mosconi-countdown-november-2026",
-    "willie-mosconi-526-ball-run"
-  ],
+  "queue": [],
   "sent": [
     "reyes-cup-2026-results",
     "us-open-pool-championship-2026-results",
@@ -120,7 +117,9 @@
     "thin-cut-shots",
     "carbon-fiber-vs-maple-shaft",
     "pool-bridge-types",
-    "how-to-chalk-a-cue"
+    "how-to-chalk-a-cue",
+    "pool-news-chua-filler-mosconi-countdown-november-2026",
+    "willie-mosconi-526-ball-run"
   ],
   "log": [
     {
@@ -170,6 +169,13 @@
       "picks": [
         "pool-bridge-types",
         "how-to-chalk-a-cue"
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "picks": [
+        "pool-news-chua-filler-mosconi-countdown-november-2026",
+        "willie-mosconi-526-ball-run"
       ]
     }
   ]
