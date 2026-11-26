@@ -1,14 +1,14 @@
 {
- "lastUpdated": "Nov 25, 2026, 7:40 PM ET",
- "checkedAt": "2026-11-26T02:00:00Z",
+ "lastUpdated": "Nov 26, 2026, 8:45 AM ET",
+ "checkedAt": "2026-11-26T14:30:00Z",
  "items": [
   {
    "title": "1 ESPN2 Sunday + international broadcasters on Mosconi pages",
-   "status": "waiting for owner's go (trial ended Nov 22); needed before Nov 27. Nov 25 comment: Sky not carrying; verify each international broadcaster against official Matchroom/WNT source"
+   "status": "waiting for owner's go; today (Thu Nov 26) is the last day before the Nov 27, 1 PM ET start"
   },
   {
    "title": "2 Mosconi hub as 'live scores' page + /live short link",
-   "status": "waiting for owner's go; needed before Nov 27"
+   "status": "waiting for owner's go; today (Thu Nov 26) is the last day before the Nov 27, 1 PM ET start"
   },
   {
    "title": "3 Embed long-form video WnYQ5wsvvS8 (/blog featured + /pro-events)",
@@ -24,7 +24,7 @@
   },
   {
    "title": "6 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
-   "status": "owner said go Nov 18; order of play not announced at Grok's 8:35 AM ET Nov 25 check; next recheck Nov 26"
+   "status": "owner said go Nov 18; order of play still not announced (web search Nov 26 ~9:30 AM ET); results due Nov 27-30"
   },
   {
    "title": "7 Confirm Instagram stop",
@@ -53,6 +53,10 @@
   {
    "title": "13 Efren Reyes: /efren short link, Mosconi box + slot for channel's Efren video on the Efren post",
    "status": "new Nov 25 PM; waiting for owner's go. Owner: give Efren video ID, pin Efren post on Facebook, add site to Page About"
+  },
+  {
+   "title": "14 Embed long-form video itMRBG0Tcno (Pool vs Snooker) in /blog featured + a beginner post",
+   "status": "new Nov 26 AM; waiting for owner's go"
   }
  ]
 }
