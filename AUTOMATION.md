@@ -56,28 +56,17 @@ Site: https://billiardactiontime.com (repo `klboy87/billiardactiontime`). Node (
 - Quick check: `node --check src/blog.js src/activity.js src/app.js`.
 
 ## Learnings
-(Review 2026-11-25. Facebook Nov 18-24 via Windsor, 63 posts.)
-- Top posts this week: "Efren Reyes is Magical" 178K reach (36 comments, Nov 23, 12:50 UTC), "Efren Reyes the goat..." 302K (88 comments). A repost-style Efren one-liner beats everything; keep doing 1 every 2-3 days at most, caption under 12 words, no link, no hashtags.
-- Own-edited Sharkstream clips with a famous name reach 500-3,000 (best: Efren vs John 3,029; Shaw/Strickland 1,593; Efren double bank 1,301). Keep 2 per day, posted 00:00-03:00 UTC.
-- Mosconi text posts and countdowns reach 9-26; article shares 8-20; one link click total across the week. Article shares and countdowns are not worth extra posts: one share per article, no countdowns, no weekend YES/NO or tournament-plug posts.
-- Billiardaction Page: 0-3 reach on all posts again (0 reactions). Post there only credited clips or nothing.
-- Reactions are still ~0 on everything; comments only on video/Efren. Judge by reach and comments, not reactions.
-- Mosconi Cup runs Nov 27-30: a short video recap/highlight clip with a team name beats text recaps; text recaps should be 1 per day, results first.
-(Review 2026-11-23. Facebook data Nov 16-22 via Windsor, 69 posts; earlier Nov 14-20 review agrees; Windsor lags ~1 day. Page 101659817843047 = Billiard Action Time; 849318714932168 = Billiardaction.)
-- Only video/reel-style posts about Efren Reyes break out: three posts reached 299,000-329,000 people (52-88 comments) and one 112,000 (24 comments). Their captions were 1 short line, no hashtags, no link ("Efren Reyes is just a goat for this amazing shot"). Nothing else comes close.
-- Credited video clips (The Sharkstream, CC BY) with a famous pro name plus "luck or genius?" / "would you fire this?" reached 500-1,400 each, 20-100x any other post type. Make 1-2 per day on Billiard Action Time; link goes in the first comment.
-- Famous names carry reach: Efren Reyes, Joshua Filler, Jayson Shaw, Earl Strickland. Lead with the name plus a surprising result.
-- "Day N: 7 down, one left... YES or NO?" challenge posts reached 400-420 (video). Repeat in series form, one per day at most.
-- Long Mosconi Team USA / Europe roster text posts reached 45-118 (best of the non-video text). Short Mosconi "who wins?" polls and countdowns reached 4-11. Do not post countdowns.
-- Article shares reach 8-16 people and almost never get a click. Share each article once, on the Billiard Action Time Facebook Page only (no Instagram, owner stop Nov 23). Articles still matter for search, not for Facebook.
-- Fun facts, tips, tournament-finder plugs, weekend YES/NO and hand-drawn graphics: 5-22 reach, 0 reactions. Stop posting tips and fun facts.
-- Billiardaction gets 0-2 reach per post. Do not post there except credited video clips.
-- Nov 16-22 top posts: Efren one-liners 336K and 302K reach (Nov 16, Nov 20, both ~01:00-03:00 UTC); "Where's Efren Reyes going this time?" 7.4K (short, curiosity gap). Credited Sharkstream clips with a named pro: 400-1,450 reach each; Jayson Shaw/Earl Strickland 1,450 best, Filler carom 1,279. Clips of Efren/Shaw/Filler beat Gorst/SVB tricks (570-760).
-- Short captions (under ~12 words, no hashtags, no link) on Efren reposts drove 100x the reach of long captions. Test short curiosity-gap captions on credited clips too.
-- Reactions are 0 almost everywhere; comments only on Efren/Shaw/Filler video. Use comment-bait questions only on video.
-- Best times seen: 00:00-03:00 UTC (US evening) for video; 17:00-18:00 UTC for text. Weak: 04:00-12:00 UTC.
-- Post 3-5 times a day total (1-2 video clips + 1 Mosconi item + article share), not 10+.
-- Mosconi Cup Nov 27-30: post daily result recaps and update content/mosconi-2026.json each day; link /mosconi-cup-2026. Highlights video of the matches is the best chance for another 100K+ post.
-- Blog pace is 2 articles/day (Nov 20-21: 3 published). Favour evergreen beginner guides; confirm the live URL returns 200 before sharing.
-- Railway watch patterns SKIP almost every push (articles, code, logs). After pushing, poll the live URL and redeploy via the Railway connector (project spectacular-vitality) if not 200 in ~3 minutes. Owner needs to clear the watch patterns.
-- Always confirm image URLs return 200 on the live site before posting to Facebook/Instagram.
+(Review 2026-11-27. Facebook Nov 20-26 via Windsor, 51 posts; Windsor lags ~1 day. Page 101659817843047 = Billiard Action Time; 849318714932168 = Billiardaction.)
+- Only Efren Reyes reposts break out: 302K reach (88 comments, Nov 20), 245K (47 comments, 64K video views, Nov 23), 40K ("Where's Efren Reyes going this time?"). Caption = one short line, no hashtags, no link. Post one every 2-3 days at most.
+- Own-edited credited Sharkstream clips with a famous name reach 400-3,200 (best: Efren vs John 3,201; Shaw/Strickland 1,698; Filler carom 1,556; Efren double bank 1,526). Keep 2 per day, posted 00:00-03:00 UTC, link in first comment. Efren/Shaw/Filler/Strickland/SVB names carry reach.
+- Clips with a vague name or off-topic hook (Bangkok Open "hill-hill", Efren two-way shot) reach only ~400-440: lead with the name plus a surprising result.
+- Article shares reach 9-21 people and almost never get a click (1 link click all week). One share per article on Billiard Action Time only, no hashtag walls. Articles matter for search, not Facebook.
+- Mosconi text/graphic posts reach 11-30 (roster text 140, a swipe carousel 166). Polls, countdowns, Thanksgiving/tournament plugs, tips and fun facts: 11-40 reach. Do not post countdowns, weekend YES/NO or tip posts.
+- Reactions are ~0 on everything; comments only on video/Efren. Judge by reach and comments.
+- Billiardaction Page: 0-1 reach per post. Do not post there.
+- Mosconi Cup is Nov 27-30: a credited highlight clip with a team/player name is the best shot at another 100K+ post; text recaps 1 per day, result first, link /mosconi-cup-2026. Update content/mosconi-2026.json daily.
+- Best times: 00:00-03:00 UTC for video; 14:00-17:00 UTC for text. Weak: 04:00-12:00 UTC.
+- Post 3-5 times a day total (1-2 video clips + 1 Mosconi item + article share), not 10+. The social-post routine had no logged run after Nov 25; keep it running.
+- Blog pace is 2 articles/day (Nov 25-27: 5 published, all healthy). Favour evergreen beginner guides; confirm the live URL returns 200 before sharing.
+- Railway watch patterns SKIP almost every push. After pushing, poll the live URL and redeploy via the Railway connector (project spectacular-vitality) if not 200 in ~3 minutes. Owner needs to clear the watch patterns.
+- Always confirm image URLs return 200 on the live site before posting to Facebook.
