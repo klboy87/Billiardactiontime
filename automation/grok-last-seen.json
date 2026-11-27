@@ -1,62 +1,62 @@
 {
- "lastUpdated": "Nov 26, 2026, 7:40 PM ET",
- "checkedAt": "2026-11-27T02:06:46Z",
+ "lastUpdated": "Nov 27, 2026, 8:45 AM ET",
+ "checkedAt": "2026-11-27T14:08:00Z",
  "items": [
   {
    "title": "1 ESPN2 Sunday + international broadcasters on Mosconi pages",
-   "status": "waiting for owner's go; today (Thu Nov 26) is the last day before the Nov 27, 1 PM ET start"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "2 Mosconi hub as 'live scores' page + /live short link",
-   "status": "waiting for owner's go; today (Thu Nov 26) is the last day before the Nov 27, 1 PM ET start"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "3 Embed long-form video WnYQ5wsvvS8 (/blog featured + /pro-events)",
-   "status": "new Nov 24 AM; waiting for owner's go"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "4 Add public Short JIKtq1Xjnp0 (home strip + etiquette post)",
-   "status": "waiting for owner's go"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "5 Link league + bracket posts into tournament funnel",
-   "status": "waiting for owner's go"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "6 Mosconi c-e (Nov 24/26 rechecks, Nov 27-30 results, Dec 1 recap)",
-   "status": "owner said go Nov 18; order of play still not announced (web search Nov 26 ~9:30 AM ET); results due Nov 27-30"
+   "status": "waiting for owner's go; Day 1 order of play now out (6c), Mosconi starts today 1 PM ET"
   },
   {
    "title": "7 Confirm Instagram stop",
-   "status": "AUTOMATION.md stop rule live (1610a10); owner must edit 3 scheduled tasks or let Claude edit them"
+   "status": "needs owner action"
   },
   {
    "title": "8 Daily email Mosconi lead",
-   "status": "owner check"
+   "status": "needs owner action"
   },
   {
    "title": "9 Railway watch paths",
-   "status": "owner action"
+   "status": "needs owner action"
   },
   {
    "title": "10 /gear products + Black Friday",
-   "status": "needs owner's product picks"
+   "status": "needs owner action"
   },
   {
    "title": "11 Held videos CVAxby8h7IA, hub youtubeId",
-   "status": "held"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "12 Link Fargo + jump-shot rules posts into tournament funnel",
-   "status": "waiting for owner's go; now also covers the kick-shots post (added Nov 25 PM)"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "13 Efren Reyes: /efren short link, Mosconi box + slot for channel's Efren video on the Efren post",
-   "status": "new Nov 25 PM; waiting for owner's go. Owner: give Efren video ID, pin Efren post on Facebook, add site to Page About"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   },
   {
    "title": "14 Embed long-form video itMRBG0Tcno (Pool vs Snooker) in /blog featured + a beginner post",
-   "status": "new Nov 26 AM; waiting for owner's go"
+   "status": "waiting for owner's go (trial ended Nov 22)"
   }
  ]
 }
