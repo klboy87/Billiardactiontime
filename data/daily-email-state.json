@@ -119,7 +119,9 @@
     "pool-bridge-types",
     "how-to-chalk-a-cue",
     "pool-news-chua-filler-mosconi-countdown-november-2026",
-    "willie-mosconi-526-ball-run"
+    "willie-mosconi-526-ball-run",
+    "how-to-aim-in-pool",
+    "first-pool-tournament"
   ],
   "log": [
     {
@@ -176,6 +178,13 @@
       "picks": [
         "pool-news-chua-filler-mosconi-countdown-november-2026",
         "willie-mosconi-526-ball-run"
+      ]
+    },
+    {
+      "date": "2026-11-27",
+      "picks": [
+        "how-to-aim-in-pool",
+        "first-pool-tournament"
       ]
     }
   ]
